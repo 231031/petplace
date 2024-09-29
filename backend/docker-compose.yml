@@ -1,0 +1,67 @@
+services:
+  petplace_api:
+    container_name: petplace-api
+    build: .
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - ./public:/app/go/public
+      - ./:/app/go
+    depends_on:
+      - petplace_db
+    networks:
+      - petplace_networks
+    # develop:
+    #   watch:
+    #     - action: rebuild
+    #       path: go.mod
+    #     - action: sync
+    #       x-initialSync: true
+    #       path: ./
+    #       target: /app/go
+    #       ignore:
+    #         - ./public
+    #         - go.sum
+    #         - go.mod
+
+  petplace_db:
+    image: mysql
+    restart: unless-stopped
+    container_name: petplace-db
+    env_file:
+      - .env
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_USER=${DATABASE_USERNAME}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+      - MYSQL_TCP_PORT=${DATABASE_PORT}
+    volumes:
+      - petplace_volumes:/var/lib/mysql
+    networks:
+      - petplace_networks
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - petplace_db
+    ports:
+      - 8081:80
+    env_file:
+      - .env
+    environment:
+      - PMA_HOST=${DATABASE_HOST}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+    networks:
+      - petplace_networks
+networks:
+  petplace_networks:
+    driver: bridge
+volumes:
+  petplace_volumes:
