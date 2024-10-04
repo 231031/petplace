@@ -18,6 +18,7 @@ type CageRoom struct {
 	Size          string         `gorm:"type:varchar(191);not null" json:"size" query:"size"`
 	SizeDetail    string         `gorm:"type:text;not null" json:"size_detail" query:"size_detail"`
 	AnimalType    string         `gorm:"type:varchar(191);not null" json:"animal_type" query:"animal_type"`
+	Image     string  `gorm:"type:varchar(191)" json:"image" query:"image"`
 	CageType string `gorm:"type:varchar(191);not null" json:"cage_type" query:"cage_type"`
 	HotelServices []HotelService `gorm:"foreignKey:CageID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"hotel_services" query:"hotel_services"`
 }
