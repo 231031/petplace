@@ -29,6 +29,7 @@ type Order struct {
 	UpdatedAt     time.Time
 	PaymentStatus string   `gorm:"not null;default:'pending'" json:"payment_status" query:"payment_status"`
 	TransportStatus string `gorm:"not null; default:'pending'" json:"transport_status" query:"transport_status"`
+	Price         int            `gorm:"type:int;not null" json:"price" query:"price"`
 	ProductMerchadises []ProductMerchadise `gorm:"foreignKey:OrderID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"product_merchandises" query:"product_merchandises"`
 	ProductAnimals []ProductAnimal `gorm:"foreignKey:OrderID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"product_animals" query:"product_animals"`
 }

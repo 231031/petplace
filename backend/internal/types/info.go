@@ -21,6 +21,7 @@ type ServiceInfo struct {
 	UpdatedAt     time.Time
 	Status        string `gorm:"not null;default:'pending'" json:"status" query:"status"`
 	PaymentStatus string   `gorm:"not null;default:'pending'" json:"payment_status" query:"payment_status"`
+	Price         int            `gorm:"type:int;not null" json:"price" query:"price"`
 	Detail      string `gorm:"type:text" json:"detail" query:"detail"`
 }
 
