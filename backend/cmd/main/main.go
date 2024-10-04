@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"petplace/config"
-	"petplace/internal/model"
+	"petplace/internal/migration"
 	"petplace/internal/routes"
 
 	"github.com/labstack/echo/v4"
@@ -17,7 +17,8 @@ func main() {
 	}
 	fmt.Printf("connect database successfully\n")
 
-	db.Table("users").AutoMigrate(&model.Users{})
+	migration.Migrate(db)
+
 	routes.CreateRoutes(e, db)
 	e.Logger.Fatal(e.Start(":5000"))
 }

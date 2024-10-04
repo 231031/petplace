@@ -1,8 +1,27 @@
 package model
 
-type Users struct {
-	ID       int    `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
-	Email    string `gorm:"type:varchar(191); unique; not null" json:"email" query:"email"`
-	Password string `gorm:"not null" json:"password" query:"password"`
-	// Role     string `gorm:"type:int;default:2;not null"`
+import "petplace/internal/types"
+
+type User struct {
+	ID        uint         `gorm:"primaryKey;autoIncrement;" json:"id" param:"id" query:"id"`
+	Email     string       `gorm:"type:varchar(191);unique;not null" json:"email" query:"email"`
+	Password  string       `gorm:"type:varchar(191);not null" json:"password" query:"password"`
+	Name      string       `gorm:"type:varchar(191);not null" json:"name" query:"name"`
+	Surename  string       `gorm:"type:varchar(191);not null" json:"surename" query:"surename"`
+	Age       int          `gorm:"type:int;not null" json:"age" query:"age"`
+	CitizenID string       `gorm:"type:varchar(191);not null" json:"citizen_id" query:"citizen_id"`
+	Profiles  []Profile    `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"profiles" query:"profiles"`
+	Animals   []AnimalUser `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animals" query:"animals"`
+	Orders []Order `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"orders" query:"orders"`
+}
+
+type AnimalUser struct {
+	ID     uint `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
+	UserID uint `gorm:"not null" json:"user_id" query:"user_id"`
+	types.AnimalInfo
+	Name              string             `gorm:"type:varchar(191);not null" json:"name" query:"name"`
+	Image             string             `gorm:"type:varchar(191);not null" json:"image" query:"image"`
+	HotelServices     []HotelService     `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"hotel_services" query:"hotel_services"`
+	ClinicServices    []ClinicService    `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"clinic_services" query:"clinic_services"`
+	TransportServices []TransportService `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"transport_services" query:"transport_services"`
 }

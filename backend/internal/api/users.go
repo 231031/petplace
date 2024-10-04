@@ -1,8 +1,10 @@
 package api
 
 import (
+	"net/http"
 	"petplace/internal/model"
 	"petplace/internal/service"
+	"petplace/internal/types"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,8 +19,8 @@ func NewUsersHandler(usersServiceIn service.UsersServiceIn) *UsersHandler {
 }
 
 func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
-	g.POST("/signup", h.SignUp)
-	g.POST("/signin", h.SignIn)
+	g.POST("/signup", h.handleSignUp)
+	g.POST("/login", h.handleLogIn)
 }
 
 // @Tags api v1
@@ -26,8 +28,8 @@ func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
 // @Accept json
 // @Success 200
 // @Router /api/users/signup [post]
-func (h *UsersHandler) SignUp(c echo.Context) error {
-	u := &model.Users{}
+func (h *UsersHandler) handleSignUp(c echo.Context) error {
+	u := &model.User{}
 	err := c.Bind(u)
 	if err != nil {
 		return err
@@ -45,8 +47,22 @@ func (h *UsersHandler) SignUp(c echo.Context) error {
 	
 
 }
-func (h *UsersHandler) SignIn(c echo.Context) error {
 
-	return c.String(200, "SignIn Success")
+func (h *UsersHandler) handleLogIn(c echo.Context) error {
+	payload := &types.LoginPayload{}
+	err := c.Bind(payload)
+	if err != nil {
+		return err
+	}
+
+	token, err := h.usersService.LogIn(*payload)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+        "message": "SignIn Success",
+        "token":   token,
+    })
 	
 }
