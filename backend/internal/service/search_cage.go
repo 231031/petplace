@@ -13,12 +13,12 @@ type SearchCageService struct {
 	Validate           *validator.Validate
 }
 
-func NewSearchCageService(validate *validator.Validate, cageRoomRepositoryIn repository.CageRoomRepositoryIn) *SearchService {
-	return &SearchService{cageRoomRepository: cageRoomRepositoryIn, Validate: validate}
+func NewSearchCageService(validate *validator.Validate, cageRoomRepositoryIn repository.CageRoomRepositoryIn) *SearchCageService {
+	return &SearchCageService{cageRoomRepository: cageRoomRepositoryIn, Validate: validate}
 }
 
 // FilterCages - method to filter cages by animal type, location, and booking time
-func (s *SearchService) FilterCages(filter types.FilterSearch_cage) ([]*types.Cage, error) {
+func (s *SearchCageService) FilterCages(filter types.FilterSearch_cage) ([]*types.Cage, error) {
 	// Validate input
 	if err := s.Validate.Struct(filter); err != nil {
 		return nil, err
