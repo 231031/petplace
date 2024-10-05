@@ -36,7 +36,7 @@ func (s *SearchService) FilterCages(filter types.FilterSearch_cage) ([]*types.Ca
 	}
 
 	// Call to repository to fetch filtered results
-	cages, err := s.CageRoomRepositoryIn.FilterCages(filter.AnimalType, filter.Location, startTime, endTime)
+	cages, err := s.cageRoomRepository.FilterCages(filter.AnimalType, filter.Location, startTime, endTime)
 	if err != nil {
 		return nil, err
 	}
