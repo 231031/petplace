@@ -2,6 +2,8 @@ package repository
 
 import (
 	"petplace/internal/model"
+	"petplace/internal/types"
+	"time"
 )
 
 type UserRepositoryIn interface {
@@ -9,8 +11,8 @@ type UserRepositoryIn interface {
 	GetUserByEmail(email string) (*model.User, error)
 }
 
-type AnimalUserRepositoryIn interface {}
-type ProfileRepositoryIn interface {}
+type AnimalUserRepositoryIn interface{}
+type ProfileRepositoryIn interface{}
 
 type HotelServiceRepositoryIn interface {
 	CreateHotelService(ser model.HotelService) error
@@ -25,4 +27,5 @@ type CageRoomRepositoryIn interface {
 	DeleteCageRoom(id uint) error
 	GetCageRoom(id uint) (*model.CageRoom, error)
 	GetAllCageRoom() ([]model.CageRoom, error)
+	FilterCages(animalType string, location string, startTime time.Time, endTime time.Time) ([]*types.Cage, error)
 }
