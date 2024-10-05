@@ -21,5 +21,6 @@ type ServiceClinic struct {
 // history
 type ClinicService struct {
 	types.ServiceInfo
+	AnimalUserID  uint      `gorm:"not null" json:"animal_user_id" query:"animal_user_id"`
 	ServiceClinicID uint      `gorm:"not null" json:"service_clinic_id" query:"service_clinic_id"`
 }

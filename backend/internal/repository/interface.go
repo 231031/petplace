@@ -11,6 +11,18 @@ type UserRepositoryIn interface {
 
 type AnimalUserRepositoryIn interface {}
 type ProfileRepositoryIn interface {}
-type HotelRepositoryIn interface {}
-type HotelServiceRepositoryIn interface {}
-type CageRoomRepositoryIn interface {}
+
+type HotelServiceRepositoryIn interface {
+	CreateHotelService(ser model.HotelService) error
+	UpdateHotelService(ser model.HotelService) error
+	DeleteHotelService(id uint) error
+	GetHotelService(id uint) (*model.HotelService, error)
+}
+
+type CageRoomRepositoryIn interface {
+	CreateCageRoom(ser model.CageRoom) error
+	UpdateCageRoom(ser model.CageRoom) error
+	DeleteCageRoom(id uint) error
+	GetCageRoom(id uint) (*model.CageRoom, error)
+	GetAllCageRoom() ([]model.CageRoom, error)
+}

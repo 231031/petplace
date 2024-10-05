@@ -21,6 +21,7 @@ type TransportCategory struct {
 
 type TransportService struct {
 	types.ServiceInfo
+	AnimalUserID  uint      `gorm:"not null" json:"animal_user_id" query:"animal_user_id"`
 	TransportCategoryID uint      `gorm:"not null" json:"transport_category_id" query:"transport_category_id"`
 	TransportStatus string `gorm:"not null; default:'pending'" json:"transport_status" query:"transport_status"`
 }

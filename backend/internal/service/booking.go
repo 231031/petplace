@@ -9,13 +9,22 @@ import (
 
 // implement bussiness logic
 type BookingService struct {
-	UsersRepository repository.UserRepositoryIn
+	HotelServiceRepository repository.HotelServiceRepositoryIn
+	CageRoomRepository repository.CageRoomRepositoryIn
 	Validate *validator.Validate
 }
 
-func NewBookingService(userRepositoryIn repository.UserRepositoryIn, validate *validator.Validate) *UsersService {
-	return &UsersService{UsersRepository: userRepositoryIn, Validate: validate}
-	// return &UsersService{UsersRepository: userRepositoryIn}
+func NewBookingService(
+		hotelSerRepositoryIn repository.HotelServiceRepositoryIn, 
+		cageRoomRepositoryIn repository.CageRoomRepositoryIn,
+		validate *validator.Validate,
+	) *BookingService {
+
+	return &BookingService{
+		HotelServiceRepository: hotelSerRepositoryIn, 
+		CageRoomRepository: cageRoomRepositoryIn,
+		Validate: validate,
+	}
 }
 
 func (b *BookingService) BookHotelService() error {

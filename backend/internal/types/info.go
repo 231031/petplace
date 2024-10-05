@@ -14,7 +14,6 @@ import "time"
 
 type ServiceInfo struct {
 	ID            uint      `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
-	AnimalUserID  uint      `gorm:"not null" json:"animal_user_id" query:"animal_user_id"`
 	StartTime     time.Time `gorm:"not null" json:"start_time" query:"start_time"`
 	EndTime       time.Time `gorm:"not null" json:"end_time" query:"end_time"`
 	CreatedAt     time.Time

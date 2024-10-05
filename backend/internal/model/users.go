@@ -21,7 +21,14 @@ type AnimalUser struct {
 	types.AnimalInfo
 	Name              string             `gorm:"type:varchar(191);not null" json:"name" query:"name"`
 	Image             string             `gorm:"type:varchar(191);not null" json:"image" query:"image"`
-	HotelServices     []HotelService     `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"hotel_services" query:"hotel_services"`
+	AnimalUserVaccines []AnimalUserVaccine `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animal_ser_vaccines" query:"animal_ser_vaccines"`
 	ClinicServices    []ClinicService    `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"clinic_services" query:"clinic_services"`
 	TransportServices []TransportService `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"transport_services" query:"transport_services"`
+	AnimalHotelServices []AnimalHotelService `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animal_hotel_services" query:"animal_hotel_services"`
+}
+
+type AnimalUserVaccine struct {
+	ID     uint `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
+	AnimalUserID  uint      `gorm:"not null" json:"animal_user_id" query:"animal_user_id"`
+	Image             string             `gorm:"type:varchar(191);not null" json:"image" query:"image"`
 }
