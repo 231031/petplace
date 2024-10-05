@@ -10,16 +10,26 @@ type UserRepositoryIn interface {
 	SignUp(data model.User) error
 	GetUserByEmail(email string) (*model.User, error)
 }
+						
+type AnimalUserRepositoryIn interface{
+	CreateAnimalUser(animals []model.AnimalUser) error
+	UpdateAnimalUser(animals model.AnimalUser) error
+}
 
-type AnimalUserRepositoryIn interface{}
 type ProfileRepositoryIn interface{}
 
+type AnimalHotelServiceRepositoryIn interface {
+	CreateAnimalHotelService(animals []model.AnimalHotelService) error
+	UpdateAnimalHotelService(animals model.AnimalHotelService) error
+}
+
 type HotelServiceRepositoryIn interface {
-	CreateHotelService(ser model.HotelService) error
+	BookHotelService(ser model.HotelService, animals []model.AnimalHotelService) error
 	UpdateHotelService(ser model.HotelService) error
 	DeleteHotelService(id uint) error
 	GetHotelService(id uint) (*model.HotelService, error)
 }
+
 
 type CageRoomRepositoryIn interface {
 	CreateCageRoom(ser model.CageRoom) error

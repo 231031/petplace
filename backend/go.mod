@@ -4,6 +4,7 @@ go 1.23.1
 
 require (
 	github.com/go-playground/validator/v10 v10.22.1
+	github.com/jinzhu/copier v0.4.0
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/swaggo/swag v1.16.3
 	golang.org/x/crypto v0.27.0

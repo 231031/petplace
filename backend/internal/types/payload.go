@@ -7,7 +7,11 @@ type LoginPayload struct {
 	Password string `json:"password" query:"password"`
 }
 
-type BookingHotelPayload struct{}
+type BookingHotelPayload struct{
+	ServiceInfo
+	CageID       uint `json:"cage_id" query:"cage_id"`
+	Animals []uint `json:"animals" query:"animals"`
+}
 
 type FilterSearch_cage struct {
 	AnimalType string `json:"animal_type" validate:"required"`
@@ -21,3 +25,4 @@ type Cage struct {
 	AnimalType  string    `json:"animal_type"`
 	BookingTime time.Time `json:"booking_time"`
 }
+

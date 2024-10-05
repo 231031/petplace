@@ -32,7 +32,7 @@ func (h *UsersHandler) handleSignUp(c echo.Context) error {
 	u := &model.User{}
 	err := c.Bind(u)
 	if err != nil {
-		return err
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	if u.Email == "" || u.Password == "" {

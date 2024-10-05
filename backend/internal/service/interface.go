@@ -11,7 +11,7 @@ type UsersServiceIn interface {
 }
 
 type BookingServiceIn interface {
-	BookHotelService() error
+	BookHotelService(payload types.BookingHotelPayload) error
 	UpdateAcceptStatus() error
 	GetBookingHotel() (*types.BookingHotelPayload, error)
 }

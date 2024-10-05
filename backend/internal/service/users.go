@@ -10,30 +10,38 @@ import (
 )
 
 // implement bussiness logic
-type UsersService struct {
-	UsersRepository repository.UserRepositoryIn
+type UserService struct {
+	UserRepositoryIn repository.UserRepositoryIn
+	AnimalUserRepository repository.AnimalUserRepositoryIn
 	Validate *validator.Validate
 }
 
-func NewUsersService(userRepositoryIn repository.UserRepositoryIn, validate *validator.Validate) *UsersService {
-	return &UsersService{UsersRepository: userRepositoryIn, Validate: validate}
-	// return &UsersService{UsersRepository: userRepositoryIn}
+func NewUserService(
+		userRepositoryIn repository.UserRepositoryIn, 
+		animalUserRepositoryIn repository.AnimalUserRepositoryIn, 
+		validate *validator.Validate,
+	) *UserService {
+	return &UserService{
+		UserRepositoryIn: userRepositoryIn, 
+		AnimalUserRepository: animalUserRepositoryIn,
+		Validate: validate,
+	}
 }
 
-func (u *UsersService) SignUp(data model.User) error {
+func (u *UserService) SignUp(data model.User) error {
 	hashed, err := auth.HashPassword(data.Password)
 	if err != nil {
 		return err
 	}
 
 	data.Password = hashed
-	res := u.UsersRepository.SignUp(data)
+	res := u.UserRepositoryIn.SignUp(data)
 	if res != nil {
 		return res
 	}
 	return nil
 }
 
-func (u *UsersService) LogIn(payload types.LoginPayload) (string, error) {
+func (u *UserService) LogIn(payload types.LoginPayload) (string, error) {
 	return "nil", nil
 }

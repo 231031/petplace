@@ -1,7 +1,9 @@
 package api
 
 import (
+	"net/http"
 	"petplace/internal/service"
+	"petplace/internal/types"
 
 	"github.com/labstack/echo/v4"
 )
@@ -16,9 +18,20 @@ func NewHotelHandler(bookingServiceIn service.BookingServiceIn) *HotelHandler {
 }
 
 func (h *HotelHandler) RegisterRoutes(g *echo.Group) {
-	g.POST("/", h.test)
+	g.POST("/booking", h.bookHotelService)
 }
 
-func (h *HotelHandler) test(c echo.Context) error {
+func (h *HotelHandler) bookHotelService(c echo.Context) error {
+	s := &types.BookingHotelPayload{}
+	err := c.Bind(s)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+
+	err = h.BookingService.BookHotelService(*s)
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
+	}
+	
 	return nil
 }

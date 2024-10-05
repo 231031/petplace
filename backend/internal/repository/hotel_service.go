@@ -17,12 +17,31 @@ func NewHotelServiceRepository(db *gorm.DB) *HotelServiceRepository {
 	return &HotelServiceRepository{db: db}
 }
 
-func (r *HotelServiceRepository) CreateHotelService(ser model.HotelService) error {
-	result := r.db.Create(&ser)
-	if result.Error != nil {
-		return fmt.Errorf("%s", result.Error.Error())
+func (r *HotelServiceRepository) BookHotelService(ser model.HotelService, animals []model.AnimalHotelService) error {
+	tx := r.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+		  tx.Rollback()
+		}
+	}()
+
+	err := tx.Create(&ser)
+	if err.Error != nil {
+		tx.Rollback()
+		return fmt.Errorf("%s", err.Error.Error())
 	}
-	return nil
+
+	for i := range animals {
+		animals[i].HotelServiceID = ser.ID
+	}
+
+	if err := tx.Create(&animals).Error; err != nil {
+		tx.Rollback()
+		return fmt.Errorf("failed to create AnimalHotelService records: %s", err.Error())
+	}
+
+	return tx.Commit().Error
+
 }
 
 func (r *HotelServiceRepository) GetHotelService(id uint) (*model.HotelService, error) {
