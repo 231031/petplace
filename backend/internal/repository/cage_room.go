@@ -71,8 +71,6 @@ func (r *CageRoomRepository) FilterCages(animalType, animalSize, location string
 	// Combine animalType and animalSize check
 	if animalType != "" && animalSize != "" {
 		query = query.Where("animal_type = ? AND animal_size = ?", animalType, animalSize)
-	} else if animalType != "" {
-		query = query.Where("animal_type = ?", animalType)
 	}
 
 	// Check for location if needed
