@@ -30,7 +30,12 @@ func NewBookingService(
 	}
 }
 
+// role : Hotel
 func (s *BookingService) BookHotelService(payload types.BookingHotelPayload) error {
+	if len(payload.Animals) == 0 {
+		return fmt.Errorf("no animals provided in booking payload")
+	}
+
 	ser := model.HotelService{}
 	if err := copier.Copy(&ser, &payload); err != nil {
 		return fmt.Errorf("failed to copy booking payload to hotel service: %v", err)
@@ -49,7 +54,14 @@ func (s *BookingService) BookHotelService(payload types.BookingHotelPayload) err
 	if err != nil {
 		return fmt.Errorf("%s", err.Error())
 	}
+	if cage == nil {
+		return fmt.Errorf("cage room not found for ID: %d", ser.CageID)
+	}
 
+	if ser.EndTime.Before(ser.StartTime) {
+		return fmt.Errorf("end time must be after start time")
+	}
+	
 	duration := ser.EndTime.Sub(ser.StartTime)
 	days := int(duration.Hours() / 24)
 	price := cage.Price * days
@@ -66,6 +78,21 @@ func (s *BookingService) UpdateAcceptStatus() error {
 	return nil
 }
 
-func (s *BookingService) GetBookingHotel() (*types.BookingHotelPayload, error) {
-	return nil, nil
+// role : hotel
+func (s *BookingService) GetAllBookingHotel(profile_id uint, status string) (*[]model.HotelService, error) {
+	ser, err := s.HotelServiceRepositoryIn.GetAllHotelService(profile_id, status)
+	if err != nil {
+		return nil, fmt.Errorf("%s", err.Error())
+	}
+
+	return ser, nil
+}
+
+func (s *BookingService) GetBookingHotel(id uint) (*model.HotelService, error) {
+	ser, err := s.HotelServiceRepositoryIn.GetHotelService(id)
+	if err != nil {
+		return nil, fmt.Errorf("%s", err.Error())
+	}
+
+	return ser, nil
 }

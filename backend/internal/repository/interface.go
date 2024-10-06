@@ -27,6 +27,7 @@ type HotelServiceRepositoryIn interface {
 	BookHotelService(ser model.HotelService, animals []model.AnimalHotelService) error
 	UpdateHotelService(ser model.HotelService) error
 	DeleteHotelService(id uint) error
+	GetAllHotelService(id uint, status string) (*[]model.HotelService, error)
 	GetHotelService(id uint) (*model.HotelService, error)
 }
 

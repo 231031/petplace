@@ -25,10 +25,10 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 	userHandler := api.NewUsersHandler(userService)
 	userHandler.RegisterRoutes(user)
 
-	hotel := e.Group("/api/hotel")
+	ser_hotel := e.Group("/api/service/hotel")
 	hotelServiceRepository := repository.NewHotelServiceRepository(db)
 	bookingService := service.NewBookingService(hotelServiceRepository, cageRoomRepository, validate)
 	hotelHandler := api.NewHotelHandler(bookingService)
-	hotelHandler.RegisterRoutes(hotel)
+	hotelHandler.RegisterRoutes(ser_hotel)
 
 }

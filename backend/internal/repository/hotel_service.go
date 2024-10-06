@@ -3,7 +3,6 @@ package repository
 import (
 	"fmt"
 	"petplace/internal/model"
-	"petplace/internal/types"
 
 	"gorm.io/gorm"
 )
@@ -44,13 +43,24 @@ func (r *HotelServiceRepository) BookHotelService(ser model.HotelService, animal
 
 }
 
-func (r *HotelServiceRepository) GetHotelService(id uint) (*model.HotelService, error) {
-	ser := &model.HotelService{
-		ServiceInfo: types.ServiceInfo{ID: id},
-	}
-	result := r.db.First(&ser)
+func (r *HotelServiceRepository) GetAllHotelService(profile_id uint, status string) (*[]model.HotelService, error) {
+	ser := &[]model.HotelService{}
+	result := r.db.
+				Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
+				Joins("JOIN profiles ON profiles.id = cage_rooms.profile_id").
+				Where("profiles.id = ? AND hotel_services.status = ?", profile_id, status).
+				Find(ser)
 	if result.Error != nil {
-		return ser, fmt.Errorf("%s", result.Error.Error())
+		return nil, fmt.Errorf("%s", result.Error.Error())
+	}
+	return ser, nil
+}
+
+func (r *HotelServiceRepository) GetHotelService(id uint) (*model.HotelService, error) {
+	ser := &model.HotelService{}
+	result := r.db.First(ser, id)
+	if result.Error != nil {
+		return nil, fmt.Errorf("%s", result.Error.Error())
 	}
 	return ser, nil
 }

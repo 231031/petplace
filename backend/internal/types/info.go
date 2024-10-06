@@ -35,6 +35,7 @@ type ProductInfo struct {
 }
 
 type AnimalInfo struct {
+	AnimalType    string         `gorm:"type:varchar(191);not null" json:"animal_type" query:"animal_type"`
 	Age    int    `gorm:"type:int;not null" json:"age" query:"age"`
 	Weight int    `gorm:"type:int;not null" json:"weight" query:"weight"`
 	Breed  string `gorm:"type:varchar(191);not null" json:"breed" query:"breed"`

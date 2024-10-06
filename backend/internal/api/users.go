@@ -23,10 +23,13 @@ func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
 	g.POST("/login", h.handleLogIn)
 }
 
-// @Tags api v1
-// @Description registration
+// @Tags Users
+// @Description User registration
 // @Accept json
-// @Success 200
+// @Produce json
+// @Param user body model.User true "User object"
+// @Success 201 {string} string "SignUp Success"
+// @Failure 400 {string} string "Invalid username or password"
 // @Router /api/users/signup [post]
 func (h *UsersHandler) handleSignUp(c echo.Context) error {
 	u := &model.User{}
@@ -47,6 +50,14 @@ func (h *UsersHandler) handleSignUp(c echo.Context) error {
 
 }
 
+// @Tags Users
+// @Description User login
+// @Accept json
+// @Produce json
+// @Param payload body types.LoginPayload true "Login Payload"
+// @Success 200 {object} map[string]string
+// @Failure 400 {string} string "Invalid login credentials"
+// @Router /api/users/login [post]
 func (h *UsersHandler) handleLogIn(c echo.Context) error {
 	payload := &types.LoginPayload{}
 	err := c.Bind(payload)

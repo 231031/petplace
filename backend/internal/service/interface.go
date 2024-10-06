@@ -13,5 +13,6 @@ type UsersServiceIn interface {
 type BookingServiceIn interface {
 	BookHotelService(payload types.BookingHotelPayload) error
 	UpdateAcceptStatus() error
-	GetBookingHotel() (*types.BookingHotelPayload, error)
+	GetBookingHotel(id uint) (*model.HotelService, error)
+	GetAllBookingHotel(profile_id uint, status string) (*[]model.HotelService, error)
 }
