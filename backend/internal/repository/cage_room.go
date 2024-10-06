@@ -63,19 +63,31 @@ func (r *CageRoomRepository) DeleteCageRoom(id uint) error {
 
 // filter by using animal_type and cage_size
 // calculate longtitude and latitude of selected location compare with longitude and latitude of hotel in profiles
-func (r *CageRoomRepository) FilterCages(animalType string, location string, startTime time.Time, endTime time.Time) ([]*types.Cage, error) {
-	var cages []*types.Cage
-	// p := model.Profile{}
-	// c := model.CageRoom{}
 
-	// Query the database to find cages matching the criteria
-	result := r.db.Where("animal_type = ? AND booking_time BETWEEN ? AND ?", animalType, location, startTime, endTime).Find(&cages)
-	// r.db.Joins("CageRoom", r.db.Select("").Where("profile_id = profiles.id AND "))
+func (r *CageRoomRepository) FilterCages(animalType, animalSize, location string, startTime, endTime time.Time) ([]*types.Cage, error) {
+	var cages []*types.Cage
+	query := r.db.Model(&types.Cage{})
+
+	// Combine animalType and animalSize check
+	if animalType != "" && animalSize != "" {
+		query = query.Where("animal_type = ? AND animal_size = ?", animalType, animalSize)
+	} else if animalType != "" {
+		query = query.Where("animal_type = ?", animalType)
+	}
+
+	// Check for location if needed
+	if location != "" {
+		query = query.Where("location = ?", location)
+	}
+
+	// Check the booking time range
+	query = query.Where("booking_time BETWEEN ? AND ?", startTime, endTime)
+
+	// Execute the query
+	result := query.Find(&cages)
 
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return cages, nil
 }
-
-// db.Joins("Account", DB.Select("id").Where("user_id = users.id AND name = ?", "someName").Model(&Account{}))

@@ -17,9 +17,12 @@ func NewSearchCageService(validate *validator.Validate, cageRoomRepositoryIn rep
 	return &SearchCageService{cageRoomRepository: cageRoomRepositoryIn, Validate: validate}
 }
 
+// s = instance of SearchCageService
 // FilterCages - method to filter cages by animal type, location, and booking time
 func (s *SearchCageService) FilterCages(filter types.FilterSearch_cage) ([]*types.Cage, error) {
-	// Validate input
+	//filter cages by FilterSearch_cage
+
+	//if not valid return error
 	if err := s.Validate.Struct(filter); err != nil {
 		return nil, err
 	}
@@ -35,8 +38,8 @@ func (s *SearchCageService) FilterCages(filter types.FilterSearch_cage) ([]*type
 		return nil, err
 	}
 
-	// Call to repository to fetch filtered results
-	cages, err := s.cageRoomRepository.FilterCages(filter.AnimalType, filter.Location, startTime, endTime)
+	// Call to repository to fetch filtered results ใช้ดึงข้อมูล
+	cages, err := s.cageRoomRepository.FilterCages(filter.AnimalType, filter.Animalsize, filter.Location, startTime, endTime)
 	if err != nil {
 		return nil, err
 	}

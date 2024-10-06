@@ -44,7 +44,6 @@ func (h *UsersHandler) handleSignUp(c echo.Context) error {
 		return c.String(400, err.Error())
 	}
 	return c.String(201, "SignUp Success")
-	
 
 }
 
@@ -61,8 +60,8 @@ func (h *UsersHandler) handleLogIn(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{
-        "message": "SignIn Success",
-        "token":   token,
-    })
-	
+		"message": "SignIn Success",
+		"token":   token,
+	})
+
 }

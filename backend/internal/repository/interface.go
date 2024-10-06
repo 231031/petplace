@@ -10,8 +10,8 @@ type UserRepositoryIn interface {
 	SignUp(data model.User) error
 	GetUserByEmail(email string) (*model.User, error)
 }
-						
-type AnimalUserRepositoryIn interface{
+
+type AnimalUserRepositoryIn interface {
 	CreateAnimalUser(animals []model.AnimalUser) error
 	UpdateAnimalUser(animals model.AnimalUser) error
 }
@@ -30,12 +30,11 @@ type HotelServiceRepositoryIn interface {
 	GetHotelService(id uint) (*model.HotelService, error)
 }
 
-
 type CageRoomRepositoryIn interface {
 	CreateCageRoom(ser model.CageRoom) error
 	UpdateCageRoom(ser model.CageRoom) error
 	DeleteCageRoom(id uint) error
 	GetCageRoom(id uint) (*model.CageRoom, error)
 	GetAllCageRoom() ([]model.CageRoom, error)
-	FilterCages(animalType string, location string, startTime time.Time, endTime time.Time) ([]*types.Cage, error)
+	FilterCages(animalType string, animalsize string, location string, startTime time.Time, endTime time.Time) ([]*types.Cage, error)
 }
