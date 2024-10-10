@@ -27,15 +27,16 @@ type HotelServiceRepositoryIn interface {
 	BookHotelService(ser model.HotelService, animals []model.AnimalHotelService) error
 	UpdateHotelService(ser model.HotelService) error
 	DeleteHotelService(id uint) error
-	GetAllHotelService(id uint, status string) (*[]model.HotelService, error)
-	GetHotelService(id uint) (*model.HotelService, error)
+	GetAllHotelServiceByHotel(profile_id uint, status string) ([]model.HotelService, error)
+	GetAllHotelServiceByUser(user_id uint, status string) ([]model.HotelService, error)
+	GetHotelService(id uint) (model.HotelService, error)
 }
 
 type CageRoomRepositoryIn interface {
 	CreateCageRoom(ser model.CageRoom) error
 	UpdateCageRoom(ser model.CageRoom) error
 	DeleteCageRoom(id uint) error
-	GetCageRoom(id uint) (*model.CageRoom, error)
-	GetAllCageRoom() ([]model.CageRoom, error)
-	FilterCages(animalType string, animalsize string, location string, startTime time.Time, endTime time.Time) ([]*types.Cage, error)
+	GetCageRoom(id uint) (model.CageRoom, error)
+	GetAllCageRoom(id uint) ([]model.CageRoom, error)
+	FilterCages(animalType string, animalsize string, location string, startTime time.Time, endTime time.Time) ([]types.Cage, error)
 }

@@ -52,12 +52,8 @@ func (s *BookingService) BookHotelService(payload types.BookingHotelPayload) err
 	// calculate price of this service
 	cage, err := s.CageRoomRepositoryIn.GetCageRoom(ser.CageID)
 	if err != nil {
-		return fmt.Errorf("%s", err.Error())
+		return err
 	}
-	if cage == nil {
-		return fmt.Errorf("cage room not found for ID: %d", ser.CageID)
-	}
-
 	if ser.EndTime.Before(ser.StartTime) {
 		return fmt.Errorf("end time must be after start time")
 	}
@@ -69,7 +65,7 @@ func (s *BookingService) BookHotelService(payload types.BookingHotelPayload) err
 
 	err = s.HotelServiceRepositoryIn.BookHotelService(ser, animals)
 	if err != nil {
-		return fmt.Errorf("%s", err.Error())
+		return err
 	}
 	return nil
 }
@@ -79,19 +75,29 @@ func (s *BookingService) UpdateAcceptStatus() error {
 }
 
 // role : hotel
-func (s *BookingService) GetAllBookingHotel(profile_id uint, status string) (*[]model.HotelService, error) {
-	ser, err := s.HotelServiceRepositoryIn.GetAllHotelService(profile_id, status)
+func (s *BookingService) GetAllBookingHotelByHotel(profile_id uint, status string) ([]model.HotelService, error) {
+	ser, err := s.HotelServiceRepositoryIn.GetAllHotelServiceByHotel(profile_id, status)
 	if err != nil {
-		return nil, fmt.Errorf("%s", err.Error())
+		return ser, err
 	}
 
 	return ser, nil
 }
 
-func (s *BookingService) GetBookingHotel(id uint) (*model.HotelService, error) {
+func (s *BookingService) GetBookingHotel(id uint) (model.HotelService, error) {
 	ser, err := s.HotelServiceRepositoryIn.GetHotelService(id)
 	if err != nil {
-		return nil, fmt.Errorf("%s", err.Error())
+		return ser, err
+	}
+
+	return ser, nil
+}
+
+// role : client
+func (s *BookingService) GetAllBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error) {
+	ser, err := s.HotelServiceRepositoryIn.GetAllHotelServiceByUser(user_id, status)
+	if err != nil {
+		return ser, err
 	}
 
 	return ser, nil

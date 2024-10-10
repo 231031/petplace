@@ -19,35 +19,55 @@ func NewHotelHandler(bookingServiceIn service.BookingServiceIn) *HotelHandler {
 }
 
 func (h *HotelHandler) RegisterRoutes(g *echo.Group) {
-	g.POST("/booking", h.bookHotelService)
-	g.GET("/:id/:status", h.getAllHotelService)
+	// hotel
+	g.GET("/:id/:status", h.getAllHotelServiceByHotel)
 	g.GET("/:id", h.getHotelService)
+
+	// client
+	g.POST("/client/booking", h.bookHotelService)
+	g.GET("/client/:id/:status", h.getAllHotelServiceByUser)
 }
 
 func (h *HotelHandler) bookHotelService(c echo.Context) error {
 	s := &types.BookingHotelPayload{}
 	err := c.Bind(s)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
+		utils.HandleError(c, http.StatusBadRequest, "Booking detail not correct", err)
 	}
 
 	err = h.BookingService.BookHotelService(*s)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
+		utils.HandleError(c, http.StatusInternalServerError, "Booking not success", err)
 	}
 	
-	return nil
+	return c.JSON(http.StatusOK, "Booking success")
 }
 
-func (h *HotelHandler) getAllHotelService(c echo.Context) error {
+func (h *HotelHandler) getAllHotelServiceByHotel(c echo.Context) error {
 	id := c.Param("id")
 	profile_id, err := utils.ConvertTypeToUint(id)
+	if err != nil {
+		utils.HandleError(c, http.StatusBadRequest, "Booking detail not correct", err)
+	}
+	status := c.Param("status")
+
+	ser_info, err := h.BookingService.GetAllBookingHotelByHotel(*profile_id, status)
+	if err != nil {
+		utils.HandleError(c, http.StatusInternalServerError, "Booking not available", err)
+	}
+	
+	return c.JSON(http.StatusOK, ser_info)
+}
+
+func (h *HotelHandler) getAllHotelServiceByUser(c echo.Context) error {
+	id := c.Param("id")
+	user_id, err := utils.ConvertTypeToUint(id)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 	status := c.Param("status")
 
-	ser_info, err := h.BookingService.GetAllBookingHotel(*profile_id, status)
+	ser_info, err := h.BookingService.GetAllBookingHotelByUser(*user_id, status)
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
 	}

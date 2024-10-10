@@ -43,32 +43,46 @@ func (r *HotelServiceRepository) BookHotelService(ser model.HotelService, animal
 
 }
 
-func (r *HotelServiceRepository) GetAllHotelService(profile_id uint, status string) (*[]model.HotelService, error) {
-	ser := &[]model.HotelService{}
+func (r *HotelServiceRepository) GetAllHotelServiceByHotel(profile_id uint, status string) ([]model.HotelService, error) {
+	ser := []model.HotelService{}
 	result := r.db.
-				Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
-				Joins("JOIN profiles ON profiles.id = cage_rooms.profile_id").
 				Where("profiles.id = ? AND hotel_services.status = ?", profile_id, status).
-				Find(ser)
+				Joins("JOIN profiles ON profiles.id = cage_rooms.profile_id").
+				Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
+				Find(&ser)
 	if result.Error != nil {
-		return nil, fmt.Errorf("%s", result.Error.Error())
+		return ser, result.Error
 	}
 	return ser, nil
 }
 
-func (r *HotelServiceRepository) GetHotelService(id uint) (*model.HotelService, error) {
-	ser := &model.HotelService{}
-	result := r.db.First(ser, id)
+func (r *HotelServiceRepository) GetAllHotelServiceByUser(user_id uint, status string) ([]model.HotelService, error) {
+	ser := []model.HotelService{}
+	result := r.db.
+				Where("animal_users.user_id = ? AND hotel_services.status = ?", user_id, status).
+				Joins("JOIN animal_hotel_services ON animal_hotel_services.hotel_service_id = hotel_services.id").
+				Joins("JOIN animal_users ON animal_hotel_services.animal_user_id = animal_users.id").
+				Find(&ser)
 	if result.Error != nil {
-		return nil, fmt.Errorf("%s", result.Error.Error())
+		return ser, result.Error
 	}
 	return ser, nil
 }
+
+func (r *HotelServiceRepository) GetHotelService(id uint) (model.HotelService, error) {
+	ser := model.HotelService{}
+	result := r.db.First(&ser, id)
+	if result.Error != nil {
+		return ser, result.Error
+	}
+	return ser, nil
+}
+
 
 func (r *HotelServiceRepository) UpdateHotelService(ser model.HotelService) error {
 	result := r.db.Update("HotelService", ser)
 	if result.Error != nil {
-		return fmt.Errorf("%s", result.Error.Error())
+		return result.Error
 	}
 	return nil
 }
@@ -76,7 +90,7 @@ func (r *HotelServiceRepository) UpdateHotelService(ser model.HotelService) erro
 func (r *HotelServiceRepository) DeleteHotelService(id uint) error {
 	result := r.db.Delete(&model.HotelService{}, id)
 	if result.Error != nil {
-		return fmt.Errorf("%s", result.Error.Error())
+		return result.Error
 	}
 	return nil
 }

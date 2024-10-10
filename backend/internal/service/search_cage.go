@@ -19,7 +19,7 @@ func NewSearchCageService(validate *validator.Validate, cageRoomRepositoryIn rep
 
 // s = instance of SearchCageService
 // FilterCages - method to filter cages by animal type, location, and booking time
-func (s *SearchCageService) FilterCages(filter types.FilterSearch_cage) ([]*types.Cage, error) {
+func (s *SearchCageService) FilterCages(filter types.FilterSearch_cage) ([]types.Cage, error) {
 	//filter cages by FilterSearch_cage
 
 	//if not valid return error
