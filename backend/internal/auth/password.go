@@ -17,3 +17,7 @@ func ComparePassword(password string, hashed string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(password))
 	return err == nil
 }
+
+func GenerateJwt(id uint, email string, role string) (string, error) {
+	return "", nil
+}

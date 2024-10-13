@@ -5,6 +5,7 @@ import (
 	"petplace/internal/model"
 	"petplace/internal/repository"
 	"petplace/internal/types"
+	"petplace/internal/utils"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
@@ -13,19 +14,19 @@ import (
 // implement bussiness logic
 type BookingService struct {
 	HotelServiceRepositoryIn repository.HotelServiceRepositoryIn
-	CageRoomRepositoryIn repository.CageRoomRepositoryIn
+	CageRoomServiceIn CageRoomServiceIn
 	Validate *validator.Validate
 }
 
 func NewBookingService(
 		hotelSerRepositoryIn repository.HotelServiceRepositoryIn,
-		cageRoomRepositoryIn repository.CageRoomRepositoryIn,  
+		cageRoomService CageRoomServiceIn,  
 		validate *validator.Validate,
 	) *BookingService {
 
 	return &BookingService{
 		HotelServiceRepositoryIn: hotelSerRepositoryIn, 
-		CageRoomRepositoryIn: cageRoomRepositoryIn,
+		CageRoomServiceIn: cageRoomService,
 		Validate: validate,
 	}
 }
@@ -50,7 +51,7 @@ func (s *BookingService) BookHotelService(payload types.BookingHotelPayload) err
 	}
 
 	// calculate price of this service
-	cage, err := s.CageRoomRepositoryIn.GetCageRoom(ser.CageID)
+	cage, err := s.CageRoomServiceIn.GetCageRoom(ser.CageID)
 	if err != nil {
 		return err
 	}
@@ -70,7 +71,18 @@ func (s *BookingService) BookHotelService(payload types.BookingHotelPayload) err
 	return nil
 }
 
-func (s *BookingService) UpdateAcceptStatus() error {
+func (s *BookingService) UpdateHotelService(id uint, ser model.HotelService) error {
+	ser_db, err := s.GetBookingHotel(id)
+	if err != nil {
+		return err
+	}
+
+	updateBook := utils.CopyNonZeroFields(&ser, &ser_db).(*model.HotelService)
+	err = s.HotelServiceRepositoryIn.UpdateHotelService(*updateBook)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

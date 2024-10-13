@@ -40,3 +40,6 @@ type AnimalInfo struct {
 	Weight int    `gorm:"type:int;not null" json:"weight" query:"weight"`
 	Breed  string `gorm:"type:varchar(191);not null" json:"breed" query:"breed"`
 }
+
+
+

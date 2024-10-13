@@ -17,7 +17,7 @@ func NewCageRoomRepository(db *gorm.DB) *CageRoomRepository {
 	return &CageRoomRepository{db: db}
 }
 
-func (r *CageRoomRepository) CreateCageRoom(cage model.CageRoom) error {
+func (r *CageRoomRepository) CreateCageRoom(cage []model.CageRoom) error {
 	result := r.db.Create(&cage)
 	if result.Error != nil {
 		return result.Error
@@ -32,8 +32,6 @@ func (r *CageRoomRepository) GetAllCageRoom(id uint) ([]model.CageRoom, error) {
 		return cages, result.Error
 	}
 	return cages, nil
-
-
 }
 
 func (r *CageRoomRepository) GetCageRoom(id uint) (model.CageRoom, error) {
@@ -46,7 +44,7 @@ func (r *CageRoomRepository) GetCageRoom(id uint) (model.CageRoom, error) {
 }
 
 func (r *CageRoomRepository) UpdateCageRoom(cage model.CageRoom) error {
-	result := r.db.Update("CageRoom", cage)
+	result := r.db.Save(&cage)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -89,3 +87,55 @@ func (r *CageRoomRepository) FilterCages(animalType, animalSize, location string
 	}
 	return cages, nil
 }
+
+// func (r *CageRoomRepository) FilterCages(animals []types.FilterInfo, startTime , endTime time.Time) ([]model.CageRoom, error) {
+// 	cages := []model.CageRoom{}
+// 	// cages_id := []uint{}
+// 	query := r.db.Model(&cages)
+
+// 	// all in cage_rooms not have in hotel_services filter by animal_type and size
+// 	// otherwise check booking time with quantity before
+// 	// if booking time overlaps each other count and check with quantity of each cage
+
+// 	query = query.Select("cage_rooms.id, cage_rooms.quantity")
+// 	if len(animals) > 0 {
+// 		for i, animal := range animals {
+// 			if i == 0 {
+// 				query = query.Where("animal_type = ? AND size = ?", animal.AnimalType, animal.CageSize)
+// 			} else {
+// 				query = query.Or("animal_type = ? AND size = ?", animal.AnimalType, animal.CageSize)
+// 			}
+// 		}
+// 	}
+
+// 	result := query.Joins("JOIN hotel_services ON cage_rooms.id = hotel_services.cage_id").
+// 				Where("(start_time <= ? AND end_time >= ?) OR (start_time <= ? AND end_time >= ?)", startTime, startTime, endTime, endTime).
+// 				Group("cage_rooms.id").
+// 				Having("COUNT(start_time) < cage_rooms.quantity").
+// 				Find(&cages)
+// 	if result.Error != nil {
+// 		return cages, result.Error
+// 	}
+// 	// fmt.Println(cages_id)
+
+// 	// cages, err := r.GetAllCageRoomByIds(cages_id)
+// 	// if err != nil {
+// 	// 	return cages, err
+// 	// }
+// 	fmt.Println(cages)
+
+// 	return cages, nil
+// }
+
+// func (r *CageRoomRepository) GetAllCageRoomByIds(ids []uint) ([]model.CageRoom, error) {
+// 	cages := []model.CageRoom{}
+// 	result := r.db.Preload("Profile").
+// 				Where("id IN (?)", ids).
+// 				Find(&cages)
+				
+// 	if result.Error != nil {
+// 		return cages, result.Error
+// 	}
+
+// 	return cages,nil
+// }

@@ -93,3 +93,5 @@ func Migrate(db *gorm.DB) error {
 	// db.Migrator().CreateConstraint(&model.Carrier{}, "TransportCategorys")
 	// db.Migrator().CreateConstraint(&model.Seller{}, "Merchandises")
 	// db.Migrator().CreateConstraint(&model.Seller{}, "Animals")
+
+	// db.Migrator().CreateConstraint(&model.HotelService{}, "CageRoom")

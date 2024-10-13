@@ -24,7 +24,7 @@ func (r *AnimalHotelServiceRepository) CreateAnimalHotelService(animals []model.
 }
 
 func (r *AnimalHotelServiceRepository) UpdateAnimalHotelService(ser model.AnimalHotelService) error {
-	result := r.db.Update("AnimalHotelService", ser)
+	result := r.db.Save(&ser)
 	if result.Error != nil {
 		return result.Error
 	}

@@ -1,0 +1,338 @@
+info:
+  contact: {}
+paths:
+  /api/animal/:id:
+    get:
+      consumes:
+      - application/json
+      description: get animal
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get Animal
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: update animal
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Update Animal
+      tags:
+      - Users
+  /api/animals:
+    post:
+      consumes:
+      - application/json
+      description: create animals
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Create Animals
+      tags:
+      - Users
+  /api/animals/:user_id:
+    get:
+      consumes:
+      - application/json
+      description: get animals
+      parameters:
+      - description: user_id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get Animals
+      tags:
+      - Users
+  /api/users/login:
+    post:
+      consumes:
+      - application/json
+      description: log in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: Log In
+      tags:
+      - Users
+  /api/users/signup:
+    post:
+      consumes:
+      - application/json
+      description: sign up a user
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Sign Up
+      tags:
+      - Users
+  /cageroom:
+    post:
+      description: create cage
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Create Cage
+      tags:
+      - CageRooms
+  /cageroom/:id:
+    delete:
+      description: delete cage
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Delete Cage
+      tags:
+      - CageRooms
+    get:
+      description: get cage
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get Cage
+      tags:
+      - CageRooms
+    put:
+      description: update cage
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Update Cage
+      tags:
+      - CageRooms
+  /cageroom/all/:profile_id:
+    get:
+      description: get cages
+      parameters:
+      - description: profile_id
+        in: path
+        name: profile_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get Cages
+      tags:
+      - CageRooms
+  /client/service/hotel/:id/:status:
+    get:
+      description: get hotel service user
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get Hotel Service User
+      tags:
+      - HotelServices
+  /service/hotel:
+    post:
+      description: book hotel service
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Book Hotel Service
+      tags:
+      - HotelServices
+  /service/hotel/:id:
+    get:
+      description: get hotel service
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get Hotel Service
+      tags:
+      - HotelServices
+    put:
+      description: update hotel service
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Update Hotel Service
+      tags:
+      - HotelServices
+  /service/hotel/:id/:status:
+    get:
+      description: get hotel service hotel
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get Hotel Service Hotel
+      tags:
+      - HotelServices
+swagger: "2.0"

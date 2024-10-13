@@ -24,10 +24,28 @@ func (r *AnimalUserRepository) CreateAnimalUser(animals []model.AnimalUser) erro
 	return nil
 }
 
-func (r *AnimalUserRepository) UpdateAnimalUser(ser model.AnimalUser) error {
-	result := r.db.Update("AnimalUser", ser)
+func (r *AnimalUserRepository) UpdateAnimalUser(animal model.AnimalUser) error {
+	result := r.db.Save(&animal)
 	if result.Error != nil {
 		return fmt.Errorf("%s", result.Error.Error())
 	}
 	return nil
+}
+
+func (r *AnimalUserRepository) GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error) {
+	animals := []model.AnimalUser{}
+	result := r.db.Where("user_id = ?", user_id).Find(&animals)
+	if result.Error != nil {
+		return animals, result.Error
+	}
+	return animals, nil
+}
+
+func (r *AnimalUserRepository) GetAnimalUser(id uint) (model.AnimalUser, error) {
+	animal := model.AnimalUser{ID: id}
+	result := r.db.First(&animal)
+	if result.Error != nil {
+		return animal, result.Error
+	}
+	return animal, nil
 }

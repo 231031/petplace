@@ -11,12 +11,18 @@ type UserRepositoryIn interface {
 	GetUserByEmail(email string) (*model.User, error)
 }
 
+type ProfileRepositoryIn interface {
+	CreateProfile(profile model.Profile) error
+	GetProfileByID(id uint) (model.Profile, error)
+	UpdateProfile(profile model.Profile) error
+}
+
 type AnimalUserRepositoryIn interface {
 	CreateAnimalUser(animals []model.AnimalUser) error
 	UpdateAnimalUser(animals model.AnimalUser) error
+	GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error)
+	GetAnimalUser(id uint) (model.AnimalUser, error)
 }
-
-type ProfileRepositoryIn interface{}
 
 type AnimalHotelServiceRepositoryIn interface {
 	CreateAnimalHotelService(animals []model.AnimalHotelService) error
@@ -33,10 +39,11 @@ type HotelServiceRepositoryIn interface {
 }
 
 type CageRoomRepositoryIn interface {
-	CreateCageRoom(ser model.CageRoom) error
+	CreateCageRoom(ser []model.CageRoom) error
 	UpdateCageRoom(ser model.CageRoom) error
 	DeleteCageRoom(id uint) error
 	GetCageRoom(id uint) (model.CageRoom, error)
 	GetAllCageRoom(id uint) ([]model.CageRoom, error)
 	FilterCages(animalType string, animalsize string, location string, startTime time.Time, endTime time.Time) ([]types.Cage, error)
+	// FilterCages(animals []types.FilterInfo, startTime , endTime time.Time) ([]model.CageRoom, error)
 }
