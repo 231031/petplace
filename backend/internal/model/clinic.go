@@ -8,19 +8,22 @@ import "petplace/internal/types"
 // }
 
 // service which available for client in each clinic
-type ServiceClinic struct {
+type ServiceDetail struct {
 	ID          uint   `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
 	// ClinicID    uint   `gorm:"not null" json:"clinic_id" query:"clinic_id"`
 	ProfileID       uint           `gorm:"not null" json:"profile_id" query:"profile_id"`
 	ServiceType string `gorm:"not null" json:"service_type" query:"service_type"`
 	AnimalType    string         `gorm:"type:varchar(191);not null" json:"animal_type" query:"animal_type"`
 	Detail      string `gorm:"type:text;not null" json:"detail" query:"detail"`
-	ClinicServices []ClinicService `gorm:"foreignKey:ServiceClinicID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"clinic_services" query:"clinic_services"`
+	AnimalServices []AnimalService `gorm:"foreignKey:ServiceDetailID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animal_services" query:"animal_services"`
 }
 
 // history
-type ClinicService struct {
+type AnimalService struct {
 	types.ServiceInfo
 	AnimalUserID  uint      `gorm:"not null" json:"animal_user_id" query:"animal_user_id"`
-	ServiceClinicID uint      `gorm:"not null" json:"service_clinic_id" query:"service_clinic_id"`
+	ServiceDetailID uint      `gorm:"not null" json:"service_detail_id" query:"service_detail_id"`
 }
+
+// ServiceClinic - ServiceDetail
+// ClinicsService - AnimalService

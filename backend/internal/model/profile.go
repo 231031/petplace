@@ -19,7 +19,7 @@ type Profile struct {
 	Cages     []CageRoom `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"cages" query:"cages"`
 
 	// Clinic  Clinic  `gorm:"foreignKey:ProfileID"`
-	ServiceClinics []ServiceClinic `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"service_clinics" query:"service_clinics"`
+	ServiceDetails []ServiceDetail `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"service_details" query:"service_details"`
 
 	// Carrier Carrier `gorm:"foreignKey:ProfileID"`
 	TransportCategorys []TransportCategory `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"transport_categorys" query:"transport_categorys"`

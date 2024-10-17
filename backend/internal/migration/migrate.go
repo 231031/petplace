@@ -8,8 +8,8 @@ import (
 
 func Migrate(db *gorm.DB) error {
 	// supply clinic
-	db.AutoMigrate(&model.ClinicService{}) // history service
-	db.AutoMigrate(&model.ServiceClinic{}) // available services
+	db.AutoMigrate(&model.AnimalService{}) // history service
+	db.AutoMigrate(&model.ServiceDetail{}) // available services
 
 	// supply hotel
 	db.AutoMigrate(&model.AnimalHotelService{})
@@ -55,9 +55,9 @@ func Migrate(db *gorm.DB) error {
 	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalHotelServices")
 
 	// supply clinic
-	// db.Migrator().CreateConstraint(&model.Profile{}, "ServiceClinics")
-	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "ClinicServices")
-	// db.Migrator().CreateConstraint(&model.ServiceClinic{}, "ClinicServices")
+	// db.Migrator().CreateConstraint(&model.Profile{}, "ServiceDetails")
+	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalServices")
+	// db.Migrator().CreateConstraint(&model.ServiceDetail{}, "AnimalServices")
 
 	// transportation
 	// db.Migrator().CreateConstraint(&model.Profile{}, "TransportCategorys")
