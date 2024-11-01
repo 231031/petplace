@@ -6,7 +6,7 @@ import (
 	"petplace/internal/migration"
 	"petplace/internal/routes"
 
-	_ "petplace/docs"
+	_ "petplace/cmd/main/docs"
 
 	"github.com/labstack/echo/v4"
 )

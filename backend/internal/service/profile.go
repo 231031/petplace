@@ -9,16 +9,16 @@ import (
 )
 
 type ProfileService struct {
-	ProfileRepository repository.ProfileRepositoryIn
-	Validate          validator.Validate
+	ProfileRepositoryIn repository.ProfileRepositoryIn
+	Validate          *validator.Validate
 }
 
 func NewProfileService(
 	profileRepository repository.ProfileRepositoryIn,
-	validate validator.Validate,
+	validate *validator.Validate,
 ) *ProfileService {
 	return &ProfileService{
-		ProfileRepository: profileRepository,
+		ProfileRepositoryIn: profileRepository,
 		Validate:          validate,
 	}
 }
@@ -28,7 +28,7 @@ func (s ProfileService) CreateProfile(profile model.Profile) error {
 	if err != nil {
 		return err
 	}
-	err = s.ProfileRepository.CreateProfile(profile)
+	err = s.ProfileRepositoryIn.CreateProfile(profile)
 	if err != nil {
 		return err
 	}
@@ -38,7 +38,7 @@ func (s ProfileService) CreateProfile(profile model.Profile) error {
 
 func (s ProfileService) GetProfileByID(id uint) (model.Profile, error) {
 
-	profile, err := s.ProfileRepository.GetProfileByID(id)
+	profile, err := s.ProfileRepositoryIn.GetProfileByID(id)
 	if err != nil {
 		return profile, err
 	}
@@ -51,7 +51,7 @@ func (s ProfileService) UpdateProfile(id uint, profile model.Profile) error {
 		return err
 	}
 
-	existingProfile, err := s.ProfileRepository.GetProfileByID(id)
+	existingProfile, err := s.ProfileRepositoryIn.GetProfileByID(id)
 	if err != nil {
 		return err
 	}
@@ -60,5 +60,5 @@ func (s ProfileService) UpdateProfile(id uint, profile model.Profile) error {
 		return fmt.Errorf("role mismatch: cannot update profile with role %s", profile.Role)
 	}
 
-	return s.ProfileRepository.UpdateProfile(profile)
+	return s.ProfileRepositoryIn.UpdateProfile(profile)
 }

@@ -33,6 +33,6 @@ type CageRoomServiceIn interface {
 	GetAllCageRoom(profile_id uint) ([]model.CageRoom, error)
 	GetCageRoom(id uint) (model.CageRoom, error)
 	DeleteCageRoom(id uint) error
-	FilterCages(filter types.FilterSearchCage) ([]types.Cage, error)
-	// SearchCage(animals []types.FilterInfo, filter types.FilterSearchCage) ([]model.CageRoom, error)
+	SearchCage(animals []types.FilterInfo, filter types.FilterSearchCage) ([]model.Profile, error)
+	// FilterCages(filter types.FilterSearchCage) ([]types.Cage, error)
 }

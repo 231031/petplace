@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"petplace/internal/model"
 	"petplace/internal/service"
+	"petplace/internal/types"
 	"petplace/internal/utils"
 
 	"github.com/labstack/echo/v4"
@@ -11,13 +13,12 @@ import (
 
 // handle requests and response requests
 type CageRoomHandler struct {
-	CageRoomService service.CageRoomServiceIn
+	cageRoomServiceIn service.CageRoomServiceIn
 }
 
 func NewCageRoomHandler(cageRoomServiceIn service.CageRoomServiceIn) *CageRoomHandler {
-	return &CageRoomHandler{CageRoomService: cageRoomServiceIn}
+	return &CageRoomHandler{cageRoomServiceIn: cageRoomServiceIn}
 }
-
 
 func (h *CageRoomHandler) RegisterRoutes(g *echo.Group) {
 	g.POST("", h.handleCreateCageRoom)
@@ -25,16 +26,18 @@ func (h *CageRoomHandler) RegisterRoutes(g *echo.Group) {
 	g.DELETE("/:id", h.handleDeleteCageRoom)
 	g.GET("/all/:profile_id", h.handleGetAllCageRoomByHotel)
 	g.GET("/:id", h.handleGetCageRoom)
+	g.GET("/search", h.handleSearchCage)
 }
 
 // @Summary		Create Cage
 // @Description	create cage
-// @Produce  application/json
+// @Accept application/json
+// @Produce application/json
 // @tags CageRooms
 // @Success 201
 // @Failure 400
 // @Failure 500
-// @Router /cageroom [post]
+// @Router /api/cageroom [post]
 // @Security BearerAuth
 func (h *CageRoomHandler) handleCreateCageRoom(c echo.Context) error {
 	cages := []model.CageRoom{}
@@ -43,23 +46,24 @@ func (h *CageRoomHandler) handleCreateCageRoom(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "Cage detail not correct", err)
 	}
 
-	err = h.CageRoomService.CreateCageRoom(cages)
+	err = h.cageRoomServiceIn.CreateCageRoom(cages)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Add cage not success", err)
 	}
-	
+
 	return c.JSON(http.StatusOK, "Add cage success")
 }
 
 // @Summary		Update Cage
 // @Description	update cage
-// @Produce  application/json
+// @Accept application/json
+// @Produce application/json
 // @tags CageRooms
-// @Param    id path int true "id"
+// @Param id path string true "ID"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /cageroom/:id [put]
+// @Router /api/cageroom/{id} [put]
 // @Security BearerAuth
 func (h *CageRoomHandler) handleUpdateCageRoom(c echo.Context) error {
 
@@ -68,13 +72,14 @@ func (h *CageRoomHandler) handleUpdateCageRoom(c echo.Context) error {
 
 // @Summary		Delete Cage
 // @Description	delete cage
-// @Produce  application/json
+// @Accept application/json
+// @Produce application/json
 // @tags CageRooms
-// @Param    id path int true "id"
+// @Param id path string true "ID"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /cageroom/:id [delete]
+// @Router /api/cageroom/{id} [delete]
 // @Security BearerAuth
 func (h *CageRoomHandler) handleDeleteCageRoom(c echo.Context) error {
 	param_id := c.Param("id")
@@ -83,7 +88,7 @@ func (h *CageRoomHandler) handleDeleteCageRoom(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "Cannot get cage room", err)
 	}
 
-	err = h.CageRoomService.DeleteCageRoom(id)
+	err = h.cageRoomServiceIn.DeleteCageRoom(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Cage room not available", err)
 	}
@@ -92,23 +97,23 @@ func (h *CageRoomHandler) handleDeleteCageRoom(c echo.Context) error {
 }
 
 // @Summary		Get Cage
-// @Description	get cage 
-// @Produce  application/json
+// @Description	get cage
+// @Produce application/json
 // @tags CageRooms
-// @Param    id path int true "id"
+// @Param id path string true "ID"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /cageroom/:id [get]
+// @Router /api/cageroom/{id} [get]
 // @Security BearerAuth
-func (h *CageRoomHandler) handleGetCageRoom(c echo.Context) error { 
+func (h *CageRoomHandler) handleGetCageRoom(c echo.Context) error {
 	param_id := c.Param("id")
 	id, err := utils.ConvertTypeToUint(param_id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusBadRequest, "Cannot get cage room", err)
 	}
 
-	cage, err := h.CageRoomService.GetCageRoom(id)
+	cage, err := h.cageRoomServiceIn.GetCageRoom(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Cage room not available", err)
 	}
@@ -118,13 +123,13 @@ func (h *CageRoomHandler) handleGetCageRoom(c echo.Context) error {
 
 // @Summary		Get Cages
 // @Description	get cages
-// @Produce  application/json
+// @Produce application/json
 // @tags CageRooms
-// @Param    profile_id path int true "profile_id"
+// @Param profile_id path string true "Profile ID"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /cageroom/all/:profile_id [get]
+// @Router /api/cageroom/all/{profile_id} [get]
 // @Security BearerAuth
 func (h *CageRoomHandler) handleGetAllCageRoomByHotel(c echo.Context) error {
 	param_id := c.Param("profile_id")
@@ -133,10 +138,51 @@ func (h *CageRoomHandler) handleGetAllCageRoomByHotel(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "Cannot get cage room", err)
 	}
 
-	cages, err := h.CageRoomService.GetAllCageRoom(id)
+	cages, err := h.cageRoomServiceIn.GetAllCageRoom(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Cage room not available", err)
 	}
 
 	return c.JSON(http.StatusOK, cages)
+}
+
+// @Summary		Get Selected Cages
+// @Description	get selected cages
+// @Produce application/json
+// @tags CageRooms
+// @Param animals query string false "Filter by animal type and size ex. animals[0].animal_type=dog&animals[0].cage_size=s"
+// @Param start_time query string false "Filter by start_time"
+// @Param end_time query string false "Filter by end_time"
+// @Param latitude query string false "Filter by latitude"
+// @Param longitude query string false "Filter by longitude"
+// @Param sort query string false "Sort by sort"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /api/cageroom/search [get]
+func (h *CageRoomHandler) handleSearchCage(c echo.Context) error {
+	filter := types.FilterSearchCage{}
+	err := (&echo.DefaultBinder{}).BindQueryParams(c, &filter)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "Search system not available", err)
+	}
+
+	animals := []types.FilterInfo{}
+	for i := 0; ; i++ {
+		animalType := c.QueryParam(fmt.Sprintf("animals[%d].animal_type", i))
+		cageSize := c.QueryParam(fmt.Sprintf("animals[%d].cage_size", i))
+		if animalType == "" && cageSize == "" {
+			break // End parsing when no more indexed parameters are found
+		}
+		animals = append(animals, types.FilterInfo{AnimalType: animalType, CageSize: cageSize})
+	}
+
+	// ?latitude=12.34&longitude=56.78&start_time=...&end_time=...&animals[0][animal_type]=dog&animals[0][cage_size]=large&animals[1][animal_type]=cat&animals[1][cage_size]=small
+
+	profiles, err := h.cageRoomServiceIn.SearchCage(animals, filter)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "Search system not available", err)
+	}
+
+	return c.JSON(http.StatusOK, profiles)
 }

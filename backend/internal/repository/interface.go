@@ -44,6 +44,6 @@ type CageRoomRepositoryIn interface {
 	DeleteCageRoom(id uint) error
 	GetCageRoom(id uint) (model.CageRoom, error)
 	GetAllCageRoom(id uint) ([]model.CageRoom, error)
-	FilterCages(animalType string, animalsize string, location string, startTime time.Time, endTime time.Time) ([]types.Cage, error)
-	// FilterCages(animals []types.FilterInfo, startTime , endTime time.Time) ([]model.CageRoom, error)
+	FilterCages(animals []types.FilterInfo, startTime , endTime time.Time) ([]model.Profile, error)
+	// FilterCages(animalType string, animalsize string, location string, startTime time.Time, endTime time.Time) ([]types.Cage, error)
 }

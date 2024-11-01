@@ -11,14 +11,13 @@ import (
 	"gorm.io/gorm"
 )
 
-
 func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 
 	validate := validator.New()
 	e.GET("/swagger/*any", echoSwagger.WrapHandler)
-	
+
 	baseRouter := e.Group("/api")
-	
+
 	// create new repository
 	animalUserRepository := repository.NewAnimalUserRepository(db)
 
@@ -29,6 +28,13 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 	userHandler := api.NewUsersHandler(userService)
 	userHandler.RegisterRoutes(user)
 
+	// profile
+	profile := baseRouter.Group("/profile")
+	profileRepository := repository.NewProfileRepository(db)
+	profileService := service.NewProfileService(profileRepository, validate)
+	profileHandler := api.NewProfileHandler(profileService)
+	profileHandler.RegisterRoutes(profile)
+
 	// CageRoom
 	cage := baseRouter.Group("/cageroom")
 	cageRoomRepository := repository.NewCageRoomRepository(db)
@@ -36,17 +42,11 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 	cageRoomHandler := api.NewCageRoomHandler(cageRoomService)
 	cageRoomHandler.RegisterRoutes(cage)
 
-
 	// HotelService
-	ser_hotel := baseRouter.Group("/service/hotel")
+	ser_hotel := baseRouter.Group("/hotel")
 	hotelServiceRepository := repository.NewHotelServiceRepository(db)
 	bookingService := service.NewBookingService(hotelServiceRepository, cageRoomService, validate)
 	hotelHandler := api.NewHotelHandler(bookingService)
 	hotelHandler.RegisterRoutes(ser_hotel)
-
-	// search
-	search := baseRouter.Group("/search")
-	searchHandler := api.NewSearchHandler(cageRoomService)
-	searchHandler.RegisterRoutes(search)
 
 }

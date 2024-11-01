@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"petplace/internal/model"
 	"petplace/internal/types"
 	"time"
@@ -61,81 +62,103 @@ func (r *CageRoomRepository) DeleteCageRoom(id uint) error {
 
 // filter by using animal_type and cage_size
 // calculate longtitude and latitude of selected location compare with longitude and latitude of hotel in profiles
+func (r *CageRoomRepository) FilterCages(animals []types.FilterInfo, startTime, endTime time.Time) ([]model.Profile, error) {
+	profiles := []model.Profile{}
 
-func (r *CageRoomRepository) FilterCages(animalType, animalSize, location string, startTime, endTime time.Time) ([]types.Cage, error) {
-	var cages []types.Cage
-	query := r.db.Model(&types.Cage{})
-
-	// Combine animalType and animalSize check
-	if animalType != "" && animalSize != "" {
-		query = query.Where("animal_type = ? AND animal_size = ?", animalType, animalSize)
+	animalPairs := [][]interface{}{}
+	for _, animal := range animals {
+		animalPairs = append(animalPairs, []interface{}{animal.AnimalType, animal.CageSize})
 	}
 
-	// Check for location if needed
-	if location != "" {
-		query = query.Where("location = ?", location)
+	id, err := r.GetNotAvaliableCageRoom(animalPairs, startTime, endTime)
+	if err != nil {
+		return profiles, err
 	}
 
-	// Check the booking time range
-	query = query.Where("booking_time BETWEEN ? AND ?", startTime, endTime)
-
-	// Execute the query
-	result := query.Find(&cages)
-
-	if result.Error != nil {
-		return nil, result.Error
+	query := r.db.Model(&profiles).Where("role = ?", "hotel")
+	if len(id) > 0 {
+		query = query.Preload("Cages", func(db *gorm.DB) *gorm.DB {
+			return db.Where("(animal_type, size) IN (?) AND id NOT IN (?)", animalPairs, id).Order("price ASC")
+		})
+	} else {
+		query = query.Preload("Cages", func(db *gorm.DB) *gorm.DB {
+			return db.Where("(animal_type, size) IN (?)", animalPairs).Order("price ASC")
+		})
 	}
-	return cages, nil
+
+	result_search := query.Joins("JOIN cage_rooms ON cage_rooms.profile_id = profiles.id").
+		Group("profiles.id").
+		Find(&profiles)
+
+	if result_search.Error != nil {
+		return profiles, result_search.Error
+	}
+
+	return profiles, nil
 }
 
-// func (r *CageRoomRepository) FilterCages(animals []types.FilterInfo, startTime , endTime time.Time) ([]model.CageRoom, error) {
-// 	cages := []model.CageRoom{}
-// 	// cages_id := []uint{}
-// 	query := r.db.Model(&cages)
+func (r *CageRoomRepository) GetNotAvaliableCageRoom(animals [][]interface{}, startTime, endTime time.Time) ([]uint, error) {
+	id := []uint{}
+	services := []model.HotelService{}
 
-// 	// all in cage_rooms not have in hotel_services filter by animal_type and size
-// 	// otherwise check booking time with quantity before
-// 	// if booking time overlaps each other count and check with quantity of each cage
+	// start time between range of bookinh time and start time not equal to end time
+	// end time between range of booking time and end time not equal to start time
+	query_service := r.db.Model(&services)
+	result := query_service.
+		Select("hotel_services.cage_id, cage_rooms.quantity").
+		Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
+		Where("(animal_type, size) IN (?)", animals).
+		Where("(start_time <= ? AND end_time > ?) OR (start_time < ? AND end_time >= ?)", startTime, startTime, endTime, endTime).
+		Group("hotel_services.cage_id").
+		Having("COUNT(start_time) >= cage_rooms.quantity").
+		Find(&services)
 
-// 	query = query.Select("cage_rooms.id, cage_rooms.quantity")
-// 	if len(animals) > 0 {
-// 		for i, animal := range animals {
-// 			if i == 0 {
-// 				query = query.Where("animal_type = ? AND size = ?", animal.AnimalType, animal.CageSize)
-// 			} else {
-// 				query = query.Or("animal_type = ? AND size = ?", animal.AnimalType, animal.CageSize)
-// 			}
-// 		}
-// 	}
+	if result.Error != nil {
+		return id, result.Error
+	}
 
-// 	result := query.Joins("JOIN hotel_services ON cage_rooms.id = hotel_services.cage_id").
-// 				Where("(start_time <= ? AND end_time >= ?) OR (start_time <= ? AND end_time >= ?)", startTime, startTime, endTime, endTime).
-// 				Group("cage_rooms.id").
-// 				Having("COUNT(start_time) < cage_rooms.quantity").
-// 				Find(&cages)
-// 	if result.Error != nil {
-// 		return cages, result.Error
-// 	}
-// 	// fmt.Println(cages_id)
-
-// 	// cages, err := r.GetAllCageRoomByIds(cages_id)
-// 	// if err != nil {
-// 	// 	return cages, err
-// 	// }
-// 	fmt.Println(cages)
-
-// 	return cages, nil
-// }
+	for _, service := range services {
+		id = append(id, service.CageID)
+	}
+	fmt.Println(id)
+	return id, nil
+}
 
 // func (r *CageRoomRepository) GetAllCageRoomByIds(ids []uint) ([]model.CageRoom, error) {
 // 	cages := []model.CageRoom{}
 // 	result := r.db.Preload("Profile").
 // 				Where("id IN (?)", ids).
 // 				Find(&cages)
-				
+
 // 	if result.Error != nil {
 // 		return cages, result.Error
 // 	}
 
 // 	return cages,nil
+// }
+
+// func (r *CageRoomRepository) FilterCages(animalType, animalSize, location string, startTime, endTime time.Time) ([]types.Cage, error) {
+// 	var cages []types.Cage
+// 	query := r.db.Model(&types.Cage{})
+
+// 	// Combine animalType and animalSize check
+// 	if animalType != "" && animalSize != "" {
+// 		query = query.Where("animal_type = ? AND animal_size = ?", animalType, animalSize)
+// 	}
+
+// 	// Check for location if needed
+// 	if location != "" {
+// 		query = query.Where("location = ?", location)
+// 	}
+
+// 	// Check the booking time range
+// 	query = query.Where("booking_time BETWEEN ? AND ?", startTime, endTime)
+
+// 	// Execute the query
+// 	result := query.Find(&cages)
+
+// 	if result.Error != nil {
+// 		return nil, result.Error
+// 	}
+// 	return cages, nil
 // }

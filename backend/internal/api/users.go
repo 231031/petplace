@@ -12,11 +12,11 @@ import (
 
 // handle requests and response requests
 type UsersHandler struct {
-	usersService service.UsersServiceIn
+	usersServiceIn service.UsersServiceIn
 }
 
 func NewUsersHandler(usersServiceIn service.UsersServiceIn) *UsersHandler {
-	return &UsersHandler{usersService: usersServiceIn}
+	return &UsersHandler{usersServiceIn: usersServiceIn}
 }
 
 func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
@@ -30,16 +30,15 @@ func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
 	g.PUT("/animal/:id", h.handleUpdateAnimalUser)
 }
 
-
 // @Summary Sign Up
 // @Description sign up a user
 // @tags Users
-// @Accept  json
-// @Produce  json
-// @Success 201 
-// @Failure 400 
-// @Failure 500 
-// @Router /api/users/signup [post]
+// @Accept application/json
+// @Produce application/json
+// @Success 201
+// @Failure 400
+// @Failure 500
+// @Router /api/user/signup [post]
 func (h *UsersHandler) handleSignUp(c echo.Context) error {
 	u := &model.User{}
 	err := c.Bind(u)
@@ -51,7 +50,7 @@ func (h *UsersHandler) handleSignUp(c echo.Context) error {
 		return c.String(400, "Invalid username or password")
 	}
 
-	err = h.usersService.SignUp(*u)
+	err = h.usersServiceIn.SignUp(*u)
 	if err != nil {
 		return c.String(400, err.Error())
 	}
@@ -62,12 +61,12 @@ func (h *UsersHandler) handleSignUp(c echo.Context) error {
 // @Summary Log In
 // @Description log in user
 // @tags Users
-// @Accept  json
-// @Produce  json
-// @Success 200 
-// @Failure 401 
-// @Failure 500 
-// @Router /api/users/login [post]
+// @Accept application/json
+// @Produce application/json
+// @Success 200
+// @Failure 401
+// @Failure 500
+// @Router /api/user/login [post]
 func (h *UsersHandler) handleLogIn(c echo.Context) error {
 	payload := &types.LoginPayload{}
 	err := c.Bind(payload)
@@ -75,7 +74,7 @@ func (h *UsersHandler) handleLogIn(c echo.Context) error {
 		return err
 	}
 
-	token, err := h.usersService.LogIn(*payload)
+	token, err := h.usersServiceIn.LogIn(*payload)
 	if err != nil {
 		return err
 	}
@@ -90,12 +89,12 @@ func (h *UsersHandler) handleLogIn(c echo.Context) error {
 // @Summary Create Animals
 // @Description create animals
 // @tags Users
-// @Accept  json
-// @Produce  json
-// @Success 201 
-// @Failure 400 
-// @Failure 500 
-// @Router /api/animals [post]
+// @Accept application/json
+// @Produce application/json
+// @Success 201
+// @Failure 400
+// @Failure 500
+// @Router /api/user/animals [post]
 // @Security BearerAuth
 func (h *UsersHandler) handleCreateAnimalUser(c echo.Context) error {
 	animals := []model.AnimalUser{}
@@ -104,24 +103,24 @@ func (h *UsersHandler) handleCreateAnimalUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "Animals detail not correct", err)
 	}
 
-	err = h.usersService.CreateAnimalUser(animals)
+	err = h.usersServiceIn.CreateAnimalUser(animals)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Add animals not success", err)
 	}
-	
+
 	return c.JSON(http.StatusOK, "Add animals success")
 }
 
 // @Summary Update Animal
 // @Description update animal
 // @tags Users
-// @Accept  json
-// @Produce  json
-// @Param    id path int true "id"
-// @Success 200 
-// @Failure 400 
-// @Failure 500 
-// @Router /api/animal/:id [put]
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /api/user/animal/{id} [put]
 // @Security BearerAuth
 func (h *UsersHandler) handleUpdateAnimalUser(c echo.Context) error {
 	return nil
@@ -130,13 +129,12 @@ func (h *UsersHandler) handleUpdateAnimalUser(c echo.Context) error {
 // @Summary Get Animals
 // @Description get animals
 // @tags Users
-// @Accept  json
-// @Produce  json
-// @Param    user_id path int true "user_id"
+// @Produce application/json
+// @Param user_id path string true "User ID"
 // @Success 200
-// @Failure 400 
-// @Failure 500 
-// @Router /api/animals/:user_id [get]
+// @Failure 400
+// @Failure 500
+// @Router /api/user/animals/{user_id} [get]
 // @Security BearerAuth
 func (h *UsersHandler) handleGetAllAnimalUserByUser(c echo.Context) error {
 	param_id := c.Param("user_id")
@@ -145,7 +143,7 @@ func (h *UsersHandler) handleGetAllAnimalUserByUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "Cannot get animals", err)
 	}
 
-	animals, err := h.usersService.GetAllAnimalUser(id)
+	animals, err := h.usersServiceIn.GetAllAnimalUser(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Animals not available", err)
 	}
@@ -156,13 +154,12 @@ func (h *UsersHandler) handleGetAllAnimalUserByUser(c echo.Context) error {
 // @Summary Get Animal
 // @Description get animal
 // @tags Users
-// @Accept  json
-// @Produce  json
-// @Param    id path int true "id"
-// @Success 200 
-// @Failure 400 
-// @Failure 500 
-// @Router /api/animal/:id [get]
+// @Produce application/json
+// @Param id path string true "ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /api/user/animal/{id} [get]
 // @Security BearerAuth
 func (h *UsersHandler) handleGetAnimalUser(c echo.Context) error {
 	param_id := c.Param("id")
@@ -171,12 +168,10 @@ func (h *UsersHandler) handleGetAnimalUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "Cannot get animal", err)
 	}
 
-	animal, err := h.usersService.GetAnimalUser(id)
+	animal, err := h.usersServiceIn.GetAnimalUser(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Animal not available", err)
 	}
 
 	return c.JSON(http.StatusOK, animal)
 }
-
-
