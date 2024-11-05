@@ -20,7 +20,7 @@ func (r *HotelServiceRepository) BookHotelService(ser model.HotelService, animal
 	tx := r.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
-		  tx.Rollback()
+			tx.Rollback()
 		}
 	}()
 
@@ -46,10 +46,10 @@ func (r *HotelServiceRepository) BookHotelService(ser model.HotelService, animal
 func (r *HotelServiceRepository) GetAllHotelServiceByHotel(profile_id uint, status string) ([]model.HotelService, error) {
 	ser := []model.HotelService{}
 	result := r.db.
-				Where("profiles.id = ? AND hotel_services.status = ?", profile_id, status).
-				Joins("JOIN profiles ON profiles.id = cage_rooms.profile_id").
-				Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
-				Find(&ser)
+		Where("profiles.id = ? AND hotel_services.status = ?", profile_id, status).
+		Joins("JOIN profiles ON profiles.id = cage_rooms.profile_id").
+		Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
+		Find(&ser)
 	if result.Error != nil {
 		return ser, result.Error
 	}
@@ -59,13 +59,13 @@ func (r *HotelServiceRepository) GetAllHotelServiceByHotel(profile_id uint, stat
 func (r *HotelServiceRepository) GetAllHotelServiceByUser(user_id uint, status string) ([]model.HotelService, error) {
 	ser := []model.HotelService{}
 	result := r.db.
-				Preload("AnimalHotelServices.AnimalUser").
-				Preload("CageRoom").
-				Where("animal_users.user_id = ? AND hotel_services.status = ?", user_id, status).
-				Joins("JOIN animal_hotel_services ON animal_hotel_services.hotel_service_id = hotel_services.id").
-				Joins("JOIN animal_users ON animal_hotel_services.animal_user_id = animal_users.id").
-				Group("hotel_services.id").
-				Find(&ser)
+		Preload("AnimalHotelServices.AnimalUser").
+		Preload("CageRoom").
+		Where("animal_users.user_id = ? AND hotel_services.status = ?", user_id, status).
+		Joins("JOIN animal_hotel_services ON animal_hotel_services.hotel_service_id = hotel_services.id").
+		Joins("JOIN animal_users ON animal_hotel_services.animal_user_id = animal_users.id").
+		Group("hotel_services.id").
+		Find(&ser)
 	if result.Error != nil {
 		return ser, result.Error
 	}
@@ -80,7 +80,6 @@ func (r *HotelServiceRepository) GetHotelService(id uint) (model.HotelService, e
 	}
 	return ser, nil
 }
-
 
 func (r *HotelServiceRepository) UpdateHotelService(ser model.HotelService) error {
 	result := r.db.Save(&ser)

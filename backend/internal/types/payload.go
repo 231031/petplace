@@ -13,6 +13,22 @@ type BookingHotelPayload struct {
 	ServiceInfo
 	CageID  uint   `json:"cage_id" query:"cage_id"`
 	Animals []uint `json:"animals" query:"animals"`
+	// payment information
+	ClientID   string      `json:"client_id" query:"client_id"`
+	ProfileID  string      `json:"profile_id" query:"profile_id"`
+	CardDetail CardPayload `json:"card_detail" query:"card_detail"`
+}
+
+type PaymentSource struct {
+	Card CardPayload `json:"card" query:"card"`
+}
+
+type CardPayload struct {
+	Name         string `json:"name" query:"name"`
+	Number       string `json:"number"`
+	Expiry       string `json:"expiry"`
+	SecurityCode string `json:"security_code"`
+	// BillingAddress *CardBillingAddress `json:"billing_address"`
 }
 
 // type FilterSearchCage struct {

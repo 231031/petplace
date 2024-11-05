@@ -30,6 +30,7 @@ type HotelService struct {
 	CageID              uint                 `gorm:"not null" json:"cage_id" query:"cage_id"`
 	AnimalHotelServices []AnimalHotelService `gorm:"foreignKey:HotelServiceID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animal_hotel_services" query:"animal_hotel_services"`
 	CageRoom            CageRoom             `gorm:"foreignKey:CageID;references:ID" json:"cage_room"`
+	PaymentID           string               `gorm:"type:string" json:"payment_id" query:"payment_id"`
 }
 
 type AnimalHotelService struct {

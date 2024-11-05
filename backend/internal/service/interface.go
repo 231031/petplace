@@ -36,3 +36,7 @@ type CageRoomServiceIn interface {
 	SearchCage(animals []types.FilterInfo, filter types.FilterSearchCage) ([]model.Profile, error)
 	// FilterCages(filter types.FilterSearchCage) ([]types.Cage, error)
 }
+
+type PaymentServiceIn interface {
+	RequestPayment() error
+}

@@ -14,20 +14,20 @@ import (
 // implement bussiness logic
 type BookingService struct {
 	HotelServiceRepositoryIn repository.HotelServiceRepositoryIn
-	CageRoomServiceIn CageRoomServiceIn
-	Validate *validator.Validate
+	CageRoomServiceIn        CageRoomServiceIn
+	Validate                 *validator.Validate
 }
 
 func NewBookingService(
-		hotelSerRepositoryIn repository.HotelServiceRepositoryIn,
-		cageRoomService CageRoomServiceIn,  
-		validate *validator.Validate,
-	) *BookingService {
+	hotelSerRepositoryIn repository.HotelServiceRepositoryIn,
+	cageRoomService CageRoomServiceIn,
+	validate *validator.Validate,
+) *BookingService {
 
 	return &BookingService{
-		HotelServiceRepositoryIn: hotelSerRepositoryIn, 
-		CageRoomServiceIn: cageRoomService,
-		Validate: validate,
+		HotelServiceRepositoryIn: hotelSerRepositoryIn,
+		CageRoomServiceIn:        cageRoomService,
+		Validate:                 validate,
 	}
 }
 
@@ -41,11 +41,11 @@ func (s *BookingService) BookHotelService(payload types.BookingHotelPayload) err
 	if err := copier.Copy(&ser, &payload); err != nil {
 		return fmt.Errorf("failed to copy booking payload to hotel service: %v", err)
 	}
-	
+
 	animals := make([]model.AnimalHotelService, len(payload.Animals))
 	for i, animalID := range payload.Animals {
 		animals[i] = model.AnimalHotelService{
-			AnimalUserID:  animalID,
+			AnimalUserID:   animalID,
 			HotelServiceID: 0,
 		}
 	}
@@ -58,7 +58,7 @@ func (s *BookingService) BookHotelService(payload types.BookingHotelPayload) err
 	if ser.EndTime.Before(ser.StartTime) {
 		return fmt.Errorf("end time must be after start time")
 	}
-	
+
 	duration := ser.EndTime.Sub(ser.StartTime)
 	days := int(duration.Hours() / 24)
 	price := cage.Price * days
@@ -68,6 +68,13 @@ func (s *BookingService) BookHotelService(payload types.BookingHotelPayload) err
 	if err != nil {
 		return err
 	}
+
+	// after transaction booking is complete
+	// use payment service to pay the transaction from the client to the application
+	// update order id link to paypal service and status in database
+	// calculate fee for petplace
+	// use payment service to send money to profile ( hotel )
+
 	return nil
 }
 
