@@ -1,26 +1,30 @@
-import Nav from '../components/Nav';
-import { Routes, Route } from 'react-router-dom';
-import Home from '../components/Home';
-import Hotel from '../components/Hotel';
-import Care from '../components/Care';
-import Delivery from '../components/Delivery';
-import Shop from '../components/Shop';
-import Social from '../components/Social';
-
+import { Route,Routes } from "react-router-dom";
+import Nav from "./components/Nav";
+import Home from "./page/Home";
+import Care from "./page/Care";
+import Hotel from "./page/Hotel";
+import Shop from "./page/Shop";
+import Social from "./page/Social";
+import HotelDetail from "./page/HotelDetail";
+import Delivery from "./page/Delivery";
+import HotelBookDetails from "./page/HotelBookDetail";
 
 
 
 function App () {
   return (
     <div className = "bg-white-900" >
-      <Nav />
+      <Nav/>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/hotel" element={<Hotel />} />
-        <Route path="/care" element={<Care />} />
-        <Route path="/delivery" element={<Delivery />} />
-        <Route path="/shop" element={<Shop />} />
-        <Route path="/social" element={<Social />} />
+        <Route path="/" element={<Home/>}/>
+        <Route path="/care" element={<Care/>}/>
+        <Route path="/hotel" element={<Hotel/>}/>
+        <Route path="/delivery" element={<Delivery/>}/>
+        <Route path="/shop" element={<Shop/>}/>
+        <Route path="/socail" element={<Social/>}/>
+        <Route path="/hoteldetails" element={<HotelDetail/>}/>
+        <Route path ="/hotelbookdetails" element={<HotelBookDetails/>}/>
+      
       </Routes>
     </div>
   );
