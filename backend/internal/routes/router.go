@@ -1,7 +1,9 @@
 package routes
 
 import (
+	"net/http"
 	"petplace/internal/api"
+	"petplace/internal/auth"
 	"petplace/internal/repository"
 	"petplace/internal/service"
 
@@ -54,5 +56,12 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 	bookingService := service.NewBookingService(hotelServiceRepository, cageRoomService, validate)
 	hotelHandler := api.NewHotelHandler(bookingService)
 	hotelHandler.RegisterRoutes(ser_hotel)
+
+	// Protected route
+	protected := baseRouter.Group("/protected")
+	protected.Use(auth.AuthMiddleware) // ใช้ AuthMiddleware สำหรับ route นี้
+	protected.GET("/data", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Protected data")
+	})
 
 }
