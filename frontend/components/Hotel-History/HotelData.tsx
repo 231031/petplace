@@ -1,6 +1,8 @@
 // import { Card } from "flowbite-react";
-import CardHotel from "./CardHotel";
-import Card from "./Card";
+
+import Card from "./Card"
+
+
 
 export interface Hotel {
     hotel_id : number
@@ -42,6 +44,7 @@ const HotelList = () => {
                 // <div>{hotel.hotel_name}</div>
             ))}  
         </div>
+
             
     )
 }
