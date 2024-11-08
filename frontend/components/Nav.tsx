@@ -43,7 +43,7 @@ const Nav: React.FC = () => {
           
           {/*Profile Icon*/}
           <div className="flex items-center space-x-4">
-            <h1 className="text-black">Profile</h1>
+            <a href="/Login" className="text-black">Log in</a>
             <div className="hidden md:block">
               <button onClick={toggleMenu} className="text-black">
                 <svg

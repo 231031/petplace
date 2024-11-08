@@ -2,7 +2,7 @@
 function Shop ()  {
     return (
         <div>
-            <h1>Shop</h1>
+            <h1 className="text-4xl" >Shop</h1>
         </div>
     )
 }
