@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"fmt"
 	"petplace/internal/model"
 	"petplace/internal/types"
+	"petplace/internal/utils"
 	"time"
 
 	"gorm.io/gorm"
@@ -65,10 +65,7 @@ func (r *CageRoomRepository) DeleteCageRoom(id uint) error {
 func (r *CageRoomRepository) FilterCages(animals []types.FilterInfo, startTime, endTime time.Time) ([]model.Profile, error) {
 	profiles := []model.Profile{}
 
-	animalPairs := [][]interface{}{}
-	for _, animal := range animals {
-		animalPairs = append(animalPairs, []interface{}{animal.AnimalType, animal.CageSize})
-	}
+	animalPairs := utils.MapSearchAnimalPairs(animals)
 
 	id, err := r.GetNotAvaliableCageRoom(animalPairs, startTime, endTime)
 	if err != nil {
@@ -86,8 +83,7 @@ func (r *CageRoomRepository) FilterCages(animals []types.FilterInfo, startTime, 
 		})
 	}
 
-	result_search := query.Joins("JOIN cage_rooms ON cage_rooms.profile_id = profiles.id").
-		Group("profiles.id").
+	result_search := query.Group("profiles.id").
 		Find(&profiles)
 
 	if result_search.Error != nil {
@@ -95,6 +91,36 @@ func (r *CageRoomRepository) FilterCages(animals []types.FilterInfo, startTime, 
 	}
 
 	return profiles, nil
+}
+
+func (r *CageRoomRepository) FilterCagesByHotel(animals []types.FilterInfo, startTime, endTime time.Time, profile_id uint) (model.Profile, error) {
+	profile := model.Profile{
+		ID: profile_id,
+	}
+	animalPairs := utils.MapSearchAnimalPairs(animals)
+
+	id, err := r.GetNotAvaliableCageRoom(animalPairs, startTime, endTime)
+	if err != nil {
+		return profile, err
+	}
+
+	query := r.db.First(&profile)
+	if len(id) > 0 {
+		query = query.Preload("Cages", func(db *gorm.DB) *gorm.DB {
+			return db.Where("(animal_type, size) IN (?) AND id NOT IN (?)", animalPairs, id).Order("price ASC")
+		})
+	} else {
+		query = query.Preload("Cages", func(db *gorm.DB) *gorm.DB {
+			return db.Where("(animal_type, size) IN (?)", animalPairs).Order("price ASC")
+		})
+	}
+
+	result_search := query.Find(&profile)
+
+	if result_search.Error != nil {
+		return profile, result_search.Error
+	}
+	return profile, nil
 }
 
 func (r *CageRoomRepository) GetNotAvaliableCageRoom(animals [][]interface{}, startTime, endTime time.Time) ([]uint, error) {
@@ -120,7 +146,6 @@ func (r *CageRoomRepository) GetNotAvaliableCageRoom(animals [][]interface{}, st
 	for _, service := range services {
 		id = append(id, service.CageID)
 	}
-	fmt.Println(id)
 	return id, nil
 }
 

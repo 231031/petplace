@@ -4,6 +4,8 @@ import (
 	"petplace/internal/model"
 	"petplace/internal/repository"
 	"petplace/internal/types"
+	"sort"
+	"strconv"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -11,15 +13,18 @@ import (
 
 // implement bussiness logic
 type CageRoomService struct {
+	ProfileServiceIn     ProfileServiceIn
 	CageRoomRepositoryIn repository.CageRoomRepositoryIn
 	Validate             *validator.Validate
 }
 
 func NewCageRoomService(
+	profileServiceIn ProfileServiceIn,
 	cageRoomRepositoryIn repository.CageRoomRepositoryIn,
 	validate *validator.Validate,
 ) *CageRoomService {
 	return &CageRoomService{
+		ProfileServiceIn:     profileServiceIn,
 		CageRoomRepositoryIn: cageRoomRepositoryIn,
 		Validate:             validate,
 	}
@@ -57,6 +62,70 @@ func (s *CageRoomService) DeleteCageRoom(id uint) error {
 	return nil
 }
 
+func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.FilterSearchCage) ([]model.Profile, error) {
+	if err := s.Validate.Struct(filter); err != nil {
+		return nil, err
+	}
+
+	long, err := strconv.ParseFloat(filter.Longitude, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	la, err := strconv.ParseFloat(filter.Latitude, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	startDate, err := time.Parse("2006-01-02", filter.StartTime)
+	if err != nil {
+		return nil, err
+	}
+
+	endDate, err := time.Parse("2006-01-02", filter.EndTime)
+	if err != nil {
+		return nil, err
+	}
+
+	profiles, err := s.CageRoomRepositoryIn.FilterCages(animals, startDate, endDate)
+	if err != nil {
+		return profiles, err
+	}
+
+	// sort by
+	if filter.Sort == "price" {
+		sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].Cages[0].Price < profiles[j].Cages[0].Price })
+	} else if filter.Sort == "distance" {
+		profiles = s.ProfileServiceIn.SortProfileByDistance(profiles, la, long)
+	}
+
+	return profiles, nil
+}
+
+func (s *CageRoomService) SearchCageByHotel(animals []types.FilterInfo, filter types.FilterSearchCage, profile_id uint) (model.Profile, error) {
+	profile := model.Profile{}
+	if err := s.Validate.Struct(filter); err != nil {
+		return profile, err
+	}
+
+	startDate, err := time.Parse("2006-01-02", filter.StartTime)
+	if err != nil {
+		return profile, err
+	}
+
+	endDate, err := time.Parse("2006-01-02", filter.EndTime)
+	if err != nil {
+		return profile, err
+	}
+
+	profile, err = s.CageRoomRepositoryIn.FilterCagesByHotel(animals, startDate, endDate, profile_id)
+	if err != nil {
+		return profile, err
+	}
+
+	return profile, nil
+}
+
 // s = instance of SearchCageService
 // FilterCages - method to filter cages by animal type, location, and booking time
 // func (s *CageRoomService) FilterCages(filter types.FilterSearchCage) ([]types.Cage, error) {
@@ -86,39 +155,3 @@ func (s *CageRoomService) DeleteCageRoom(id uint) error {
 
 // 	return cages, nil
 // }
-
-func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.FilterSearchCage) ([]model.Profile, error) {
-	// long, err := strconv.ParseFloat(filter.Longitude, 64)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// la, err := strconv.ParseFloat(filter.Latitude, 64)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	if err := s.Validate.Struct(filter); err != nil {
-		return nil, err
-	}
-
-	startTime, err := time.Parse(time.RFC3339, filter.StartTime)
-	if err != nil {
-		return nil, err
-	}
-
-	endTime, err := time.Parse(time.RFC3339, filter.EndTime)
-	if err != nil {
-		return nil, err
-	}
-
-	profiles, err := s.CageRoomRepositoryIn.FilterCages(animals, startTime, endTime)
-	if err != nil {
-		return profiles, err
-	}
-
-	// check sort by
-	// calculate about location
-
-	return profiles, nil
-}

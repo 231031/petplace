@@ -18,28 +18,27 @@ type ServiceInfo struct {
 	EndTime       time.Time `gorm:"not null" json:"end_time" query:"end_time"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
-	Status        string `gorm:"not null;default:'pending'" json:"status" query:"status"`
-	PaymentStatus string `gorm:"not null;default:'pending'" json:"payment_status" query:"payment_status"`
-	Price         int    `gorm:"type:int;not null" json:"price" query:"price"`
-	Detail        string `gorm:"type:text" json:"detail" query:"detail"`
+	Status        string  `gorm:"not null;default:'pending'" json:"status" query:"status"`
+	PaymentStatus string  `gorm:"not null;default:'pending'" json:"payment_status" query:"payment_status"`
+	Price         float32 `gorm:"type:float;not null" json:"price" query:"price"`
+	Detail        string  `gorm:"type:text" json:"detail" query:"detail"`
+	PaymentID     string  `gorm:"type:string" json:"payment_id" query:"payment_id"`
+	PayoutID      string  `gorm:"type:string" json:"payout_id" query:"payout_id"`
 }
 
 type ProductInfo struct {
 	ID uint `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
 	// SellerID  uint      `gorm:"not null" json:"seller_id" query:"seller_id"`
-	ProfileID uint   `gorm:"not null" json:"profile_id" query:"profile_id"`
-	Name      string `gorm:"type:varchar(191);not null" json:"name" query:"name"`
-	Detail    string `gorm:"type:varchar(191);not null" json:"detail" query:"detail"`
-	Image     string `gorm:"type:varchar(191);" json:"image" query:"image"`
-	Price     int    `gorm:"type:int;not null" json:"price" query:"price"`
+	ProfileID uint    `gorm:"not null" json:"profile_id" query:"profile_id"`
+	Name      string  `gorm:"type:varchar(191);not null" json:"name" query:"name"`
+	Detail    string  `gorm:"type:varchar(191);not null" json:"detail" query:"detail"`
+	Image     string  `gorm:"type:varchar(191);" json:"image" query:"image"`
+	Price     float32 `gorm:"type:float;not null" json:"price" query:"price"`
 }
 
 type AnimalInfo struct {
-	AnimalType    string         `gorm:"type:varchar(191);not null" json:"animal_type" query:"animal_type"`
-	Age    int    `gorm:"type:int;not null" json:"age" query:"age"`
-	Weight int    `gorm:"type:int;not null" json:"weight" query:"weight"`
-	Breed  string `gorm:"type:varchar(191);not null" json:"breed" query:"breed"`
+	AnimalType string `gorm:"type:varchar(191);not null" json:"animal_type" query:"animal_type"`
+	Age        int    `gorm:"type:int;not null" json:"age" query:"age"`
+	Weight     int    `gorm:"type:int;not null" json:"weight" query:"weight"`
+	Breed      string `gorm:"type:varchar(191);not null" json:"breed" query:"breed"`
 }
-
-
-

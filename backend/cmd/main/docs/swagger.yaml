@@ -154,6 +154,51 @@ paths:
       summary: Get Selected Cages
       tags:
       - CageRooms
+  /api/cageroom/search/{profile_id}:
+    get:
+      description: get selected cages by hotel
+      parameters:
+      - description: Profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      - description: Filter by animal type and size ex. animals[0].animal_type=dog&animals[0].cage_size=s
+        in: query
+        name: animals
+        type: string
+      - description: Filter by start_time
+        in: query
+        name: start_time
+        type: string
+      - description: Filter by end_time
+        in: query
+        name: end_time
+        type: string
+      - description: Filter by latitude
+        in: query
+        name: latitude
+        type: string
+      - description: Filter by longitude
+        in: query
+        name: longitude
+        type: string
+      - description: Sort by sort
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Get Selected Cages by Hotel
+      tags:
+      - CageRooms
   /api/hotel/{id}:
     get:
       description: get hotel service

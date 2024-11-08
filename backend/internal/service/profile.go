@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"petplace/internal/model"
 	"petplace/internal/repository"
+	"sort"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/umahmood/haversine"
 )
 
 type ProfileService struct {
 	ProfileRepositoryIn repository.ProfileRepositoryIn
-	Validate          *validator.Validate
+	Validate            *validator.Validate
 }
 
 func NewProfileService(
@@ -19,11 +21,11 @@ func NewProfileService(
 ) *ProfileService {
 	return &ProfileService{
 		ProfileRepositoryIn: profileRepository,
-		Validate:          validate,
+		Validate:            validate,
 	}
 }
 
-func (s ProfileService) CreateProfile(profile model.Profile) error {
+func (s *ProfileService) CreateProfile(profile model.Profile) error {
 	err := s.Validate.Struct(profile)
 	if err != nil {
 		return err
@@ -36,7 +38,7 @@ func (s ProfileService) CreateProfile(profile model.Profile) error {
 	return nil
 }
 
-func (s ProfileService) GetProfileByID(id uint) (model.Profile, error) {
+func (s *ProfileService) GetProfileByID(id uint) (model.Profile, error) {
 
 	profile, err := s.ProfileRepositoryIn.GetProfileByID(id)
 	if err != nil {
@@ -46,7 +48,7 @@ func (s ProfileService) GetProfileByID(id uint) (model.Profile, error) {
 	return profile, nil
 }
 
-func (s ProfileService) UpdateProfile(id uint, profile model.Profile) error {
+func (s *ProfileService) UpdateProfile(id uint, profile model.Profile) error {
 	if err := s.Validate.Struct(profile); err != nil {
 		return err
 	}
@@ -61,4 +63,18 @@ func (s ProfileService) UpdateProfile(id uint, profile model.Profile) error {
 	}
 
 	return s.ProfileRepositoryIn.UpdateProfile(profile)
+}
+
+// not test
+func (s *ProfileService) SortProfileByDistance(profiles []model.Profile, la float64, long float64) []model.Profile {
+	userLoc := haversine.Coord{Lat: la, Lon: long}
+	for _, profile := range profiles {
+		profileLoc := haversine.Coord{Lat: profile.Latitude, Lon: profile.Longitude}
+		_, km := haversine.Distance(profileLoc, userLoc)
+		profile.Distance = km
+		fmt.Println(profile.Distance)
+	}
+	sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].Distance < profiles[j].Distance })
+
+	return profiles
 }

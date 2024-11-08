@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"petplace/internal/types"
 	"reflect"
 	"strconv"
 
@@ -23,39 +24,29 @@ func HandleError(c echo.Context, status int, msg string, err error) error {
 }
 
 func CopyNonZeroFields(data interface{}, data_db interface{}) interface{} {
-    dataVal := reflect.ValueOf(data).Elem()
-    dataDbVal := reflect.ValueOf(data_db).Elem()
+	dataVal := reflect.ValueOf(data).Elem()
+	dataDbVal := reflect.ValueOf(data_db).Elem()
 
-    dataType := reflect.TypeOf(data).Elem()
-    fields := reflect.VisibleFields(dataType)
+	dataType := reflect.TypeOf(data).Elem()
+	fields := reflect.VisibleFields(dataType)
 
-    for _, field := range fields {
-        fieldName := field.Name
-        fieldVal := dataVal.FieldByName(fieldName)
-        dbFieldVal := dataDbVal.FieldByName(fieldName)
+	for _, field := range fields {
+		fieldName := field.Name
+		fieldVal := dataVal.FieldByName(fieldName)
+		dbFieldVal := dataDbVal.FieldByName(fieldName)
 
-        if fieldVal.IsZero() && dbFieldVal.IsValid() && fieldVal.CanSet() {
-            fieldVal.Set(dbFieldVal)
-        }
-    }
+		if fieldVal.IsZero() && dbFieldVal.IsValid() && fieldVal.CanSet() {
+			fieldVal.Set(dbFieldVal)
+		}
+	}
 
-    return data
+	return data
 }
 
-	// if dataVal.Kind() != reflect.Ptr || dataDbVal.Kind() != reflect.Ptr {
-	// 	panic("CopyNonZeroFields requires both arguments to be pointers")
-	// }
-
-	// dataVal = dataVal.Elem()
-	// dataDbVal = dataDbVal.Elem()
-	// fmt.Println(dataDbVal.Field(1))
-
-// for i := 0; i < dataVal.NumField(); i++ {
-
-// 	if isZeroValue(field) {
-// 		dbField := dataDbVal.FieldByName(fieldName)
-// 		if dbField.IsValid() && dbField.CanSet() {
-// 			field.Set(dbField)
-// 		}
-// 	}
-// }
+func MapSearchAnimalPairs(animals []types.FilterInfo) [][]interface{} {
+	animalPairs := [][]interface{}{}
+	for _, animal := range animals {
+		animalPairs = append(animalPairs, []interface{}{animal.AnimalType, animal.CageSize})
+	}
+	return animalPairs
+}

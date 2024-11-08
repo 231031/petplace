@@ -43,15 +43,15 @@ func (h *HotelHandler) RegisterRoutes(g *echo.Group) {
 // @Router /api/hotel/client/booking [post]
 // @Security BearerAuth
 func (h *HotelHandler) handleBookHotelService(c echo.Context) error {
-	s := types.BookingHotelPayload{}
+	s := types.BookingPayload{}
 	err := c.Bind(&s)
 	if err != nil {
 		return utils.HandleError(c, http.StatusBadRequest, "Booking detail not correct", err)
 	}
 
-	err = h.bookingServiceIn.BookHotelService(s)
+	status, err_str, err := h.bookingServiceIn.BookHotelService(s)
 	if err != nil {
-		return utils.HandleError(c, http.StatusInternalServerError, "Booking not success", err)
+		return utils.HandleError(c, status, err_str.Error(), err)
 	}
 
 	return c.JSON(http.StatusOK, "Booking success")

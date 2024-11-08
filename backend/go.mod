@@ -10,6 +10,8 @@ require (
 	github.com/plutov/paypal/v4 v4.11.0
 	github.com/swaggo/echo-swagger v1.4.1
 	github.com/swaggo/swag v1.16.3
+	github.com/umahmood/haversine v0.0.0-20151105152445-808ab04add26
+	github.com/yusufthedragon/exchange-rates-go v1.0.0
 	golang.org/x/crypto v0.28.0
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/gorm v1.25.12
