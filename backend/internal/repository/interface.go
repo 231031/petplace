@@ -30,7 +30,7 @@ type AnimalHotelServiceRepositoryIn interface {
 }
 
 type HotelServiceRepositoryIn interface {
-	BookHotelService(ser model.HotelService, animals []model.AnimalHotelService) error
+	BookHotelService(ser model.HotelService, animals []model.AnimalHotelService) (uint, error)
 	UpdateHotelService(ser model.HotelService) error
 	DeleteHotelService(id uint) error
 	GetAllHotelServiceByHotel(profile_id uint, status string) ([]model.HotelService, error)
@@ -44,6 +44,7 @@ type CageRoomRepositoryIn interface {
 	DeleteCageRoom(id uint) error
 	GetCageRoom(id uint) (model.CageRoom, error)
 	GetAllCageRoom(id uint) ([]model.CageRoom, error)
-	FilterCages(animals []types.FilterInfo, startTime , endTime time.Time) ([]model.Profile, error)
+	FilterCages(animals []types.FilterInfo, startTime, endTime time.Time) ([]model.Profile, error)
+	FilterCagesByHotel(animals []types.FilterInfo, startTime, endTime time.Time, profile_id uint) (model.Profile, error)
 	// FilterCages(animalType string, animalsize string, location string, startTime time.Time, endTime time.Time) ([]types.Cage, error)
 }

@@ -14,7 +14,7 @@ type CageRoom struct {
 	// HotelID       uint           `gorm:"not null" json:"hotel_id" query:"hotel_id"`
 	ProfileID     uint           `gorm:"not null" json:"profile_id" query:"profile_id"`
 	Quantity      int            `gorm:"type:int;not null" json:"quantity" query:"quantity"`
-	Price         int            `gorm:"type:int;not null" json:"price" query:"price"`
+	Price         float32        `gorm:"type:float;not null" json:"price" query:"price"`
 	Size          string         `gorm:"type:varchar(191);not null" json:"size" query:"size"`
 	SizeDetail    string         `gorm:"type:text;not null" json:"size_detail" query:"size_detail"`
 	AnimalType    string         `gorm:"type:varchar(191);not null" json:"animal_type" query:"animal_type"`
@@ -30,7 +30,6 @@ type HotelService struct {
 	CageID              uint                 `gorm:"not null" json:"cage_id" query:"cage_id"`
 	AnimalHotelServices []AnimalHotelService `gorm:"foreignKey:HotelServiceID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animal_hotel_services" query:"animal_hotel_services"`
 	CageRoom            CageRoom             `gorm:"foreignKey:CageID;references:ID" json:"cage_room"`
-	PaymentID           string               `gorm:"type:string" json:"payment_id" query:"payment_id"`
 }
 
 type AnimalHotelService struct {

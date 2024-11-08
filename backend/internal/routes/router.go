@@ -46,14 +46,14 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 	// CageRoom
 	cage := baseRouter.Group("/cageroom")
 	cageRoomRepository := repository.NewCageRoomRepository(db)
-	cageRoomService := service.NewCageRoomService(cageRoomRepository, validate)
+	cageRoomService := service.NewCageRoomService(profileService, cageRoomRepository, validate)
 	cageRoomHandler := api.NewCageRoomHandler(cageRoomService)
 	cageRoomHandler.RegisterRoutes(cage)
 
 	// HotelService
 	ser_hotel := baseRouter.Group("/hotel")
 	hotelServiceRepository := repository.NewHotelServiceRepository(db)
-	bookingService := service.NewBookingService(hotelServiceRepository, cageRoomService, validate)
+	bookingService := service.NewBookingService(hotelServiceRepository, profileService, cageRoomService, paymentService, validate)
 	hotelHandler := api.NewHotelHandler(bookingService)
 	hotelHandler.RegisterRoutes(ser_hotel)
 

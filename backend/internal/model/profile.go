@@ -31,6 +31,8 @@ type Profile struct {
 
 	ChatSenders   []Chat `gorm:"foreignKey:SenderID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"sender_id" query:"sender_id"`
 	ChatReceivers []Chat `gorm:"foreignKey:ReceiverID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"receiver_id" query:"receiver_id"`
+
+	Distance float64 `gorm:"-"`
 }
 
 type Chat struct {

@@ -9,14 +9,18 @@ type LoginPayload struct {
 	Password string `json:"password" query:"password"`
 }
 
-type BookingHotelPayload struct {
-	ServiceInfo
-	CageID  uint   `json:"cage_id" query:"cage_id"`
-	Animals []uint `json:"animals" query:"animals"`
+type BookingPayload struct {
+	CageID    uint   `json:"cage_id" query:"cage_id" validate:"required"`
+	Animals   []uint `json:"animals" query:"animals" validate:"required"`
+	StartTime string `json:"start_time" query:"start_time" validate:"required"`
+	EndTime   string `json:"end_time" query:"end_time" validate:"required"`
+	Detail    string `json:"detail" query:"detail"`
 	// payment information
-	ClientID   string      `json:"client_id" query:"client_id"`
-	ProfileID  string      `json:"profile_id" query:"profile_id"`
-	CardDetail CardPayload `json:"card_detail" query:"card_detail"`
+	ClientID    uint        `json:"client_id" query:"client_id" validate:"required"`
+	ClientName  string      `json:"client_name" query:"client_name" validate:"required"`
+	ProfileID   uint        `json:"profile_id" query:"profile_id" validate:"required"`
+	ProfileName string      `json:"profile_name" query:"profile_name" validate:"required"`
+	CardDetail  CardPayload `json:"card_detail" query:"card_detail" validate:"required"`
 }
 
 type PaymentSource struct {
@@ -31,6 +35,12 @@ type CardPayload struct {
 	// BillingAddress *CardBillingAddress `json:"billing_address"`
 }
 
+type BookingDetail struct {
+	TotalPrice string `json:"total_price" query:"total_price"`
+	Category   string `json:"catagory" query:"catagory"`
+	Day        string `json:"day" query:"day"`
+}
+
 // type FilterSearchCage struct {
 // 	AnimalType string `json:"animal_type" validate:"required"`
 // 	Animalsize string `json:"animal_size" validate:"required"`
@@ -42,8 +52,8 @@ type CardPayload struct {
 type FilterSearchCage struct {
 	Longitude string `json:"longitude" query:"longitude" param:"longitude"`
 	Latitude  string `json:"latitude" query:"latitude" param:"latitude"`
-	StartTime string `json:"start_time" param:"start_time" query:"start_time"`
-	EndTime   string `json:"end_time" param:"end_time" query:"end_time"`
+	StartTime string `json:"start_time" param:"start_time" query:"start_time" validate:"required"`
+	EndTime   string `json:"end_time" param:"end_time" query:"end_time" validate:"required"`
 	Sort      string `json:"sort" param:"sort" query:"sort"`
 	// Animal []FilterInfo  `json:"animals" param:"animals" query:"animals"`
 }
@@ -51,6 +61,11 @@ type FilterSearchCage struct {
 type FilterInfo struct {
 	AnimalType string `json:"animal_type" query:"animal_type" param:"animal_type"`
 	CageSize   string `json:"cage_size" query:"cage_size" param:"cage_size"`
+}
+
+type ProfileDistance struct {
+	ProfileID uint64  `json:"profile_id" query:"profile_id"`
+	Distance  float64 `json:"distance" query:"distance" param:"distance"`
 }
 
 type Cage struct {

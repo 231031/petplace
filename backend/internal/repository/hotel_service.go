@@ -16,7 +16,7 @@ func NewHotelServiceRepository(db *gorm.DB) *HotelServiceRepository {
 	return &HotelServiceRepository{db: db}
 }
 
-func (r *HotelServiceRepository) BookHotelService(ser model.HotelService, animals []model.AnimalHotelService) error {
+func (r *HotelServiceRepository) BookHotelService(ser model.HotelService, animals []model.AnimalHotelService) (uint, error) {
 	tx := r.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -24,10 +24,10 @@ func (r *HotelServiceRepository) BookHotelService(ser model.HotelService, animal
 		}
 	}()
 
-	err := tx.Create(&ser)
-	if err.Error != nil {
+	res := tx.Create(&ser)
+	if res.Error != nil {
 		tx.Rollback()
-		return fmt.Errorf("%s", err.Error.Error())
+		return 0, fmt.Errorf("%s", res.Error.Error())
 	}
 
 	for i := range animals {
@@ -36,10 +36,14 @@ func (r *HotelServiceRepository) BookHotelService(ser model.HotelService, animal
 
 	if err := tx.Create(&animals).Error; err != nil {
 		tx.Rollback()
-		return fmt.Errorf("failed to create AnimalHotelService records: %s", err.Error())
+		return 0, fmt.Errorf("failed to create AnimalHotelService records: %s", err.Error())
 	}
 
-	return tx.Commit().Error
+	if tx.Commit().Error != nil {
+		return 0, tx.Commit().Error
+	}
+
+	return ser.ID, nil
 
 }
 
@@ -47,8 +51,8 @@ func (r *HotelServiceRepository) GetAllHotelServiceByHotel(profile_id uint, stat
 	ser := []model.HotelService{}
 	result := r.db.
 		Where("profiles.id = ? AND hotel_services.status = ?", profile_id, status).
-		Joins("JOIN profiles ON profiles.id = cage_rooms.profile_id").
 		Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
+		Joins("JOIN profiles ON profiles.id = cage_rooms.profile_id").
 		Find(&ser)
 	if result.Error != nil {
 		return ser, result.Error
