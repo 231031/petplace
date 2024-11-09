@@ -20,6 +20,7 @@ func NewProfileHandler(profileServiceIn service.ProfileServiceIn) *ProfileHandle
 
 func (h *ProfileHandler) RegisterRoutes(g *echo.Group) {
 	g.POST("/create", h.handleCreateProfile)
+	g.GET("/:id/:role", h.handleGetProfileByUserID)
 }
 
 // @Summary Create New Profile
@@ -31,6 +32,7 @@ func (h *ProfileHandler) RegisterRoutes(g *echo.Group) {
 // @Failure 400
 // @Failure 500
 // @Router /api/profile/create [post]
+// @Security BearerAuth
 func (h *ProfileHandler) handleCreateProfile(c echo.Context) error {
 	profile := model.Profile{}
 	err := c.Bind(&profile)
@@ -44,4 +46,36 @@ func (h *ProfileHandler) handleCreateProfile(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, "Create profile success")
+}
+
+// @Summary Get Profile By User ID and Role
+// @Description get profile by user ID and role
+// @tags Profiles
+// @Produce application/json
+// @Param user_id path string true "User ID"
+// @Param role path string true "Role"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /api/profile/{user_id}/{role} [get]
+// @Security BearerAuth
+func (h *ProfileHandler) handleGetProfileByUserID(c echo.Context) error {
+	role := c.Param("role")
+	param_id := c.Param("id")
+	userID, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "get user id failed", err)
+	}
+
+	profile, token, err := h.profileServiceIn.GetProfileByUserID(userID, role)
+	if profile.ID == 0 {
+		return utils.HandleError(c, http.StatusBadRequest, "this profile is not found, create first", err)
+	}
+
+	response := map[string]interface{}{
+		"profile": profile,
+		"token":   token,
+	}
+
+	return c.JSON(http.StatusOK, response)
 }

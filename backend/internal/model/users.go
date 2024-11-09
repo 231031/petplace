@@ -3,16 +3,17 @@ package model
 import "petplace/internal/types"
 
 type User struct {
-	ID        uint         `gorm:"primaryKey;autoIncrement;" json:"id" param:"id" query:"id"`
-	Email     string       `gorm:"type:varchar(191);unique;not null" json:"email" query:"email"`
-	Password  string       `gorm:"type:varchar(191);not null" json:"password" query:"password"`
-	Name      string       `gorm:"type:varchar(191);not null" json:"name" query:"name"`
-	Surename  string       `gorm:"type:varchar(191);not null" json:"surename" query:"surename"`
-	Age       int          `gorm:"type:int;not null" json:"age" query:"age"`
-	CitizenID string       `gorm:"type:varchar(191);not null" json:"citizen_id" query:"citizen_id"`
-	Profiles  []Profile    `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"profiles" query:"profiles"`
-	Animals   []AnimalUser `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animals" query:"animals"`
-	Orders    []Order      `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"orders" query:"orders"`
+	ID          uint         `gorm:"primaryKey;autoIncrement;" json:"id" param:"id" query:"id"`
+	Email       string       `gorm:"type:varchar(191);unique;not null" json:"email" query:"email"`
+	PaypalEmail string       `gorm:"type:varchar(191);" json:"paypal_email" query:"paypal_email"`
+	Password    string       `gorm:"type:varchar(191);not null" json:"password" query:"password"`
+	Name        string       `gorm:"type:varchar(191);not null" json:"name" query:"name"`
+	Surename    string       `gorm:"type:varchar(191);not null" json:"surename" query:"surename"`
+	Age         int          `gorm:"type:int;not null" json:"age" query:"age"`
+	CitizenID   string       `gorm:"type:varchar(191);not null" json:"citizen_id" query:"citizen_id"`
+	Profiles    []Profile    `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"profiles" query:"profiles"`
+	Animals     []AnimalUser `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animals" query:"animals"`
+	Orders      []Order      `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"orders" query:"orders"`
 }
 
 type AnimalUser struct {

@@ -5,9 +5,12 @@ import (
 	"petplace/internal/types"
 )
 
-type UsersServiceIn interface {
+type AuthServiceIn interface {
 	SignUp(data model.User) error
 	LogIn(payload types.LoginPayload) (string, error)
+}
+
+type UsersServiceIn interface {
 	CreateAnimalUser(animals []model.AnimalUser) error
 	UpdateAnimalUser(id uint, animal model.AnimalUser) error
 	GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error)
@@ -17,6 +20,7 @@ type UsersServiceIn interface {
 type ProfileServiceIn interface {
 	CreateProfile(profile model.Profile) error
 	GetProfileByID(id uint) (model.Profile, error)
+	GetProfileByUserID(userID uint, role string) (model.Profile, string, error)
 	UpdateProfile(id uint, profile model.Profile) error
 	SortProfileByDistance(profiles []model.Profile, la float64, long float64) []model.Profile
 }

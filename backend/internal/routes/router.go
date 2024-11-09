@@ -30,6 +30,12 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 	userHandler := api.NewUsersHandler(userService)
 	userHandler.RegisterRoutes(user)
 
+	// Authentication
+	authentication := baseRouter.Group("/auth")
+	authService := service.NewAuthService(userRepository, validate)
+	authHandler := api.NewAuthHandler(authService)
+	authHandler.RegisterRoutes(authentication)
+
 	// payment
 	payment := baseRouter.Group("/payment")
 	paymentService := service.NewPaymentService(validate)

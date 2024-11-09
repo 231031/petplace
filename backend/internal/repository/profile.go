@@ -40,6 +40,15 @@ func (r ProfileRepository) GetProfileByID(id uint) (model.Profile, error) {
 	return profile, nil
 }
 
+func (r ProfileRepository) GetProfileByUserID(userID uint, role string) (model.Profile, error) {
+	profile := model.Profile{}
+	result := r.db.Where("user_id = ? AND role = ?", userID, role).Find(&profile)
+	if result.Error != nil {
+		return profile, fmt.Errorf("get profile failed: %v", result.Error.Error())
+	}
+	return profile, nil
+}
+
 func (r ProfileRepository) UpdateProfile(profile model.Profile) error {
 	result := r.db.Save(&profile)
 	if result.Error != nil {

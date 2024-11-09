@@ -1,10 +1,8 @@
 package service
 
 import (
-	"petplace/internal/auth"
 	"petplace/internal/model"
 	"petplace/internal/repository"
-	"petplace/internal/types"
 	"petplace/internal/utils"
 
 	"github.com/go-playground/validator/v10"
@@ -12,39 +10,21 @@ import (
 
 // implement bussiness logic
 type UserService struct {
-	UserRepositoryIn repository.UserRepositoryIn
+	UserRepositoryIn       repository.UserRepositoryIn
 	AnimalUserRepositoryIn repository.AnimalUserRepositoryIn
-	Validate *validator.Validate
+	Validate               *validator.Validate
 }
 
 func NewUserService(
-		userRepositoryIn repository.UserRepositoryIn, 
-		animalUserRepositoryIn repository.AnimalUserRepositoryIn, 
-		validate *validator.Validate,
-	) *UserService {
+	userRepositoryIn repository.UserRepositoryIn,
+	animalUserRepositoryIn repository.AnimalUserRepositoryIn,
+	validate *validator.Validate,
+) *UserService {
 	return &UserService{
-		UserRepositoryIn: userRepositoryIn, 
+		UserRepositoryIn:       userRepositoryIn,
 		AnimalUserRepositoryIn: animalUserRepositoryIn,
-		Validate: validate,
+		Validate:               validate,
 	}
-}
-
-func (s *UserService) SignUp(data model.User) error {
-	hashed, err := auth.HashPassword(data.Password)
-	if err != nil {
-		return err
-	}
-
-	data.Password = hashed
-	res := s.UserRepositoryIn.SignUp(data)
-	if res != nil {
-		return res
-	}
-	return nil
-}
-
-func (s *UserService) LogIn(payload types.LoginPayload) (string, error) {
-	return "nil", nil
 }
 
 func (s *UserService) CreateAnimalUser(animals []model.AnimalUser) error {
@@ -56,7 +36,7 @@ func (s *UserService) CreateAnimalUser(animals []model.AnimalUser) error {
 }
 
 func (s *UserService) UpdateAnimalUser(id uint, animal model.AnimalUser) error {
-	animal_db, err  := s.AnimalUserRepositoryIn.GetAnimalUser(id)
+	animal_db, err := s.AnimalUserRepositoryIn.GetAnimalUser(id)
 	if err != nil {
 		return err
 	}

@@ -14,6 +14,7 @@ type UserRepositoryIn interface {
 type ProfileRepositoryIn interface {
 	CreateProfile(profile model.Profile) error
 	GetProfileByID(id uint) (model.Profile, error)
+	GetProfileByUserID(userID uint, role string) (model.Profile, error)
 	UpdateProfile(profile model.Profile) error
 }
 

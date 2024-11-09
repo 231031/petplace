@@ -86,12 +86,12 @@ func (h *CageRoomHandler) handleDeleteCageRoom(c echo.Context) error {
 	param_id := c.Param("id")
 	id, err := utils.ConvertTypeToUint(param_id)
 	if err != nil {
-		return utils.HandleError(c, http.StatusBadRequest, "Cannot get cage room", err)
+		return utils.HandleError(c, http.StatusBadRequest, "get cage room failed", err)
 	}
 
 	err = h.cageRoomServiceIn.DeleteCageRoom(id)
 	if err != nil {
-		return utils.HandleError(c, http.StatusInternalServerError, "Cage room not available", err)
+		return utils.HandleError(c, http.StatusInternalServerError, "cage room not available", err)
 	}
 
 	return c.JSON(http.StatusOK, "Delete cage success")

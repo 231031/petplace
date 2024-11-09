@@ -1,6 +1,40 @@
 info:
   contact: {}
 paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: log in user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+        "500":
+          description: Internal Server Error
+      summary: Log In
+      tags:
+      - Authentication
+  /api/auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: sign up a user
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Sign Up
+      tags:
+      - Authentication
   /api/cageroom:
     post:
       consumes:
@@ -319,6 +353,34 @@ paths:
       summary: Book Hotel Service
       tags:
       - HotelServices
+  /api/profile/{user_id}/{role}:
+    get:
+      description: get profile by user ID and role
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Role
+        in: path
+        name: role
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get Profile By User ID and Role
+      tags:
+      - Profiles
   /api/profile/create:
     post:
       consumes:
@@ -333,6 +395,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - BearerAuth: []
       summary: Create New Profile
       tags:
       - Profiles
@@ -423,40 +487,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Get Animals
-      tags:
-      - Users
-  /api/user/login:
-    post:
-      consumes:
-      - application/json
-      description: log in user
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-        "401":
-          description: Unauthorized
-        "500":
-          description: Internal Server Error
-      summary: Log In
-      tags:
-      - Users
-  /api/user/signup:
-    post:
-      consumes:
-      - application/json
-      description: sign up a user
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-        "400":
-          description: Bad Request
-        "500":
-          description: Internal Server Error
-      summary: Sign Up
       tags:
       - Users
 swagger: "2.0"

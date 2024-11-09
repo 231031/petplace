@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"petplace/internal/model"
 	"petplace/internal/service"
-	"petplace/internal/types"
 	"petplace/internal/utils"
 
 	"github.com/labstack/echo/v4"
@@ -20,70 +19,11 @@ func NewUsersHandler(usersServiceIn service.UsersServiceIn) *UsersHandler {
 }
 
 func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
-	g.POST("/signup", h.handleSignUp)
-	g.POST("/login", h.handleLogIn)
-
 	// role : client
 	g.POST("/animals", h.handleCreateAnimalUser)
 	g.GET("/animals/:user_id", h.handleGetAllAnimalUserByUser)
 	g.GET("/animal/:id", h.handleGetAnimalUser)
 	g.PUT("/animal/:id", h.handleUpdateAnimalUser)
-}
-
-// @Summary Sign Up
-// @Description sign up a user
-// @tags Users
-// @Accept application/json
-// @Produce application/json
-// @Success 201
-// @Failure 400
-// @Failure 500
-// @Router /api/user/signup [post]
-func (h *UsersHandler) handleSignUp(c echo.Context) error {
-	u := &model.User{}
-	err := c.Bind(u)
-	if err != nil {
-		return utils.HandleError(c, http.StatusBadRequest, "user detail not correct", err)
-	}
-
-	if u.Email == "" || u.Password == "" {
-		return utils.HandleError(c, http.StatusBadRequest, "invalid email or password", err)
-	}
-
-	err = h.usersServiceIn.SignUp(*u)
-	if err != nil {
-		return utils.HandleError(c, http.StatusInternalServerError, "sign up failed", err)
-	}
-	return c.JSON(http.StatusCreated, "Sign up success")
-
-}
-
-// @Summary Log In
-// @Description log in user
-// @tags Users
-// @Accept application/json
-// @Produce application/json
-// @Success 200
-// @Failure 401
-// @Failure 500
-// @Router /api/user/login [post]
-func (h *UsersHandler) handleLogIn(c echo.Context) error {
-	payload := &types.LoginPayload{}
-	err := c.Bind(payload)
-	if err != nil {
-		return err
-	}
-
-	token, err := h.usersServiceIn.LogIn(*payload)
-	if err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, map[string]string{
-		"message": "SignIn Success",
-		"token":   token,
-	})
-
 }
 
 // @Summary Create Animals

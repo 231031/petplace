@@ -48,6 +48,20 @@ func (s *ProfileService) GetProfileByID(id uint) (model.Profile, error) {
 	return profile, nil
 }
 
+func (s *ProfileService) GetProfileByUserID(userID uint, role string) (model.Profile, string, error) {
+	profile, err := s.ProfileRepositoryIn.GetProfileByUserID(userID, role)
+	if err != nil {
+		return profile, "", err
+	}
+
+	if profile.ID == 0 {
+		return profile, "", nil
+	}
+
+	// generate new token
+	return profile, "", nil
+}
+
 func (s *ProfileService) UpdateProfile(id uint, profile model.Profile) error {
 	if err := s.Validate.Struct(profile); err != nil {
 		return err
