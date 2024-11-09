@@ -65,16 +65,15 @@ func (s *ProfileService) UpdateProfile(id uint, profile model.Profile) error {
 	return s.ProfileRepositoryIn.UpdateProfile(profile)
 }
 
-// not test
 func (s *ProfileService) SortProfileByDistance(profiles []model.Profile, la float64, long float64) []model.Profile {
 	userLoc := haversine.Coord{Lat: la, Lon: long}
-	for _, profile := range profiles {
-		profileLoc := haversine.Coord{Lat: profile.Latitude, Lon: profile.Longitude}
-		_, km := haversine.Distance(profileLoc, userLoc)
-		profile.Distance = km
-		fmt.Println(profile.Distance)
-	}
-	sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].Distance < profiles[j].Distance })
 
+	for i := range profiles {
+		profileLoc := haversine.Coord{Lat: profiles[i].Latitude, Lon: profiles[i].Longitude}
+		_, km := haversine.Distance(profileLoc, userLoc)
+		profiles[i].Distance = km
+	}
+
+	sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].Distance < profiles[j].Distance })
 	return profiles
 }

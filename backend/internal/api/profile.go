@@ -43,5 +43,5 @@ func (h *ProfileHandler) handleCreateProfile(c echo.Context) error {
 		return utils.HandleError(c, http.StatusInternalServerError, "Create profile not success", err)
 	}
 
-	return c.JSON(http.StatusOK, "Create profile success")
+	return c.JSON(http.StatusCreated, "Create profile success")
 }

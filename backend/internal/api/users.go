@@ -43,18 +43,18 @@ func (h *UsersHandler) handleSignUp(c echo.Context) error {
 	u := &model.User{}
 	err := c.Bind(u)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, err.Error())
+		return utils.HandleError(c, http.StatusBadRequest, "user detail not correct", err)
 	}
 
 	if u.Email == "" || u.Password == "" {
-		return c.String(400, "Invalid username or password")
+		return utils.HandleError(c, http.StatusBadRequest, "invalid email or password", err)
 	}
 
 	err = h.usersServiceIn.SignUp(*u)
 	if err != nil {
-		return c.String(400, err.Error())
+		return utils.HandleError(c, http.StatusInternalServerError, "sign up failed", err)
 	}
-	return c.String(201, "SignUp Success")
+	return c.JSON(http.StatusCreated, "Sign up success")
 
 }
 
@@ -108,7 +108,7 @@ func (h *UsersHandler) handleCreateAnimalUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusInternalServerError, "Add animals not success", err)
 	}
 
-	return c.JSON(http.StatusOK, "Add animals success")
+	return c.JSON(http.StatusCreated, "Add animals success")
 }
 
 // @Summary Update Animal

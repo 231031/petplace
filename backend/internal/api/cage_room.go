@@ -52,7 +52,7 @@ func (h *CageRoomHandler) handleCreateCageRoom(c echo.Context) error {
 		return utils.HandleError(c, http.StatusInternalServerError, "Add cage not success", err)
 	}
 
-	return c.JSON(http.StatusOK, "Add cage success")
+	return c.JSON(http.StatusCreated, "Add cage success")
 }
 
 // @Summary		Update Cage
