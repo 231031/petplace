@@ -11,6 +11,9 @@ type AuthServiceIn interface {
 }
 
 type UsersServiceIn interface {
+	UpdateUser(id uint, user model.User) error
+	GetCreditCard(id uint) (types.CardPayload, error)
+
 	CreateAnimalUser(animals []model.AnimalUser) error
 	UpdateAnimalUser(id uint, animal model.AnimalUser) error
 	GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error)
@@ -27,6 +30,8 @@ type ProfileServiceIn interface {
 
 type BookingServiceIn interface {
 	BookHotelService(payload types.BookingPayload) (int, error, error)
+	AcceptRejectBookHotel(payload types.SelectStatusPayload) error
+	ManageRefundBookHotel(payload types.RefundPayload) error
 	UpdateHotelService(id uint, ser model.HotelService) error
 	GetBookingHotel(id uint) (model.HotelService, error)
 	GetAllBookingHotelByHotel(profile_id uint, status string) ([]model.HotelService, error)

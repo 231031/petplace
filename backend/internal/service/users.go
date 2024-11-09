@@ -3,6 +3,7 @@ package service
 import (
 	"petplace/internal/model"
 	"petplace/internal/repository"
+	"petplace/internal/types"
 	"petplace/internal/utils"
 
 	"github.com/go-playground/validator/v10"
@@ -25,6 +26,35 @@ func NewUserService(
 		AnimalUserRepositoryIn: animalUserRepositoryIn,
 		Validate:               validate,
 	}
+}
+
+func (s *UserService) UpdateUser(id uint, user model.User) error {
+	userDb, err := s.UserRepositoryIn.GetUserByID(id)
+	if err != nil {
+		return err
+	}
+
+	updateUser := utils.CopyNonZeroFields(&user, &userDb).(*model.User)
+	err = s.UserRepositoryIn.UpdateUser(*updateUser)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *UserService) GetCreditCard(id uint) (types.CardPayload, error) {
+	card := types.CardPayload{}
+	user, err := s.UserRepositoryIn.GetUserByID(id)
+	if err != nil {
+		return card, err
+	}
+
+	card.Name = user.Name
+	card.Number = user.Number
+	card.Expiry = user.Expiry
+	card.SecurityCode = user.SecurityCode
+
+	return card, nil
 }
 
 func (s *UserService) CreateAnimalUser(animals []model.AnimalUser) error {

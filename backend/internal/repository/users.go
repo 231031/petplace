@@ -16,23 +16,40 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-func (u *UserRepository) SignUp(data model.User) error {
-	result := u.db.Create(&data)
+func (r *UserRepository) SignUp(data model.User) error {
+	result := r.db.Create(&data)
 	if result.Error != nil {
 		return fmt.Errorf("%s", result.Error.Error())
 	}
 	return nil
 }
 
-func (u *UserRepository) GetUserByEmail(email string) (*model.User, error) {
-	user := &model.User{
+func (r *UserRepository) GetUserByEmail(email string) (model.User, error) {
+	user := model.User{
 		Email: email,
 	}
 
-	result := u.db.Where("email = ?", "jinzhu").First(&user)
+	result := r.db.Where("email = ?", "jinzhu").First(&user)
 	if result.Error != nil {
-		return nil, fmt.Errorf("%s", result.Error.Error())
+		return user, fmt.Errorf("%s", result.Error.Error())
 	}
-	
+
 	return user, nil
+}
+
+func (r *UserRepository) GetUserByID(id uint) (model.User, error) {
+	user := model.User{ID: id}
+	result := r.db.First(&user)
+	if result.Error != nil {
+		return user, result.Error
+	}
+	return user, nil
+}
+
+func (r *UserRepository) UpdateUser(user model.User) error {
+	result := r.db.Save(&user)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
 }

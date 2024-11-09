@@ -12,7 +12,7 @@ type Profile struct {
 	Tel         string  `gorm:"type:varchar(191);" json:"tel" query:"tel"`
 	Name        string  `gorm:"type:varchar(191);" json:"name" query:"name"`
 	Address     string  `gorm:"type:text;not null" json:"address" query:"address"`
-	Image       string  `gorm:"type:varchar(191)" json:"image" query:"image"`
+	Image       string  `gorm:"type:text;" json:"image" query:"image"`
 	Longitude   float64 `gorm:"type:float;not null" json:"longitude" query:"longitude"`
 	Latitude    float64 `gorm:"type:float;not null" json:"latitude" query:"latitude"`
 

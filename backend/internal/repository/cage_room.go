@@ -134,7 +134,7 @@ func (r *CageRoomRepository) GetNotAvaliableCageRoom(animals [][]interface{}, st
 		Select("hotel_services.cage_id, cage_rooms.quantity").
 		Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
 		Where("(animal_type, size) IN (?)", animals).
-		Where("(start_time <= ? AND end_time > ?) OR (start_time < ? AND end_time >= ?)", startTime, startTime, endTime, endTime).
+		Where("((start_time <= ? AND end_time > ?) OR (start_time < ? AND end_time >= ?)) AND status IN (?, ?)", startTime, startTime, endTime, endTime, "accepted", "pending").
 		Group("hotel_services.cage_id").
 		Having("COUNT(start_time) >= cage_rooms.quantity").
 		Find(&services)

@@ -377,6 +377,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/hotel/cleint/{hotel_service_id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "cancel or refund reservation",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "HotelServices"
+                ],
+                "summary": "Cancel or Refund Reservation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Hotel Service ID",
+                        "name": "hotel_service_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/api/hotel/client/booking": {
             "post": {
                 "security": [
@@ -408,7 +445,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/client/{id}/{status}": {
+        "/api/hotel/client/{hotel_service_id}/{status}": {
             "get": {
                 "security": [
                     {
@@ -427,7 +464,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "ID",
-                        "name": "id",
+                        "name": "hotel_service_id",
                         "in": "path",
                         "required": true
                     },
@@ -452,7 +489,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/{id}": {
+        "/api/hotel/{hotel_service_id}": {
             "get": {
                 "security": [
                     {
@@ -471,7 +508,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "ID",
-                        "name": "id",
+                        "name": "hotel_service_id",
                         "in": "path",
                         "required": true
                     }
@@ -494,19 +531,19 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "update hotel service",
+                "description": "Accept or Reject a booking request",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "HotelServices"
                 ],
-                "summary": "Update Hotel Service",
+                "summary": "Accept or Reject a booking request",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID",
-                        "name": "id",
+                        "description": "Hotel Service ID",
+                        "name": "hotel_service_id",
                         "in": "path",
                         "required": true
                     }
@@ -524,7 +561,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/{id}/{status}": {
+        "/api/hotel/{hotel_service_id}/{status}": {
             "get": {
                 "security": [
                     {
@@ -543,7 +580,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "ID",
-                        "name": "id",
+                        "name": "hotel_service_id",
                         "in": "path",
                         "required": true
                     },
@@ -769,6 +806,43 @@ const docTemplate = `{
                         "type": "string",
                         "description": "User ID",
                         "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/user/card/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get credit card",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get Credit Card",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }

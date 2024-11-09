@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"petplace/internal/model"
 	"petplace/internal/service"
 	"petplace/internal/types"
 	"petplace/internal/utils"
@@ -23,13 +22,14 @@ func (h *HotelHandler) RegisterRoutes(g *echo.Group) {
 	// hotel
 	g.GET("/:id/:status", h.handleGetAllHotelServiceByHotel)
 	g.GET("/:id", h.handleGetHotelService)
+	g.PUT("/:id", h.handleAcceptRejectBookHotel)
 
 	// client
 	g.POST("/client/booking", h.handleBookHotelService)
 	g.GET("/client/:id/:status", h.handleGetAllHotelServiceByUser)
+	g.PUT("/client/:id", h.handleManageRefundBookHotel)
 
 	// both
-	g.PUT("/:id", h.handleUpdateHotelSerivice)
 }
 
 // @Summary		Book Hotel Service
@@ -61,15 +61,15 @@ func (h *HotelHandler) handleBookHotelService(c echo.Context) error {
 // @Description	get hotel service hotel
 // @Produce application/json
 // @tags HotelServices
-// @Param id path string true "ID"
+// @Param hotel_service_id path string true "ID"
 // @Param status path string true "Status"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/hotel/{id}/{status} [get]
+// @Router /api/hotel/{hotel_service_id}/{status} [get]
 // @Security BearerAuth
 func (h *HotelHandler) handleGetAllHotelServiceByHotel(c echo.Context) error {
-	id := c.Param("id")
+	id := c.Param("hotel_service_id")
 	profile_id, err := utils.ConvertTypeToUint(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusBadRequest, "Booking detail not correct", err)
@@ -88,15 +88,15 @@ func (h *HotelHandler) handleGetAllHotelServiceByHotel(c echo.Context) error {
 // @Description	get hotel service user
 // @Produce application/json
 // @tags HotelServices
-// @Param id path string true "ID"
+// @Param hotel_service_id path string true "ID"
 // @Param status path string true "Status"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/hotel/client/{id}/{status} [get]
+// @Router /api/hotel/client/{hotel_service_id}/{status} [get]
 // @Security BearerAuth
 func (h *HotelHandler) handleGetAllHotelServiceByUser(c echo.Context) error {
-	id := c.Param("id")
+	id := c.Param("hotel_service_id")
 	user_id, err := utils.ConvertTypeToUint(id)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -115,14 +115,14 @@ func (h *HotelHandler) handleGetAllHotelServiceByUser(c echo.Context) error {
 // @Description	get hotel service
 // @Produce application/json
 // @tags HotelServices
-// @Param id path string true "ID"
+// @Param hotel_service_id path string true "ID"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/hotel/{id} [get]
+// @Router /api/hotel/{hotel_service_id} [get]
 // @Security BearerAuth
 func (h *HotelHandler) handleGetHotelService(c echo.Context) error {
-	str := c.Param("id")
+	str := c.Param("hotel_service_id")
 	id, err := utils.ConvertTypeToUint(str)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -136,33 +136,52 @@ func (h *HotelHandler) handleGetHotelService(c echo.Context) error {
 	return c.JSON(http.StatusOK, ser_info)
 }
 
-// @Summary		Update Hotel Service
-// @Description	update hotel service
+// @Summary		Accept or Reject a booking request
+// @Description	Accept or Reject a booking request
 // @Produce application/json
 // @tags HotelServices
-// @Param id path string true "ID"
+// @Param hotel_service_id path string true "Hotel Service ID"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/hotel/{id} [put]
+// @Router /api/hotel/{hotel_service_id} [put]
 // @Security BearerAuth
-func (h *HotelHandler) handleUpdateHotelSerivice(c echo.Context) error {
-	str := c.Param("id")
-	id, err := utils.ConvertTypeToUint(str)
+func (h *HotelHandler) handleAcceptRejectBookHotel(c echo.Context) error {
+	sel := types.SelectStatusPayload{}
+	err := c.Bind(&sel)
 	if err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
+		return utils.HandleError(c, http.StatusBadRequest, "this detail is not correct", err)
 	}
 
-	ser := model.HotelService{}
-	err = c.Bind(&ser)
+	err = h.bookingServiceIn.AcceptRejectBookHotel(sel)
 	if err != nil {
-		return utils.HandleError(c, http.StatusBadRequest, "Booking detail not correct", err)
+		return utils.HandleError(c, http.StatusBadRequest, "falied to update status of this booking", err)
 	}
 
-	err = h.bookingServiceIn.UpdateHotelService(id, ser)
+	return c.JSON(http.StatusOK, "update successfully")
+}
+
+// @Summary		Cancel or Refund Reservation
+// @Description	cancel or refund reservation
+// @Produce application/json
+// @tags HotelServices
+// @Param hotel_service_id path string true "Hotel Service ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /api/hotel/cleint/{hotel_service_id} [put]
+// @Security BearerAuth
+func (h *HotelHandler) handleManageRefundBookHotel(c echo.Context) error {
+	payload := types.RefundPayload{}
+	err := c.Bind(&payload)
 	if err != nil {
-		return utils.HandleError(c, http.StatusBadRequest, "Update booking detail not successful", err)
+		return utils.HandleError(c, http.StatusBadRequest, "this detail is not correct", err)
 	}
 
-	return c.JSON(http.StatusOK, "Update booking detail successful")
+	err = h.bookingServiceIn.ManageRefundBookHotel(payload)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "failed to refuded", err)
+	}
+
+	return c.JSON(http.StatusOK, "process successfully")
 }

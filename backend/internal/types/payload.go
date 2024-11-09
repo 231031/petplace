@@ -23,6 +23,19 @@ type BookingPayload struct {
 	CardDetail  CardPayload `json:"card_detail" query:"card_detail" validate:"required"`
 }
 
+type SelectStatusPayload struct {
+	HotelServiceID uint   `json:"hotel_service_id" query:"hotel_service_id" validate:"required"`
+	ProfileID      uint   `json:"profile_id" query:"profile_id" validate:"required"`
+	ProfileName    string `json:"profile_name" query:"profile_name" validate:"required"`
+	Status         string `json:"status" query:"status" validate:"required"`
+}
+
+type RefundPayload struct {
+	HotelServiceID uint   `json:"hotel_service_id" query:"hotel_service_id" validate:"required"`
+	ClientID       uint   `json:"client_id" query:"client_id" validate:"required"`
+	PaypalEmail    string `gorm:"type:varchar(191);" json:"paypal_email" query:"paypal_email"`
+}
+
 type PaymentSource struct {
 	Card CardPayload `json:"card" query:"card"`
 }

@@ -233,13 +233,13 @@ paths:
       summary: Get Selected Cages by Hotel
       tags:
       - CageRooms
-  /api/hotel/{id}:
+  /api/hotel/{hotel_service_id}:
     get:
       description: get hotel service
       parameters:
       - description: ID
         in: path
-        name: id
+        name: hotel_service_id
         required: true
         type: string
       produces:
@@ -257,11 +257,11 @@ paths:
       tags:
       - HotelServices
     put:
-      description: update hotel service
+      description: Accept or Reject a booking request
       parameters:
-      - description: ID
+      - description: Hotel Service ID
         in: path
-        name: id
+        name: hotel_service_id
         required: true
         type: string
       produces:
@@ -275,16 +275,16 @@ paths:
           description: Internal Server Error
       security:
       - BearerAuth: []
-      summary: Update Hotel Service
+      summary: Accept or Reject a booking request
       tags:
       - HotelServices
-  /api/hotel/{id}/{status}:
+  /api/hotel/{hotel_service_id}/{status}:
     get:
       description: get hotel service hotel
       parameters:
       - description: ID
         in: path
-        name: id
+        name: hotel_service_id
         required: true
         type: string
       - description: Status
@@ -306,13 +306,36 @@ paths:
       summary: Get Hotel Service Hotel
       tags:
       - HotelServices
-  /api/hotel/client/{id}/{status}:
+  /api/hotel/cleint/{hotel_service_id}:
+    put:
+      description: cancel or refund reservation
+      parameters:
+      - description: Hotel Service ID
+        in: path
+        name: hotel_service_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Cancel or Refund Reservation
+      tags:
+      - HotelServices
+  /api/hotel/client/{hotel_service_id}/{status}:
     get:
       description: get hotel service user
       parameters:
       - description: ID
         in: path
-        name: id
+        name: hotel_service_id
         required: true
         type: string
       - description: Status
@@ -487,6 +510,29 @@ paths:
       security:
       - BearerAuth: []
       summary: Get Animals
+      tags:
+      - Users
+  /api/user/card/{id}:
+    get:
+      description: get credit card
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get Credit Card
       tags:
       - Users
 swagger: "2.0"

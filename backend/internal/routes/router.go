@@ -59,7 +59,7 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 	// HotelService
 	ser_hotel := baseRouter.Group("/hotel")
 	hotelServiceRepository := repository.NewHotelServiceRepository(db)
-	bookingService := service.NewBookingService(hotelServiceRepository, profileService, cageRoomService, paymentService, validate)
+	bookingService := service.NewBookingService(hotelServiceRepository, userService, profileService, cageRoomService, paymentService, validate)
 	hotelHandler := api.NewHotelHandler(bookingService)
 	hotelHandler.RegisterRoutes(ser_hotel)
 

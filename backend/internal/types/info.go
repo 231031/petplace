@@ -32,7 +32,7 @@ type ProductInfo struct {
 	ProfileID uint    `gorm:"not null" json:"profile_id" query:"profile_id"`
 	Name      string  `gorm:"type:varchar(191);not null" json:"name" query:"name"`
 	Detail    string  `gorm:"type:varchar(191);not null" json:"detail" query:"detail"`
-	Image     string  `gorm:"type:varchar(191);" json:"image" query:"image"`
+	Image     string  `gorm:"type:text;" json:"image" query:"image"`
 	Price     float32 `gorm:"type:float;not null" json:"price" query:"price"`
 }
 

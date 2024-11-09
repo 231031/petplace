@@ -17,6 +17,7 @@ import (
 // implement bussiness logic
 type BookingService struct {
 	HotelServiceRepositoryIn repository.HotelServiceRepositoryIn
+	UsersServiceIn           UsersServiceIn
 	ProfileServiceIn         ProfileServiceIn
 	CageRoomServiceIn        CageRoomServiceIn
 	PaymentServiceIn         PaymentServiceIn
@@ -25,6 +26,7 @@ type BookingService struct {
 
 func NewBookingService(
 	hotelSerRepositoryIn repository.HotelServiceRepositoryIn,
+	usersServiceIn UsersServiceIn,
 	profileService ProfileServiceIn,
 	cageRoomService CageRoomServiceIn,
 	paymentService PaymentServiceIn,
@@ -33,6 +35,7 @@ func NewBookingService(
 
 	return &BookingService{
 		HotelServiceRepositoryIn: hotelSerRepositoryIn,
+		UsersServiceIn:           usersServiceIn,
 		ProfileServiceIn:         profileService,
 		CageRoomServiceIn:        cageRoomService,
 		PaymentServiceIn:         paymentService,
@@ -108,7 +111,7 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 	updatedSer := model.HotelService{
 		ServiceInfo: types.ServiceInfo{
 			PaymentID:     paymentID,
-			PaymentStatus: "completed",
+			PaymentStatus: "hold",
 		},
 	}
 
@@ -117,31 +120,128 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 		return http.StatusInternalServerError, fmt.Errorf("update payment failed"), err
 	}
 
-	// calculate fee for petplace and use payment service to send money to profile ( hotel )
-	cost := price - 0.1*price
+	updatedCredit := model.User{
+		Name:         payload.CardDetail.Name,
+		Number:       payload.CardDetail.Number,
+		Expiry:       payload.CardDetail.Expiry,
+		SecurityCode: payload.CardDetail.SecurityCode,
+	}
+	err = s.UsersServiceIn.UpdateUser(payload.ClientID, updatedCredit)
+	if err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("update creddit card failed"), err
+	}
 
+	return http.StatusOK, nil, nil
+}
+
+func (s *BookingService) AcceptRejectBookHotel(payload types.SelectStatusPayload) error {
+	bookID := payload.HotelServiceID
+	if payload.Status == "rejected" {
+		updatedSer := model.HotelService{
+			ServiceInfo: types.ServiceInfo{
+				Status: payload.Status,
+			},
+		}
+		err := s.UpdateHotelService(bookID, updatedSer)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	ser, err := s.GetBookingHotel(bookID)
+	if err != nil {
+		return err
+	}
+
+	cost := ser.Price - 0.08*ser.Price
 	profile, err := s.ProfileServiceIn.GetProfileByID(payload.ProfileID)
 	if err != nil {
-		return http.StatusInternalServerError, fmt.Errorf("booking service not complete"), err
+		return err
 	}
 
 	payoutID, err := s.PaymentServiceIn.CreatePayout(cost, profile.PaypalEmail)
 	if err != nil {
-		return http.StatusInternalServerError, fmt.Errorf("booking service not complete"), err
+		return err
 	}
 
-	updatedSer = model.HotelService{
+	updatedSer := model.HotelService{
 		ServiceInfo: types.ServiceInfo{
-			PayoutID: payoutID,
+			Status:        payload.Status,
+			PayoutID:      payoutID,
+			PaymentStatus: "completed",
 		},
 	}
 
 	err = s.UpdateHotelService(bookID, updatedSer)
 	if err != nil {
-		return http.StatusInternalServerError, fmt.Errorf("booking service not complete"), err
+		return err
 	}
 
-	return http.StatusOK, nil, nil
+	return nil
+}
+
+func (s *BookingService) ManageRefundBookHotel(payload types.RefundPayload) error {
+	ser, err := s.GetBookingHotel(payload.HotelServiceID)
+	if err != nil {
+		return nil
+	}
+
+	if ser.Status == "accepted" {
+		return s.cancelNotRefundBookHotel(payload.HotelServiceID)
+	}
+
+	if ser.Status == "rejected" {
+		return s.refundBookHotel(ser, payload, ser.Status)
+	}
+
+	if ser.Status == "pending" {
+		return s.refundBookHotel(ser, payload, "canceled")
+	}
+	return nil
+}
+
+func (s *BookingService) refundBookHotel(ser model.HotelService, payload types.RefundPayload, newStatus string) error {
+	payoutID, err := s.PaymentServiceIn.CreatePayout(ser.Price, payload.PaypalEmail)
+	if err != nil {
+		return err
+	}
+
+	updatedSer := model.HotelService{
+		ServiceInfo: types.ServiceInfo{
+			Status:        newStatus,
+			PaymentStatus: "refunded",
+			PayoutID:      payoutID,
+		},
+	}
+	err = s.UpdateHotelService(ser.ID, updatedSer)
+	if err != nil {
+		return err
+	}
+
+	updatedUser := model.User{
+		PaypalEmail: payload.PaypalEmail,
+	}
+	err = s.UsersServiceIn.UpdateUser(payload.ClientID, updatedUser)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *BookingService) cancelNotRefundBookHotel(id uint) error {
+	updatedSer := model.HotelService{
+		ServiceInfo: types.ServiceInfo{
+			Status: "canceled",
+		},
+	}
+
+	err := s.UpdateHotelService(id, updatedSer)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *BookingService) calculatePriceService(startTime, endTime time.Time, cagePrice float32) (int, float32) {

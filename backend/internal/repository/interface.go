@@ -8,7 +8,9 @@ import (
 
 type UserRepositoryIn interface {
 	SignUp(data model.User) error
-	GetUserByEmail(email string) (*model.User, error)
+	GetUserByID(id uint) (model.User, error)
+	GetUserByEmail(email string) (model.User, error)
+	UpdateUser(user model.User) error
 }
 
 type ProfileRepositoryIn interface {

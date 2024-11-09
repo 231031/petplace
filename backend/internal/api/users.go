@@ -20,6 +20,9 @@ func NewUsersHandler(usersServiceIn service.UsersServiceIn) *UsersHandler {
 
 func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
 	// role : client
+	g.GET("/card/:id", h.GetCreaditCard)
+
+	// animal
 	g.POST("/animals", h.handleCreateAnimalUser)
 	g.GET("/animals/:user_id", h.handleGetAllAnimalUserByUser)
 	g.GET("/animal/:id", h.handleGetAnimalUser)
@@ -110,8 +113,33 @@ func (h *UsersHandler) handleGetAnimalUser(c echo.Context) error {
 
 	animal, err := h.usersServiceIn.GetAnimalUser(id)
 	if err != nil {
-		return utils.HandleError(c, http.StatusInternalServerError, "Animal not available", err)
+		return utils.HandleError(c, http.StatusInternalServerError, "animal not available", err)
 	}
 
 	return c.JSON(http.StatusOK, animal)
+}
+
+// @Summary Get Credit Card
+// @Description get credit card
+// @tags Users
+// @Produce application/json
+// @Param id path string true "ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /api/user/card/{id} [get]
+// @Security BearerAuth
+func (h *UsersHandler) GetCreaditCard(c echo.Context) error {
+	param_id := c.Param("id")
+	id, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "cannot get user id", err)
+	}
+
+	card, err := h.usersServiceIn.GetCreditCard(id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "credit card not available", err)
+	}
+
+	return c.JSON(http.StatusOK, card)
 }
