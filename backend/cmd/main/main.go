@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"petplace/config"
+	"petplace/internal/auth"
 	"petplace/internal/migration"
 	"petplace/internal/routes"
 
@@ -18,6 +19,7 @@ import (
 //		@BasePath		/api
 //	 @schemes http
 func main() {
+
 	e := echo.New()
 
 	db, err := config.ConnectDatabase()
@@ -30,6 +32,15 @@ func main() {
 
 	routes.CreateRoutes(e, db)
 
-	e.Logger.Fatal(e.Start(":5000"))
-	config.LoadEnvVariables()
+	// แสดง JWT token ที่สร้าง
+	config.LoadEnvVariables() // โหลดค่า .env เพื่อให้ SECRET_KEY ถูกใช้
+	token, err := auth.GenerateJwt(1, "user@example.com", "admin")
+	if err != nil {
+		fmt.Println("Error generating JWT:", err)
+	} else {
+		fmt.Println("Generated JWT Token:", token)
+	}
+
+	e.Logger.Fatal(e.Start(":5001"))
+
 }
