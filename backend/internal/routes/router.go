@@ -59,7 +59,7 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 
 	// Protected route
 	protected := baseRouter.Group("/protected")
-	protected.Use(auth.AuthMiddleware) // ใช้ AuthMiddleware สำหรับ route นี้
+	protected.Use(auth.AuthMiddleware)
 	protected.GET("/data", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Protected data")
 	})
