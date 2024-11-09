@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"petplace/internal/repository"
 	"petplace/internal/types"
 	"time"
 
+	"github.com/coocood/freecache"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/plutov/paypal/v4"
@@ -19,8 +19,8 @@ import (
 
 // implement bussiness logic
 type PaymentService struct {
-	CageRoomRepositoryIn repository.CageRoomRepositoryIn
-	Validate             *validator.Validate
+	Validate *validator.Validate
+	Cache    *freecache.Cache
 }
 
 func NewPaymentService(
@@ -28,11 +28,27 @@ func NewPaymentService(
 ) *PaymentService {
 	return &PaymentService{
 		Validate: validate,
+		Cache:    freecache.NewCache(1800 * 1024 * 1024),
 	}
 }
 
 // do cache to reduce response time
 func (s *PaymentService) getAccessToken() (*paypal.TokenResponse, error) {
+	cacheKey := []byte("access_token")
+	cachedTokenData, err := s.Cache.Get(cacheKey)
+	if err != nil {
+		fmt.Println("error getting token", err.Error())
+	} else if cachedTokenData != nil {
+		var cachedToken *paypal.TokenResponse
+		err = json.Unmarshal(cachedTokenData, &cachedToken)
+		if err != nil {
+			fmt.Println("error unmarshalling", err.Error())
+		} else {
+			fmt.Println("used cached token")
+			return cachedToken, nil
+		}
+	}
+
 	clientID := os.Getenv("CLIENT_ID")
 	secretID := os.Getenv("SECRET_ID")
 
@@ -41,12 +57,24 @@ func (s *PaymentService) getAccessToken() (*paypal.TokenResponse, error) {
 		return nil, err
 	}
 
-	access_token, err := c.GetAccessToken(context.Background())
+	// token expired
+	tokenRes, err := c.GetAccessToken(context.Background())
 	if err != nil {
 		return nil, err
 	}
 
-	return access_token, nil
+	tokenData, err := json.Marshal(tokenRes)
+	if err != nil {
+		fmt.Println("error marshalling token")
+	}
+
+	expToken := int(time.Duration(tokenRes.ExpiresIn) * time.Second)
+	err = s.Cache.Set(cacheKey, []byte(tokenData), expToken)
+	if err != nil {
+		fmt.Println("error setting token", err.Error())
+	}
+
+	return tokenRes, nil
 }
 
 // request paypal to transfer money from client account to web app account

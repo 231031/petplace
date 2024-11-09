@@ -54,7 +54,7 @@ func (h *HotelHandler) handleBookHotelService(c echo.Context) error {
 		return utils.HandleError(c, status, err_str.Error(), err)
 	}
 
-	return c.JSON(http.StatusOK, "Booking success")
+	return c.JSON(http.StatusCreated, "Booking success")
 }
 
 // @Summary		Get Hotel Service Hotel
