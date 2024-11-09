@@ -1,10 +1,17 @@
 package auth
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"fmt"
+	"os"
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
+)
 
 func HashPassword(password string) (string, error) {
 	hashed, err := bcrypt.GenerateFromPassword(
-		[]byte(password), 
+		[]byte(password),
 		bcrypt.DefaultCost,
 	)
 	if err != nil {
@@ -19,5 +26,20 @@ func ComparePassword(password string, hashed string) bool {
 }
 
 func GenerateJwt(id uint, email string, role string) (string, error) {
-	return "", nil
+
+	secretKey := os.Getenv("SECRET_KEY")
+	if secretKey == "" {
+		return "", fmt.Errorf("Secret key not found in environment variables")
+	}
+
+	claims := jwt.MapClaims{
+		"id":    id,
+		"email": email,
+		"role":  role,
+		"exp":   time.Now().Add(time.Hour * 24).Unix(),
+	}
+
+	// create token
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(secretKey))
 }
