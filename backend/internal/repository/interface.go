@@ -23,6 +23,8 @@ type ProfileRepositoryIn interface {
 type AnimalUserRepositoryIn interface {
 	CreateAnimalUser(animals []model.AnimalUser) error
 	UpdateAnimalUser(animals model.AnimalUser) error
+
+	GetAllAnimalUserByType(user_id uint, animal_type string) ([]model.AnimalUser, error)
 	GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error)
 	GetAnimalUser(id uint) (model.AnimalUser, error)
 }

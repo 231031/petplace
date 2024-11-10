@@ -42,7 +42,7 @@ func (r ProfileRepository) GetProfileByID(id uint) (model.Profile, error) {
 
 func (r ProfileRepository) GetProfileByUserID(userID uint, role string) (model.Profile, error) {
 	profile := model.Profile{}
-	result := r.db.Where("user_id = ? AND role = ?", userID, role).Find(&profile)
+	result := r.db.Where("user_id = ? AND role = ?", userID, role).First(&profile)
 	if result.Error != nil {
 		return profile, fmt.Errorf("get profile failed: %v", result.Error.Error())
 	}

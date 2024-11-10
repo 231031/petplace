@@ -377,7 +377,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/cleint/{hotel_service_id}": {
+        "/api/hotel/cleint/{id}": {
             "put": {
                 "security": [
                     {
@@ -396,7 +396,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Hotel Service ID",
-                        "name": "hotel_service_id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -445,7 +445,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/client/{hotel_service_id}/{status}": {
+        "/api/hotel/client/{id}/{status}": {
             "get": {
                 "security": [
                     {
@@ -463,8 +463,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID",
-                        "name": "hotel_service_id",
+                        "description": "User ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -489,7 +489,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/{hotel_service_id}": {
+        "/api/hotel/{id}": {
             "get": {
                 "security": [
                     {
@@ -507,8 +507,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID",
-                        "name": "hotel_service_id",
+                        "description": "Hotel Service ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -543,7 +543,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Hotel Service ID",
-                        "name": "hotel_service_id",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -561,7 +561,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/{hotel_service_id}/{status}": {
+        "/api/hotel/{id}/{status}": {
             "get": {
                 "security": [
                     {
@@ -579,8 +579,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID",
-                        "name": "hotel_service_id",
+                        "description": "Profile ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -738,6 +738,50 @@ const docTemplate = `{
                         "type": "string",
                         "description": "ID",
                         "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/user/animal/{user_id}/{animal_type}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get animal of each user filter by animal type",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get Animal User By Animal Type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Animal Type",
+                        "name": "animal_type",
                         "in": "path",
                         "required": true
                     }

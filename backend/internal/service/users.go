@@ -28,6 +28,16 @@ func NewUserService(
 	}
 }
 
+func (s *UserService) GetUserByID(id uint) (model.User, error) {
+	user, err := s.UserRepositoryIn.GetUserByID(id)
+	if err != nil {
+		return user, err
+	}
+
+	user.Password = ""
+	return user, nil
+}
+
 func (s *UserService) UpdateUser(id uint, user model.User) error {
 	userDb, err := s.UserRepositoryIn.GetUserByID(id)
 	if err != nil {
@@ -58,6 +68,12 @@ func (s *UserService) GetCreditCard(id uint) (types.CardPayload, error) {
 }
 
 func (s *UserService) CreateAnimalUser(animals []model.AnimalUser) error {
+	if len(animals) > 0 {
+		for i := range animals {
+			animals[i].Image = utils.MapStringArrayToText(animals[i].ImageArray)
+		}
+	}
+
 	err := s.AnimalUserRepositoryIn.CreateAnimalUser(animals)
 	if err != nil {
 		return err
@@ -70,6 +86,12 @@ func (s *UserService) UpdateAnimalUser(id uint, animal model.AnimalUser) error {
 	if err != nil {
 		return err
 	}
+
+	// newImage := ""
+	// if len(animal.ImageArray) > 0 {
+	// 	newImage = utils.MapStringArrayToText(animal.ImageArray)
+	// }
+	// animal.Image = animal.Image + "," + newImage
 
 	updateAn := utils.CopyNonZeroFields(&animal, &animal_db).(*model.AnimalUser)
 	err = s.AnimalUserRepositoryIn.UpdateAnimalUser(*updateAn)
@@ -84,6 +106,13 @@ func (s *UserService) GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error)
 	if err != nil {
 		return animals, err
 	}
+
+	if len(animals) > 0 {
+		for i := range animals {
+			animals[i].ImageArray = utils.MapTextToStringArray(animals[i].Image)
+		}
+	}
+
 	return animals, nil
 }
 
@@ -92,5 +121,20 @@ func (s *UserService) GetAnimalUser(id uint) (model.AnimalUser, error) {
 	if err != nil {
 		return animal, err
 	}
+	animal.ImageArray = utils.MapTextToStringArray(animal.Image)
 	return animal, nil
+}
+
+func (s *UserService) GetAnimalUserByType(user_id uint, animal_type string) ([]model.AnimalUser, error) {
+	animals, err := s.AnimalUserRepositoryIn.GetAllAnimalUserByType(user_id, animal_type)
+	if err != nil {
+		return animals, err
+	}
+
+	if len(animals) > 0 {
+		for i := range animals {
+			animals[i].ImageArray = utils.MapTextToStringArray(animals[i].Image)
+		}
+	}
+	return animals, nil
 }

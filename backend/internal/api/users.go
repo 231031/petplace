@@ -23,9 +23,10 @@ func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
 	g.GET("/card/:id", h.GetCreaditCard)
 
 	// animal
-	g.POST("/animals", h.handleCreateAnimalUser)
-	g.GET("/animals/:user_id", h.handleGetAllAnimalUserByUser)
+	g.GET("/animal/:user_id/:animal_type", h.handleGetAnimalUserByType)
 	g.GET("/animal/:id", h.handleGetAnimalUser)
+	g.GET("/animals/:user_id", h.handleGetAllAnimalUserByUser)
+	g.POST("/animals", h.handleCreateAnimalUser)
 	g.PUT("/animal/:id", h.handleUpdateAnimalUser)
 }
 
@@ -142,4 +143,32 @@ func (h *UsersHandler) GetCreaditCard(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, card)
+}
+
+// @Summary Get Animal User By Animal Type
+// @Description get animal of each user filter by animal type
+// @tags Users
+// @Produce application/json
+// @Param user_id path string true "User ID"
+// @Param animal_type path string true "Animal Type"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /api/user/animal/{user_id}/{animal_type} [get]
+// @Security BearerAuth
+func (h *UsersHandler) handleGetAnimalUserByType(c echo.Context) error {
+	param_id := c.Param("user_id")
+	user_id, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "cannot get user id", err)
+	}
+
+	animal_type := c.Param("animal_type")
+
+	animals, err := h.usersServiceIn.GetAnimalUserByType(user_id, animal_type)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "your animals not available", err)
+	}
+
+	return c.JSON(http.StatusOK, animals)
 }

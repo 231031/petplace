@@ -1,10 +1,12 @@
 package utils
 
 import (
+	"bytes"
 	"fmt"
 	"petplace/internal/types"
 	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -49,4 +51,41 @@ func MapSearchAnimalPairs(animals []types.FilterInfo) [][]interface{} {
 		animalPairs = append(animalPairs, []interface{}{animal.AnimalType, animal.CageSize})
 	}
 	return animalPairs
+}
+
+func MapCageSize(max_capacity int) string {
+	if max_capacity >= 1 && max_capacity <= 2 {
+		return "s"
+	} else if max_capacity >= 3 && max_capacity <= 4 {
+		return "m"
+	} else if max_capacity >= 5 && max_capacity <= 6 {
+		return "l"
+	}
+
+	return "xl"
+}
+
+func MapStringArrayToText(stringArray []string) string {
+	var stringText bytes.Buffer
+
+	if len(stringArray) > 0 {
+		for i := range stringArray {
+			if i == len(stringArray)-1 {
+				str := stringArray[i]
+				stringText.WriteString(str)
+				break
+			}
+			str := stringArray[i] + ","
+			stringText.WriteString(str)
+		}
+		return stringText.String()
+	}
+	return ""
+}
+
+func MapTextToStringArray(text string) []string {
+	if text == "" {
+		return []string{}
+	}
+	return strings.Split(text, ",")
 }

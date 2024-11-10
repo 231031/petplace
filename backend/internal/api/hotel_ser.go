@@ -61,15 +61,15 @@ func (h *HotelHandler) handleBookHotelService(c echo.Context) error {
 // @Description	get hotel service hotel
 // @Produce application/json
 // @tags HotelServices
-// @Param hotel_service_id path string true "ID"
+// @Param id path string true "Profile ID"
 // @Param status path string true "Status"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/hotel/{hotel_service_id}/{status} [get]
+// @Router /api/hotel/{id}/{status} [get]
 // @Security BearerAuth
 func (h *HotelHandler) handleGetAllHotelServiceByHotel(c echo.Context) error {
-	id := c.Param("hotel_service_id")
+	id := c.Param("id")
 	profile_id, err := utils.ConvertTypeToUint(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusBadRequest, "Booking detail not correct", err)
@@ -88,15 +88,15 @@ func (h *HotelHandler) handleGetAllHotelServiceByHotel(c echo.Context) error {
 // @Description	get hotel service user
 // @Produce application/json
 // @tags HotelServices
-// @Param hotel_service_id path string true "ID"
+// @Param id path string true "User ID"
 // @Param status path string true "Status"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/hotel/client/{hotel_service_id}/{status} [get]
+// @Router /api/hotel/client/{id}/{status} [get]
 // @Security BearerAuth
 func (h *HotelHandler) handleGetAllHotelServiceByUser(c echo.Context) error {
-	id := c.Param("hotel_service_id")
+	id := c.Param("id")
 	user_id, err := utils.ConvertTypeToUint(id)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -115,14 +115,14 @@ func (h *HotelHandler) handleGetAllHotelServiceByUser(c echo.Context) error {
 // @Description	get hotel service
 // @Produce application/json
 // @tags HotelServices
-// @Param hotel_service_id path string true "ID"
+// @Param id path string true "Hotel Service ID"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/hotel/{hotel_service_id} [get]
+// @Router /api/hotel/{id} [get]
 // @Security BearerAuth
 func (h *HotelHandler) handleGetHotelService(c echo.Context) error {
-	str := c.Param("hotel_service_id")
+	str := c.Param("id")
 	id, err := utils.ConvertTypeToUint(str)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
@@ -140,11 +140,11 @@ func (h *HotelHandler) handleGetHotelService(c echo.Context) error {
 // @Description	Accept or Reject a booking request
 // @Produce application/json
 // @tags HotelServices
-// @Param hotel_service_id path string true "Hotel Service ID"
+// @Param id path string true "Hotel Service ID"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/hotel/{hotel_service_id} [put]
+// @Router /api/hotel/{id} [put]
 // @Security BearerAuth
 func (h *HotelHandler) handleAcceptRejectBookHotel(c echo.Context) error {
 	sel := types.SelectStatusPayload{}
@@ -165,11 +165,11 @@ func (h *HotelHandler) handleAcceptRejectBookHotel(c echo.Context) error {
 // @Description	cancel or refund reservation
 // @Produce application/json
 // @tags HotelServices
-// @Param hotel_service_id path string true "Hotel Service ID"
+// @Param id path string true "Hotel Service ID"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/hotel/cleint/{hotel_service_id} [put]
+// @Router /api/hotel/cleint/{id} [put]
 // @Security BearerAuth
 func (h *HotelHandler) handleManageRefundBookHotel(c echo.Context) error {
 	payload := types.RefundPayload{}

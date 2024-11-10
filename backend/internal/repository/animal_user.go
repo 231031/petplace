@@ -49,3 +49,12 @@ func (r *AnimalUserRepository) GetAnimalUser(id uint) (model.AnimalUser, error) 
 	}
 	return animal, nil
 }
+
+func (r *AnimalUserRepository) GetAllAnimalUserByType(user_id uint, animal_type string) ([]model.AnimalUser, error) {
+	animals := []model.AnimalUser{}
+	result := r.db.Where("user_id = ? AND animal_type = ?", user_id, animal_type).Find(&animals)
+	if result.Error != nil {
+		return animals, result.Error
+	}
+	return animals, nil
+}

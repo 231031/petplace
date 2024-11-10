@@ -45,7 +45,7 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 	// profile
 	profile := baseRouter.Group("/profile")
 	profileRepository := repository.NewProfileRepository(db)
-	profileService := service.NewProfileService(profileRepository, validate)
+	profileService := service.NewProfileService(profileRepository, userService, validate)
 	profileHandler := api.NewProfileHandler(profileService)
 	profileHandler.RegisterRoutes(profile)
 

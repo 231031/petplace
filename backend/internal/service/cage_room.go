@@ -4,6 +4,7 @@ import (
 	"petplace/internal/model"
 	"petplace/internal/repository"
 	"petplace/internal/types"
+	"petplace/internal/utils"
 	"sort"
 	"strconv"
 	"time"
@@ -31,6 +32,14 @@ func NewCageRoomService(
 }
 
 func (s *CageRoomService) CreateCageRoom(cages []model.CageRoom) error {
+	if len(cages) > 0 {
+		for i := range cages {
+			cages[i].Size = utils.MapCageSize(cages[i].MaxCapacity)
+			cages[i].Image = utils.MapStringArrayToText(cages[i].ImageArray)
+			cages[i].Facility = utils.MapStringArrayToText(cages[i].FacilityArray)
+		}
+	}
+
 	err := s.CageRoomRepositoryIn.CreateCageRoom(cages)
 	if err != nil {
 		return err
@@ -43,6 +52,14 @@ func (s *CageRoomService) GetAllCageRoom(profile_id uint) ([]model.CageRoom, err
 	if err != nil {
 		return cages, err
 	}
+
+	if len(cages) > 0 {
+		for i := range cages {
+			cages[i].ImageArray = utils.MapTextToStringArray(cages[i].Image)
+			cages[i].FacilityArray = utils.MapTextToStringArray(cages[i].Facility)
+		}
+	}
+
 	return cages, nil
 }
 
@@ -51,6 +68,9 @@ func (s *CageRoomService) GetCageRoom(id uint) (model.CageRoom, error) {
 	if err != nil {
 		return cage, err
 	}
+
+	cage.ImageArray = utils.MapTextToStringArray(cage.Image)
+	cage.FacilityArray = utils.MapTextToStringArray(cage.Facility)
 	return cage, nil
 }
 
@@ -99,6 +119,12 @@ func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.Fi
 		profiles = s.ProfileServiceIn.SortProfileByDistance(profiles, la, long)
 	}
 
+	if len(profiles) > 0 {
+		for i := range profiles {
+			profiles[i].ImageArray = utils.MapTextToStringArray(profiles[i].Image)
+		}
+	}
+
 	return profiles, nil
 }
 
@@ -121,6 +147,14 @@ func (s *CageRoomService) SearchCageByHotel(animals []types.FilterInfo, filter t
 	profile, err = s.CageRoomRepositoryIn.FilterCagesByHotel(animals, startDate, endDate, profile_id)
 	if err != nil {
 		return profile, err
+	}
+
+	profile.ImageArray = utils.MapTextToStringArray(profile.Image)
+	if len(profile.Cages) > 0 {
+		for i := range profile.Cages {
+			profile.Cages[i].ImageArray = utils.MapTextToStringArray(profile.Cages[i].Image)
+			profile.Cages[i].FacilityArray = utils.MapTextToStringArray(profile.Cages[i].Facility)
+		}
 	}
 
 	return profile, nil

@@ -11,6 +11,7 @@ type AuthServiceIn interface {
 }
 
 type UsersServiceIn interface {
+	GetUserByID(id uint) (model.User, error)
 	UpdateUser(id uint, user model.User) error
 	GetCreditCard(id uint) (types.CardPayload, error)
 
@@ -18,6 +19,7 @@ type UsersServiceIn interface {
 	UpdateAnimalUser(id uint, animal model.AnimalUser) error
 	GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error)
 	GetAnimalUser(id uint) (model.AnimalUser, error)
+	GetAnimalUserByType(user_id uint, animal_type string) ([]model.AnimalUser, error)
 }
 
 type ProfileServiceIn interface {

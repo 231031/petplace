@@ -13,6 +13,7 @@ type Profile struct {
 	Name        string  `gorm:"type:varchar(191);" json:"name" query:"name"`
 	Address     string  `gorm:"type:text;not null" json:"address" query:"address"`
 	Image       string  `gorm:"type:text;" json:"image" query:"image"`
+	Facility    string  `gorm:"type:text;" json:"facility" query:"facility"`
 	Longitude   float64 `gorm:"type:float;not null" json:"longitude" query:"longitude"`
 	Latitude    float64 `gorm:"type:float;not null" json:"latitude" query:"latitude"`
 
@@ -32,7 +33,10 @@ type Profile struct {
 	ChatSenders   []Chat `gorm:"foreignKey:SenderID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"sender_id" query:"sender_id"`
 	ChatReceivers []Chat `gorm:"foreignKey:ReceiverID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"receiver_id" query:"receiver_id"`
 
-	Distance float64 `gorm:"-"`
+	// no in database
+	Distance      float64  `gorm:"-"`
+	ImageArray    []string `gorm:"-" json:"image_array" query:"image_array"`
+	FacilityArray []string `gorm:"-" json:"facility_array" query:"facility_array"`
 }
 
 type Chat struct {
