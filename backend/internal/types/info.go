@@ -24,6 +24,9 @@ type ServiceInfo struct {
 	Detail        string  `gorm:"type:text" json:"detail" query:"detail"`
 	PaymentID     string  `gorm:"type:string" json:"payment_id" query:"payment_id"`
 	PayoutID      string  `gorm:"type:string" json:"payout_id" query:"payout_id"`
+
+	ReviewRate   float32 `gorm:"type:float;" json:"review_rate" query:"review_rate"`
+	ReviewDetail string  `gorm:"type:text;" json:"review_detail" query:"review_detail"`
 }
 
 type ProductInfo struct {

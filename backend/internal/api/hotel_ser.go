@@ -28,6 +28,7 @@ func (h *HotelHandler) RegisterRoutes(g *echo.Group) {
 	g.POST("/client/booking", h.handleBookHotelService)
 	g.GET("/client/:id/:status", h.handleGetAllHotelServiceByUser)
 	g.PUT("/client/:id", h.handleManageRefundBookHotel)
+	g.PUT("/client/review/:id", h.handleReviewHotelService)
 
 	// both
 }
@@ -184,4 +185,19 @@ func (h *HotelHandler) handleManageRefundBookHotel(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, "process successfully")
+}
+
+// @Summary		review Reservation
+// @Description	review reservation
+// @Produce application/json
+// @tags HotelServices
+// @Param id path string true "Hotel Service ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /api/hotel/cleint/review/{id} [put]
+// @Security BearerAuth
+func (h *HotelHandler) handleReviewHotelService(c echo.Context) error {
+
+	return c.JSON(http.StatusOK, "reviewed successfully")
 }

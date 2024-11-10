@@ -251,6 +251,27 @@ func (s *BookingService) calculatePriceService(startTime, endTime time.Time, cag
 	return days, price
 }
 
+func (s *BookingService) ReviewHotelService(paylaod types.ReviewPayload) error {
+	profile, err := s.ProfileServiceIn.GetProfileByID(paylaod.ProfileID)
+	if err != nil {
+		return err
+	}
+
+	count, err := s.ProfileServiceIn.CountCompleteBookByID(paylaod.ProfileID)
+	if err != nil {
+		return err
+	}
+
+	preAvg := float32(count) * profile.AvgReview
+	newAvg := (preAvg + paylaod.ReviewRate) / (float32(count) + 1)
+	err = s.HotelServiceRepositoryIn.ReviewHotelService(paylaod, newAvg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *BookingService) UpdateHotelService(id uint, ser model.HotelService) error {
 	ser_db, err := s.GetBookingHotel(id)
 	if err != nil {
@@ -288,6 +309,16 @@ func (s *BookingService) GetBookingHotel(id uint) (model.HotelService, error) {
 // role : client
 func (s *BookingService) GetAllBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error) {
 	ser, err := s.HotelServiceRepositoryIn.GetAllHotelServiceByUser(user_id, status)
+	if err != nil {
+		return ser, err
+	}
+
+	return ser, nil
+}
+
+// task
+func (s *BookingService) GetAllBookingHotelByStatus(status string) ([]model.HotelService, error) {
+	ser, err := s.HotelServiceRepositoryIn.GetAllBookingHotelByStatus(status)
 	if err != nil {
 		return ser, err
 	}

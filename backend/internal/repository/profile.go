@@ -56,3 +56,21 @@ func (r ProfileRepository) UpdateProfile(profile model.Profile) error {
 	}
 	return nil
 }
+
+// not test
+func (r ProfileRepository) CountCompleteBookByID(profile_id uint) (int, error) {
+	var count int64
+	result := r.db.
+		Model(&model.Profile{}).
+		Where("profiles.id = ?", profile_id).
+		Select("profiles.id").
+		Joins("JOIN cage_rooms ON profiles.id = cage_rooms.profile_id").
+		Joins("JOIN hotel_services ON cage_rooms.id = hotel_services.cage_id").
+		Where("hotel_services.status = ? AND hotel_services.review_rate > ?", "completed", 0.0).
+		Group("profiles.id").
+		Count(&count)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return int(count), nil
+}

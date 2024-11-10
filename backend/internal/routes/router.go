@@ -6,6 +6,7 @@ import (
 	"petplace/internal/auth"
 	"petplace/internal/repository"
 	"petplace/internal/service"
+	"petplace/internal/ticker"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -62,6 +63,10 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 	bookingService := service.NewBookingService(hotelServiceRepository, userService, profileService, cageRoomService, paymentService, validate)
 	hotelHandler := api.NewHotelHandler(bookingService)
 	hotelHandler.RegisterRoutes(ser_hotel)
+
+	// TickerService
+	tickerService := ticker.NewTickerService(bookingService)
+	go tickerService.StartTickerService()
 
 	// Protected route
 	protected := baseRouter.Group("/protected")

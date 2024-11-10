@@ -18,6 +18,7 @@ type ProfileRepositoryIn interface {
 	GetProfileByID(id uint) (model.Profile, error)
 	GetProfileByUserID(userID uint, role string) (model.Profile, error)
 	UpdateProfile(profile model.Profile) error
+	CountCompleteBookByID(profile_id uint) (int, error)
 }
 
 type AnimalUserRepositoryIn interface {
@@ -38,6 +39,9 @@ type HotelServiceRepositoryIn interface {
 	BookHotelService(ser model.HotelService, animals []model.AnimalHotelService) (uint, error)
 	UpdateHotelService(ser model.HotelService) error
 	DeleteHotelService(id uint) error
+	ReviewHotelService(review types.ReviewPayload, avgReview float32) error
+
+	GetAllBookingHotelByStatus(status string) ([]model.HotelService, error)
 	GetAllHotelServiceByHotel(profile_id uint, status string) ([]model.HotelService, error)
 	GetAllHotelServiceByUser(user_id uint, status string) ([]model.HotelService, error)
 	GetHotelService(id uint) (model.HotelService, error)

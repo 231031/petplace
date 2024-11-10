@@ -28,6 +28,7 @@ type CageRoom struct {
 	Size   string  `gorm:"type:varchar(191);not null" json:"size" query:"size"`
 
 	HotelServices []HotelService `gorm:"foreignKey:CageID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"hotel_services" query:"hotel_services"`
+	Profile       Profile        `gorm:"foreignKey:ProfileID;references:ID" json:"profile"`
 
 	// no in database
 	ImageArray    []string `gorm:"-" json:"image_array" query:"image_array"`

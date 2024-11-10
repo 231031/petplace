@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 	"petplace/internal/model"
+	"petplace/internal/types"
 
 	"gorm.io/gorm"
 )
@@ -47,9 +48,36 @@ func (r *HotelServiceRepository) BookHotelService(ser model.HotelService, animal
 
 }
 
+func (r *HotelServiceRepository) ReviewHotelService(review types.ReviewPayload, avgReview float32) error {
+	tx := r.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// udpate review hotel service
+	// if err := tx.Save(&ser).Error; err != nil {
+	// 	tx.Rollback()
+	// 	return err
+	// }
+
+	// update avg review of profile
+	// if err := tx.Save(&profile).Error; err != nil {
+	// 	tx.Rollback()
+	// 	return err
+	// }
+
+	if tx.Commit().Error != nil {
+		return tx.Commit().Error
+	}
+	return nil
+}
+
 func (r *HotelServiceRepository) GetAllHotelServiceByHotel(profile_id uint, status string) ([]model.HotelService, error) {
 	ser := []model.HotelService{}
 	result := r.db.
+		Preload("CageRoom").
 		Where("profiles.id = ? AND hotel_services.status = ?", profile_id, status).
 		Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
 		Joins("JOIN profiles ON profiles.id = cage_rooms.profile_id").
@@ -79,6 +107,20 @@ func (r *HotelServiceRepository) GetAllHotelServiceByUser(user_id uint, status s
 func (r *HotelServiceRepository) GetHotelService(id uint) (model.HotelService, error) {
 	ser := model.HotelService{}
 	result := r.db.First(&ser, id)
+	if result.Error != nil {
+		return ser, result.Error
+	}
+	return ser, nil
+}
+
+func (r *HotelServiceRepository) GetAllBookingHotelByStatus(status string) ([]model.HotelService, error) {
+	ser := []model.HotelService{}
+	result := r.db.
+		Preload("CageRoom.Profile").
+		Where("hotel_services.status = ?", status).
+		Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
+		Joins("JOIN profiles ON profiles.id = cage_rooms.profile_id").
+		Find(&ser)
 	if result.Error != nil {
 		return ser, result.Error
 	}

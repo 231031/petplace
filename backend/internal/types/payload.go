@@ -48,6 +48,13 @@ type CardPayload struct {
 	// BillingAddress *CardBillingAddress `json:"billing_address"`
 }
 
+type ReviewPayload struct {
+	HotelServiceID uint    `json:"hotel_service_id" query:"hotel_service_id"`
+	ProfileID      uint    `json:"profile_id" query:"profile_id"`
+	ReviewRate     float32 `json:"review_rate" query:"review_rate"`
+	ReviewDetail   string  `json:"review_detail" query:"review_detail"`
+}
+
 type BookingDetail struct {
 	TotalPrice string `json:"total_price" query:"total_price"`
 	Category   string `json:"catagory" query:"catagory"`

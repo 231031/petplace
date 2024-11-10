@@ -16,6 +16,9 @@ type Profile struct {
 	Facility    string  `gorm:"type:text;" json:"facility" query:"facility"`
 	Longitude   float64 `gorm:"type:float;not null" json:"longitude" query:"longitude"`
 	Latitude    float64 `gorm:"type:float;not null" json:"latitude" query:"latitude"`
+	CheckIn     string  `gorm:"type:varchar(191);" json:"check_in" query:"check_in"`
+	CheckOut    string  `gorm:"type:varchar(191);" json:"check_out" query:"check_out"`
+	AvgReview   float32 `gorm:"type:float;" json:"avg_review" query:"avg_review"`
 
 	// Hotel   Hotel   `gorm:"foreignKey:ProfileID"`
 	Cages []CageRoom `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"cages" query:"cages"`
