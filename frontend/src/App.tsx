@@ -1,21 +1,22 @@
-import Nav from '../components/Nav';
+import Nav from '../pages/Nav';
 import { Routes, Route } from 'react-router-dom';
-import Home from '../components/Home';
-import Hotel from '../components/Hotel';
-import Care from '../components/Care';
-import Delivery from '../components/Delivery';
-import Shop from '../components/Shop';
-import Social from '../components/Social';
-import Login from '../components/Login';
-import Signup from '../components/Signup';
-import FormSignup from '../components/FormSignup';
-import FormSignupHotel from '../components/FormSignupHotel';
+import Home from '../pages/Home';
+import Hotel from '../pages/Hotel';
+import Care from '../pages/Care';
+import Delivery from '../pages/Delivery';
+import Shop from '../pages/Shop';
+import Social from '../pages/Social';
+import Login from '../pages/Login';
+import Signup from '../pages/Signup';
+import FormSignup from '../pages/FormSignup';
+import FormSignupHotel from '../pages/FormSignupHotel';
+import HotelHome from '../pages/HotelHome';
 
 
 function App () {
   return (
     <div className = "bg-white-900" >
-      <Nav />
+      <Nav/>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/hotel" element={<Hotel />} />
@@ -27,6 +28,7 @@ function App () {
         <Route path="/Signup" element={<Signup />} />
         <Route path="/FormSignup" element={<FormSignup />} />
         <Route path="/FormSignupHotel" element={<FormSignupHotel />} />
+        <Route path="/HotelHome" element={<HotelHome />} />
       </Routes>
     </div>
   );

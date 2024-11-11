@@ -40,38 +40,38 @@ func Migrate(db *gorm.DB) error {
 	// uncomment to create foreign keys then comment again
 
 	// profile
-	// db.Migrator().CreateConstraint(&model.User{}, "Profiles")
-	// db.Migrator().CreateConstraint(&model.User{}, "Animals")
-	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalUserVaccines")
+	db.Migrator().CreateConstraint(&model.User{}, "Profiles")
+	db.Migrator().CreateConstraint(&model.User{}, "Animals")
+	db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalUserVaccines")
 
 	// chat
-	// db.Migrator().CreateConstraint(&model.Profile{}, "ChatSenders")
-	// db.Migrator().CreateConstraint(&model.Profile{}, "ChatReceivers")
+	db.Migrator().CreateConstraint(&model.Profile{}, "ChatSenders")
+	db.Migrator().CreateConstraint(&model.Profile{}, "ChatReceivers")
 
 	// supply hotel
-	// db.Migrator().CreateConstraint(&model.Profile{}, "Cages")
-	// db.Migrator().CreateConstraint(&model.CageRoom{}, "HotelServices")
-	// db.Migrator().CreateConstraint(&model.HotelService{}, "AnimalHotelServices")
-	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalHotelServices")
+	db.Migrator().CreateConstraint(&model.Profile{}, "Cages")
+	db.Migrator().CreateConstraint(&model.CageRoom{}, "HotelServices")
+	db.Migrator().CreateConstraint(&model.HotelService{}, "AnimalHotelServices")
+	db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalHotelServices")
 
 	// supply clinic
-	// db.Migrator().CreateConstraint(&model.Profile{}, "ServiceDetails")
-	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalServices")
-	// db.Migrator().CreateConstraint(&model.ServiceDetail{}, "AnimalServices")
+	db.Migrator().CreateConstraint(&model.Profile{}, "ServiceDetails")
+	db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalServices")
+	db.Migrator().CreateConstraint(&model.ServiceDetail{}, "AnimalServices")
 
 	// transportation
-	// db.Migrator().CreateConstraint(&model.Profile{}, "TransportCategorys")
-	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "TransportServices")
-	// db.Migrator().CreateConstraint(&model.TransportCategory{}, "TransportServices")
+	db.Migrator().CreateConstraint(&model.Profile{}, "TransportCategorys")
+	db.Migrator().CreateConstraint(&model.AnimalUser{}, "TransportServices")
+	db.Migrator().CreateConstraint(&model.TransportCategory{}, "TransportServices")
 
 	// seller 
-	// db.Migrator().CreateConstraint(&model.Profile{}, "Merchandises")
-	// db.Migrator().CreateConstraint(&model.Profile{}, "Animals")
-	// db.Migrator().CreateConstraint(&model.User{}, "Orders")
-	// db.Migrator().CreateConstraint(&model.Order{}, "ProductMerchadises")
-	// db.Migrator().CreateConstraint(&model.Order{}, "ProductAnimals")
-	// db.Migrator().CreateConstraint(&model.Animal{}, "ProductAnimals")
-	// db.Migrator().CreateConstraint(&model.Merchandise{}, "ProductMerchadises")
+	db.Migrator().CreateConstraint(&model.Profile{}, "Merchandises")
+	db.Migrator().CreateConstraint(&model.Profile{}, "Animals")
+	db.Migrator().CreateConstraint(&model.User{}, "Orders")
+	db.Migrator().CreateConstraint(&model.Order{}, "ProductMerchadises")
+	db.Migrator().CreateConstraint(&model.Order{}, "ProductAnimals")
+	db.Migrator().CreateConstraint(&model.Animal{}, "ProductAnimals")
+	db.Migrator().CreateConstraint(&model.Merchandise{}, "ProductMerchadises")
 	
 
 	return nil
