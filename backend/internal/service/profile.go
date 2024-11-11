@@ -122,11 +122,17 @@ func (s *ProfileService) SortProfileByDistance(profiles []model.Profile, la floa
 	return profiles
 }
 
+// high to low
+func (s *ProfileService) SortProfileByReviewRate(profiles []model.Profile) []model.Profile {
+	sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].AvgReview > profiles[j].AvgReview })
+	return profiles
+}
+
 func (s *ProfileService) CountCompleteBookByID(profile_id uint) (int, error) {
 	count, err := s.ProfileRepositoryIn.CountCompleteBookByID(profile_id)
 	if err != nil {
 		return 0, err
 	}
 
-	return int(count), nil
+	return count, nil
 }

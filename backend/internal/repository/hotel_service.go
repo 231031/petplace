@@ -56,17 +56,29 @@ func (r *HotelServiceRepository) ReviewHotelService(review types.ReviewPayload, 
 		}
 	}()
 
-	// udpate review hotel service
-	// if err := tx.Save(&ser).Error; err != nil {
-	// 	tx.Rollback()
-	// 	return err
-	// }
+	profile := model.Profile{
+		ID: review.ProfileID,
+	}
+	result := tx.Model(&profile).Update("avg_review", avgReview)
+	if result.Error != nil {
+		tx.Rollback()
+		return result.Error
+	}
 
-	// update avg review of profile
-	// if err := tx.Save(&profile).Error; err != nil {
-	// 	tx.Rollback()
-	// 	return err
-	// }
+	// udpate review hotel service
+	ser := model.HotelService{
+		ServiceInfo: types.ServiceInfo{
+			ID: review.HotelServiceID,
+		},
+	}
+	result = tx.Model(&ser).Updates(model.HotelService{ServiceInfo: types.ServiceInfo{
+		ReviewRate:   review.ReviewRate,
+		ReviewDetail: review.ReviewDetail,
+	}})
+	if result.Error != nil {
+		tx.Rollback()
+		return result.Error
+	}
 
 	if tx.Commit().Error != nil {
 		return tx.Commit().Error

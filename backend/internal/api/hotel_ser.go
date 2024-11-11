@@ -195,9 +195,19 @@ func (h *HotelHandler) handleManageRefundBookHotel(c echo.Context) error {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/hotel/cleint/review/{id} [put]
+// @Router /api/hotel/client/review/{id} [put]
 // @Security BearerAuth
 func (h *HotelHandler) handleReviewHotelService(c echo.Context) error {
+	payload := types.ReviewPayload{}
+	err := c.Bind(&payload)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "review detail is not correct", err)
+	}
+
+	status, errStr, err := h.bookingServiceIn.ReviewHotelService(payload)
+	if err != nil {
+		return utils.HandleError(c, status, errStr.Error(), err)
+	}
 
 	return c.JSON(http.StatusOK, "reviewed successfully")
 }

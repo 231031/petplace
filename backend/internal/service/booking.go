@@ -251,25 +251,30 @@ func (s *BookingService) calculatePriceService(startTime, endTime time.Time, cag
 	return days, price
 }
 
-func (s *BookingService) ReviewHotelService(paylaod types.ReviewPayload) error {
-	profile, err := s.ProfileServiceIn.GetProfileByID(paylaod.ProfileID)
+func (s *BookingService) ReviewHotelService(payload types.ReviewPayload) (int, error, error) {
+	err := s.Validate.Struct(payload)
 	if err != nil {
-		return err
+		return http.StatusBadRequest, fmt.Errorf("review detail is not correct"), err
 	}
 
-	count, err := s.ProfileServiceIn.CountCompleteBookByID(paylaod.ProfileID)
+	profile, err := s.ProfileServiceIn.GetProfileByID(payload.ProfileID)
 	if err != nil {
-		return err
+		return http.StatusBadRequest, fmt.Errorf("review detail is not correct"), err
+	}
+
+	count, err := s.ProfileServiceIn.CountCompleteBookByID(payload.ProfileID)
+	if err != nil {
+		return http.StatusBadRequest, fmt.Errorf("review detail is not correct"), err
 	}
 
 	preAvg := float32(count) * profile.AvgReview
-	newAvg := (preAvg + paylaod.ReviewRate) / (float32(count) + 1)
-	err = s.HotelServiceRepositoryIn.ReviewHotelService(paylaod, newAvg)
+	newAvg := (preAvg + payload.ReviewRate) / (float32(count) + 1)
+	err = s.HotelServiceRepositoryIn.ReviewHotelService(payload, newAvg)
 	if err != nil {
-		return err
+		return http.StatusInternalServerError, fmt.Errorf("review hotel service failed"), err
 	}
 
-	return nil
+	return http.StatusOK, nil, nil
 }
 
 func (s *BookingService) UpdateHotelService(id uint, ser model.HotelService) error {

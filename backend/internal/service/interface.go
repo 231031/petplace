@@ -27,6 +27,8 @@ type ProfileServiceIn interface {
 	GetProfileByID(id uint) (model.Profile, error)
 	GetProfileByUserID(userID uint, role string) (model.Profile, string, error)
 	UpdateProfile(id uint, profile model.Profile) error
+
+	SortProfileByReviewRate(profiles []model.Profile) []model.Profile
 	SortProfileByDistance(profiles []model.Profile, la float64, long float64) []model.Profile
 	CountCompleteBookByID(profile_id uint) (int, error)
 }
@@ -35,6 +37,7 @@ type BookingServiceIn interface {
 	BookHotelService(payload types.BookingPayload) (int, error, error)
 	AcceptRejectBookHotel(payload types.SelectStatusPayload) error
 	ManageRefundBookHotel(payload types.RefundPayload) error
+	ReviewHotelService(payload types.ReviewPayload) (int, error, error)
 	UpdateHotelService(id uint, ser model.HotelService) error
 
 	GetAllBookingHotelByStatus(status string) ([]model.HotelService, error)

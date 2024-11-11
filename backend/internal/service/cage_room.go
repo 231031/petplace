@@ -117,6 +117,8 @@ func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.Fi
 		sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].Cages[0].Price < profiles[j].Cages[0].Price })
 	} else if filter.Sort == "distance" {
 		profiles = s.ProfileServiceIn.SortProfileByDistance(profiles, la, long)
+	} else if filter.Sort == "review" {
+		profiles = s.ProfileServiceIn.SortProfileByReviewRate(profiles)
 	}
 
 	if len(profiles) > 0 {

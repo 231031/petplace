@@ -33,7 +33,7 @@ type SelectStatusPayload struct {
 type RefundPayload struct {
 	HotelServiceID uint   `json:"hotel_service_id" query:"hotel_service_id" validate:"required"`
 	ClientID       uint   `json:"client_id" query:"client_id" validate:"required"`
-	PaypalEmail    string `gorm:"type:varchar(191);" json:"paypal_email" query:"paypal_email"`
+	PaypalEmail    string `gorm:"type:varchar(191);" json:"paypal_email" query:"paypal_email" validate:"required"`
 }
 
 type PaymentSource struct {
@@ -49,9 +49,9 @@ type CardPayload struct {
 }
 
 type ReviewPayload struct {
-	HotelServiceID uint    `json:"hotel_service_id" query:"hotel_service_id"`
-	ProfileID      uint    `json:"profile_id" query:"profile_id"`
-	ReviewRate     float32 `json:"review_rate" query:"review_rate"`
+	HotelServiceID uint    `json:"hotel_service_id" query:"hotel_service_id" validate:"required"`
+	ProfileID      uint    `json:"profile_id" query:"profile_id" validate:"required"`
+	ReviewRate     float32 `json:"review_rate" query:"review_rate" validate:"required"`
 	ReviewDetail   string  `json:"review_detail" query:"review_detail"`
 }
 

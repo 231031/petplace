@@ -59,8 +59,6 @@ func (ds *tickerService) task() {
 		fmt.Println(err.Error())
 	}
 
-	year, month, day := thTime.Date()
-
 	for i := range ser {
 		checkOut := ser[i].CageRoom.Profile.CheckOut
 		mapHour := strings.Split(checkOut, ":")
@@ -75,8 +73,11 @@ func (ds *tickerService) task() {
 			fmt.Println(err.Error())
 		}
 
+		year, month, day := ser[i].EndTime.Date()
+
+		// checkout day from client and checkout time from profile
 		checkoutTime := time.Date(year, month, day, h, m, 0, 0, thailandLocation)
-		if ser[i].EndTime.After(checkoutTime) || ser[i].EndTime.Equal(checkoutTime) {
+		if thTime.After(checkoutTime) || thTime.Equal(checkoutTime) {
 			ser[i].Status = "completed"
 			err = ds.BookingServiceIn.UpdateHotelService(ser[i].ID, ser[i])
 			if err != nil {

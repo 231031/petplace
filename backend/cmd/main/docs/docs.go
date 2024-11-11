@@ -377,43 +377,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/cleint/review/{id}": {
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "review reservation",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "HotelServices"
-                ],
-                "summary": "review Reservation",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Hotel Service ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
         "/api/hotel/cleint/{id}": {
             "put": {
                 "security": [
@@ -472,6 +435,43 @@ const docTemplate = `{
                 "responses": {
                     "201": {
                         "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/api/hotel/client/review/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "review reservation",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "HotelServices"
+                ],
+                "summary": "review Reservation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Hotel Service ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request"
