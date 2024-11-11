@@ -1,10 +1,8 @@
 package api
 
 import (
-	"net/http"
 	"petplace/internal/model"
 	"petplace/internal/service"
-	"petplace/internal/utils"
 
 	"github.com/labstack/echo/v4"
 )
@@ -19,41 +17,32 @@ func NewUsersHandler(usersServiceIn service.UsersServiceIn) *UsersHandler {
 }
 
 func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
-	// role : client
-	g.GET("/card/:id", h.GetCreaditCard)
-
-	// animal
-	g.GET("/animal/:user_id/:animal_type", h.handleGetAnimalUserByType)
-	g.GET("/animal/:id", h.handleGetAnimalUser)
-	g.GET("/animals/:user_id", h.handleGetAllAnimalUserByUser)
-	g.POST("/animals", h.handleCreateAnimalUser)
-	g.PUT("/animal/:id", h.handleUpdateAnimalUser)
+	g.POST("/signup", h.SignUp)
+	g.POST("/signin", h.SignIn)
 }
 
-// @Summary Create Animals
-// @Description create animals
-// @tags Users
-// @Accept application/json
-// @Produce application/json
-// @Success 201
-// @Failure 400
-// @Failure 500
-// @Router /api/user/animals [post]
-// @Security BearerAuth
-func (h *UsersHandler) handleCreateAnimalUser(c echo.Context) error {
-	animals := []model.AnimalUser{}
-	err := c.Bind(&animals)
+// @Tags api v1
+// @Description registration
+// @Accept json
+// @Success 200
+// @Router /api/users/signup [post]
+func (h *UsersHandler) SignUp(c echo.Context) error {
+	u := &model.Users{}
+	err := c.Bind(u)
 	if err != nil {
-		return utils.HandleError(c, http.StatusBadRequest, "Animals detail not correct", err)
+		return err
 	}
 
 	err = h.usersServiceIn.CreateAnimalUser(animals)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Add animals not success", err)
 	}
+	return c.String(201, "SignUp Success")
+	
 
 	return c.JSON(http.StatusCreated, "Add animals success")
 }
+func (h *UsersHandler) SignIn(c echo.Context) error {
 
 // @Summary Update Animal
 // @Description update animal

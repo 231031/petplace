@@ -3,13 +3,17 @@ package service
 import (
 	"petplace/internal/model"
 	"petplace/internal/repository"
+<<<<<<< HEAD
 	"petplace/internal/types"
 	"petplace/internal/utils"
+=======
+>>>>>>> 4a2a754b140ef680d96b2fd477467c14e672eff4
 
 	"github.com/go-playground/validator/v10"
 )
 
 // implement bussiness logic
+<<<<<<< HEAD
 type UserService struct {
 	UserRepositoryIn       repository.UserRepositoryIn
 	AnimalUserRepositoryIn repository.AnimalUserRepositoryIn
@@ -138,3 +142,22 @@ func (s *UserService) GetAnimalUserByType(user_id uint, animal_type string) ([]m
 	}
 	return animals, nil
 }
+=======
+type UsersService struct {
+	UsersRepository repository.UsersRepositoryIn
+	Validate *validator.Validate
+}
+
+func NewUsersService(userRepositoryIn repository.UsersRepositoryIn, validate *validator.Validate) *UsersService {
+	return &UsersService{UsersRepository: userRepositoryIn, Validate: validate}
+	// return &UsersService{UsersRepository: userRepositoryIn}
+}
+
+func (u *UsersService) SignUp(data model.Users) error {
+	res := u.UsersRepository.SignUp(data)
+	if res != nil {
+		return res
+	}
+	return nil
+}
+>>>>>>> 4a2a754b140ef680d96b2fd477467c14e672eff4

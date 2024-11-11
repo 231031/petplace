@@ -21,6 +21,7 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 
 	baseRouter := e.Group("/api")
 
+<<<<<<< HEAD
 	// create new repository
 	animalUserRepository := repository.NewAnimalUserRepository(db)
 
@@ -28,9 +29,17 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 	user := baseRouter.Group("/user")
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository, animalUserRepository, validate)
+=======
+	// users
+	user := e.Group("/api/users")
+	userRepository := repository.NewUsersRepository(db)
+	userService := service.NewUsersService(userRepository, validate)
+>>>>>>> 4a2a754b140ef680d96b2fd477467c14e672eff4
 	userHandler := api.NewUsersHandler(userService)
 	userHandler.RegisterRoutes(user)
+	
 
+<<<<<<< HEAD
 	// Authentication
 	authentication := baseRouter.Group("/auth")
 	authService := service.NewAuthService(userRepository, validate)
@@ -76,3 +85,6 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 	})
 
 }
+=======
+}
+>>>>>>> 4a2a754b140ef680d96b2fd477467c14e672eff4
