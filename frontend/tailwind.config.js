@@ -5,9 +5,18 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
     "./node_modules/flowbite/**/*.{js,ts,jsx,tsx}"
+    "./pages/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        bgLogin: '#E6E2DC',
+        navbar: '#A08252',
+        yellow: '#D4B995',
+        egg: '#FDEACC',
+        bg: '#FFFBF5',
+      }
+    },
   },
   plugins: [require('flowbite/plugin')],
 }
