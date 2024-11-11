@@ -63,7 +63,7 @@ const Nav: React.FC = () => {
 
             {isMenuOpen && (
                   <aside id="default-sidebar" className="fixed top-16 right-0 z-40 w-64 h-screen transition-transform translate-x-0">
-                    <div className="overflow-y-auto py-5 px-3 h-full bg-white-900 border-r border-gray-200">
+                    <div className="overflow-y-auto py-5 px-3 h-auto bg-gray-100 border border-gray-900">
                       <ul className="space-y-2">
                         <li>
                           <a href="/profile" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100">

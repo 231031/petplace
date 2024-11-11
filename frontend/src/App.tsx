@@ -1,7 +1,7 @@
 import Nav from '../components/Nav';
 import { Routes, Route } from 'react-router-dom';
 import Home from '../components/Home';
-import Hotel from '../components/Hotel';
+import Hotel from '../components/Hotel-Search/Hotel';
 import Care from '../components/Care';
 import Delivery from '../components/Delivery';
 import Shop from '../components/Shop';
@@ -10,6 +10,9 @@ import Login from '../components/Login';
 import Signup from '../components/Signup';
 import FormSignup from '../components/FormSignup';
 import FormSignupHotel from '../components/FormSignupHotel';
+import HotelHistory from '../components/Hotel-History/HotelHistory'
+
+
 
 
 function App () {
@@ -18,7 +21,7 @@ function App () {
       <Nav />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/hotel" element={<Hotel />} />
+        <Route path="/hotelsearch" element={<Hotel />} />
         <Route path="/care" element={<Care />} />
         <Route path="/delivery" element={<Delivery />} />
         <Route path="/shop" element={<Shop />} />
@@ -27,6 +30,7 @@ function App () {
         <Route path="/Signup" element={<Signup />} />
         <Route path="/FormSignup" element={<FormSignup />} />
         <Route path="/FormSignupHotel" element={<FormSignupHotel />} />
+        <Route path="/hotelhis" element={<HotelHistory />} />
       </Routes>
     </div>
   );
