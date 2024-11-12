@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 
 const Nav: React.FC = () => {
@@ -9,43 +10,43 @@ const Nav: React.FC = () => {
 
   return (
     <nav>
-      <div className="bg-white-900 p-4">
-        <div className="flex items-center justify-between">
+      <div className="bg-navbar p-4">
+        <div className="flex items-center justify-between h-6">
           
           {/*Logo & Name*/}
           <div className="flex items-center">
-            <div className="text-black text-2xl font-bold">Pet Place</div>
+            <div className="text-white text-2xl font-bold">Pet Place</div>
           </div>
           
           {/*Navigation Links*/}
           <div className="hidden md:flex justify-center flex-grow space-x-4">
             <ul className="flex space-x-4">
               <li>
-                <a href="/" className="text-black">Home</a>
+                <a href="/" className="text-white">Home</a>
               </li>
               <li>
-                <a href="/hotel" className="text-black">Hotel</a>
+                <a href="/hotel" className="text-white">Hotel</a>
               </li>
               <li>
-                <a href="/care" className="text-black">Care</a>
+                <a href="/care" className="text-white">Care</a>
               </li>
               <li>
-                <a href="/delivery" className="text-black">Delivery</a>
+                <a href="/delivery" className="text-white">Delivery</a>
               </li>
               <li>
-                <a href="/shop" className="text-black">Shop</a>
+                <a href="/shop" className="text-white">Shop</a>
               </li>
               <li>
-                <a href="/social" className="text-black">Social</a>
+                <a href="/social" className="text-white">Social</a>
               </li>
             </ul>
           </div>
           
           {/*Profile Icon*/}
           <div className="flex items-center space-x-4">
-            <a href="/Login" className="text-black">Log in</a>
+            <a href="/Login" className="text-white">Log in</a>
             <div className="hidden md:block">
-              <button onClick={toggleMenu} className="text-black">
+              <button onClick={toggleMenu} className="text-white">
                 <svg
                   className="w-8 h-8"
                   fill="none"
@@ -63,7 +64,7 @@ const Nav: React.FC = () => {
 
             {isMenuOpen && (
                   <aside id="default-sidebar" className="fixed top-16 right-0 z-40 w-64 h-screen transition-transform translate-x-0">
-                    <div className="overflow-y-auto py-5 px-3 h-full bg-white-900 border-r border-gray-200">
+                    <div className="overflow-y-auto py-5 px-3 h-auto bg-gray-100 border border-gray-900">
                       <ul className="space-y-2">
                         <li>
                           <a href="/profile" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100">
