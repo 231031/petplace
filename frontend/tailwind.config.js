@@ -15,6 +15,12 @@ export default {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+			bgLogin: '#E6E2DC',
+			navbar: '#A08252',
+			yellow: '#D4B995',
+			egg: '#FDEACC',
+			bg: '#FFFBF5',
+			
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

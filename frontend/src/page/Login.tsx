@@ -1,5 +1,5 @@
-import InputBox from '../components/InputBox';
-import Button from '../components/Button'
+import InputBox from '../components/ui/petch/InputBox';
+import Button from '../components/ui/petch/Button';
 import { useNavigate } from 'react-router-dom';
 import React from 'react';
 
@@ -15,9 +15,13 @@ export default function Login () {
             {/* container left */}
             <div className="flex justify-center bg-bgLogin w-3/4 items-baseline" > 
                 <div className="flex flex-col  items-center w-1/2 gap-y-5 pt-64">
-                    <h1 className="text-3xl"> Log in to your account </h1>
-                    <InputBox placeholder="Username" />
-                    <InputBox placeholder="Password" />
+                    <h1 className="text-5xl mb-10"> Log in to your account </h1>
+                    <div className='flex flex-col w-1/2 gap-y-2'>
+                        <p className=''>Username</p>
+                        <InputBox placeholder="Username" />
+                        <p className=''>Password</p>
+                        <InputBox placeholder="Password" />
+                    </div>
                     <div className="flex flex-row gap-x-3">
                         <p>Are you forget Password ? </p>
                         <a href="#" className="underline decoration-1"> Reset password </a>
