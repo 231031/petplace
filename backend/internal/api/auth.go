@@ -65,17 +65,22 @@ func (h *AuthHandler) handleLogIn(c echo.Context) error {
 	payload := &types.LoginPayload{}
 	err := c.Bind(payload)
 	if err != nil {
-		return err
+		return utils.HandleError(c, http.StatusBadRequest, "login information is not correct", err)
 	}
 
-	token, err := h.authServiceIn.LogIn(*payload)
+	user, token, err := h.authServiceIn.LogIn(*payload)
 	if err != nil {
-		return err
+		return utils.HandleError(c, http.StatusUnauthorized, "email or password is not correct", err)
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{
-		"message": "SignIn Success",
+	if token == "" {
+		return utils.HandleError(c, http.StatusUnauthorized, "email or password is not correct", err)
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "login Successfully",
 		"token":   token,
+		"user":    user,
 	})
 
 }

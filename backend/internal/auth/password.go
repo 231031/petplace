@@ -29,14 +29,14 @@ func GenerateJwt(id uint, email string, role string) (string, error) {
 
 	secretKey := os.Getenv("SECRET_KEY")
 	if secretKey == "" {
-		return "", fmt.Errorf("Secret key not found in environment variables")
+		return "", fmt.Errorf("secret key not found in environment variables")
 	}
 
 	claims := jwt.MapClaims{
 		"id":    id,
 		"email": email,
 		"role":  role,
-		"exp":   time.Now().Add(time.Hour * 24).Unix(),
+		"exp":   time.Now().Add(time.Hour * 3).Unix(),
 	}
 
 	// create token

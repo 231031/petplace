@@ -29,7 +29,7 @@ func (r *UserRepository) GetUserByEmail(email string) (model.User, error) {
 		Email: email,
 	}
 
-	result := r.db.Where("email = ?", "jinzhu").First(&user)
+	result := r.db.Preload("Profiles").Where("email = ?", email).First(&user)
 	if result.Error != nil {
 		return user, fmt.Errorf("%s", result.Error.Error())
 	}

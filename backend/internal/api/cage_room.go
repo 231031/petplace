@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"petplace/internal/auth"
 	"petplace/internal/model"
 	"petplace/internal/service"
 	"petplace/internal/types"
@@ -21,11 +22,12 @@ func NewCageRoomHandler(cageRoomServiceIn service.CageRoomServiceIn) *CageRoomHa
 }
 
 func (h *CageRoomHandler) RegisterRoutes(g *echo.Group) {
-	g.POST("", h.handleCreateCageRoom)
-	g.PUT("/:id", h.handleUpdateCageRoom)
-	g.DELETE("/:id", h.handleDeleteCageRoom)
-	g.GET("/all/:profile_id", h.handleGetAllCageRoomByHotel)
-	g.GET("/:id", h.handleGetCageRoom)
+	g.POST("", h.handleCreateCageRoom, auth.AuthMiddleware)
+	g.PUT("/:id", h.handleUpdateCageRoom, auth.AuthMiddleware)
+	g.DELETE("/:id", h.handleDeleteCageRoom, auth.AuthMiddleware)
+	g.GET("/all/:profile_id", h.handleGetAllCageRoomByHotel, auth.AuthMiddleware)
+	g.GET("/:id", h.handleGetCageRoom, auth.AuthMiddleware)
+
 	g.GET("/search", h.handleSearchCage)
 	g.GET("/search/:profile_id", h.handleSearchCageByHotel)
 }
@@ -35,6 +37,7 @@ func (h *CageRoomHandler) RegisterRoutes(g *echo.Group) {
 // @Accept application/json
 // @Produce application/json
 // @tags CageRooms
+// @Param pet body Pet true "Pet to create"
 // @Success 201
 // @Failure 400
 // @Failure 500

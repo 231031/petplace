@@ -21,7 +21,9 @@ func ConvertTypeToUint(str string) (uint, error) {
 }
 
 func HandleError(c echo.Context, status int, msg string, err error) error {
-	fmt.Println(err.Error())
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 	return c.String(status, msg)
 }
 
@@ -88,4 +90,16 @@ func MapTextToStringArray(text string) []string {
 		return []string{}
 	}
 	return strings.Split(text, ",")
+}
+
+func BinaryConvertor(number int, bits int) []int {
+	result := make([]int, 0)
+	for number > 0 {
+		result = append(result, number%2)
+		number /= 2
+	}
+	for i := len(result) - 1; len(result) != bits; i++ {
+		result = append(result, 0)
+	}
+	return result
 }

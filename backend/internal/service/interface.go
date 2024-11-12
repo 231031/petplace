@@ -7,7 +7,7 @@ import (
 
 type AuthServiceIn interface {
 	SignUp(data model.User) error
-	LogIn(payload types.LoginPayload) (string, error)
+	LogIn(payload types.LoginPayload) (any, string, error)
 }
 
 type UsersServiceIn interface {
