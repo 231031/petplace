@@ -48,9 +48,11 @@ type BookingServiceIn interface {
 
 type CageRoomServiceIn interface {
 	CreateCageRoom(cage []model.CageRoom) error
+	UpdateCageRoom(id uint, ser model.CageRoom) error
+	DeleteCageRoom(id uint) error
+
 	GetAllCageRoom(profile_id uint) ([]model.CageRoom, error)
 	GetCageRoom(id uint) (model.CageRoom, error)
-	DeleteCageRoom(id uint) error
 	SearchCage(animals []types.FilterInfo, filter types.FilterSearchCage) ([]model.Profile, error)
 	SearchCageByHotel(animals []types.FilterInfo, filter types.FilterSearchCage, profile_id uint) (model.Profile, error)
 	// FilterCages(filter types.FilterSearchCage) ([]types.Cage, error)

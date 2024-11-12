@@ -74,6 +74,35 @@ func (s *CageRoomService) GetCageRoom(id uint) (model.CageRoom, error) {
 	return cage, nil
 }
 
+func (s *CageRoomService) UpdateCageRoom(id uint, cage model.CageRoom) error {
+	cageDb, err := s.GetCageRoom(id)
+	if err != nil {
+		return err
+	}
+
+	if len(cage.ImageArray) > 0 {
+		updateImage := utils.MapStringArrayToText(cage.ImageArray)
+		cage.Image = updateImage
+	} else {
+		cage.Image = ""
+	}
+
+	if len(cage.FacilityArray) > 0 {
+		updateFacility := utils.MapStringArrayToText(cage.FacilityArray)
+		cage.Facility = updateFacility
+	} else {
+		cage.Facility = ""
+	}
+
+	updateCage := utils.CopyNonZeroFields(&cage, &cageDb).(*model.CageRoom)
+	err = s.CageRoomRepositoryIn.UpdateCageRoom(*updateCage)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *CageRoomService) DeleteCageRoom(id uint) error {
 	err := s.CageRoomRepositoryIn.DeleteCageRoom(id)
 	if err != nil {
@@ -161,33 +190,3 @@ func (s *CageRoomService) SearchCageByHotel(animals []types.FilterInfo, filter t
 
 	return profile, nil
 }
-
-// s = instance of SearchCageService
-// FilterCages - method to filter cages by animal type, location, and booking time
-// func (s *CageRoomService) FilterCages(filter types.FilterSearchCage) ([]types.Cage, error) {
-// 	//filter cages by FilterSearch_cage
-
-// 	//if not valid return error
-// 	if err := s.Validate.Struct(filter); err != nil {
-// 		return nil, err
-// 	}
-
-// 	// Convert booking times to time.Time for comparison
-// 	startTime, err := time.Parse(time.RFC3339, filter.StartTime)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	endTime, err := time.Parse(time.RFC3339, filter.EndTime)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	// Call to repository to fetch filtered results ใช้ดึงข้อมูล
-// 	cages, err := s.CageRoomRepositoryIn.FilterCages(filter.AnimalType, filter.Animalsize, filter.Location, startTime, endTime)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return cages, nil
-// }

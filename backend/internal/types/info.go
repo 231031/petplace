@@ -14,8 +14,8 @@ import "time"
 
 type ServiceInfo struct {
 	ID            uint      `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
-	StartTime     time.Time `gorm:"not null" json:"start_time" query:"start_time"`
-	EndTime       time.Time `gorm:"not null" json:"end_time" query:"end_time"`
+	StartTime     time.Time `gorm:"not null" json:"start_time" query:"start_time" validate:"required"`
+	EndTime       time.Time `gorm:"not null" json:"end_time" query:"end_time" validate:"required"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	Status        string  `gorm:"not null;default:'pending'" json:"status" query:"status"`
@@ -32,16 +32,16 @@ type ServiceInfo struct {
 type ProductInfo struct {
 	ID uint `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
 	// SellerID  uint      `gorm:"not null" json:"seller_id" query:"seller_id"`
-	ProfileID uint    `gorm:"not null" json:"profile_id" query:"profile_id"`
-	Name      string  `gorm:"type:varchar(191);not null" json:"name" query:"name"`
+	ProfileID uint    `gorm:"not null" json:"profile_id" query:"profile_id" validate:"required"`
+	Name      string  `gorm:"type:varchar(191);not null" json:"name" query:"name" validate:"required"`
 	Detail    string  `gorm:"type:varchar(191);not null" json:"detail" query:"detail"`
 	Image     string  `gorm:"type:text;" json:"image" query:"image"`
-	Price     float32 `gorm:"type:float;not null" json:"price" query:"price"`
+	Price     float32 `gorm:"type:float;not null" json:"price" query:"price" validate:"required"`
 }
 
 type AnimalInfo struct {
-	AnimalType string `gorm:"type:varchar(191);not null" json:"animal_type" query:"animal_type"`
-	Age        int    `gorm:"type:int;not null" json:"age" query:"age"`
-	Weight     int    `gorm:"type:int;not null" json:"weight" query:"weight"`
+	AnimalType string `gorm:"type:varchar(191);not null" json:"animal_type" query:"animal_type" validate:"required"`
+	Age        int    `gorm:"type:int;not null" json:"age" query:"age" validate:"required"`
+	Weight     int    `gorm:"type:int;not null" json:"weight" query:"weight" validate:"required"`
 	Breed      string `gorm:"type:varchar(191);not null" json:"breed" query:"breed"`
 }

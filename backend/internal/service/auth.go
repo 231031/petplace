@@ -60,11 +60,12 @@ func (s *AuthService) LogIn(payload types.LoginPayload) (any, string, error) {
 	}
 
 	// profiles, current role = client
-	// returnUser := map[string]interface{}{
-	// 	"id":        user.ID,
-	// 	"email":     user.Email,
-	// 	"firstname": user.FirstName,
-	// 	"surename":  user.Surename,
-	// }
-	return user, userToken, nil
+	returnUser := map[string]interface{}{
+		"id":        user.ID,
+		"email":     user.Email,
+		"firstname": user.FirstName,
+		"surename":  user.Surename,
+		"profile":   user.Profiles,
+	}
+	return returnUser, userToken, nil
 }

@@ -101,6 +101,20 @@ func (s *ProfileService) UpdateProfile(id uint, profile model.Profile) error {
 		return fmt.Errorf("role mismatch: cannot update profile with role %s", profile.Role)
 	}
 
+	if len(profile.ImageArray) > 0 {
+		updateImage := utils.MapStringArrayToText(profile.ImageArray)
+		profile.Image = updateImage
+	} else {
+		profile.Image = ""
+	}
+
+	if len(profile.FacilityArray) > 0 {
+		updateFacility := utils.MapStringArrayToText(profile.FacilityArray)
+		profile.Facility = updateFacility
+	} else {
+		profile.Facility = ""
+	}
+
 	updateProfile := utils.CopyNonZeroFields(&profile, &existingProfile).(*model.Profile)
 	err = s.ProfileRepositoryIn.UpdateProfile(*updateProfile)
 	if err != nil {

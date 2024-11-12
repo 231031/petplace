@@ -21,17 +21,19 @@ func NewProfileHandler(profileServiceIn service.ProfileServiceIn) *ProfileHandle
 func (h *ProfileHandler) RegisterRoutes(g *echo.Group) {
 	g.POST("/create", h.handleCreateProfile)
 	g.GET("/:id/:role", h.handleGetProfileByUserID)
+	g.PUT("/:id", h.handleUpdateProfile)
 }
 
 // @Summary Create New Profile
 // @Description create new profile
 // @tags Profiles
+// @Param   Profile body model.Profile true "Profile model"
 // @Accept application/json
 // @Produce application/json
 // @Success 201
 // @Failure 400
 // @Failure 500
-// @Router /api/profile/create [post]
+// @Router /profile/create [post]
 // @Security BearerAuth
 func (h *ProfileHandler) handleCreateProfile(c echo.Context) error {
 	profile := model.Profile{}
@@ -48,6 +50,39 @@ func (h *ProfileHandler) handleCreateProfile(c echo.Context) error {
 	return c.JSON(http.StatusCreated, "Create profile success")
 }
 
+// @Summary Update Profile
+// @Description update profile
+// @tags Profiles
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "ID"
+// @Param   ProfileModel body model.Profile true "profile model"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /profile/{id} [put]
+// @Security BearerAuth
+func (h *ProfileHandler) handleUpdateProfile(c echo.Context) error {
+	param_id := c.Param("user_id")
+	id, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
+	}
+
+	profile := model.Profile{}
+	err = c.Bind(&profile)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "profile detail not correct", err)
+	}
+
+	err = h.profileServiceIn.UpdateProfile(id, profile)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "failed to udpate profile", err)
+	}
+
+	return nil
+}
+
 // @Summary Get Profile By User ID and Role
 // @Description get profile by user ID and role
 // @tags Profiles
@@ -57,7 +92,7 @@ func (h *ProfileHandler) handleCreateProfile(c echo.Context) error {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/profile/{user_id}/{role} [get]
+// @Router /profile/{user_id}/{role} [get]
 // @Security BearerAuth
 func (h *ProfileHandler) handleGetProfileByUserID(c echo.Context) error {
 	role := c.Param("role")
