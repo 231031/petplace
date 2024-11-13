@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// Authentication
 // AuthMiddleware check token from Authorization header
 func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -39,6 +40,18 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired token")
 		}
 
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if ok && token.Valid {
+			c.Set("role", claims["role"])
+			return next(c)
+		}
+		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired token")
+	}
+}
+
+func AuthurizationMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		// userRole := c.Get("role")
 		return next(c)
 	}
 }

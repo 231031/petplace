@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/auth/login": {
+        "/auth/login": {
             "post": {
                 "description": "log in user",
                 "consumes": [
@@ -28,6 +28,17 @@ const docTemplate = `{
                     "Authentication"
                 ],
                 "summary": "Log In",
+                "parameters": [
+                    {
+                        "description": "Login payload",
+                        "name": "LoginPayload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.LoginPayload"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -41,7 +52,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/signup": {
+        "/auth/signup": {
             "post": {
                 "description": "sign up a user",
                 "consumes": [
@@ -54,6 +65,17 @@ const docTemplate = `{
                     "Authentication"
                 ],
                 "summary": "Sign Up",
+                "parameters": [
+                    {
+                        "description": "Signup payload",
+                        "name": "SignUpPayload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.User"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created"
@@ -67,7 +89,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/cageroom": {
+        "/cageroom": {
             "post": {
                 "security": [
                     {
@@ -85,6 +107,20 @@ const docTemplate = `{
                     "CageRooms"
                 ],
                 "summary": "Create Cage",
+                "parameters": [
+                    {
+                        "description": "cageroom payload",
+                        "name": "CageRoom",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CageRoom"
+                            }
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created"
@@ -98,7 +134,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/cageroom/all/{profile_id}": {
+        "/cageroom/all/{profile_id}": {
             "get": {
                 "security": [
                     {
@@ -135,7 +171,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/cageroom/search": {
+        "/cageroom/search": {
             "get": {
                 "description": "get selected cages",
                 "produces": [
@@ -196,7 +232,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/cageroom/search/{profile_id}": {
+        "/cageroom/search/{profile_id}": {
             "get": {
                 "description": "get selected cages by hotel",
                 "produces": [
@@ -264,7 +300,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/cageroom/{id}": {
+        "/cageroom/{id}": {
             "get": {
                 "security": [
                     {
@@ -324,6 +360,15 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "cageroom payload",
+                        "name": "CageRoom",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CageRoom"
+                        }
                     }
                 ],
                 "responses": {
@@ -377,7 +422,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/cleint/{id}": {
+        "/hotel/cleint/{id}": {
             "put": {
                 "security": [
                     {
@@ -399,6 +444,15 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Refund payload",
+                        "name": "RefundPayload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.RefundPayload"
+                        }
                     }
                 ],
                 "responses": {
@@ -414,7 +468,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/client/booking": {
+        "/hotel/client/booking": {
             "post": {
                 "security": [
                     {
@@ -432,6 +486,17 @@ const docTemplate = `{
                     "HotelServices"
                 ],
                 "summary": "Book Hotel Service",
+                "parameters": [
+                    {
+                        "description": "Booking payload",
+                        "name": "BookingPayload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.BookingPayload"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created"
@@ -445,7 +510,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/client/review/{id}": {
+        "/hotel/client/review/{id}": {
             "put": {
                 "security": [
                     {
@@ -467,6 +532,15 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Review payload",
+                        "name": "ReviewPayload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.ReviewPayload"
+                        }
                     }
                 ],
                 "responses": {
@@ -482,7 +556,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/client/{id}/{status}": {
+        "/hotel/client/{id}/{status}": {
             "get": {
                 "security": [
                     {
@@ -526,7 +600,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/{id}": {
+        "/hotel/{id}": {
             "get": {
                 "security": [
                     {
@@ -583,6 +657,15 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "SelectStatus payload",
+                        "name": "SelectStatusPayload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.SelectStatusPayload"
+                        }
                     }
                 ],
                 "responses": {
@@ -598,7 +681,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/hotel/{id}/{status}": {
+        "/hotel/{id}/{status}": {
             "get": {
                 "security": [
                     {
@@ -642,7 +725,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/profile/create": {
+        "/profile/create": {
             "post": {
                 "security": [
                     {
@@ -660,6 +743,17 @@ const docTemplate = `{
                     "Profiles"
                 ],
                 "summary": "Create New Profile",
+                "parameters": [
+                    {
+                        "description": "Profile model",
+                        "name": "Profile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Profile"
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created"
@@ -673,7 +767,56 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/profile/{user_id}/{role}": {
+        "/profile/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "Update Profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "profile model",
+                        "name": "ProfileModel",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Profile"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/profile/{user_id}/{role}": {
             "get": {
                 "security": [
                     {
@@ -717,7 +860,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/animal/{id}": {
+        "/user/animal/{id}": {
             "get": {
                 "security": [
                     {
@@ -735,7 +878,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID",
+                        "description": "Animal ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -773,10 +916,19 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID",
+                        "description": "Animal User ID",
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "user's animal model",
+                        "name": "AnimalUserModel",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AnimalUser"
+                        }
                     }
                 ],
                 "responses": {
@@ -792,7 +944,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/animal/{user_id}/{animal_type}": {
+        "/user/animal/{user_id}/{animal_type}": {
             "get": {
                 "security": [
                     {
@@ -836,7 +988,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/animals": {
+        "/user/animals": {
             "post": {
                 "security": [
                     {
@@ -854,6 +1006,20 @@ const docTemplate = `{
                     "Users"
                 ],
                 "summary": "Create Animals",
+                "parameters": [
+                    {
+                        "description": "user's animal model",
+                        "name": "AnimalUserModel",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.AnimalUser"
+                            }
+                        }
+                    }
+                ],
                 "responses": {
                     "201": {
                         "description": "Created"
@@ -867,7 +1033,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/animals/{user_id}": {
+        "/user/animals/{user_id}": {
             "get": {
                 "security": [
                     {
@@ -904,7 +1070,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/user/card/{id}": {
+        "/user/card/{id}": {
             "get": {
                 "security": [
                     {
@@ -922,7 +1088,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ID",
+                        "description": "User ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -941,17 +1107,409 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "definitions": {
+        "model.AnimalUser": {
+            "type": "object",
+            "required": [
+                "age",
+                "animal_type",
+                "name",
+                "user_id",
+                "weight"
+            ],
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "animal_type": {
+                    "type": "string"
+                },
+                "breed": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "image_array": {
+                    "description": "no in database",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                },
+                "weight": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.CageRoom": {
+            "type": "object",
+            "required": [
+                "cage_type",
+                "height",
+                "lenth",
+                "max_capacity",
+                "price",
+                "profile_id",
+                "quantity",
+                "width"
+            ],
+            "properties": {
+                "animal_type": {
+                    "type": "string"
+                },
+                "cage_type": {
+                    "type": "string"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "facility": {
+                    "type": "string"
+                },
+                "facility_array": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "height": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "image_array": {
+                    "description": "no in database",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "lenth": {
+                    "description": "size",
+                    "type": "number"
+                },
+                "max_capacity": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "profile_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "string"
+                },
+                "width": {
+                    "type": "number"
+                }
+            }
+        },
+        "model.Profile": {
+            "type": "object",
+            "required": [
+                "check_in",
+                "check_out",
+                "latitude",
+                "longitude",
+                "name",
+                "role",
+                "user_id"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "avg_review": {
+                    "type": "number"
+                },
+                "check_in": {
+                    "type": "string"
+                },
+                "check_out": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "facility": {
+                    "type": "string"
+                },
+                "facility_array": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "image_array": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "payment": {
+                    "type": "string"
+                },
+                "paypal_email": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "tel": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.User": {
+            "type": "object",
+            "required": [
+                "email",
+                "first_name",
+                "password",
+                "surename"
+            ],
+            "properties": {
+                "age": {
+                    "type": "integer"
+                },
+                "citizen_id": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "expiry": {
+                    "type": "string"
+                },
+                "first_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "credit card",
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "paypal_email": {
+                    "type": "string"
+                },
+                "security_code": {
+                    "type": "string"
+                },
+                "surename": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.BookingPayload": {
+            "type": "object",
+            "required": [
+                "animals",
+                "cage_id",
+                "card_detail",
+                "client_id",
+                "client_name",
+                "end_time",
+                "profile_id",
+                "profile_name",
+                "start_time"
+            ],
+            "properties": {
+                "animals": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "cage_id": {
+                    "type": "integer"
+                },
+                "card_detail": {
+                    "$ref": "#/definitions/types.CardPayload"
+                },
+                "client_id": {
+                    "description": "payment information",
+                    "type": "integer"
+                },
+                "client_name": {
+                    "type": "string"
+                },
+                "detail": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "profile_id": {
+                    "type": "integer"
+                },
+                "profile_name": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.CardPayload": {
+            "type": "object",
+            "properties": {
+                "expiry": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "security_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.LoginPayload": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.RefundPayload": {
+            "type": "object",
+            "required": [
+                "client_id",
+                "hotel_service_id",
+                "paypal_email"
+            ],
+            "properties": {
+                "client_id": {
+                    "type": "integer"
+                },
+                "hotel_service_id": {
+                    "type": "integer"
+                },
+                "paypal_email": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ReviewPayload": {
+            "type": "object",
+            "required": [
+                "hotel_service_id",
+                "profile_id",
+                "review_rate"
+            ],
+            "properties": {
+                "hotel_service_id": {
+                    "type": "integer"
+                },
+                "profile_id": {
+                    "type": "integer"
+                },
+                "review_detail": {
+                    "type": "string"
+                },
+                "review_rate": {
+                    "type": "number"
+                }
+            }
+        },
+        "types.SelectStatusPayload": {
+            "type": "object",
+            "required": [
+                "hotel_service_id",
+                "profile_id",
+                "profile_name",
+                "status"
+            ],
+            "properties": {
+                "hotel_service_id": {
+                    "type": "integer"
+                },
+                "profile_id": {
+                    "type": "integer"
+                },
+                "profile_name": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
+	Version:          "1.0",
+	Host:             "localhost:5000",
+	BasePath:         "/api",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Petplace API Version1",
+	Description:      "Petplace API Description",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

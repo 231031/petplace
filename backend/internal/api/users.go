@@ -1,8 +1,10 @@
 package api
 
 import (
+	"net/http"
 	"petplace/internal/model"
 	"petplace/internal/service"
+	"petplace/internal/utils"
 
 	"github.com/labstack/echo/v4"
 )
@@ -17,45 +19,73 @@ func NewUsersHandler(usersServiceIn service.UsersServiceIn) *UsersHandler {
 }
 
 func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
-	g.POST("/signup", h.SignUp)
-	g.POST("/signin", h.SignIn)
+	// role : client
+	g.GET("/card/:id", h.GetCreaditCard)
+
+	// animal
+	g.GET("/animal/:user_id/:animal_type", h.handleGetAnimalUserByType)
+	g.GET("/animal/:id", h.handleGetAnimalUser)
+	g.GET("/animals/:user_id", h.handleGetAllAnimalUserByUser)
+	g.POST("/animals", h.handleCreateAnimalUser)
+	g.PUT("/animal/:id", h.handleUpdateAnimalUser)
 }
 
-// @Tags api v1
-// @Description registration
-// @Accept json
-// @Success 200
-// @Router /api/users/signup [post]
-func (h *UsersHandler) SignUp(c echo.Context) error {
-	u := &model.Users{}
-	err := c.Bind(u)
+// @Summary Create Animals
+// @Description create animals
+// @tags Users
+// @Param   AnimalUserModel body []model.AnimalUser true "user's animal model"
+// @Accept application/json
+// @Produce application/json
+// @Success 201
+// @Failure 400
+// @Failure 500
+// @Router /user/animals [post]
+// @Security BearerAuth
+func (h *UsersHandler) handleCreateAnimalUser(c echo.Context) error {
+	animals := []model.AnimalUser{}
+	err := c.Bind(&animals)
 	if err != nil {
-		return err
+		return utils.HandleError(c, http.StatusBadRequest, "animals detail not correct", err)
 	}
 
 	err = h.usersServiceIn.CreateAnimalUser(animals)
 	if err != nil {
-		return utils.HandleError(c, http.StatusInternalServerError, "Add animals not success", err)
+		return utils.HandleError(c, http.StatusInternalServerError, "failed to add animals", err)
 	}
-	return c.String(201, "SignUp Success")
-	
 
-	return c.JSON(http.StatusCreated, "Add animals success")
+	return c.JSON(http.StatusCreated, "add animals success")
 }
-func (h *UsersHandler) SignIn(c echo.Context) error {
 
 // @Summary Update Animal
 // @Description update animal
 // @tags Users
 // @Accept application/json
 // @Produce application/json
-// @Param id path string true "ID"
+// @Param id path string true "Animal User ID"
+// @Param   AnimalUserModel body model.AnimalUser true "user's animal model"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/user/animal/{id} [put]
+// @Router /user/animal/{id} [put]
 // @Security BearerAuth
 func (h *UsersHandler) handleUpdateAnimalUser(c echo.Context) error {
+	param_id := c.Param("id")
+	id, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "animal information is not correct", err)
+	}
+
+	animal := model.AnimalUser{}
+	err = c.Bind(&animal)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "animal detail is not correct", err)
+	}
+
+	err = h.usersServiceIn.UpdateAnimalUser(id, animal)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "failed to update animal", err)
+	}
+
 	return nil
 }
 
@@ -67,18 +97,18 @@ func (h *UsersHandler) handleUpdateAnimalUser(c echo.Context) error {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/user/animals/{user_id} [get]
+// @Router /user/animals/{user_id} [get]
 // @Security BearerAuth
 func (h *UsersHandler) handleGetAllAnimalUserByUser(c echo.Context) error {
 	param_id := c.Param("user_id")
 	id, err := utils.ConvertTypeToUint(param_id)
 	if err != nil {
-		return utils.HandleError(c, http.StatusBadRequest, "Cannot get animals", err)
+		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
 	}
 
 	animals, err := h.usersServiceIn.GetAllAnimalUser(id)
 	if err != nil {
-		return utils.HandleError(c, http.StatusInternalServerError, "Animals not available", err)
+		return utils.HandleError(c, http.StatusInternalServerError, "animals not available", err)
 	}
 
 	return c.JSON(http.StatusOK, animals)
@@ -88,17 +118,17 @@ func (h *UsersHandler) handleGetAllAnimalUserByUser(c echo.Context) error {
 // @Description get animal
 // @tags Users
 // @Produce application/json
-// @Param id path string true "ID"
+// @Param id path string true "Animal ID"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/user/animal/{id} [get]
+// @Router /user/animal/{id} [get]
 // @Security BearerAuth
 func (h *UsersHandler) handleGetAnimalUser(c echo.Context) error {
 	param_id := c.Param("id")
 	id, err := utils.ConvertTypeToUint(param_id)
 	if err != nil {
-		return utils.HandleError(c, http.StatusBadRequest, "Cannot get animal", err)
+		return utils.HandleError(c, http.StatusBadRequest, "animal information is not correct", err)
 	}
 
 	animal, err := h.usersServiceIn.GetAnimalUser(id)
@@ -113,17 +143,17 @@ func (h *UsersHandler) handleGetAnimalUser(c echo.Context) error {
 // @Description get credit card
 // @tags Users
 // @Produce application/json
-// @Param id path string true "ID"
+// @Param id path string true "User ID"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/user/card/{id} [get]
+// @Router /user/card/{id} [get]
 // @Security BearerAuth
 func (h *UsersHandler) GetCreaditCard(c echo.Context) error {
 	param_id := c.Param("id")
 	id, err := utils.ConvertTypeToUint(param_id)
 	if err != nil {
-		return utils.HandleError(c, http.StatusBadRequest, "cannot get user id", err)
+		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
 	}
 
 	card, err := h.usersServiceIn.GetCreditCard(id)
@@ -143,13 +173,13 @@ func (h *UsersHandler) GetCreaditCard(c echo.Context) error {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/user/animal/{user_id}/{animal_type} [get]
+// @Router /user/animal/{user_id}/{animal_type} [get]
 // @Security BearerAuth
 func (h *UsersHandler) handleGetAnimalUserByType(c echo.Context) error {
 	param_id := c.Param("user_id")
 	user_id, err := utils.ConvertTypeToUint(param_id)
 	if err != nil {
-		return utils.HandleError(c, http.StatusBadRequest, "cannot get user id", err)
+		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
 	}
 
 	animal_type := c.Param("animal_type")

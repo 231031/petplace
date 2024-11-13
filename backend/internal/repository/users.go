@@ -8,26 +8,20 @@ import (
 )
 
 // interact with the database
-type UsersRepository struct {
+type UserRepository struct {
 	db *gorm.DB
 }
 
-func NewUsersRepository(db *gorm.DB) *UsersRepository {
-	return &UsersRepository{db: db}
+func NewUserRepository(db *gorm.DB) *UserRepository {
+	return &UserRepository{db: db}
 }
 
-<<<<<<< HEAD
 func (r *UserRepository) SignUp(data model.User) error {
 	result := r.db.Create(&data)
-=======
-func (u *UsersRepository) SignUp(data model.Users) error {
-	result := u.db.Create(&data)
->>>>>>> 4a2a754b140ef680d96b2fd477467c14e672eff4
 	if result.Error != nil {
 		return fmt.Errorf("%s", result.Error.Error())
 	}
 	return nil
-<<<<<<< HEAD
 }
 
 func (r *UserRepository) GetUserByEmail(email string) (model.User, error) {
@@ -35,7 +29,7 @@ func (r *UserRepository) GetUserByEmail(email string) (model.User, error) {
 		Email: email,
 	}
 
-	result := r.db.Where("email = ?", "jinzhu").First(&user)
+	result := r.db.Preload("Profiles").Where("email = ?", email).First(&user)
 	if result.Error != nil {
 		return user, fmt.Errorf("%s", result.Error.Error())
 	}
@@ -59,6 +53,3 @@ func (r *UserRepository) UpdateUser(user model.User) error {
 	}
 	return nil
 }
-=======
-}
->>>>>>> 4a2a754b140ef680d96b2fd477467c14e672eff4

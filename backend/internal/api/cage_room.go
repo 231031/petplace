@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"petplace/internal/auth"
 	"petplace/internal/model"
 	"petplace/internal/service"
 	"petplace/internal/types"
@@ -21,11 +22,12 @@ func NewCageRoomHandler(cageRoomServiceIn service.CageRoomServiceIn) *CageRoomHa
 }
 
 func (h *CageRoomHandler) RegisterRoutes(g *echo.Group) {
-	g.POST("", h.handleCreateCageRoom)
-	g.PUT("/:id", h.handleUpdateCageRoom)
-	g.DELETE("/:id", h.handleDeleteCageRoom)
-	g.GET("/all/:profile_id", h.handleGetAllCageRoomByHotel)
-	g.GET("/:id", h.handleGetCageRoom)
+	g.POST("", h.handleCreateCageRoom, auth.AuthMiddleware)
+	g.PUT("/:id", h.handleUpdateCageRoom, auth.AuthMiddleware)
+	g.DELETE("/:id", h.handleDeleteCageRoom, auth.AuthMiddleware)
+	g.GET("/all/:profile_id", h.handleGetAllCageRoomByHotel, auth.AuthMiddleware)
+	g.GET("/:id", h.handleGetCageRoom, auth.AuthMiddleware)
+
 	g.GET("/search", h.handleSearchCage)
 	g.GET("/search/:profile_id", h.handleSearchCageByHotel)
 }
@@ -35,10 +37,11 @@ func (h *CageRoomHandler) RegisterRoutes(g *echo.Group) {
 // @Accept application/json
 // @Produce application/json
 // @tags CageRooms
+// @Param   CageRoom body  []model.CageRoom true "cageroom payload"
 // @Success 201
 // @Failure 400
 // @Failure 500
-// @Router /api/cageroom [post]
+// @Router /cageroom [post]
 // @Security BearerAuth
 func (h *CageRoomHandler) handleCreateCageRoom(c echo.Context) error {
 	cages := []model.CageRoom{}
@@ -61,12 +64,29 @@ func (h *CageRoomHandler) handleCreateCageRoom(c echo.Context) error {
 // @Produce application/json
 // @tags CageRooms
 // @Param id path string true "ID"
+// @Param   CageRoom body  model.CageRoom true "cageroom payload"
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/cageroom/{id} [put]
+// @Router /cageroom/{id} [put]
 // @Security BearerAuth
 func (h *CageRoomHandler) handleUpdateCageRoom(c echo.Context) error {
+	param_id := c.Param("id")
+	id, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "get cage room failed", err)
+	}
+
+	cage := model.CageRoom{}
+	err = c.Bind(&cage)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "Cage detail not correct", err)
+	}
+
+	err = h.cageRoomServiceIn.UpdateCageRoom(id, cage)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "failed to update cage room", err)
+	}
 
 	return nil
 }
@@ -80,7 +100,7 @@ func (h *CageRoomHandler) handleUpdateCageRoom(c echo.Context) error {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/cageroom/{id} [delete]
+// @Router /cageroom/{id} [delete]
 // @Security BearerAuth
 func (h *CageRoomHandler) handleDeleteCageRoom(c echo.Context) error {
 	param_id := c.Param("id")
@@ -105,7 +125,7 @@ func (h *CageRoomHandler) handleDeleteCageRoom(c echo.Context) error {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/cageroom/{id} [get]
+// @Router /cageroom/{id} [get]
 // @Security BearerAuth
 func (h *CageRoomHandler) handleGetCageRoom(c echo.Context) error {
 	param_id := c.Param("id")
@@ -130,7 +150,7 @@ func (h *CageRoomHandler) handleGetCageRoom(c echo.Context) error {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/cageroom/all/{profile_id} [get]
+// @Router /cageroom/all/{profile_id} [get]
 // @Security BearerAuth
 func (h *CageRoomHandler) handleGetAllCageRoomByHotel(c echo.Context) error {
 	param_id := c.Param("profile_id")
@@ -160,7 +180,7 @@ func (h *CageRoomHandler) handleGetAllCageRoomByHotel(c echo.Context) error {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/cageroom/search [get]
+// @Router /cageroom/search [get]
 func (h *CageRoomHandler) handleSearchCage(c echo.Context) error {
 	filter := types.FilterSearchCage{}
 	err := (&echo.DefaultBinder{}).BindQueryParams(c, &filter)
@@ -202,7 +222,7 @@ func (h *CageRoomHandler) handleSearchCage(c echo.Context) error {
 // @Success 200
 // @Failure 400
 // @Failure 500
-// @Router /api/cageroom/search/{profile_id} [get]
+// @Router /cageroom/search/{profile_id} [get]
 func (h *CageRoomHandler) handleSearchCageByHotel(c echo.Context) error {
 	param_id := c.Param("profile_id")
 	profile_id, err := utils.ConvertTypeToUint(param_id)

@@ -21,25 +21,17 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 
 	baseRouter := e.Group("/api")
 
-<<<<<<< HEAD
 	// create new repository
 	animalUserRepository := repository.NewAnimalUserRepository(db)
 
 	// User
 	user := baseRouter.Group("/user")
+	user.Use(auth.AuthMiddleware)
 	userRepository := repository.NewUserRepository(db)
 	userService := service.NewUserService(userRepository, animalUserRepository, validate)
-=======
-	// users
-	user := e.Group("/api/users")
-	userRepository := repository.NewUsersRepository(db)
-	userService := service.NewUsersService(userRepository, validate)
->>>>>>> 4a2a754b140ef680d96b2fd477467c14e672eff4
 	userHandler := api.NewUsersHandler(userService)
 	userHandler.RegisterRoutes(user)
-	
 
-<<<<<<< HEAD
 	// Authentication
 	authentication := baseRouter.Group("/auth")
 	authService := service.NewAuthService(userRepository, validate)
@@ -54,6 +46,7 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 
 	// profile
 	profile := baseRouter.Group("/profile")
+	profile.Use(auth.AuthMiddleware)
 	profileRepository := repository.NewProfileRepository(db)
 	profileService := service.NewProfileService(profileRepository, userService, validate)
 	profileHandler := api.NewProfileHandler(profileService)
@@ -68,6 +61,7 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 
 	// HotelService
 	ser_hotel := baseRouter.Group("/hotel")
+	ser_hotel.Use(auth.AuthMiddleware)
 	hotelServiceRepository := repository.NewHotelServiceRepository(db)
 	bookingService := service.NewBookingService(hotelServiceRepository, userService, profileService, cageRoomService, paymentService, validate)
 	hotelHandler := api.NewHotelHandler(bookingService)
@@ -85,6 +79,3 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 	})
 
 }
-=======
-}
->>>>>>> 4a2a754b140ef680d96b2fd477467c14e672eff4
