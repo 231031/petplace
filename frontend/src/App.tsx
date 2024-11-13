@@ -3,7 +3,7 @@ import Home from './page/Home';
 import Nav from '../src/components/Nav';
 import Footer from '../src/components/Footer';
 import { Routes, Route } from 'react-router-dom';
-import Hotel from './page/Hotel-Search/Hotel';
+import Hotel from './page/Hotel';
 import Care from './page/Care';
 import Delivery from './page/Delivery';
 import Shop from './page/Shop';
@@ -12,12 +12,9 @@ import Login from './page/Login';
 import Signup from './page/Signup';
 import FormSignupHotel from './page/FormSignupHotel';
 import FormSignup from './page/FormSignup';
-import HotelHistory from './page/Hotel-History/HotelHistory';
+import HotelHistory from './page/HotelHistory';
 import HotelHome from './page/HotelHome';
 import HotelDetail from './page/HotelDetail';
-
-
-
 
 
 function App () {

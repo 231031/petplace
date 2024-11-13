@@ -1,7 +1,5 @@
-import Dropdown from "./Dropdown";
-import Search from "./Search";
-import CardHotel from "./CardHotel";
-import HotelData from "./HotelData";
+import Search from "../components/Hotel-Search/Search";
+import HotelData from "../components/Hotel-Search/HotelData";
 
 
 

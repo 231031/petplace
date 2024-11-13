@@ -15,9 +15,9 @@ export default function HotelHome() {
                     </div>
                 </div>
                 {/* section2 */}
-                <div className="flex w-full h-72">
+                <div className="flex w-full h-72 mt-10">
                     {/* detail */}
-                    <div className="flex flex-col gap-y-5 w-full">
+                    <div className="flex flex-col gap-y-5 w-full ">
                         <h1 className="text-2xl"> Detail</h1>
                         <div className="flex flex-col mr-5 bg-bg gap-y-5 p-5 rounded-xl shadow shadow-gray-400">
                             <p>

@@ -1,4 +1,4 @@
-import HotelData from "./HotelData";
+import HotelData from "../components/Hotel-History/HotelData";
 
 function HotelHistory() {
     return (
@@ -21,7 +21,6 @@ function HotelHistory() {
                 <span className="text-2xl">Passed By</span>
                 <HotelData></HotelData>
             </div>
-
         </div>
   
     );

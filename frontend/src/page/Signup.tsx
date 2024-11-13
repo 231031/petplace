@@ -1,5 +1,5 @@
-import InputBox from '../components/ui/petch/InputBox';
-import Button from '../components/ui/petch/Button';
+import InputBox from '../components/LoginSignup/InputBox';
+import Button from '../components/LoginSignup/Button';
 import { useNavigate } from 'react-router-dom';
 
 
