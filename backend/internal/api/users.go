@@ -28,6 +28,11 @@ func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
 	g.GET("/animals/:user_id", h.handleGetAllAnimalUserByUser)
 	g.POST("/animals", h.handleCreateAnimalUser)
 	g.PUT("/animal/:id", h.handleUpdateAnimalUser)
+
+	// Favorites
+	g.POST("/fav", h.handleAddFavoriteCage)
+	g.GET("/fav/:user_id", h.handleGetFavoriteCageByUser)
+	g.DELETE("/fav/:user_id/:cage_id", h.handleDeleteFavoriteCage)
 }
 
 // @Summary Create Animals
@@ -86,7 +91,7 @@ func (h *UsersHandler) handleUpdateAnimalUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusInternalServerError, "failed to update animal", err)
 	}
 
-	return nil
+	return c.JSON(http.StatusOK, "update animal successfully")
 }
 
 // @Summary Get Animals
@@ -190,4 +195,86 @@ func (h *UsersHandler) handleGetAnimalUserByType(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, animals)
+}
+
+// @Summary Add Favorites Cages
+// @Description add favorite cages
+// @tags Users
+// @Produce application/json
+// @Param FavoritePayload body model.FavoriteCage true "model favorite"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /user/fav [post]
+// @Security BearerAuth
+func (h *UsersHandler) handleAddFavoriteCage(c echo.Context) error {
+	fav := model.FavoriteCage{}
+	err := c.Bind(&fav)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "favaorite information is not correct", err)
+	}
+
+	err = h.usersServiceIn.AddFavoriteCage(fav)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "failed to add favorite cage", err)
+	}
+
+	return c.JSON(http.StatusCreated, "add favorite success")
+}
+
+// @Summary delete Favorites Cages
+// @Description delete favorite cages
+// @tags Users
+// @Produce application/json
+// @Param user_id path string true "User ID"
+// @Param cage_id path string true "Cage ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /user/fav/{user_id}/{cage_id} [delete]
+// @Security BearerAuth
+func (h *UsersHandler) handleDeleteFavoriteCage(c echo.Context) error {
+	param_id := c.Param("user_id")
+	user_id, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "cage information is not correct", err)
+	}
+
+	param_id = c.Param("cage_id")
+	cage_id, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "cage information is not correct", err)
+	}
+
+	err = h.usersServiceIn.DelFavoriteCage(user_id, cage_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "favorite cage is not available", err)
+	}
+
+	return c.JSON(http.StatusOK, "deleted favorite cage")
+}
+
+// @Summary Get Favorites Cages
+// @Description get favorite cages
+// @tags Users
+// @Produce application/json
+// @Param user_id path string true "User ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /user/fav/{user_id} [get]
+// @Security BearerAuth
+func (h *UsersHandler) handleGetFavoriteCageByUser(c echo.Context) error {
+	param_id := c.Param("user_id")
+	id, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
+	}
+
+	favorites, err := h.usersServiceIn.GetFavoriteCageByUser(id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "favorite cage is not available", err)
+	}
+
+	return c.JSON(http.StatusOK, favorites)
 }

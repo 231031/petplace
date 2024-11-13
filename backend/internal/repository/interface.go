@@ -21,6 +21,12 @@ type ProfileRepositoryIn interface {
 	CountCompleteBookByID(profile_id uint) (int, error)
 }
 
+type FavoriteCageRepositoryIn interface {
+	AddFavoriteCage(fav model.FavoriteCage) error
+	DelFavoriteCage(user_id uint, cage_id uint) error
+	GetFavoriteCageByUser(user_id uint) ([]model.FavoriteCage, error)
+}
+
 type AnimalUserRepositoryIn interface {
 	CreateAnimalUser(animals []model.AnimalUser) error
 	UpdateAnimalUser(animals model.AnimalUser) error
@@ -54,6 +60,5 @@ type CageRoomRepositoryIn interface {
 	GetCageRoom(id uint) (model.CageRoom, error)
 	GetAllCageRoom(id uint) ([]model.CageRoom, error)
 	FilterCages(animals []types.FilterInfo, startTime, endTime time.Time) ([]model.Profile, error)
-	FilterCagesByHotel(animals []types.FilterInfo, startTime, endTime time.Time, profile_id uint) (model.Profile, error)
-	// FilterCages(animalType string, animalsize string, location string, startTime time.Time, endTime time.Time) ([]types.Cage, error)
+	FilterCagesByHotel(animals []types.FilterInfo, startTime, endTime time.Time, profile_id uint, user_id uint) (model.Profile, error)
 }

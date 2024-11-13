@@ -26,9 +26,9 @@ func (h *HotelHandler) RegisterRoutes(g *echo.Group) {
 
 	// client
 	g.POST("/client/booking", h.handleBookHotelService)
-	g.GET("/client/:id/:status", h.handleGetAllHotelServiceByUser)
 	g.PUT("/client/:id", h.handleManageRefundBookHotel)
 	g.PUT("/client/review/:id", h.handleReviewHotelService)
+	g.GET("/client/:id/:status", h.handleGetAllHotelServiceByUser)
 
 	// both
 }

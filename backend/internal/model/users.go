@@ -18,9 +18,10 @@ type User struct {
 	Expiry       string `gorm:"type:varchar(191);" json:"expiry" query:"name"`
 	SecurityCode string `gorm:"type:varchar(191);" json:"security_code" query:"security_code"`
 
-	Profiles []Profile    `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"profiles" query:"profiles" swaggerignore:"true"`
-	Animals  []AnimalUser `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animals" query:"animals" swaggerignore:"true"`
-	Orders   []Order      `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"orders" query:"orders" swaggerignore:"true"`
+	Profiles      []Profile      `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"profiles" query:"profiles" swaggerignore:"true"`
+	FavoriteCages []FavoriteCage `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"user_id" query:"user_id" swaggerignore:"true"`
+	Animals       []AnimalUser   `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animals" query:"animals" swaggerignore:"true"`
+	Orders        []Order        `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"orders" query:"orders" swaggerignore:"true"`
 }
 
 type AnimalUser struct {

@@ -159,7 +159,7 @@ func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.Fi
 	return profiles, nil
 }
 
-func (s *CageRoomService) SearchCageByHotel(animals []types.FilterInfo, filter types.FilterSearchCage, profile_id uint) (model.Profile, error) {
+func (s *CageRoomService) SearchCageByHotel(animals []types.FilterInfo, filter types.FilterSearchCage, profile_id uint, user_id uint) (model.Profile, error) {
 	profile := model.Profile{}
 	if err := s.Validate.Struct(filter); err != nil {
 		return profile, err
@@ -175,7 +175,7 @@ func (s *CageRoomService) SearchCageByHotel(animals []types.FilterInfo, filter t
 		return profile, err
 	}
 
-	profile, err = s.CageRoomRepositoryIn.FilterCagesByHotel(animals, startDate, endDate, profile_id)
+	profile, err = s.CageRoomRepositoryIn.FilterCagesByHotel(animals, startDate, endDate, profile_id, user_id)
 	if err != nil {
 		return profile, err
 	}

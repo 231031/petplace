@@ -20,6 +20,10 @@ type UsersServiceIn interface {
 	GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error)
 	GetAnimalUser(id uint) (model.AnimalUser, error)
 	GetAnimalUserByType(user_id uint, animal_type string) ([]model.AnimalUser, error)
+
+	AddFavoriteCage(fav model.FavoriteCage) error
+	DelFavoriteCage(user_id uint, cage_id uint) error
+	GetFavoriteCageByUser(user_id uint) ([]model.FavoriteCage, error)
 }
 
 type ProfileServiceIn interface {
@@ -54,8 +58,7 @@ type CageRoomServiceIn interface {
 	GetAllCageRoom(profile_id uint) ([]model.CageRoom, error)
 	GetCageRoom(id uint) (model.CageRoom, error)
 	SearchCage(animals []types.FilterInfo, filter types.FilterSearchCage) ([]model.Profile, error)
-	SearchCageByHotel(animals []types.FilterInfo, filter types.FilterSearchCage, profile_id uint) (model.Profile, error)
-	// FilterCages(filter types.FilterSearchCage) ([]types.Cage, error)
+	SearchCageByHotel(animals []types.FilterInfo, filter types.FilterSearchCage, profile_id uint, user_id uint) (model.Profile, error)
 }
 
 type PaymentServiceIn interface {

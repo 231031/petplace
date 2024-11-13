@@ -93,7 +93,7 @@ func (r *CageRoomRepository) FilterCages(animals []types.FilterInfo, startTime, 
 	return profiles, nil
 }
 
-func (r *CageRoomRepository) FilterCagesByHotel(animals []types.FilterInfo, startTime, endTime time.Time, profile_id uint) (model.Profile, error) {
+func (r *CageRoomRepository) FilterCagesByHotel(animals []types.FilterInfo, startTime, endTime time.Time, profile_id uint, user_id uint) (model.Profile, error) {
 	profile := model.Profile{
 		ID: profile_id,
 	}
@@ -108,10 +108,14 @@ func (r *CageRoomRepository) FilterCagesByHotel(animals []types.FilterInfo, star
 	if len(id) > 0 {
 		query = query.Preload("Cages", func(db *gorm.DB) *gorm.DB {
 			return db.Where("(animal_type, size) IN (?) AND id NOT IN (?)", animalPairs, id).Order("price ASC")
+		}).Preload("Cages.FavoriteCages", func(db *gorm.DB) *gorm.DB {
+			return db.Where("user_id = ?", 2)
 		})
 	} else {
 		query = query.Preload("Cages", func(db *gorm.DB) *gorm.DB {
 			return db.Where("(animal_type, size) IN (?)", animalPairs).Order("price ASC")
+		}).Preload("Cages.FavoriteCages", func(db *gorm.DB) *gorm.DB {
+			return db.Where("user_id = ?", 2)
 		})
 	}
 
