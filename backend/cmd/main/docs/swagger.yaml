@@ -502,7 +502,7 @@ paths:
     get:
       description: get selected cages by hotel
       parameters:
-      - description: User ID
+      - description: User ID of Client
         in: path
         name: user_id
         required: true
@@ -737,6 +737,29 @@ paths:
       security:
       - BearerAuth: []
       summary: review Reservation
+      tags:
+      - HotelServices
+  /hotel/review/{profile_id}:
+    get:
+      description: get review hotel service by hotel
+      parameters:
+      - description: Profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get Review Hotel Service by Hotel
       tags:
       - HotelServices
   /profile/{id}:

@@ -215,7 +215,7 @@ func (h *CageRoomHandler) handleSearchCage(c echo.Context) error {
 // @Description	get selected cages by hotel
 // @Produce application/json
 // @tags CageRooms
-// @Param user_id path string true "User ID"
+// @Param user_id path string true "User ID of Client"
 // @Param profile_id path string true "Profile ID"
 // @Param animals query string false "Filter by animal type and size ex. animals[0].animal_type=dog&animals[0].cage_size=s"
 // @Param start_time query string false "Filter by start_time"

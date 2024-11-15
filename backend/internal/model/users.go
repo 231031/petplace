@@ -36,6 +36,8 @@ type AnimalUser struct {
 	TransportServices   []TransportService   `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"transport_services" query:"transport_services" swaggerignore:"true"`
 	AnimalHotelServices []AnimalHotelService `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animal_hotel_services" query:"animal_hotel_services" swaggerignore:"true"`
 
+	User User `gorm:"foreignKey:UserID;references:ID" json:"user" swaggerignore:"true"`
+
 	// no in database
 	ImageArray []string `gorm:"-" json:"image_array" query:"image_array"`
 }

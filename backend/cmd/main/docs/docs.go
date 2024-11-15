@@ -245,7 +245,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "User ID",
+                        "description": "User ID of Client",
                         "name": "user_id",
                         "in": "path",
                         "required": true
@@ -590,6 +590,43 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Status",
                         "name": "status",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/hotel/review/{profile_id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get review hotel service by hotel",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "HotelServices"
+                ],
+                "summary": "Get Review Hotel Service by Hotel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Profile ID",
+                        "name": "profile_id",
                         "in": "path",
                         "required": true
                     }

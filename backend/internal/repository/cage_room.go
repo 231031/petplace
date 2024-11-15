@@ -37,7 +37,10 @@ func (r *CageRoomRepository) GetAllCageRoom(id uint) ([]model.CageRoom, error) {
 
 func (r *CageRoomRepository) GetCageRoom(id uint) (model.CageRoom, error) {
 	cage := model.CageRoom{ID: id}
-	result := r.db.First(&cage)
+	result := r.db.Preload("Profile", func(db *gorm.DB) *gorm.DB {
+		return db.Select("ID", "CheckIn", "CheckOut")
+	}).First(&cage)
+
 	if result.Error != nil {
 		return cage, result.Error
 	}
@@ -108,16 +111,18 @@ func (r *CageRoomRepository) FilterCagesByHotel(animals []types.FilterInfo, star
 	if len(id) > 0 {
 		query = query.Preload("Cages", func(db *gorm.DB) *gorm.DB {
 			return db.Where("(animal_type, size) IN (?) AND id NOT IN (?)", animalPairs, id).Order("price ASC")
-		}).Preload("Cages.FavoriteCages", func(db *gorm.DB) *gorm.DB {
-			return db.Where("user_id = ?", 2)
 		})
 	} else {
 		query = query.Preload("Cages", func(db *gorm.DB) *gorm.DB {
 			return db.Where("(animal_type, size) IN (?)", animalPairs).Order("price ASC")
-		}).Preload("Cages.FavoriteCages", func(db *gorm.DB) *gorm.DB {
-			return db.Where("user_id = ?", 2)
 		})
 	}
+
+	query = query.Preload("Cages.FavoriteCages")
+
+	// .Preload("Cages.HotelServices", func(db *gorm.DB) *gorm.DB {
+	// 	return db.Select("CageID", "ReviewDetail", "ReviewRate")
+	// })
 
 	result_search := query.Find(&profile)
 

@@ -51,6 +51,7 @@ type HotelServiceRepositoryIn interface {
 	GetAllHotelServiceByHotel(profile_id uint, status string) ([]model.HotelService, error)
 	GetAllHotelServiceByUser(user_id uint, status string) ([]model.HotelService, error)
 	GetHotelService(id uint) (model.HotelService, error)
+	GetReviewByHotel(profile_id uint) ([]model.HotelService, error)
 }
 
 type CageRoomRepositoryIn interface {

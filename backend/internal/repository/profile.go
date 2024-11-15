@@ -42,9 +42,14 @@ func (r ProfileRepository) GetProfileByID(id uint) (model.Profile, error) {
 
 func (r ProfileRepository) GetProfileByUserID(userID uint, role string) (model.Profile, error) {
 	profile := model.Profile{}
-	result := r.db.Where("user_id = ? AND role = ?", userID, role).First(&profile)
+	result := r.db.Preload("Cages.HotelServices", func(db *gorm.DB) *gorm.DB {
+		return db.Select("CageID", "ReviewDetail", "ReviewRate")
+	}).
+		Where("user_id = ? AND role = ?", userID, role).
+		First(&profile)
+
 	if result.Error != nil {
-		return profile, fmt.Errorf("get profile failed: %v", result.Error.Error())
+		return profile, result.Error
 	}
 	return profile, nil
 }
@@ -57,7 +62,6 @@ func (r ProfileRepository) UpdateProfile(profile model.Profile) error {
 	return nil
 }
 
-// not test
 func (r ProfileRepository) CountCompleteBookByID(profile_id uint) (int, error) {
 	var count int64
 	result := r.db.
