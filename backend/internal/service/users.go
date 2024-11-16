@@ -11,20 +11,23 @@ import (
 
 // implement bussiness logic
 type UserService struct {
-	UserRepositoryIn       repository.UserRepositoryIn
-	AnimalUserRepositoryIn repository.AnimalUserRepositoryIn
-	Validate               *validator.Validate
+	UserRepositoryIn         repository.UserRepositoryIn
+	AnimalUserRepositoryIn   repository.AnimalUserRepositoryIn
+	FavoriteCageRepositoryIn repository.FavoriteCageRepositoryIn
+	Validate                 *validator.Validate
 }
 
 func NewUserService(
 	userRepositoryIn repository.UserRepositoryIn,
 	animalUserRepositoryIn repository.AnimalUserRepositoryIn,
+	favoriteCageRepositoryIn repository.FavoriteCageRepositoryIn,
 	validate *validator.Validate,
 ) *UserService {
 	return &UserService{
-		UserRepositoryIn:       userRepositoryIn,
-		AnimalUserRepositoryIn: animalUserRepositoryIn,
-		Validate:               validate,
+		UserRepositoryIn:         userRepositoryIn,
+		AnimalUserRepositoryIn:   animalUserRepositoryIn,
+		FavoriteCageRepositoryIn: favoriteCageRepositoryIn,
+		Validate:                 validate,
 	}
 }
 
@@ -67,6 +70,7 @@ func (s *UserService) GetCreditCard(id uint) (types.CardPayload, error) {
 	return card, nil
 }
 
+// Animal's User
 func (s *UserService) CreateAnimalUser(animals []model.AnimalUser) error {
 	if len(animals) > 0 {
 		for i := range animals {
@@ -136,4 +140,29 @@ func (s *UserService) GetAnimalUserByType(user_id uint, animal_type string) ([]m
 		}
 	}
 	return animals, nil
+}
+
+// Favorite Cage
+func (s *UserService) AddFavoriteCage(fav model.FavoriteCage) error {
+	err := s.FavoriteCageRepositoryIn.AddFavoriteCage(fav)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *UserService) DelFavoriteCage(user_id uint, cage_id uint) error {
+	err := s.FavoriteCageRepositoryIn.DelFavoriteCage(user_id, cage_id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *UserService) GetFavoriteCageByUser(user_id uint) ([]model.FavoriteCage, error) {
+	fav, err := s.FavoriteCageRepositoryIn.GetFavoriteCageByUser(user_id)
+	if err != nil {
+		return []model.FavoriteCage{}, nil
+	}
+	return fav, nil
 }

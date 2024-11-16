@@ -28,6 +28,7 @@ type CageRoom struct {
 	Size   string  `gorm:"type:varchar(191);not null" json:"size" query:"size"`
 
 	HotelServices []HotelService `gorm:"foreignKey:CageID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"hotel_services" query:"hotel_services" swaggerignore:"true"`
+	FavoriteCages []FavoriteCage `gorm:"foreignKey:CageID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"favorite_cages" swaggerignore:"true"`
 	Profile       Profile        `gorm:"foreignKey:ProfileID;references:ID" json:"profile" swaggerignore:"true"`
 
 	// no in database
@@ -46,4 +47,9 @@ type AnimalHotelService struct {
 	AnimalUserID   uint       `gorm:"primaryKey;not null" json:"animal_user_id" query:"animal_user_id"`
 	AnimalUser     AnimalUser `gorm:"foreignKey:AnimalUserID;references:ID" json:"animal_user" swaggerignore:"true"`
 	HotelServiceID uint       `gorm:"primaryKey;not null" json:"hotel_service_id" query:"hotel_service_id"`
+}
+
+type FavoriteCage struct {
+	UserID uint `gorm:"primaryKey;not null" json:"user_id" query:"user_id" validate:"required"`
+	CageID uint `gorm:"primaryKey;not null" json:"cage_id" query:"cage_id" validate:"required"`
 }

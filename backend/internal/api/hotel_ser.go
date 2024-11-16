@@ -22,13 +22,14 @@ func (h *HotelHandler) RegisterRoutes(g *echo.Group) {
 	// hotel
 	g.GET("/:id/:status", h.handleGetAllHotelServiceByHotel)
 	g.GET("/:id", h.handleGetHotelService)
+	g.GET("/review/:profile_id", h.handleGetReviewByHotel)
 	g.PUT("/:id", h.handleAcceptRejectBookHotel)
 
 	// client
 	g.POST("/client/booking", h.handleBookHotelService)
-	g.GET("/client/:id/:status", h.handleGetAllHotelServiceByUser)
 	g.PUT("/client/:id", h.handleManageRefundBookHotel)
 	g.PUT("/client/review/:id", h.handleReviewHotelService)
+	g.GET("/client/:id/:status", h.handleGetAllHotelServiceByUser)
 
 	// both
 }
@@ -136,6 +137,31 @@ func (h *HotelHandler) handleGetHotelService(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, ser_info)
+}
+
+// @Summary		Get Review Hotel Service by Hotel
+// @Description	get review hotel service by hotel
+// @Produce application/json
+// @tags HotelServices
+// @Param profile_id path string true "Profile ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /hotel/review/{profile_id} [get]
+// @Security BearerAuth
+func (h *HotelHandler) handleGetReviewByHotel(c echo.Context) error {
+	str := c.Param("profile_id")
+	id, err := utils.ConvertTypeToUint(str)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "hotel information is not correct", err)
+	}
+
+	reviews, err := h.bookingServiceIn.GetReviewByHotel(id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "reviews is not available", err)
+	}
+
+	return c.JSON(http.StatusOK, reviews)
 }
 
 // @Summary		Accept or Reject a booking request

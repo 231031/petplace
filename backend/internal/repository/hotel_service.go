@@ -89,6 +89,7 @@ func (r *HotelServiceRepository) ReviewHotelService(review types.ReviewPayload, 
 func (r *HotelServiceRepository) GetAllHotelServiceByHotel(profile_id uint, status string) ([]model.HotelService, error) {
 	ser := []model.HotelService{}
 	result := r.db.
+		Preload("AnimalHotelServices.AnimalUser").
 		Preload("CageRoom").
 		Where("profiles.id = ? AND hotel_services.status = ?", profile_id, status).
 		Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
@@ -116,6 +117,24 @@ func (r *HotelServiceRepository) GetAllHotelServiceByUser(user_id uint, status s
 	return ser, nil
 }
 
+func (r *HotelServiceRepository) GetReviewByHotel(profile_id uint) ([]model.HotelService, error) {
+	ser := []model.HotelService{}
+
+	result := r.db.Preload("AnimalHotelServices.AnimalUser.User", func(db *gorm.DB) *gorm.DB {
+		return db.Select("users.id", "FirstName", "Surename")
+	}).
+		Preload("CageRoom").
+		Where("profile_id = ?", profile_id).
+		Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
+		Joins("JOIN profiles ON profiles.id = cage_rooms.profile_id").
+		Select("hotel_services.id", "ReviewDetail", "ReviewRate", "CageID").
+		Find(&ser)
+	if result.Error != nil {
+		return ser, result.Error
+	}
+	return ser, nil
+}
+
 func (r *HotelServiceRepository) GetHotelService(id uint) (model.HotelService, error) {
 	ser := model.HotelService{}
 	result := r.db.First(&ser, id)
@@ -125,6 +144,7 @@ func (r *HotelServiceRepository) GetHotelService(id uint) (model.HotelService, e
 	return ser, nil
 }
 
+// task
 func (r *HotelServiceRepository) GetAllBookingHotelByStatus(status string) ([]model.HotelService, error) {
 	ser := []model.HotelService{}
 	result := r.db.

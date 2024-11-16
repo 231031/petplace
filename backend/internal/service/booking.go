@@ -321,6 +321,15 @@ func (s *BookingService) GetAllBookingHotelByUser(user_id uint, status string) (
 	return ser, nil
 }
 
+func (s *BookingService) GetReviewByHotel(profile_id uint) ([]model.HotelService, error) {
+	ser, err := s.HotelServiceRepositoryIn.GetReviewByHotel(profile_id)
+	if err != nil {
+		return ser, err
+	}
+
+	return ser, nil
+}
+
 // task
 func (s *BookingService) GetAllBookingHotelByStatus(status string) ([]model.HotelService, error) {
 	ser, err := s.HotelServiceRepositoryIn.GetAllBookingHotelByStatus(status)
