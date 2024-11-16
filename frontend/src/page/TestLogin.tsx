@@ -10,6 +10,15 @@ function TestLogin() {
            password: "12345"
         };
 
+        // const payload = {
+        //     age: 14,
+        //     citizen_id: "12345",
+        //     email: "client3@gmail.com",
+        //     first_name: "client3",
+        //     password: "12345",
+        //     surename: "test",
+        // };
+
         const apiLogin = async () => {
             try {
                 const res = await LoginUser(payload);

@@ -59,6 +59,25 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 		return http.StatusBadRequest, fmt.Errorf("failed to copy booking payload to hotel service: %v", err), err
 	}
 
+	cage, err := s.CageRoomServiceIn.GetCageRoom(ser.CageID)
+	if err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("cage room not available"), err
+	}
+
+	startDate, err := time.Parse("2006-01-02", payload.StartTime)
+	if err != nil {
+		return http.StatusBadRequest, fmt.Errorf("the booking detail is not correct"), err
+	}
+	endDate, err := time.Parse("2006-01-02", payload.EndTime)
+	if err != nil {
+		return http.StatusBadRequest, fmt.Errorf("the booking detail is not correct"), err
+	}
+	ser.StartTime = startDate
+	ser.EndTime = endDate
+
+	if (ser.EndTime).Before(ser.StartTime) {
+		return http.StatusBadRequest, fmt.Errorf("end time must be after start time"), err
+	}
 	animals := make([]model.AnimalHotelService, len(payload.Animals))
 	for i, animalID := range payload.Animals {
 		animals[i] = model.AnimalHotelService{
@@ -66,25 +85,6 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 			HotelServiceID: 0,
 		}
 	}
-
-	cage, err := s.CageRoomServiceIn.GetCageRoom(ser.CageID)
-	if err != nil {
-		return http.StatusInternalServerError, fmt.Errorf("cage room not available"), err
-	}
-	if ser.EndTime.Before(ser.StartTime) {
-		return http.StatusBadRequest, fmt.Errorf("end time must be after start time"), err
-	}
-
-	startDate, err := time.Parse("2006-01-02", payload.StartTime)
-	if err != nil {
-		return 0, fmt.Errorf("the booking detail is not correct"), err
-	}
-	endDate, err := time.Parse("2006-01-02", payload.EndTime)
-	if err != nil {
-		return 0, fmt.Errorf("the booking detail is not correct"), err
-	}
-	ser.StartTime = startDate
-	ser.EndTime = endDate
 
 	days, price := s.calculatePriceService(startDate, endDate, cage.Price)
 	ser.Price = price
@@ -131,7 +131,7 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 		return http.StatusInternalServerError, fmt.Errorf("update creddit card failed"), err
 	}
 
-	return http.StatusOK, nil, nil
+	return http.StatusCreated, nil, nil
 }
 
 // func (s *BookingService) UpdateHotelInfo(payload types.UpdateHotelPayload) (int, error) {
