@@ -12,6 +12,23 @@ import (
 type HotelServiceRepository struct {
 	db *gorm.DB
 }
+func (r *HotelServiceRepository) UpdateHotel(hotel model.Hotel) error {
+    db := r.db.Model(&model.Hotel{}).Where("id = ?", hotel.ID)
+
+    // อัปเดตเฉพาะฟิลด์ที่มีการแก้ไข
+    if err := db.Updates(hotel).Error; err != nil {
+        return err
+    }
+    return nil
+}
+
+func (r *HotelServiceRepository) GetHotelByID(id uint) (model.Hotel, error) {
+    var hotel model.Hotel
+    if err := r.db.First(&hotel, id).Error; err != nil {
+        return hotel, err
+    }
+    return hotel, nil
+}
 
 func NewHotelServiceRepository(db *gorm.DB) *HotelServiceRepository {
 	return &HotelServiceRepository{db: db}
@@ -169,6 +186,14 @@ func (r *HotelServiceRepository) UpdateHotelService(ser model.HotelService) erro
 
 func (r *HotelServiceRepository) DeleteHotelService(id uint) error {
 	result := r.db.Delete(&model.HotelService{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func (r *HotelServiceRepository) UpdateHotelProfile(profile model.Profile) error {
+	result := r.db.Save(&profile)
 	if result.Error != nil {
 		return result.Error
 	}

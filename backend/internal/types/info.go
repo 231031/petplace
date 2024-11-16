@@ -2,15 +2,15 @@ package types
 
 import "time"
 
-// type ProfileInfo struct {
-// 	ID        uint    `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
-// 	ProfileID uint    `gorm:"not null" json:"profile_id" query:"profile_id"`
-// 	Name      string  `gorm:"type:varchar(191);not null" json:"name" query:"name"`
-// 	Address   string  `gorm:"type:text;not null" json:"address" query:"address"`
-// 	Image     string  `gorm:"type:varchar(191)" json:"image" query:"image"`
-// 	Longitude float64 `gorm:"type:float;not null" json:"longitude" query:"longitude"`
-// 	Latitude  float64 `gorm:"type:float;not null" json:"latitude" query:"latitude"`
-// }
+type ProfileInfo struct {
+	ID        uint    `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
+	ProfileID uint    `gorm:"not null" json:"profile_id" query:"profile_id"`
+	Name      string  `gorm:"type:varchar(191);not null" json:"name" query:"name"`
+	Address   string  `gorm:"type:text;not null" json:"address" query:"address"`
+	Image     string  `gorm:"type:varchar(191)" json:"image" query:"image"`
+	Longitude float64 `gorm:"type:float;not null" json:"longitude" query:"longitude"`
+	Latitude  float64 `gorm:"type:float;not null" json:"latitude" query:"latitude"`
+}
 
 type ServiceInfo struct {
 	ID            uint      `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
