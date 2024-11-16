@@ -17,6 +17,7 @@ import HotelHome from './page/HotelHome';
 import HotelDetail from './page/HotelDetail';
 import TestSearch from './page/TestSearch';
 import TestLogin from './page/TestLogin';
+import TestBooking from './page/TestBooking';
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
         {/* test api */}
         <Route path="/test/search" element={<TestSearch />} />
         <Route path="/test/login" element={<TestLogin />} />
+        <Route path="/test/booking" element={<TestBooking />} />
       </Routes>
       <Footer />
     </div>

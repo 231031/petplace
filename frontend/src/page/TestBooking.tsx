@@ -8,14 +8,20 @@ function TestBooking() {
 
     useEffect(() => {
         const payload = {
-            animals: [],
-            cage_id: 5,
+            animals: [1, 3],
+            cage_id: 14,
             client_id: 2,
             client_name: "client first",
-            end_time: "",
+            end_time: "2024-11-19",
             profile_id: 1,
-            profile_name: "",
-            start_time: "",
+            profile_name: "hotel1",
+            start_time: "2024-11-17",
+            card_detail: { // if user already has a card get from api and to show detail and allow update
+                expiry: "2029-11",
+                name: "Client First",
+                number: "4032032300864326",
+                security_code: "111",
+            },
         }
 
         const apiBookHotel = async () => {

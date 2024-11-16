@@ -53,7 +53,7 @@ func (h *HotelHandler) handleBookHotelService(c echo.Context) error {
 	}
 
 	status, err_str, err := h.bookingServiceIn.BookHotelService(s)
-	if err != nil {
+	if err != nil || status != http.StatusCreated {
 		return utils.HandleError(c, status, err_str.Error(), err)
 	}
 
