@@ -19,7 +19,7 @@ export interface LoginPayload {
 export interface BookingPayload {
   animals:      number[];
   cage_id:      number;
-  card_detail?:  CardDetail;
+  card_detail:  CardDetail;
   client_id:    number;
   client_name:  string;
   detail?:       string;
