@@ -1,12 +1,27 @@
 
 import { useNavigate } from "react-router-dom";
 import { CarouselDemo } from "../components/HotelDetailComponents/CarousolDemo";
+import { useRef } from 'react';
 
 function HotelDetail() {
     const navigate = useNavigate();
+    const hotelRef = useRef<HTMLDivElement>(null);
+    const detailRef = useRef<HTMLDivElement>(null);
+    const facilityRef = useRef<HTMLDivElement>(null);
+    const roomRef = useRef<HTMLDivElement>(null);
+    const reviewRef = useRef<HTMLDivElement>(null);
+
+
+
 
     const ClickBookNow = () => {
         navigate('/hotelbookdetail')
+    };
+
+    const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
+        if (ref.current) {
+            ref.current.scrollIntoView({ behavior: 'smooth'});
+        }
     };
 
     return (
@@ -14,16 +29,16 @@ function HotelDetail() {
             <div className="flex w-3/4 items-center flex-col gap-y-2 bg-bg">
                 {/* section1 */}
                 <div className="pt-10 text-black">
-                    <div className="bg-white grid grid-cols-5 gap-1 p-2 rounded-md shadow-md"> {/* กำหนดพื้นหลังของทั้งกริด */}
-                        <button className="h-10 w-20 rounded-md ">Hotel</button>
-                        <button className="h-10 w-20 rounded-md ">Detail</button>
-                        <button className="h-10 w-20 rounded-md ">Facility</button>
-                        <button className="h-10 w-20 rounded-md ">Room</button>
-                        <button className="h-10 w-20 rounded-md ">Review</button>
+                    <div className="bg-white grid grid-cols-5 gap-1 p-2 rounded-md shadow-md"> 
+                        <button className="h-10 w-20 rounded-md " onClick={() => scrollToSection(hotelRef)} >Hotel</button>
+                        <button className="h-10 w-20 rounded-md " onClick={() => scrollToSection(detailRef)}>Detail</button>
+                        <button className="h-10 w-20 rounded-md " onClick={() => scrollToSection(facilityRef)}>Facility</button>
+                        <button className="h-10 w-20 rounded-md " onClick={() => scrollToSection(roomRef)}>Room</button>
+                        <button className="h-10 w-20 rounded-md " onClick={() => scrollToSection(reviewRef)}>Review</button>
                     </div>
                 </div>
                 <div className="flex flex-col w-full h-80 gap-y-5 ">
-                    <h1 className="text-4xl">Hotel Name</h1>
+                    <h1 ref={hotelRef} id="hotel" className="text-4xl">Hotel Name</h1>
                     <CarouselDemo />
 
                 </div>
@@ -31,7 +46,7 @@ function HotelDetail() {
                 <div className="flex w-full h-72 mt-10">
                     {/* detail */}
                     <div className="flex flex-col gap-y-5 w-full ">
-                        <h1 className="text-2xl"> Detail</h1>
+                        <h1 ref={detailRef} id="detail" className="text-2xl">Detail</h1>
                         <div className="flex flex-col mr-5 bg-bg gap-y-5 p-5 rounded-xl shadow shadow-gray-400">
                             <p>
                                 At [Hotel Name], we believe your pets deserve a vacation too!
@@ -61,7 +76,7 @@ function HotelDetail() {
                 </div>
                 {/* section3 */}
                 <div className="flex flex-col w-full gap-y-5 pb-5">
-                    <h1 className="text-2xl"> Facility</h1>
+                    <h1 ref={facilityRef} id="facility" className="text-2xl"> Facility</h1>
                     <div className="flex gap-x-2">
                         <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">Parking</button>
                         <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">CCTV</button>
@@ -71,7 +86,7 @@ function HotelDetail() {
                 </div>
                 {/* section4 */}
                 <div className="flex flex-col w-full ">
-                    <h1 className="text-2xl">Room</h1>
+                    <h1 ref={roomRef} id="room" className="text-2xl">Room</h1>
                     <div className="flex flex-col">
                         {/* selection */}
                         <div className="flex justify-end gap-x-2 my-2">
@@ -135,7 +150,7 @@ function HotelDetail() {
                 {/* section 5 */}
                 <div className="flex flex-col bg-bg w-full mt-10">
                     <div className="flex space-x-5">
-                        <h1 className="text-2xl">Review</h1>
+                        <h1 ref={reviewRef} id="review" className="text-2xl">Review</h1>
                         <div className="size-7 bg-navbar rounded-full"></div>
                     </div>
                     <div className="shadow shadow-gray-400 rounded-md mt-5">
