@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"petplace/config"
 	"petplace/internal/migration"
 	"petplace/internal/routes"
@@ -9,17 +10,30 @@ import (
 	_ "petplace/cmd/main/docs"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
-//		@title			Petplace API Version1
-//		@version		1.0
-//		@description	Petplace API Description
-//		@host			localhost:5000
-//		@BasePath		/api
-//	 @schemes http
+//	@title			Petplace API Version1
+//	@version		1.0
+//	@description	Petplace API Description
+//	@host			localhost:5000
+//	@BasePath		/api
+//
+// @securityDefinitions.apiKey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
+//
+//	@schemes http
 func main() {
 
 	e := echo.New()
+	// frontUrl := os.Getenv("FRONT_URL")
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:5173"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+	}))
 
 	db, err := config.ConnectDatabase()
 	if err != nil {
@@ -28,18 +42,7 @@ func main() {
 	fmt.Printf("connect database successfully\n")
 
 	migration.Migrate(db)
-
 	routes.CreateRoutes(e, db)
-
-	// แสดง JWT token ที่สร้าง
-	// config.LoadEnvVariables() // โหลดค่า .env เพื่อให้ SECRET_KEY ถูกใช้
-	// token, err := auth.GenerateJwt(1, "user@example.com", "admin")
-	// if err != nil {
-	// 	fmt.Println("Error generating JWT:", err)
-	// } else {
-	// 	fmt.Println("Generated JWT Token:", token)
-	// }
-
 	e.Logger.Fatal(e.Start(":5000"))
 
 }

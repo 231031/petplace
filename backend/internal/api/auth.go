@@ -27,12 +27,13 @@ func (h *AuthHandler) RegisterRoutes(g *echo.Group) {
 // @Summary Sign Up
 // @Description sign up a user
 // @tags Authentication
+// @Param   SignUpPayload body model.User true "Signup payload"
 // @Accept application/json
 // @Produce application/json
 // @Success 201
 // @Failure 400
 // @Failure 500
-// @Router /api/auth/signup [post]
+// @Router /auth/signup [post]
 func (h *AuthHandler) handleSignUp(c echo.Context) error {
 	u := &model.User{}
 	err := c.Bind(u)
@@ -55,12 +56,13 @@ func (h *AuthHandler) handleSignUp(c echo.Context) error {
 // @Summary Log In
 // @Description log in user
 // @tags Authentication
+// @Param   LoginPayload body types.LoginPayload true "Login payload"
 // @Accept application/json
 // @Produce application/json
 // @Success 200
 // @Failure 401
 // @Failure 500
-// @Router /api/auth/login [post]
+// @Router /auth/login [post]
 func (h *AuthHandler) handleLogIn(c echo.Context) error {
 	payload := &types.LoginPayload{}
 	err := c.Bind(payload)

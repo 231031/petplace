@@ -37,7 +37,10 @@ func (r *CageRoomRepository) GetAllCageRoom(id uint) ([]model.CageRoom, error) {
 
 func (r *CageRoomRepository) GetCageRoom(id uint) (model.CageRoom, error) {
 	cage := model.CageRoom{ID: id}
-	result := r.db.First(&cage)
+	result := r.db.Preload("Profile", func(db *gorm.DB) *gorm.DB {
+		return db.Select("ID", "CheckIn", "CheckOut")
+	}).First(&cage)
+
 	if result.Error != nil {
 		return cage, result.Error
 	}
@@ -93,7 +96,7 @@ func (r *CageRoomRepository) FilterCages(animals []types.FilterInfo, startTime, 
 	return profiles, nil
 }
 
-func (r *CageRoomRepository) FilterCagesByHotel(animals []types.FilterInfo, startTime, endTime time.Time, profile_id uint) (model.Profile, error) {
+func (r *CageRoomRepository) FilterCagesByHotel(animals []types.FilterInfo, startTime, endTime time.Time, profile_id uint, user_id uint) (model.Profile, error) {
 	profile := model.Profile{
 		ID: profile_id,
 	}
@@ -114,6 +117,12 @@ func (r *CageRoomRepository) FilterCagesByHotel(animals []types.FilterInfo, star
 			return db.Where("(animal_type, size) IN (?)", animalPairs).Order("price ASC")
 		})
 	}
+
+	query = query.Preload("Cages.FavoriteCages")
+
+	// .Preload("Cages.HotelServices", func(db *gorm.DB) *gorm.DB {
+	// 	return db.Select("CageID", "ReviewDetail", "ReviewRate")
+	// })
 
 	result_search := query.Find(&profile)
 
@@ -160,30 +169,4 @@ func (r *CageRoomRepository) GetNotAvaliableCageRoom(animals [][]interface{}, st
 // 	}
 
 // 	return cages,nil
-// }
-
-// func (r *CageRoomRepository) FilterCages(animalType, animalSize, location string, startTime, endTime time.Time) ([]types.Cage, error) {
-// 	var cages []types.Cage
-// 	query := r.db.Model(&types.Cage{})
-
-// 	// Combine animalType and animalSize check
-// 	if animalType != "" && animalSize != "" {
-// 		query = query.Where("animal_type = ? AND animal_size = ?", animalType, animalSize)
-// 	}
-
-// 	// Check for location if needed
-// 	if location != "" {
-// 		query = query.Where("location = ?", location)
-// 	}
-
-// 	// Check the booking time range
-// 	query = query.Where("booking_time BETWEEN ? AND ?", startTime, endTime)
-
-// 	// Execute the query
-// 	result := query.Find(&cages)
-
-// 	if result.Error != nil {
-// 		return nil, result.Error
-// 	}
-// 	return cages, nil
 // }

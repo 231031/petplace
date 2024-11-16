@@ -5,8 +5,8 @@ import (
 )
 
 type LoginPayload struct {
-	Email    string `json:"email" query:"email"`
-	Password string `json:"password" query:"password"`
+	Email    string `json:"email" query:"email" validate:"required"`
+	Password string `json:"password" query:"password" validate:"required"`
 }
 
 type BookingPayload struct {

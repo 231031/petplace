@@ -20,6 +20,10 @@ type UsersServiceIn interface {
 	GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error)
 	GetAnimalUser(id uint) (model.AnimalUser, error)
 	GetAnimalUserByType(user_id uint, animal_type string) ([]model.AnimalUser, error)
+
+	AddFavoriteCage(fav model.FavoriteCage) error
+	DelFavoriteCage(user_id uint, cage_id uint) error
+	GetFavoriteCageByUser(user_id uint) ([]model.FavoriteCage, error)
 }
 
 type ProfileServiceIn interface {
@@ -29,7 +33,7 @@ type ProfileServiceIn interface {
 	UpdateProfile(id uint, profile model.Profile) error
 
 	SortProfileByReviewRate(profiles []model.Profile) []model.Profile
-	SortProfileByDistance(profiles []model.Profile, la float64, long float64) []model.Profile
+	SortProfileByDistance(profiles []model.Profile) []model.Profile
 	CountCompleteBookByID(profile_id uint) (int, error)
 }
 
@@ -44,16 +48,18 @@ type BookingServiceIn interface {
 	GetBookingHotel(id uint) (model.HotelService, error)
 	GetAllBookingHotelByHotel(profile_id uint, status string) ([]model.HotelService, error)
 	GetAllBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error)
+	GetReviewByHotel(profile_id uint) ([]model.HotelService, error)
 }
 
 type CageRoomServiceIn interface {
 	CreateCageRoom(cage []model.CageRoom) error
+	UpdateCageRoom(id uint, ser model.CageRoom) error
+	DeleteCageRoom(id uint) error
+
 	GetAllCageRoom(profile_id uint) ([]model.CageRoom, error)
 	GetCageRoom(id uint) (model.CageRoom, error)
-	DeleteCageRoom(id uint) error
 	SearchCage(animals []types.FilterInfo, filter types.FilterSearchCage) ([]model.Profile, error)
-	SearchCageByHotel(animals []types.FilterInfo, filter types.FilterSearchCage, profile_id uint) (model.Profile, error)
-	// FilterCages(filter types.FilterSearchCage) ([]types.Cage, error)
+	SearchCageByHotel(animals []types.FilterInfo, filter types.FilterSearchCage, profile_id uint, user_id uint) (model.Profile, error)
 }
 
 type PaymentServiceIn interface {

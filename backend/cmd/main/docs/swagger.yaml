@@ -1,11 +1,299 @@
+basePath: /api
+definitions:
+  model.AnimalUser:
+    properties:
+      age:
+        type: integer
+      animal_type:
+        type: string
+      breed:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      image_array:
+        description: no in database
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      user_id:
+        type: integer
+      weight:
+        type: integer
+    required:
+    - age
+    - animal_type
+    - name
+    - user_id
+    - weight
+    type: object
+  model.CageRoom:
+    properties:
+      animal_type:
+        type: string
+      cage_type:
+        type: string
+      detail:
+        type: string
+      facility:
+        type: string
+      facility_array:
+        items:
+          type: string
+        type: array
+      height:
+        type: number
+      id:
+        type: integer
+      image:
+        type: string
+      image_array:
+        description: no in database
+        items:
+          type: string
+        type: array
+      lenth:
+        description: size
+        type: number
+      max_capacity:
+        type: integer
+      price:
+        type: number
+      profile_id:
+        type: integer
+      quantity:
+        type: integer
+      size:
+        type: string
+      width:
+        type: number
+    required:
+    - cage_type
+    - height
+    - lenth
+    - max_capacity
+    - price
+    - profile_id
+    - quantity
+    - width
+    type: object
+  model.FavoriteCage:
+    properties:
+      cage_id:
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - cage_id
+    - user_id
+    type: object
+  model.Profile:
+    properties:
+      address:
+        type: string
+      avg_review:
+        type: number
+      check_in:
+        type: string
+      check_out:
+        type: string
+      email:
+        type: string
+      facility:
+        type: string
+      facility_array:
+        items:
+          type: string
+        type: array
+      id:
+        type: integer
+      image:
+        type: string
+      image_array:
+        items:
+          type: string
+        type: array
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      payment:
+        type: string
+      paypal_email:
+        type: string
+      role:
+        type: string
+      tel:
+        type: string
+      user_id:
+        type: integer
+    required:
+    - check_in
+    - check_out
+    - latitude
+    - longitude
+    - name
+    - role
+    - user_id
+    type: object
+  model.User:
+    properties:
+      age:
+        type: integer
+      citizen_id:
+        type: string
+      email:
+        type: string
+      expiry:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: integer
+      name:
+        description: credit card
+        type: string
+      number:
+        type: string
+      password:
+        type: string
+      paypal_email:
+        type: string
+      security_code:
+        type: string
+      surename:
+        type: string
+    required:
+    - email
+    - first_name
+    - password
+    - surename
+    type: object
+  types.BookingPayload:
+    properties:
+      animals:
+        items:
+          type: integer
+        type: array
+      cage_id:
+        type: integer
+      card_detail:
+        $ref: '#/definitions/types.CardPayload'
+      client_id:
+        description: payment information
+        type: integer
+      client_name:
+        type: string
+      detail:
+        type: string
+      end_time:
+        type: string
+      profile_id:
+        type: integer
+      profile_name:
+        type: string
+      start_time:
+        type: string
+    required:
+    - animals
+    - cage_id
+    - card_detail
+    - client_id
+    - client_name
+    - end_time
+    - profile_id
+    - profile_name
+    - start_time
+    type: object
+  types.CardPayload:
+    properties:
+      expiry:
+        type: string
+      name:
+        type: string
+      number:
+        type: string
+      security_code:
+        type: string
+    type: object
+  types.LoginPayload:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  types.RefundPayload:
+    properties:
+      client_id:
+        type: integer
+      hotel_service_id:
+        type: integer
+      paypal_email:
+        type: string
+    required:
+    - client_id
+    - hotel_service_id
+    - paypal_email
+    type: object
+  types.ReviewPayload:
+    properties:
+      hotel_service_id:
+        type: integer
+      profile_id:
+        type: integer
+      review_detail:
+        type: string
+      review_rate:
+        type: number
+    required:
+    - hotel_service_id
+    - profile_id
+    - review_rate
+    type: object
+  types.SelectStatusPayload:
+    properties:
+      hotel_service_id:
+        type: integer
+      profile_id:
+        type: integer
+      profile_name:
+        type: string
+      status:
+        type: string
+    required:
+    - hotel_service_id
+    - profile_id
+    - profile_name
+    - status
+    type: object
+host: localhost:5000
 info:
   contact: {}
+  description: Petplace API Description
+  title: Petplace API Version1
+  version: "1.0"
 paths:
-  /api/auth/login:
+  /auth/login:
     post:
       consumes:
       - application/json
       description: log in user
+      parameters:
+      - description: Login payload
+        in: body
+        name: LoginPayload
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginPayload'
       produces:
       - application/json
       responses:
@@ -18,11 +306,18 @@ paths:
       summary: Log In
       tags:
       - Authentication
-  /api/auth/signup:
+  /auth/signup:
     post:
       consumes:
       - application/json
       description: sign up a user
+      parameters:
+      - description: Signup payload
+        in: body
+        name: SignUpPayload
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
       produces:
       - application/json
       responses:
@@ -35,11 +330,20 @@ paths:
       summary: Sign Up
       tags:
       - Authentication
-  /api/cageroom:
+  /cageroom:
     post:
       consumes:
       - application/json
       description: create cage
+      parameters:
+      - description: cageroom payload
+        in: body
+        name: CageRoom
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/model.CageRoom'
+          type: array
       produces:
       - application/json
       responses:
@@ -54,7 +358,7 @@ paths:
       summary: Create Cage
       tags:
       - CageRooms
-  /api/cageroom/{id}:
+  /cageroom/{id}:
     delete:
       consumes:
       - application/json
@@ -111,6 +415,12 @@ paths:
         name: id
         required: true
         type: string
+      - description: cageroom payload
+        in: body
+        name: CageRoom
+        required: true
+        schema:
+          $ref: '#/definitions/model.CageRoom'
       produces:
       - application/json
       responses:
@@ -125,7 +435,7 @@ paths:
       summary: Update Cage
       tags:
       - CageRooms
-  /api/cageroom/all/{profile_id}:
+  /cageroom/all/{profile_id}:
     get:
       description: get cages
       parameters:
@@ -148,7 +458,7 @@ paths:
       summary: Get Cages
       tags:
       - CageRooms
-  /api/cageroom/search:
+  /cageroom/search:
     get:
       description: get selected cages
       parameters:
@@ -188,10 +498,15 @@ paths:
       summary: Get Selected Cages
       tags:
       - CageRooms
-  /api/cageroom/search/{profile_id}:
+  /cageroom/search/{user_id}/{profile_id}:
     get:
       description: get selected cages by hotel
       parameters:
+      - description: User ID of Client
+        in: path
+        name: user_id
+        required: true
+        type: string
       - description: Profile ID
         in: path
         name: profile_id
@@ -233,7 +548,7 @@ paths:
       summary: Get Selected Cages by Hotel
       tags:
       - CageRooms
-  /api/hotel/{id}:
+  /hotel/{id}:
     get:
       description: get hotel service
       parameters:
@@ -264,6 +579,12 @@ paths:
         name: id
         required: true
         type: string
+      - description: SelectStatus payload
+        in: body
+        name: SelectStatusPayload
+        required: true
+        schema:
+          $ref: '#/definitions/types.SelectStatusPayload'
       produces:
       - application/json
       responses:
@@ -278,7 +599,7 @@ paths:
       summary: Accept or Reject a booking request
       tags:
       - HotelServices
-  /api/hotel/{id}/{status}:
+  /hotel/{id}/{status}:
     get:
       description: get hotel service hotel
       parameters:
@@ -306,7 +627,7 @@ paths:
       summary: Get Hotel Service Hotel
       tags:
       - HotelServices
-  /api/hotel/cleint/{id}:
+  /hotel/cleint/{id}:
     put:
       description: cancel or refund reservation
       parameters:
@@ -315,6 +636,12 @@ paths:
         name: id
         required: true
         type: string
+      - description: Refund payload
+        in: body
+        name: RefundPayload
+        required: true
+        schema:
+          $ref: '#/definitions/types.RefundPayload'
       produces:
       - application/json
       responses:
@@ -329,7 +656,7 @@ paths:
       summary: Cancel or Refund Reservation
       tags:
       - HotelServices
-  /api/hotel/client/{id}/{status}:
+  /hotel/client/{id}/{status}:
     get:
       description: get hotel service user
       parameters:
@@ -357,11 +684,18 @@ paths:
       summary: Get Hotel Service User
       tags:
       - HotelServices
-  /api/hotel/client/booking:
+  /hotel/client/booking:
     post:
       consumes:
       - application/json
       description: book hotel service
+      parameters:
+      - description: Booking payload
+        in: body
+        name: BookingPayload
+        required: true
+        schema:
+          $ref: '#/definitions/types.BookingPayload'
       produces:
       - application/json
       responses:
@@ -376,7 +710,7 @@ paths:
       summary: Book Hotel Service
       tags:
       - HotelServices
-  /api/hotel/client/review/{id}:
+  /hotel/client/review/{id}:
     put:
       description: review reservation
       parameters:
@@ -385,6 +719,12 @@ paths:
         name: id
         required: true
         type: string
+      - description: Review payload
+        in: body
+        name: ReviewPayload
+        required: true
+        schema:
+          $ref: '#/definitions/types.ReviewPayload'
       produces:
       - application/json
       responses:
@@ -399,7 +739,61 @@ paths:
       summary: review Reservation
       tags:
       - HotelServices
-  /api/profile/{user_id}/{role}:
+  /hotel/review/{profile_id}:
+    get:
+      description: get review hotel service by hotel
+      parameters:
+      - description: Profile ID
+        in: path
+        name: profile_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get Review Hotel Service by Hotel
+      tags:
+      - HotelServices
+  /profile/{id}:
+    put:
+      consumes:
+      - application/json
+      description: update profile
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: profile model
+        in: body
+        name: ProfileModel
+        required: true
+        schema:
+          $ref: '#/definitions/model.Profile'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Update Profile
+      tags:
+      - Profiles
+  /profile/{user_id}/{role}:
     get:
       description: get profile by user ID and role
       parameters:
@@ -427,11 +821,18 @@ paths:
       summary: Get Profile By User ID and Role
       tags:
       - Profiles
-  /api/profile/create:
+  /profile/create:
     post:
       consumes:
       - application/json
       description: create new profile
+      parameters:
+      - description: Profile model
+        in: body
+        name: Profile
+        required: true
+        schema:
+          $ref: '#/definitions/model.Profile'
       produces:
       - application/json
       responses:
@@ -446,11 +847,11 @@ paths:
       summary: Create New Profile
       tags:
       - Profiles
-  /api/user/animal/{id}:
+  /user/animal/{id}:
     get:
       description: get animal
       parameters:
-      - description: ID
+      - description: Animal ID
         in: path
         name: id
         required: true
@@ -474,11 +875,17 @@ paths:
       - application/json
       description: update animal
       parameters:
-      - description: ID
+      - description: Animal User ID
         in: path
         name: id
         required: true
         type: string
+      - description: user's animal model
+        in: body
+        name: AnimalUserModel
+        required: true
+        schema:
+          $ref: '#/definitions/model.AnimalUser'
       produces:
       - application/json
       responses:
@@ -493,7 +900,7 @@ paths:
       summary: Update Animal
       tags:
       - Users
-  /api/user/animal/{user_id}/{animal_type}:
+  /user/animal/{user_id}/{animal_type}:
     get:
       description: get animal of each user filter by animal type
       parameters:
@@ -521,11 +928,20 @@ paths:
       summary: Get Animal User By Animal Type
       tags:
       - Users
-  /api/user/animals:
+  /user/animals:
     post:
       consumes:
       - application/json
       description: create animals
+      parameters:
+      - description: user's animal model
+        in: body
+        name: AnimalUserModel
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/model.AnimalUser'
+          type: array
       produces:
       - application/json
       responses:
@@ -540,7 +956,7 @@ paths:
       summary: Create Animals
       tags:
       - Users
-  /api/user/animals/{user_id}:
+  /user/animals/{user_id}:
     get:
       description: get animals
       parameters:
@@ -563,11 +979,11 @@ paths:
       summary: Get Animals
       tags:
       - Users
-  /api/user/card/{id}:
+  /user/card/{id}:
     get:
       description: get credit card
       parameters:
-      - description: ID
+      - description: User ID
         in: path
         name: id
         required: true
@@ -586,4 +1002,85 @@ paths:
       summary: Get Credit Card
       tags:
       - Users
+  /user/fav:
+    post:
+      description: add favorite cages
+      parameters:
+      - description: model favorite
+        in: body
+        name: FavoritePayload
+        required: true
+        schema:
+          $ref: '#/definitions/model.FavoriteCage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Add Favorites Cages
+      tags:
+      - Users
+  /user/fav/{user_id}:
+    get:
+      description: get favorite cages
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get Favorites Cages
+      tags:
+      - Users
+  /user/fav/{user_id}/{cage_id}:
+    delete:
+      description: delete favorite cages
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      - description: Cage ID
+        in: path
+        name: cage_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: delete Favorites Cages
+      tags:
+      - Users
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

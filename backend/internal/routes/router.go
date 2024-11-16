@@ -23,12 +23,13 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 
 	// create new repository
 	animalUserRepository := repository.NewAnimalUserRepository(db)
+	favoriteCageRepository := repository.NewFavoriteCageRepository(db)
 
 	// User
 	user := baseRouter.Group("/user")
 	user.Use(auth.AuthMiddleware)
 	userRepository := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepository, animalUserRepository, validate)
+	userService := service.NewUserService(userRepository, animalUserRepository, favoriteCageRepository, validate)
 	userHandler := api.NewUsersHandler(userService)
 	userHandler.RegisterRoutes(user)
 

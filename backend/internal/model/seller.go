@@ -14,12 +14,12 @@ import (
 type Merchandise struct {
 	types.ProductInfo
 	Quantity           int                 `gorm:"type:int;not null" json:"quantity" query:"quantity"`
-	ProductMerchadises []ProductMerchadise `gorm:"foreignKey:MerchandiseID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"product_merchandises" query:"product_merchandises"`
+	ProductMerchadises []ProductMerchadise `gorm:"foreignKey:MerchandiseID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"product_merchandises" query:"product_merchandises" swaggerignore:"true"`
 }
 type Animal struct {
 	types.ProductInfo
 	types.AnimalInfo
-	ProductAnimals []ProductAnimal `gorm:"foreignKey:AnimalID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"product_animals" query:"product_animals"`
+	ProductAnimals []ProductAnimal `gorm:"foreignKey:AnimalID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"product_animals" query:"product_animals" swaggerignore:"true"`
 }
 
 type Order struct {
@@ -30,8 +30,8 @@ type Order struct {
 	PaymentStatus      string              `gorm:"not null;default:'pending'" json:"payment_status" query:"payment_status"`
 	TransportStatus    string              `gorm:"not null; default:'pending'" json:"transport_status" query:"transport_status"`
 	Price              float32             `gorm:"type:float;not null" json:"price" query:"price"`
-	ProductMerchadises []ProductMerchadise `gorm:"foreignKey:OrderID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"product_merchandises" query:"product_merchandises"`
-	ProductAnimals     []ProductAnimal     `gorm:"foreignKey:OrderID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"product_animals" query:"product_animals"`
+	ProductMerchadises []ProductMerchadise `gorm:"foreignKey:OrderID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"product_merchandises" query:"product_merchandises" swaggerignore:"true"`
+	ProductAnimals     []ProductAnimal     `gorm:"foreignKey:OrderID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"product_animals" query:"product_animals" swaggerignore:"true"`
 }
 
 type ProductMerchadise struct {
