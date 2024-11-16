@@ -1,18 +1,27 @@
-import { LoginUser } from "@/helper/auth";
+import { LoginUser, SignUpUser } from "@/helper/auth";
 import { useEffect, useState } from "react";
 
 function TestLogin() {
     const [user, setUser] = useState();
 
     useEffect(() => {
+        // const payload = {
+        //     email: "test2@gmail.com",
+        //     password: "12345",
+        // };
+
         const payload = {
-            email: "test2@gmail.com",
+            age: 14,
+            citizen_id: "12345",
+            email: "client3@gmail.com",
+            first_name: "client3",
             password: "12345",
+            surename: "test",
         };
 
         const apiLogin = async () => {
             try {
-                const res = await LoginUser(payload);
+                const res = await SignUpUser(payload);
                 setUser(res.user);
                 localStorage.setItem("token", res.token);
             } catch (err) {
