@@ -1,4 +1,4 @@
-import { LoginUser } from "@/helper/auth";
+import { LoginUser, SignUpUser } from "@/helper/auth";
 import { useEffect, useState } from "react";
 
 function TestLogin() {
@@ -6,8 +6,8 @@ function TestLogin() {
 
     useEffect(() => {
         const payload = {
-            email: "test2@gmail.com",
-            password: "12345",
+           email: "aaa@gmail.com",            
+           password: "12345"
         };
 
         const apiLogin = async () => {
