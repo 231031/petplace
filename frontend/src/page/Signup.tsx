@@ -29,19 +29,19 @@ function Signup() {
         }
 
         const payload = {
-            first_name: formData.name,
-            surename: formData.surname,
-            email: formData.email,
-            password: formData.password,
-            citizen_id: formData.citizenId,
-            // Additional required fields
             age: new Date().getFullYear() - new Date(formData.dateOfBirth).getFullYear(),
+            citizen_id: formData.citizenId,
+            email: formData.email,
             expiry: "2025-12-31", // Example value
+            first_name: formData.name,
             id: 1, // Replace or remove as necessary
             name: formData.name, // Duplicate to match API
             number: "123456789", // Example value
-            paypal_email: "paypal@example.com", // Example value
-            security_code: "123", // Example value
+            password: formData.password,
+            paypal_email: '', // Example value
+            security_code: '', // Example value
+            surename: formData.surname,
+            
         };
 
         try {
@@ -63,8 +63,10 @@ function Signup() {
             }
         } catch (error) {
             setError('An error occurred. Please try again.');
-            console.error(error);
+            // console.error(error);
         }
+
+        
     };
 
     const LoginClick = () => {
