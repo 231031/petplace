@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/umahmood/haversine"
 )
 
 // implement bussiness logic
@@ -112,31 +113,51 @@ func (s *CageRoomService) DeleteCageRoom(id uint) error {
 }
 
 func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.FilterSearchCage) ([]model.Profile, error) {
+	profiles := []model.Profile{}
+
 	if err := s.Validate.Struct(filter); err != nil {
-		return nil, err
+		return profiles, err
 	}
 
 	long, err := strconv.ParseFloat(filter.Longitude, 64)
 	if err != nil {
-		return nil, err
+		return profiles, err
 	}
 
 	la, err := strconv.ParseFloat(filter.Latitude, 64)
 	if err != nil {
-		return nil, err
+		return profiles, err
 	}
 
 	startDate, err := time.Parse("2006-01-02", filter.StartTime)
 	if err != nil {
-		return nil, err
+		return profiles, err
 	}
 
 	endDate, err := time.Parse("2006-01-02", filter.EndTime)
 	if err != nil {
-		return nil, err
+		return profiles, err
 	}
 
-	profiles, err := s.CageRoomRepositoryIn.FilterCages(animals, startDate, endDate)
+	userLoc := haversine.Coord{Lat: la, Lon: long}
+	profilesBe, err := s.CageRoomRepositoryIn.FilterCages(animals, startDate, endDate)
+	for i := range profilesBe {
+		if len(profilesBe[i].Cages) > 0 {
+			// protected private information
+			profilesBe[i].PaypalEmail = ""
+
+			// calculate distances
+			profileLoc := haversine.Coord{Lat: profilesBe[i].Latitude, Lon: profilesBe[i].Longitude}
+			_, km := haversine.Distance(profileLoc, userLoc)
+			profilesBe[i].Distance = km
+
+			// map text to array
+			profilesBe[i].ImageArray = utils.MapTextToStringArray(profilesBe[i].Image)
+			profilesBe[i].FacilityArray = utils.MapTextToStringArray(profilesBe[i].Facility)
+
+			profiles = append(profiles, profilesBe[i])
+		}
+	}
 	if err != nil {
 		return profiles, err
 	}
@@ -145,23 +166,26 @@ func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.Fi
 	if filter.Sort == "price" {
 		sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].Cages[0].Price < profiles[j].Cages[0].Price })
 	} else if filter.Sort == "distance" {
-		profiles = s.ProfileServiceIn.SortProfileByDistance(profiles, la, long)
+		profiles = s.ProfileServiceIn.SortProfileByDistance(profiles)
 	} else if filter.Sort == "review" {
 		profiles = s.ProfileServiceIn.SortProfileByReviewRate(profiles)
 	}
-
-	if len(profiles) > 0 {
-		for i := range profiles {
-			profiles[i].ImageArray = utils.MapTextToStringArray(profiles[i].Image)
-		}
-	}
-
 	return profiles, nil
 }
 
 func (s *CageRoomService) SearchCageByHotel(animals []types.FilterInfo, filter types.FilterSearchCage, profile_id uint, user_id uint) (model.Profile, error) {
 	profile := model.Profile{}
 	if err := s.Validate.Struct(filter); err != nil {
+		return profile, err
+	}
+
+	long, err := strconv.ParseFloat(filter.Longitude, 64)
+	if err != nil {
+		return profile, err
+	}
+
+	la, err := strconv.ParseFloat(filter.Latitude, 64)
+	if err != nil {
 		return profile, err
 	}
 
@@ -180,7 +204,14 @@ func (s *CageRoomService) SearchCageByHotel(animals []types.FilterInfo, filter t
 		return profile, err
 	}
 
+	userLoc := haversine.Coord{Lat: la, Lon: long}
+	profileLoc := haversine.Coord{Lat: profile.Latitude, Lon: profile.Longitude}
+	_, km := haversine.Distance(profileLoc, userLoc)
+	profile.Distance = km
+
+	profile.PaypalEmail = ""
 	profile.ImageArray = utils.MapTextToStringArray(profile.Image)
+	profile.FacilityArray = utils.MapTextToStringArray(profile.Facility)
 	if len(profile.Cages) > 0 {
 		for i := range profile.Cages {
 			profile.Cages[i].ImageArray = utils.MapTextToStringArray(profile.Cages[i].Image)

@@ -170,29 +170,3 @@ func (r *CageRoomRepository) GetNotAvaliableCageRoom(animals [][]interface{}, st
 
 // 	return cages,nil
 // }
-
-// func (r *CageRoomRepository) FilterCages(animalType, animalSize, location string, startTime, endTime time.Time) ([]types.Cage, error) {
-// 	var cages []types.Cage
-// 	query := r.db.Model(&types.Cage{})
-
-// 	// Combine animalType and animalSize check
-// 	if animalType != "" && animalSize != "" {
-// 		query = query.Where("animal_type = ? AND animal_size = ?", animalType, animalSize)
-// 	}
-
-// 	// Check for location if needed
-// 	if location != "" {
-// 		query = query.Where("location = ?", location)
-// 	}
-
-// 	// Check the booking time range
-// 	query = query.Where("booking_time BETWEEN ? AND ?", startTime, endTime)
-
-// 	// Execute the query
-// 	result := query.Find(&cages)
-
-// 	if result.Error != nil {
-// 		return nil, result.Error
-// 	}
-// 	return cages, nil
-// }

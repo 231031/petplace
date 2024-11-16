@@ -33,7 +33,7 @@ type ProfileServiceIn interface {
 	UpdateProfile(id uint, profile model.Profile) error
 
 	SortProfileByReviewRate(profiles []model.Profile) []model.Profile
-	SortProfileByDistance(profiles []model.Profile, la float64, long float64) []model.Profile
+	SortProfileByDistance(profiles []model.Profile) []model.Profile
 	CountCompleteBookByID(profile_id uint) (int, error)
 }
 

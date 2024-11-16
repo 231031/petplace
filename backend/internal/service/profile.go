@@ -9,7 +9,6 @@ import (
 	"sort"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/umahmood/haversine"
 )
 
 type ProfileService struct {
@@ -123,15 +122,7 @@ func (s *ProfileService) UpdateProfile(id uint, profile model.Profile) error {
 	return nil
 }
 
-func (s *ProfileService) SortProfileByDistance(profiles []model.Profile, la float64, long float64) []model.Profile {
-	userLoc := haversine.Coord{Lat: la, Lon: long}
-
-	for i := range profiles {
-		profileLoc := haversine.Coord{Lat: profiles[i].Latitude, Lon: profiles[i].Longitude}
-		_, km := haversine.Distance(profileLoc, userLoc)
-		profiles[i].Distance = km
-	}
-
+func (s *ProfileService) SortProfileByDistance(profiles []model.Profile) []model.Profile {
 	sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].Distance < profiles[j].Distance })
 	return profiles
 }

@@ -15,28 +15,34 @@ import FormSignup from './page/FormSignup';
 import HotelHistory from './page/HotelHistory';
 import HotelHome from './page/HotelHome';
 import HotelDetail from './page/HotelDetail';
+import TestSearch from './page/TestSearch';
+import TestLogin from './page/TestLogin';
 
 
-function App () {
+function App() {
   return (
-    <div className = "bg" >
-      <Nav/>
+    <div className="bg" >
+      <Nav />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/hotelsearch" element={<Hotel />} />
-        <Route path="/care" element={<Care/>} />
+        <Route path="/care" element={<Care />} />
         <Route path="/delivery" element={<Delivery />} />
-        <Route path="/shop" element={<Shop/>} />
+        <Route path="/shop" element={<Shop />} />
         <Route path="/social" element={<Social />} />
-        <Route path="/Login" element={<Login/>} />
-        <Route path="/Signup" element={<Signup/>} />
+        <Route path="/Login" element={<Login />} />
+        <Route path="/Signup" element={<Signup />} />
         <Route path="/FormSignupHotel" element={<FormSignupHotel />} />
-        <Route path="/FormSignup" element={<FormSignup/>} />
+        <Route path="/FormSignup" element={<FormSignup />} />
         <Route path="/hotelhis" element={<HotelHistory />} />
         <Route path="/HotelHome" element={<HotelHome />} />
         <Route path="/hoteldetail" element={<HotelDetail />} />
+
+        {/* test api */}
+        <Route path="/test/search" element={<TestSearch />} />
+        <Route path="/test/login" element={<TestLogin />} />
       </Routes>
-      <Footer/>
+      <Footer />
     </div>
   );
 }
