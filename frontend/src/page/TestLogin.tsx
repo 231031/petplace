@@ -6,8 +6,8 @@ function TestLogin() {
 
     useEffect(() => {
         const payload = {
-            email: "test2@gmail.com",
-            password: "12345",
+           email: "aaa@gmail.com",            
+           password: "1234"
         };
 
         // const payload = {
@@ -24,6 +24,7 @@ function TestLogin() {
                 const res = await LoginUser(payload);
                 setUser(res.user);
                 localStorage.setItem("token", res.token);
+                console.log(res);
             } catch (err) {
                 console.log(err);
             }

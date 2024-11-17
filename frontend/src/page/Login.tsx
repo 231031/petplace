@@ -26,6 +26,7 @@ export default function Login () {
     
             if (response.ok) {
                 const data = await response.json();
+                localStorage.setItem("token", data.token);
                 // Handle successful login (e.g., save token, navigate to another page)
                 console.log('Login successful:', data);
                 navigate('/dashboard'); // Redirect to dashboard or desired page

@@ -18,6 +18,7 @@ import HotelDetail from './page/HotelDetail';
 import HotelBookDetail from './page/HotelBookDetail';
 import TestSearch from './page/TestSearch';
 import TestLogin from './page/TestLogin';
+import TestPost from './page/TestPost';
 import TestBooking from './page/TestBooking';
 // import TestLogin from './page/TestLogin';
 
@@ -45,6 +46,7 @@ function App() {
         {/* test api */}
         <Route path="/test/search" element={<TestSearch />} />
         <Route path="/test/login" element={<TestLogin />} />
+        <Route path="/test/post" element={<TestPost />} />
         <Route path="/test/booking" element={<TestBooking />} />
         {/* <Route path="/test/search" element={<TestSearch />} /> */}
         {/* <Route path="/test/login" element={<TestLogin />} /> */}
