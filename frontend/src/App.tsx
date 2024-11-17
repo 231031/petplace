@@ -15,7 +15,7 @@ import FormSignup from './page/FormSignup';
 import HotelHistory from './page/HotelHistory';
 import HotelHome from './page/HotelHome';
 import HotelDetail from './page/HotelDetail';
-import HotelBookDetail from './page/HotelBookDetail';
+import HotelPayment from './page/HotelPayment';
 import TestSearch from './page/TestSearch';
 import TestLogin from './page/TestLogin';
 import TestPost from './page/TestPost';
@@ -43,7 +43,7 @@ function App() {
         <Route path="/hotelhis" element={<HotelHistory />} />
         <Route path="/HotelHome" element={<HotelHome />} />
         <Route path="/hoteldetail" element={<HotelDetail />} />
-        <Route path="/hotelbookdetail" element={<HotelBookDetail />} />
+        <Route path="/hotelpayment" element={<HotelPayment />} />
 
         {/* test api */}
         <Route path="/test/search" element={<TestSearch />} />
