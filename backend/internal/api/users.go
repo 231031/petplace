@@ -91,7 +91,7 @@ func (h *UsersHandler) handleUpdateAnimalUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusInternalServerError, "failed to update animal", err)
 	}
 
-	return c.JSON(http.StatusOK, "update animal successfully")
+	return c.JSON(http.StatusOK, "updated animal successfully")
 }
 
 // @Summary Get Animals

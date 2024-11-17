@@ -63,7 +63,7 @@ func (h *ProfileHandler) handleCreateProfile(c echo.Context) error {
 // @Router /profile/{id} [put]
 // @Security BearerAuth
 func (h *ProfileHandler) handleUpdateProfile(c echo.Context) error {
-	param_id := c.Param("user_id")
+	param_id := c.Param("id")
 	id, err := utils.ConvertTypeToUint(param_id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
@@ -80,7 +80,7 @@ func (h *ProfileHandler) handleUpdateProfile(c echo.Context) error {
 		return utils.HandleError(c, http.StatusInternalServerError, "failed to udpate profile", err)
 	}
 
-	return nil
+	return c.JSON(http.StatusOK, "updated profile successfully")
 }
 
 // @Summary Get Profile By User ID and Role
