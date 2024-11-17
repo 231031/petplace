@@ -4,10 +4,10 @@ import (
 	"petplace/internal/types"
 )
 
-// type Hotel struct {
-// 	types.ProfileInfo
-// 	Cages     []CageRoom `gorm:"foreignKey:HotelID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"cages" query:"cages"`
-// }
+type Hotel struct {
+	types.ProfileInfo
+	Cages []CageRoom `gorm:"foreignKey:HotelID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"cages" query:"cages"`
+}
 
 type CageRoom struct {
 	ID          uint    `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
