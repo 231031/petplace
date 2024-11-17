@@ -14,6 +14,7 @@ type Profile struct {
 	Address     string  `gorm:"type:text;not null" json:"address" query:"address"`
 	Image       string  `gorm:"type:text;" json:"image" query:"image"`
 	Facility    string  `gorm:"type:text;" json:"facility" query:"facility"`
+	Detail      string  `gorm:"type:text;" json:"detail" query:"detail"`
 	Longitude   float64 `gorm:"type:float;not null" json:"longitude" query:"longitude" validate:"required"`
 	Latitude    float64 `gorm:"type:float;not null" json:"latitude" query:"latitude" validate:"required"`
 	CheckIn     string  `gorm:"type:varchar(191);" json:"check_in" query:"check_in" validate:"required"`

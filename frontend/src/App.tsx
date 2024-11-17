@@ -20,6 +20,8 @@ import TestSearch from './page/TestSearch';
 import TestLogin from './page/TestLogin';
 import TestPost from './page/TestPost';
 import TestBooking from './page/TestBooking';
+import TestProfile from './page/TestProfile';
+import CreateProfile from './page/CreateProfile';
 // import TestLogin from './page/TestLogin';
 
 
@@ -48,6 +50,8 @@ function App() {
         <Route path="/test/login" element={<TestLogin />} />
         <Route path="/test/post" element={<TestPost />} />
         <Route path="/test/booking" element={<TestBooking />} />
+        <Route path="/test/profile" element={<TestProfile />} />
+        <Route path="/CreateProfile" element={<CreateProfile />} />
         {/* <Route path="/test/search" element={<TestSearch />} /> */}
         {/* <Route path="/test/login" element={<TestLogin />} /> */}
       </Routes>
