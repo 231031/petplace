@@ -19,6 +19,7 @@ import HotelBookDetail from './page/HotelBookDetail';
 import TestSearch from './page/TestSearch';
 import TestLogin from './page/TestLogin';
 import TestBooking from './page/TestBooking';
+import TestProfile from './page/TestProfile';
 // import TestLogin from './page/TestLogin';
 
 
@@ -46,8 +47,7 @@ function App() {
         <Route path="/test/search" element={<TestSearch />} />
         <Route path="/test/login" element={<TestLogin />} />
         <Route path="/test/booking" element={<TestBooking />} />
-        {/* <Route path="/test/search" element={<TestSearch />} /> */}
-        {/* <Route path="/test/login" element={<TestLogin />} /> */}
+        <Route path="/test/profile" element={<TestProfile />} />
       </Routes>
       <Footer />
     </div>
