@@ -44,4 +44,6 @@ type AnimalInfo struct {
 	Age        int    `gorm:"type:int;not null" json:"age" query:"age" validate:"required"`
 	Weight     int    `gorm:"type:int;not null" json:"weight" query:"weight" validate:"required"`
 	Breed      string `gorm:"type:varchar(191);not null" json:"breed" query:"breed"`
+	Gender     string `gorm:"type:varchar(191);not null" json:"gender" query:"gender"`
+	HairType   string `gorm:"type:varchar(191);not null" json:"hair_type" query:"hair_type"`
 }
