@@ -1,21 +1,50 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { GetSearchCage } from "../helper/cage";
+import { FilterAnimal, FilterSearchCage } from "../types/payload";
+
 function Home  () {
  
-    const petOptions = [
-        "Dog", "Cat", "Fish", "Bird", "Chinchilla",
-        "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider",
-      ];
+  
+    const [hotels, setHotels] = useState<any[]>([]);
+    const [longitude, setLongtitude] = useState("");
+    // const [latitude, setLatitude] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [selectedPets, setSelectedPets] = useState<string[]>([]);
+    const navigate = useNavigate(); // Initialize useNavigate
+    const petOptions = ["dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
+  
     
-      const [location, setLocation] = useState("");
-      const [startDate, setStartDate] = useState("");
-      const [endDate, setEndDate] = useState("");
-      const [selectedPets, setSelectedPets] = useState<string[]>([]);
-    
-      const handlePetChange = (pet: string) => {
+    const handlePetChange = (pet: string) => {
         setSelectedPets((prev) =>
           prev.includes(pet) ? prev.filter((p) => p !== pet) : [...prev, pet]
         );
+    };
+
+    const handleSearch = async () => {
+        const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
+            animal_type: pet,
+            cage_size: "m",
+          }));
+      
+        const filterSearchCage: FilterSearchCage = {
+            longitude: "99.3986862",
+            latitude: "18.3170581",
+            start_time: startDate,
+            end_time: endDate
+        };
+      
+          try {
+            const results = await GetSearchCage(filterAnimal, filterSearchCage);
+            setHotels(results.data);
+            console.log("Results:", results);
+            navigate('/test/search', { state: { hotels: results } });
+          } catch (error) {
+            console.error("Error fetching hotels:", error);
+          }
       };
+
     return (
         <div className="h-screen relative">
             
@@ -69,8 +98,8 @@ function Home  () {
                             <input
                                 type="text"
                                 id="location"
-                                value={location}
-                                onChange={(e) => setLocation(e.target.value)}
+                                value={longitude}
+                                onChange={(e) => setLongtitude(e.target.value)}
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
                             />
                         </div>
@@ -80,11 +109,11 @@ function Home  () {
                                     Start Date
                                 </label>
                                 <input
-                                    type="date"
-                                    id="start-date"
-                                    value={startDate}
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                                type="date"
+                                id="start-date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
                                 />
                             </div>
                             <div>
@@ -92,46 +121,43 @@ function Home  () {
                                     End Date
                                 </label>
                                 <input
-                                    type="date"
-                                    id="end-date"
-                                    value={endDate}
-                                    onChange={(e) => setEndDate(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                                type="date"
+                                id="end-date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
                                 />
                             </div>
                         </div>
-            
-                        <div className ="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
-                            <label className="block text-red-900 text-lg font-semibold mb-4">Pet</label>
+                        <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
+                            <label className="block text-red-900 text-lg font-semibold mb-4">
+                                Pet
+                            </label>
                             <div className="grid grid-cols-2 gap-4">
-                            {petOptions.map((pet) => (
-                                <label key={pet} className="flex items-center space-x-2 cursor-pointer">
+                                {petOptions.map((pet) => (
+                                <label
+                                    key={pet}
+                                    className="flex items-center space-x-2 cursor-pointer"
+                                >
                                     <input
-                                        type="checkbox"
-                                        value={pet}
-                                        checked={selectedPets.includes(pet)}
-                                        onChange={() => handlePetChange(pet)}
-                                        className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
+                                    type="checkbox"
+                                    value={pet}
+                                    checked={selectedPets.includes(pet)}
+                                    onChange={() => handlePetChange(pet)}
+                                    className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
                                     />
                                     <span>{pet}</span>
-                                    <select className="bg-yellow text-sm text-[#A08252] ml-auto border border-gray-300 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#A08252]">
-                                        <option value="all">All size</option>
-                                        <option value="small">Small</option>
-                                        <option value="medium">Medium</option>
-                                        <option value="large">Large</option>
-                                    </select>
                                 </label>
-                            ))}
+                                ))}
                             </div>
                         </div>
                     </div>
-                    {/* Search Button */}
                     <div className="flex justify-center">
                         <button
-                            onClick={() => console.log({ location, startDate, endDate, selectedPets })}
-                            className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200"
+                        onClick={handleSearch}
+                        className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200"
                         >
-                            Search
+                        Search
                         </button>
                     </div>
                 </div>
@@ -140,6 +166,20 @@ function Home  () {
                         Favorite
                     </div>
                 </div>
+                <div>
+                <h1>Hotels</h1>
+                
+                {/* <ul>
+                    {hotels.map((hotel, index) => (
+                    <li key={index}>
+                        <h2>{hotel.name}</h2>
+                        <p>Location: {hotel.longitude}</p>
+                        <p>Price: {hotel.price} THB</p>
+                    </li>
+                    ))}
+                </ul> */}
+            
+            </div>
             </div>
     
                 
