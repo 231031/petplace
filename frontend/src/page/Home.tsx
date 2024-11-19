@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
 
@@ -9,6 +10,7 @@ function Home  () {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [selectedPets, setSelectedPets] = useState<string[]>([]);
+    const navigate = useNavigate(); // Initialize useNavigate
     const petOptions = ["dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
   
     
@@ -35,6 +37,7 @@ function Home  () {
             const results = await GetSearchCage(filterAnimal, filterSearchCage);
             setHotels(results.data);
             console.log("Results:", results);
+            navigate('/test/search', { state: { hotels: results } });
           } catch (error) {
             console.error("Error fetching hotels:", error);
           }
