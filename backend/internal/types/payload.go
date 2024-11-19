@@ -93,3 +93,13 @@ type Cage struct {
 	AnimalType  string    `json:"animal_type"`
 	BookingTime time.Time `json:"booking_time"`
 }
+
+type UpdateHotelPayload struct {
+    HotelID  uint    `json:"hotel_id" validate:"required"`
+    Name     string  `json:"name" validate:"omitempty,min=2"`
+    Address  string  `json:"address" validate:"omitempty,min=5"`
+    Price    float32 `json:"price" validate:"omitempty,gt=0"`
+    Services string  `json:"services" validate:"omitempty"`
+    Rating   float32 `json:"rating" validate:"omitempty,gte=0,lte=5"`
+}
+
