@@ -7,7 +7,6 @@ export async function GetSearchCage(
   filterAnimal: FilterAnimal[],
   filterSearchCage: FilterSearchCage
 ): Promise<any> {
-  console.log(filterAnimal,filterSearchCage)
   try {
     let apiPath = baseApi + "/cageroom/search?";
     let queryParams = "";
