@@ -1,5 +1,16 @@
 
 export default function HotelHome() {
+
+    fetch('http://localhost:5000/api/hotel/1', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer YOUR_TOKEN'
+        }
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+
     return (
         <div className="flex justify-center bg-bg  pb-10">
             <div className="flex w-3/4 items-center flex-col gap-y-2 bg-bg">

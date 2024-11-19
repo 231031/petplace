@@ -50,9 +50,9 @@ export default function Login () {
         <div className="h-screen flex">
             {/* container left */}
             <div className="flex justify-center bg-bgLogin w-3/4 items-baseline" > 
-                <div className="flex flex-col  items-center w-1/2 gap-y-5 pt-64">
+                <div className="flex flex-col items-center w-1/2 gap-y-5 pt-64">
                     <h1 className="text-5xl mb-10"> Log in to your account </h1>
-                    <div className='flex flex-col w-1/2 gap-y-2'>
+                    <div className='flex flex-col w-1/2 gap-y-2 pl-5'>
                         <p className=''>Username</p>
                         <InputBox placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
                         <p className=''>Password</p>
