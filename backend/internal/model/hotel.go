@@ -2,6 +2,7 @@ package model
 
 import (
 	"petplace/internal/types"
+	"time"
 )
 
 type Hotel struct {
@@ -38,7 +39,14 @@ type CageRoom struct {
 
 type HotelService struct {
 	types.ServiceInfo
-	CageID              uint                 `gorm:"not null" json:"cage_id" query:"cage_id"`
+	CageID uint `gorm:"not null" json:"cage_id" query:"cage_id"`
+
+	StartTime     time.Time `gorm:"not null" json:"start_time" query:"start_time" validate:"required"`
+	EndTime       time.Time `gorm:"not null" json:"end_time" query:"end_time" validate:"required"`
+	PaymentStatus string    `gorm:"not null;default:'pending'" json:"payment_status" query:"payment_status"`
+	PaymentID     string    `gorm:"type:string" json:"payment_id" query:"payment_id"`
+	PayoutID      string    `gorm:"type:string" json:"payout_id" query:"payout_id"`
+
 	AnimalHotelServices []AnimalHotelService `gorm:"foreignKey:HotelServiceID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animal_hotel_services" query:"animal_hotel_services" swaggerignore:"true"`
 	CageRoom            CageRoom             `gorm:"foreignKey:CageID;references:ID" json:"cage_room" swaggerignore:"true"`
 }

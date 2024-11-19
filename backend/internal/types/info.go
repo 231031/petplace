@@ -13,17 +13,12 @@ type ProfileInfo struct {
 }
 
 type ServiceInfo struct {
-	ID            uint      `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
-	StartTime     time.Time `gorm:"not null" json:"start_time" query:"start_time" validate:"required"`
-	EndTime       time.Time `gorm:"not null" json:"end_time" query:"end_time" validate:"required"`
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	Status        string  `gorm:"not null;default:'pending'" json:"status" query:"status"`
-	PaymentStatus string  `gorm:"not null;default:'pending'" json:"payment_status" query:"payment_status"`
-	Price         float32 `gorm:"type:float;not null" json:"price" query:"price"`
-	Detail        string  `gorm:"type:text" json:"detail" query:"detail"`
-	PaymentID     string  `gorm:"type:string" json:"payment_id" query:"payment_id"`
-	PayoutID      string  `gorm:"type:string" json:"payout_id" query:"payout_id"`
+	ID        uint `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Status    string  `gorm:"not null;default:'pending'" json:"status" query:"status"`
+	Price     float32 `gorm:"type:float;not null" json:"price" query:"price"`
+	Detail    string  `gorm:"type:text" json:"detail" query:"detail"`
 
 	ReviewRate   float32 `gorm:"type:float;default:0" json:"review_rate" query:"review_rate"`
 	ReviewDetail string  `gorm:"type:text;" json:"review_detail" query:"review_detail"`
@@ -45,5 +40,18 @@ type AnimalInfo struct {
 	Weight     int    `gorm:"type:int;not null" json:"weight" query:"weight" validate:"required"`
 	Breed      string `gorm:"type:varchar(191);not null" json:"breed" query:"breed"`
 	Gender     string `gorm:"type:varchar(191);not null" json:"gender" query:"gender"`
-	HairType   string `gorm:"type:varchar(191);not null" json:"hair_type" query:"hair_type"`
+	HairType   string `gorm:"type:varchar(191);" json:"hair_type" query:"hair_type"`
+}
+
+// detail affects estimating price of each service type
+type PriceServiceInfo struct {
+	ServiceDetialID uint `gorm:"not null" json:"service_detail_id" query:"service_detail_id" validate:"required"`
+
+	MinWeight  int     `gorm:"type:int;" json:"min_weight" query:"min_weight"`
+	MaxWeight  int     `gorm:"type:int;" json:"max_weight" query:"max_weight"`
+	Gender     int     `gorm:"type:varchar(191);" json:"gender" query:"gender"`
+	HairType   string  `gorm:"type:varchar(191);" json:"hair_type" query:"hair_type"`
+	AnimalType string  `gorm:"type:varchar(191);" json:"animal_type" query:"animal_type"`
+	Detail     string  `gorm:"type:text;" json:"detail" query:"detail"`
+	Price      float32 `gorm:"type:float;not null" json:"price" query:"price" validate:"required"`
 }

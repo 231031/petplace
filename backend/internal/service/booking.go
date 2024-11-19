@@ -109,10 +109,8 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 
 	// update payment id link to paypal service and status in database
 	updatedSer := model.HotelService{
-		ServiceInfo: types.ServiceInfo{
-			PaymentID:     paymentID,
-			PaymentStatus: "hold",
-		},
+		PaymentID:     paymentID,
+		PaymentStatus: "hold",
 	}
 
 	err = s.UpdateHotelService(bookID, updatedSer)
@@ -191,10 +189,10 @@ func (s *BookingService) AcceptRejectBookHotel(payload types.SelectStatusPayload
 	}
 
 	updatedSer := model.HotelService{
+		PayoutID:      payoutID,
+		PaymentStatus: "completed",
 		ServiceInfo: types.ServiceInfo{
-			Status:        payload.Status,
-			PayoutID:      payoutID,
-			PaymentStatus: "completed",
+			Status: payload.Status,
 		},
 	}
 
@@ -233,10 +231,10 @@ func (s *BookingService) refundBookHotel(ser model.HotelService, payload types.R
 	}
 
 	updatedSer := model.HotelService{
+		PaymentStatus: "refunded",
+		PayoutID:      payoutID,
 		ServiceInfo: types.ServiceInfo{
-			Status:        newStatus,
-			PaymentStatus: "refunded",
-			PayoutID:      payoutID,
+			Status: newStatus,
 		},
 	}
 	err = s.UpdateHotelService(ser.ID, updatedSer)

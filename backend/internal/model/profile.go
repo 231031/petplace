@@ -14,6 +14,7 @@ type Profile struct {
 	Address     string  `gorm:"type:text;not null" json:"address" query:"address"`
 	Image       string  `gorm:"type:text;" json:"image" query:"image"`
 	Facility    string  `gorm:"type:text;" json:"facility" query:"facility"`
+	OpenDay     string  `gorm:"type:text;" json:"open_day" query:"open_day"`
 	Detail      string  `gorm:"type:text;" json:"detail" query:"detail"`
 	Longitude   float64 `gorm:"type:float;not null" json:"longitude" query:"longitude" validate:"required"`
 	Latitude    float64 `gorm:"type:float;not null" json:"latitude" query:"latitude" validate:"required"`
@@ -25,7 +26,8 @@ type Profile struct {
 	Cages []CageRoom `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"cages" query:"cages" swaggerignore:"true"`
 
 	// Clinic  Clinic  `gorm:"foreignKey:ProfileID"`
-	ServiceDetails []ServiceDetail `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"service_details" query:"service_details" swaggerignore:"true"`
+	ServiceDetails  []ServiceDetail  `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"service_details" query:"service_details" swaggerignore:"true"`
+	ResevationTimes []ResevationTime `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"reservation_time" query:"reservation_time" swaggerignore:"true"`
 
 	// Carrier Carrier `gorm:"foreignKey:ProfileID"`
 	TransportCategorys []TransportCategory `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"transport_categorys" query:"transport_categorys" swaggerignore:"true"`
@@ -41,6 +43,14 @@ type Profile struct {
 	Distance      float64  `gorm:"-" swaggerignore:"true"`
 	ImageArray    []string `gorm:"-" json:"image_array" query:"image_array"`
 	FacilityArray []string `gorm:"-" json:"facility_array" query:"facility_array"`
+}
+
+type ResevationTime struct {
+	ProfileID        uint      `gorm:"not null" json:"profile_id" query:"profile_id" validate:"required"`
+	Date             time.Time `gorm:"not null" json:"date" query:"date" validate:"required"`
+	DayParting       time.Time `gorm:"varchar(191);not null" json:"day_parting" query:"day_parting"`                  // morning, afternoon
+	ResevationStatus string    `gorm:"not null;default:'close'" json:"reservation_status" query:"reservation_status"` // open close
+	OpenStatus       string    `gorm:"not null;default:'close'" json:"open_status" query:"open_status"`               // open close
 }
 
 type Chat struct {

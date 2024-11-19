@@ -8,6 +8,15 @@ import (
 
 func Migrate(db *gorm.DB) error {
 	// supply clinic
+	db.AutoMigrate(&model.NeuteringService{})
+	db.AutoMigrate(&model.VaccineService{})
+	db.AutoMigrate(&model.HealthCheckService{})
+
+	// & care
+	db.AutoMigrate(&model.CareService{})
+	db.AutoMigrate(&model.ExtraService{})
+
+	// & reserved clinic & care services
 	db.AutoMigrate(&model.AnimalService{}) // history service
 	db.AutoMigrate(&model.ServiceDetail{}) // available services
 
