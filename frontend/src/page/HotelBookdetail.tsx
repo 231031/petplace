@@ -32,13 +32,20 @@ function HotelBookdetail() {
             <div className="max-w-5xl w-full mx-auto">
                 <p className="text-2xl ">Room</p>
                 <CageCard />
+                <div className="flex justify-between">
+                    <p className="text-2xl ">Pet</p>
+                    <button className="w-fit px-2 h-8  rounded-full shadow shadow-gray-400">Add Pet</button>
+                </div>
+                <PetCard />
             </div>
-            <div className="max-w-5xl w-full mx-auto">
-                <p className="text-2xl ">Pet</p>
-                <PetCard/>
+            <div className="max-w-sm w-full mx-auto mb-10">
+                <div className="flex justify-between space-x-6">
+                    <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400">Back</button>
+                    <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400">Next</button>
+                </div>
             </div>
         </div>
-
+        
     )
 }
 

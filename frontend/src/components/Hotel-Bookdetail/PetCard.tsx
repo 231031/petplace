@@ -36,7 +36,7 @@ function PetCard() {
                 <div className="flex space-x-4 ">
                     <div className="flex items-center">
                         <label className="block text-sm text-black ">Pet type:</label>
-                        <select className="border- rounded-3xl p-2  mx-2 test-xs shadow shadow-gray-400">
+                        <select className="border rounded-3xl text-sm mx-2 shadow h-10 flex shadow-gray-400">
                             <option>Select type</option>
                             <option>Dog</option>
                             <option>Cat</option>
@@ -75,9 +75,11 @@ function PetCard() {
 
             {/* Button section */}
             <div className="ml-auto flex items-start">
-                <button className="bg-[#9B835F] text-white rounded-md py-2 px-4 hover:bg-[#7a684b]">
-                    Select your pet
-                </button>
+                <select className="border bg-[#CBAD87] rounded-3xl font-semibold mx-2 shadow h-10 flex shadow-gray-400">
+                            <option>Select your pet</option>
+                            <option>Profile 1</option>
+                            <option>Profile 2</option>
+                        </select>
             </div>
         </div>
 
