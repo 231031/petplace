@@ -22,7 +22,8 @@ import TestPost from './page/TestPost';
 import TestBooking from './page/TestBooking';
 import TestProfile from './page/TestProfile';
 import CreateProfile from './page/CreateProfile';
-import HotelBookdetail from './page/HotelBookDetail';
+import HotelBookdetail from './page/HotelBookdetail';
+
 // import TestLogin from './page/TestLogin';
 
 

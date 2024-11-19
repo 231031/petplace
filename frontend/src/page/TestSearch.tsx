@@ -1,4 +1,5 @@
 import { GetSearchCage, GetSearchCageByHotel } from "@/helper/cage";
+import { FilterAnimal, FilterSearchCage } from "@/types/payload";
 import { useEffect, useState } from "react";
 
 
@@ -8,7 +9,7 @@ function TestSearch() {
     const [cages, setCages] = useState();
 
     useEffect(() => {
-        const filterAnimal = [
+        const filterAnimal:FilterAnimal[] = [
             {
                 animal_type: "dog",
                 cage_size: "m",
@@ -19,7 +20,7 @@ function TestSearch() {
             },
         ]
 
-        const filterSearchCage = {
+        const filterSearchCage:FilterSearchCage= {
             longitude: "100.4913737",
             latitude: "13.6526372",
             start_time: "2024-11-11",
