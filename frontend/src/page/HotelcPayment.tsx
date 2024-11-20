@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-export default function PaymentSelect() {
+
+
+export default function HotelcPayment() {
     const [select, setSelect] = useState<number | null>(0);
 
     const handleSelect = (choice: number) => {
@@ -31,6 +33,9 @@ export default function PaymentSelect() {
                     </li>
                 </ol>
             </div>
+
+
+
             <p className="text-2xl font-bold max-w-6xl w-full mx-auto mt-5">Select Payment Method</p>
             <div className="flex flex-col gap-3 max-w-7xl mx-auto mt-5">
                 <div className={`${select === 1 ? "opacity-100" : "opacity-50"} `}>
@@ -42,69 +47,18 @@ export default function PaymentSelect() {
                             checked={select === 1}
                         />
                         <div className="shadow shadow-gray-400 w-full p-6 ml-12">
-                            <p className="text-xl font-bold mb-4">Credit/Debit Card</p>
-                            <div className='grid grid-row-2 gap-2'>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Card Type</label>
-                                    <div className='grid grid-cols-4 gap-4'>
-                                        <select className="w-full mt-1 border border-gray-300 text-gray-700 rounded-md p-2">
-                                            <option value="" disabled selected hidden>Select type</option>
-                                            <option value="master-card">Master Card</option>
-                                            <option value="visa">Visa</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-4 gap-4">
-                                    <div className="col-span-1">
-                                        <label className="block text-sm font-medium text-gray-700">Card Name</label>
-                                        <input
-                                            type="text"
-                                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                                            placeholder="Enter name"
-                                        />
-                                    </div>
-
-
-                                    <div className="col-span-1">
-                                        <label className="block text-sm font-medium text-gray-700">Card Number</label>
-                                        <input
-                                            type="text"
-                                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                                            placeholder="XXXX-XXXX-XXXX"
-                                        />
-                                    </div>
-
-
-                                    <div className="col-span-1">
-                                        <label className="block text-sm font-medium text-gray-700">Expiry Date</label>
-                                        <input
-                                            type="text"
-                                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                                            placeholder="MM/YY"
-                                        />
-                                    </div>
-
-
-                                    <div className="col-span-1">
-                                        <label className="block text-sm font-medium text-gray-700">CVC</label>
-                                        <input
-                                            type="text"
-                                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                                            placeholder="XXX"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
+                            <p className="text-xl font-bold mb-8">Credit/Debit Card</p>
+                            <img src="https://madduckjewels.com/wp-content/uploads/2019/09/Visa-MasterCard-300x175-300x175.png" alt="Credit/Debit Card" className="w-60 h-36 shadow shadow-gray-400" />
                         </div>
                     </div>
                 </div>
+
                 <div className="max-w-sm w-full mx-auto mb-10">
                     <div className="flex justify-between space-x-6">
                         <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400">Back</button>
                         <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400">Next</button>
                     </div>
                 </div>
-
 
             </div>
         </div>

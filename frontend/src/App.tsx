@@ -24,6 +24,7 @@ import TestProfile from './page/TestProfile';
 import CreateProfile from './page/CreateProfile';
 import HotelBookdetail from './page/HotelBookdetail';
 import TestSelectRoom from './page/TestSelectRoom';
+import HotelcPayment from './page/HotelcPayment';
 
 // import TestLogin from './page/TestLogin';
 
@@ -46,6 +47,7 @@ function App() {
         <Route path="/hotelhis" element={<HotelHistory />} />
         <Route path="/HotelHome" element={<HotelHome />} />
         <Route path="/hoteldetail" element={<HotelDetail />} />
+        <Route path="/hotelcpayment" element={<HotelcPayment/>}/>
         <Route path="/hotelfillpayment" element={<HotelFillPayment />} />
         <Route path="/hotelbookdetail" element={<HotelBookdetail/>}/>
 
