@@ -26,6 +26,12 @@ import HotelBookdetail from './page/HotelBookdetail';
 import TestSelectRoom from './page/TestSelectRoom';
 import HotelcPayment from './page/HotelcPayment';
 
+import HotelSearch from './page/HotelSearch';
+
+import HotelEdit from './page/HotelEdit';
+import RoomEdit from './page/RoomEdit';
+import TestUpload from './page/TestUpload';
+
 // import TestLogin from './page/TestLogin';
 
 
@@ -35,7 +41,7 @@ function App() {
       <Nav />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/hotelsearch" element={<Hotel />} />
+        <Route path="/hotelsearch" element={<HotelSearch />} />
         <Route path="/care" element={<Care />} />
         <Route path="/delivery" element={<Delivery />} />
         <Route path="/shop" element={<Shop />} />
@@ -50,6 +56,9 @@ function App() {
         <Route path="/hotelcpayment" element={<HotelcPayment/>}/>
         <Route path="/hotelfillpayment" element={<HotelFillPayment />} />
         <Route path="/hotelbookdetail" element={<HotelBookdetail/>}/>
+        <Route path="/hotel/edit" element={<HotelEdit />} />
+        <Route path="/room/edit" element={<RoomEdit />} />
+        <Route path="/CreateProfile" element={<CreateProfile />} />
 
         {/* test api */}
         <Route path="/test/search" element={<TestSearch />} />
@@ -61,6 +70,8 @@ function App() {
         <Route path="/CreateProfile" element={<CreateProfile />} />
         {/* <Route path="/test/search" element={<TestSearch />} /> */}
         {/* <Route path="/test/login" element={<TestLogin />} /> */}
+        <Route path="/test/upload" element={<TestUpload />} />
+
       </Routes>
       <Footer />
     </div>
