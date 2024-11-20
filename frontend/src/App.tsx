@@ -20,7 +20,10 @@ import TestSearch from './page/TestSearch';
 import TestLogin from './page/TestLogin';
 import TestPost from './page/TestPost';
 import TestBooking from './page/TestBooking';
+import TestProfile from './page/TestProfile';
 import CreateProfile from './page/CreateProfile';
+import TestUpload from './page/TestUpload';
+import FullMap from './page/Fullmap';
 // import TestLogin from './page/TestLogin';
 
 
@@ -43,15 +46,17 @@ function App() {
         <Route path="/HotelHome" element={<HotelHome />} />
         <Route path="/hoteldetail" element={<HotelDetail />} />
         <Route path="/hotelbookdetail" element={<HotelBookDetail />} />
+        <Route path="/CreateProfile" element={<CreateProfile />} />
 
         {/* test api */}
         <Route path="/test/search" element={<TestSearch />} />
         <Route path="/test/login" element={<TestLogin />} />
         <Route path="/test/post" element={<TestPost />} />
         <Route path="/test/booking" element={<TestBooking />} />
-        <Route path="/CreateProfile" element={<CreateProfile />} />
-        {/* <Route path="/test/search" element={<TestSearch />} /> */}
-        {/* <Route path="/test/login" element={<TestLogin />} /> */}
+        <Route path="/test/profile" element={<TestProfile />} />
+        <Route path="/test/upload" element={<TestUpload />} />
+        <Route path="/FullMap" element={<FullMap/>} />
+
       </Routes>
       <Footer />
     </div>

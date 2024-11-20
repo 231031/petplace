@@ -1,5 +1,7 @@
 import { FilterAnimal, FilterSearchCage } from "@/types/payload";
-import { MapArrayToQuery } from "./utils";
+import { MapArrayToQuery, RequestApi, UpdateImageArray } from "./utils";
+import { CageRoom } from "@/types/model";
+import { UploadRes } from "@/types/response";
 
 const baseApi = import.meta.env.VITE_BASEAPI;
 
@@ -55,6 +57,19 @@ export async function GetSearchCageByHotel(
   } catch (error) {
     return Promise.reject(error);
   }
+}
+
+export async function UpdateCage(cage:CageRoom, newImages: UploadRes[]): Promise<any> {
+  try {
+      let endpoint = `${baseApi}/cageroom/${cage.id}`;
+      if (newImages.length > 0) {
+        cage.image_array = UpdateImageArray(newImages, cage.image_array, cage.image)
+      }
+      return RequestApi(endpoint, "PUT", cage, 200);
+
+    } catch (error) {
+      return Promise.reject(error);
+    }
 }
 
 

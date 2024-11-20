@@ -1,16 +1,33 @@
+import { useEffect, useState } from "react";
 
 export default function HotelHome() {
-
-    fetch('http://localhost:5000/api/hotel/1', {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer YOUR_TOKEN'
-        }
-    })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error('Error:', error));
-
+    const [hotel, setHotel] = useState({
+        name: "",
+        email: "",
+    }
+    );
+    const id = localStorage.getItem("userId");
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        fetch(`http://localhost:5000/api/profile/${id}/hotel`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        })
+            .then((response) => {
+                if (!response.ok) throw new Error("Failed to fetch data");
+                return response.json();
+            })
+            .then((data) => {
+                console.log("Fetched hotel data:", data.profile);
+                setHotel(data.profile) // ตรวจสอบข้อมูลที่ดึงมาจาก API
+                
+            })
+            .catch((error) => console.error("Error fetching hotel data:", error));
+    }, []);
+    // console.log("hotel data", hotel.facility[])
     return (
         <div className="flex justify-center bg-bg  pb-10">
             <div className="flex w-3/4 items-center flex-col gap-y-2 bg-bg">
@@ -20,7 +37,7 @@ export default function HotelHome() {
                     <button className="bg-egg h-10 w-20 rounded-md text-navbar">edit</button>
                 </div>
                 <div className="flex flex-col w-full h-80 gap-y-5 ">
-                    <h1 className="text-4xl">Hotel</h1>
+                    <h1 className="text-4xl">{hotel.name}</h1>
                     <div className="bg-cover bg-center h-full" style={{ backgroundImage: "url('/images/loginbg.png')" }}>
                     </div>
                 </div>
@@ -31,15 +48,15 @@ export default function HotelHome() {
                         <h1 className="text-2xl"> Detail</h1>
                         <div className="flex flex-col mr-5 bg-bg gap-y-5 p-5 rounded-xl shadow shadow-gray-400">
                             <p>
-                                At [Hotel Name], we believe your pets deserve a vacation too!
+                                At {hotel.name}, we believe your pets deserve a vacation too!
                                 Our pet hotel offers a safe, comfortable, and enriching environment
                                 for your furry family members, with amenities designed specifically
                                 for both cats and dogs.
 
                             </p>
                             <div>
-                                <p>Check in 12.00</p>
-                                <p>Check out 12.00</p>
+                                <p>Check in {hotel.check_in}</p>
+                                <p>Check out {hotel.check_out}</p>
                             </div>
                         </div>
                     </div>
@@ -60,7 +77,7 @@ export default function HotelHome() {
                 <div className="flex flex-col w-full gap-y-5 pb-5">
                     <h1 className="text-2xl"> Facility</h1>
                     <div className="flex gap-x-2">
-                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">Parking</button>
+                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400"></button>
                         <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">CCTV</button>
                         <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">Picture</button>
                         <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">Grooming</button>

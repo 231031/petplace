@@ -6,7 +6,7 @@ import (
 
 type Hotel struct {
 	types.ProfileInfo
-	Cages     []CageRoom `gorm:"foreignKey:HotelID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"cages" query:"cages"`
+	Cages []CageRoom `gorm:"foreignKey:HotelID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"cages" query:"cages"`
 }
 
 type CageRoom struct {

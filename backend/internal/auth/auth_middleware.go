@@ -37,6 +37,7 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		})
 
 		if err != nil || !token.Valid {
+			fmt.Println(err.Error())
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired token")
 		}
 
@@ -45,6 +46,7 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			c.Set("role", claims["role"])
 			return next(c)
 		}
+
 		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired token")
 	}
 }

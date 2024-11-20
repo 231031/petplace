@@ -3,13 +3,13 @@ import Button from '../components/LoginSignup/Button';
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 
-export default function Login () {
-    
+export default function Login() {
+
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    
+
     const handleLogin = async () => {
         try {
             const response = await fetch('http://localhost:5000/api/auth/login', {
@@ -18,12 +18,12 @@ export default function Login () {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     email: username, // Assuming the "username" state holds the email
-                    password 
+                    password
                 }),
             });
-    
+
             if (response.ok) {
                 const data = await response.json();
                 console.log('Userid', data.user.id);
@@ -31,7 +31,7 @@ export default function Login () {
                 localStorage.setItem("userId", data.user.id)
                 // console.log("localstorge", userId)
                 console.log('Login successful:', data);
-                navigate('/dashboard'); // Redirect to dashboard or desired page
+                navigate('/'); // Redirect to dashboard or desired page
             } else {
                 const errorData = await response.json();
                 setError(errorData.message || 'Login failed');
@@ -44,7 +44,7 @@ export default function Login () {
 
     const SignupClick = () => {
         navigate('/Signup'); // นำทางไปยังหน้า /signin
-      };
+    };
 
     return (
         <div className="h-screen flex">
@@ -63,15 +63,15 @@ export default function Login () {
                         <p>Are you forget Password ? </p>
                         <a href="#" className="underline decoration-1"> Reset password </a>
                     </div>
-                    <Button label="Log in" onClick={handleLogin}/>
+                    <Button label="Log in" onClick={handleLogin} />
                 </div>
             </div>
             {/* container right */}
-            <div  className=" flex justify-center w-1/4 items-baseline bg-cover bg-center " style={{backgroundImage: "url('/images/loginbg.png')"}}> 
-            <div className="flex flex-col items-center w-1/2 pt-80 gap-y-5 text-white">
+            <div className=" flex justify-center w-1/4 items-baseline bg-cover bg-center " style={{ backgroundImage: "url('/images/loginbg.png')" }}>
+                <div className="flex flex-col items-center w-1/2 pt-80 gap-y-5 text-white">
                     <h1 className="text-3xl"> New Here ? </h1>
                     <p>Sign up and explore a petplace </p>
-                    <Button label='Sign up' onClick={SignupClick}/>
+                    <Button label='Sign up' onClick={SignupClick} />
                 </div>
             </div>
         </div>

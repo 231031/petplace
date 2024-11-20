@@ -1,4 +1,27 @@
 import { FilterAnimal, FilterSearchCage } from "@/types/payload";
+import { UploadRes } from "@/types/response";
+
+export async function RequestApi(endpoint:string, method:string, payload: any, checkStatus: number): Promise<any> {
+  try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(endpoint, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json();
+      if (response.status != checkStatus) {
+        return Promise.reject(data);
+      }
+  
+      return Promise.resolve(data);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+}
 
 export function MapArrayToQuery(
   filterAnimal: FilterAnimal[],
@@ -20,3 +43,24 @@ export function MapArrayToQuery(
       queryParams = queryParams.slice(-1) === '&' ? queryParams.slice(0, -1) : queryParams;
       return queryParams;
 }
+
+export function UpdateImageArray(newImages:UploadRes[], images:string[] | undefined, strImage:string | undefined): string[] {
+  if (strImage == "") {
+    let updatedImages: string[] = [];
+    newImages.forEach(image => {
+      updatedImages.push(image.fileUrl)
+    })
+    return updatedImages
+  }
+
+  if ( images ) {
+    newImages.forEach(image => {
+      images.push(image.fileUrl)
+    })
+    return images
+  }
+
+  return []
+}
+
+
