@@ -168,7 +168,6 @@ function CreateProfile() {
                                 className="rounded-lg text-yellow border border-2 border-bg hover:border-yellow focus:border-yellow focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow h-12 "
                             >
                                 <option value="">Select profile</option>
-                                <option value="client">Client</option>
                                 <option value="hotel">Hotel</option>
                             </select>
                         </div>

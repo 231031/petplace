@@ -32,6 +32,7 @@ import HotelEdit from './page/HotelEdit';
 import RoomEdit from './page/RoomEdit';
 import TestUpload from './page/TestUpload';
 import FullMap from './page/Fullmap';
+import HotelBookSuccess from './page/HotelBookSuccess';
 
 // import TestLogin from './page/TestLogin';
 
@@ -57,6 +58,7 @@ function App() {
         <Route path="/hotelcpayment" element={<HotelcPayment/>}/>
         <Route path="/hotelfillpayment" element={<HotelFillPayment />} />
         <Route path="/hotelbookdetail" element={<HotelBookdetail/>}/>
+        <Route path="/hotelbooksuccess" element={<HotelBookSuccess/>}/>
         <Route path="/hotel/edit" element={<HotelEdit />} />
         <Route path="/room/edit" element={<RoomEdit />} />
         <Route path="/CreateProfile" element={<CreateProfile />} />
