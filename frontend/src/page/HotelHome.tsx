@@ -1,12 +1,21 @@
+import { useNavigate } from "react-router-dom";
 
 export default function HotelHome() {
+    const navigate = useNavigate();
+
     return (
         <div className="flex justify-center bg-bg  pb-10">
             <div className="flex w-3/4 items-center flex-col gap-y-2 bg-bg">
                 {/* section1 */}
                 <div className="pt-10 space-x-1 text-white">
                     <button className="bg-navbar h-10 w-20 rounded-md">view</button>
-                    <button className="bg-egg h-10 w-20 rounded-md text-navbar">edit</button>
+                    <button
+                        className="bg-egg h-10 w-20 rounded-md text-navbar"
+                        onClick = {() => navigate('/hotel/edit')}
+                        // onClick={() => navigate('hotel/edit', { state: { hotels: results } })}
+                    >
+                        edit
+                    </button>     
                 </div>
                 <div className="flex flex-col w-full h-80 gap-y-5 ">
                     <h1 className="text-4xl">Hotel</h1>
