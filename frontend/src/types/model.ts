@@ -3,10 +3,10 @@ export interface CageRoom {
     cage_type:      string;
     detail?:         string;
     facility?:       string;
-    facility_array: string[];
+    facility_array?: string[];
     height:         number;
     image?:          string;
-    image_array:    string[];
+    image_array?:    string[];
     lenth:          number;
     max_capacity:   number;
     price:          number;

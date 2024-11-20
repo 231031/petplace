@@ -1,3 +1,9 @@
+export interface UploadRes {
+    filePath: string;
+    accountId: string;
+    fileUrl: string;
+}
+
 export interface ProfileRes {
     profile: Profile;
     token:   string;
