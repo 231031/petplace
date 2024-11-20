@@ -49,7 +49,8 @@ type HotelServiceRepositoryIn interface {
 
 	GetAllBookingHotelByStatus(status string) ([]model.HotelService, error)
 	GetAllHotelServiceByHotel(profile_id uint, status string) ([]model.HotelService, error)
-	GetAllHotelServiceByUser(user_id uint, status string) ([]model.HotelService, error)
+	GetStatusBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error)
+	GetAllHotelServiceByUser(user_id uint) ([]model.HotelService, error)
 	GetHotelService(id uint) (model.HotelService, error)
 	GetReviewByHotel(profile_id uint) ([]model.HotelService, error)
 }

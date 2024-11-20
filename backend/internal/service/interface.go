@@ -47,7 +47,8 @@ type BookingServiceIn interface {
 	GetAllBookingHotelByStatus(status string) ([]model.HotelService, error)
 	GetBookingHotel(id uint) (model.HotelService, error)
 	GetAllBookingHotelByHotel(profile_id uint, status string) ([]model.HotelService, error)
-	GetAllBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error)
+	GetStatusBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error)
+	GetAllHotelServiceByUser(user_id uint) ([]model.HotelService, error)
 	GetReviewByHotel(profile_id uint) ([]model.HotelService, error)
 }
 

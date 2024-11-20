@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"petplace/internal/model"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -54,8 +56,12 @@ func (r ProfileRepository) GetProfileByUserID(userID uint, role string) (model.P
 	result := r.db.Preload("Cages.HotelServices", func(db *gorm.DB) *gorm.DB {
 		return db.Select("CageID", "ReviewDetail", "ReviewRate")
 	}).
-		Where("user_id = ? AND role = ?", userID, role).
+		Where("user_id = ? AND role = ?", userID, strings.ToLower(role)).
 		First(&profile)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return profile, nil
+	}
 
 	if result.Error != nil {
 		return profile, result.Error
