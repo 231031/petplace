@@ -22,7 +22,7 @@ const Nav: React.FC = () => {
           <div className="hidden md:flex justify-center flex-grow space-x-4">
             <ul className="flex space-x-4">
               <li>
-                <a href="/" className="text-white">Home</a>
+                <a href="/" className="text-white"></a>
               </li>
               <li>
                 <a href="/hotel" className="text-white">Hotel</a>
