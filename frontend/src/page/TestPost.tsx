@@ -19,7 +19,7 @@ const postBookingHotel = async () => {
   };
 
   try {
-    const token = localStorage.getItem("token"); // Retrieve the token from localStorage
+    const token = localStorage.getItem("token");
 
     if (!token) {
       console.error("No token found. Please log in first.");
