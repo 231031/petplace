@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export default function HotelHome() {
     const [hotel, setHotel] = useState({
         name: "",
         email: "",
+        check_in:"",
+        check_out:"",
+        facility_array: "",
+        avg_review:"",
     }
     );
     const id = localStorage.getItem("userId");
@@ -28,13 +33,21 @@ export default function HotelHome() {
             .catch((error) => console.error("Error fetching hotel data:", error));
     }, []);
     // console.log("hotel data", hotel.facility[])
+    const navigate = useNavigate();
+
     return (
         <div className="flex justify-center bg-bg  pb-10">
             <div className="flex w-3/4 items-center flex-col gap-y-2 bg-bg">
                 {/* section1 */}
                 <div className="pt-10 space-x-1 text-white">
                     <button className="bg-navbar h-10 w-20 rounded-md">view</button>
-                    <button className="bg-egg h-10 w-20 rounded-md text-navbar">edit</button>
+                    <button
+                        className="bg-egg h-10 w-20 rounded-md text-navbar"
+                        onClick = {() => navigate('/hotel/edit')}
+                        // onClick={() => navigate('hotel/edit', { state: { hotels: results } })}
+                    >
+                        edit
+                    </button>     
                 </div>
                 <div className="flex flex-col w-full h-80 gap-y-5 ">
                     <h1 className="text-4xl">{hotel.name}</h1>
@@ -77,10 +90,10 @@ export default function HotelHome() {
                 <div className="flex flex-col w-full gap-y-5 pb-5">
                     <h1 className="text-2xl"> Facility</h1>
                     <div className="flex gap-x-2">
-                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400"></button>
-                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">CCTV</button>
-                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">Picture</button>
-                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">Grooming</button>
+                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">{hotel.facility_array[0]}</button>
+                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">{hotel.facility_array[1]}</button> 
+                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">{hotel.facility_array[2]}</button>
+                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">{hotel.facility_array[3]}</button>
                     </div>
                 </div>
                 {/* section4 */}
@@ -149,7 +162,8 @@ export default function HotelHome() {
                 {/* section 5 */}
                 <div className="flex flex-col bg-bg w-full mt-10">
                     <div className="flex space-x-5">
-                        <h1 className="text-2xl">Review</h1>
+                        <h1 className="text-2xl">Review {hotel.avg_review}</h1>
+                        {/* <h1></h1> */}
                         <div className="size-7 bg-navbar rounded-full"></div>
                     </div>
                     <div className="shadow shadow-gray-400 rounded-md mt-5">

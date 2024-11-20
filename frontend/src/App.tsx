@@ -15,15 +15,24 @@ import FormSignup from './page/FormSignup';
 import HotelHistory from './page/HotelHistory';
 import HotelHome from './page/HotelHome';
 import HotelDetail from './page/HotelDetail';
-import HotelBookDetail from './page/HotelBookDetail';
+import HotelFillPayment from './page/HotelFillPayment';
 import TestSearch from './page/TestSearch';
 import TestLogin from './page/TestLogin';
 import TestPost from './page/TestPost';
 import TestBooking from './page/TestBooking';
 import TestProfile from './page/TestProfile';
 import CreateProfile from './page/CreateProfile';
+import HotelBookdetail from './page/HotelBookdetail';
+import TestSelectRoom from './page/TestSelectRoom';
+import HotelcPayment from './page/HotelcPayment';
+
+import HotelSearch from './page/HotelSearch';
+
+import HotelEdit from './page/HotelEdit';
+import RoomEdit from './page/RoomEdit';
 import TestUpload from './page/TestUpload';
 import FullMap from './page/Fullmap';
+
 // import TestLogin from './page/TestLogin';
 
 
@@ -33,7 +42,7 @@ function App() {
       <Nav />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/hotelsearch" element={<Hotel />} />
+        <Route path="/hotelsearch" element={<HotelSearch />} />
         <Route path="/care" element={<Care />} />
         <Route path="/delivery" element={<Delivery />} />
         <Route path="/shop" element={<Shop />} />
@@ -45,7 +54,11 @@ function App() {
         <Route path="/hotelhis" element={<HotelHistory />} />
         <Route path="/HotelHome" element={<HotelHome />} />
         <Route path="/hoteldetail" element={<HotelDetail />} />
-        <Route path="/hotelbookdetail" element={<HotelBookDetail />} />
+        <Route path="/hotelcpayment" element={<HotelcPayment/>}/>
+        <Route path="/hotelfillpayment" element={<HotelFillPayment />} />
+        <Route path="/hotelbookdetail" element={<HotelBookdetail/>}/>
+        <Route path="/hotel/edit" element={<HotelEdit />} />
+        <Route path="/room/edit" element={<RoomEdit />} />
         <Route path="/CreateProfile" element={<CreateProfile />} />
 
         {/* test api */}
@@ -54,6 +67,10 @@ function App() {
         <Route path="/test/post" element={<TestPost />} />
         <Route path="/test/booking" element={<TestBooking />} />
         <Route path="/test/profile" element={<TestProfile />} />
+        <Route path="/test/selectroom" element={<TestSelectRoom/>} />
+        <Route path="/CreateProfile" element={<CreateProfile />} />
+        {/* <Route path="/test/search" element={<TestSearch />} /> */}
+        {/* <Route path="/test/login" element={<TestLogin />} /> */}
         <Route path="/test/upload" element={<TestUpload />} />
         <Route path="/FullMap" element={<FullMap/>} />
 

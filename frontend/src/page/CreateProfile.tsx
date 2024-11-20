@@ -28,8 +28,9 @@ function CreateProfile() {
         setFormData({ ...formData, [name]: value });
     };
 
-    const UserId = localStorage.getItem('userId');
-    const token = localStorage.getItem('token');
+    const UserId = localStorage.getItem('userId') ?? '';
+    const token = localStorage.getItem('token')
+    
 
     const handleLocationChange = (lat: number, lng: number) => {
         setFormData({ ...formData, lat: lat.toString(), long: lng.toString() });
@@ -167,8 +168,8 @@ function CreateProfile() {
                                 className="rounded-lg text-yellow border border-2 border-bg hover:border-yellow focus:border-yellow focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow h-12 "
                             >
                                 <option value="">Select profile</option>
-                                <option value="Client">Client</option>
-                                <option value="Hotel">Hotel</option>
+                                <option value="client">Client</option>
+                                <option value="hotel">Hotel</option>
                             </select>
                         </div>
                         <div className="flex flex-col gap-y-2 w-1/3">
