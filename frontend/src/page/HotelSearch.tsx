@@ -13,6 +13,7 @@ function HotelSearch() {
   const [longitude, setLongtitude] = useState("");
   // const [latitude, setLatitude] = useState("");
   const [startDate, setStartDate] = useState("");
+  const [sort, setSort] = useState("");
   const [endDate, setEndDate] = useState("");
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
@@ -53,17 +54,18 @@ function HotelSearch() {
 
   console.log("Currently selected pets:", selectedPets);
 
-  const handleSearch = async () => {
+  const handleSearch = async (sort: string) => {
     const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
       animal_type: pet,
       cage_size: "m",
     }));
 
     const filterSearchCage: FilterSearchCage = {
-      longitude: "99.3986862",
-      latitude: "18.3170581",
+      longitude: "14.53",
+      latitude: "100.77",
       start_time: startDate,
       end_time: endDate,
+      sort: sort,
     };
 
     try {
@@ -85,7 +87,6 @@ function HotelSearch() {
   const [activeButton, setActiveButton] = useState<number | null>(null);
   const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
 
-  
   return (
     <div className="">
       <div className="w-full h-1/2 p-4 bg-white flex justify-center items-center relative">
@@ -199,7 +200,7 @@ function HotelSearch() {
               <div className="flex justify-center mt-auto">
                 <button
                   onClick={() => {
-                    handleSearch();
+                    handleSearch("");
                     setIsEditing(false); // Exit edit mode on search
                   }}
                   className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200"
@@ -293,23 +294,25 @@ function HotelSearch() {
           <button
             key={index}
             type="submit"
-            onClick={() => setActiveButton(index)}
+            onClick={() => {
+              setActiveButton(index);
+              handleSearch(label);
+            }}
             style={{
               backgroundColor: activeButton === index ? "#A08252" : "white",
               color: activeButton === index ? "white" : "#A08252",
             }}
-            className={`${
-              activeButton === index
-                ? "hover:bg-egg focus:ring-red-300"
-                : "hover:bg-gray-100 focus:ring-red-300"
-            } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+            className={`${activeButton === index
+              ? "hover:bg-egg focus:ring-red-300"
+              : "hover:bg-gray-100 focus:ring-red-300"
+              } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
           >
             {label}
           </button>
         ))}
 
       </div>
-      
+
       <HotelData hotelList={hotel} />
     </div>
   );
