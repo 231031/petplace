@@ -20,6 +20,8 @@ function Home  () {
         );
     };
 
+
+
     const handleSearch = async () => {
         const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
             animal_type: pet,
@@ -37,7 +39,7 @@ function Home  () {
             const results = await GetSearchCage(filterAnimal, filterSearchCage);
             setHotels(results.data);
             console.log("Results:", results);
-            navigate('/test/search', { state: { hotels: results } });
+            navigate('/hotelsearch', { state: { hotels: results } });
           } catch (error) {
             console.error("Error fetching hotels:", error);
           }
