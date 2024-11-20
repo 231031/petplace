@@ -17,8 +17,10 @@ func Migrate(db *gorm.DB) error {
 	db.AutoMigrate(&model.ExtraService{})
 
 	// & reserved clinic & care services
-	db.AutoMigrate(&model.AnimalService{}) // history service
-	db.AutoMigrate(&model.ServiceDetail{}) // available services
+	db.AutoMigrate(&model.ResevationTime{})     // history service
+	db.AutoMigrate(&model.AnimalService{})      // history service
+	db.AutoMigrate(&model.AnimalExtraService{}) // history extra service of each service history
+	db.AutoMigrate(&model.ServiceDetail{})      // available services
 
 	// supply hotel
 	db.AutoMigrate(&model.FavoriteCage{})
