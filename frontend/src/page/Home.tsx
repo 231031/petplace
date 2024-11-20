@@ -14,6 +14,7 @@ function Home  () {
     const [selectedPets, setSelectedPets] = useState<string[]>([]);
     const navigate = useNavigate(); // Initialize useNavigate
     const petOptions = ["dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
+
   
     
     const handlePetChange = (pet: string) => {

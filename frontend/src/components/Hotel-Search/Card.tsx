@@ -32,7 +32,7 @@ function HotelRating({ avgReview }: { avgReview: number }) {
 
 function Card({ hotel }: { hotel: Hotel }) {
   return (
-    <div className="grid grid-cols-10 gap-4 mb-10 mt-10 mr-40 ml-40 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
+    <div className="grid grid-cols-10 gap-4 mb-10 mt-10 mx-40 *:rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
       <div className="col-span-2">
         <img
           src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
@@ -51,8 +51,8 @@ function Card({ hotel }: { hotel: Hotel }) {
       </div>
       <div className="flex flex-row gap-4 ml-5 mt-5">
         {/* <h5>{hotel.cages[].animal_type}</h5> */}
-        {hotel.cages.map((kuy)=>(
-          <h5>{kuy.animal_type}</h5>
+        {hotel.cages.map((cage)=>(
+          <h5>{cage.animal_type}</h5>
         ))}
       </div>
     </div>
