@@ -8,6 +8,7 @@ import { Cage } from "@/types/response";
 // import HotelSearch from "./TestSearch";
 
 function HotelSearch() {
+
   const [hotels, setHotels] = useState<any[]>([]);
   const [longitude, setLongtitude] = useState("");
   // const [latitude, setLatitude] = useState("");
@@ -54,30 +55,28 @@ function HotelSearch() {
 
   const handleSearch = async () => {
     const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
-        animal_type: pet,
-        cage_size: "m",
-      }));
-  
+      animal_type: pet,
+      cage_size: "m",
+    }));
+
     const filterSearchCage: FilterSearchCage = {
-        longitude: "99.3986862",
-        latitude: "18.3170581",
-        start_time: startDate,
-        end_time: endDate
+      longitude: "99.3986862",
+      latitude: "18.3170581",
+      start_time: startDate,
+      end_time: endDate,
     };
-  
-      try {
-        const results = await GetSearchCage(filterAnimal, filterSearchCage);
-        setHotels(results.data);
-        console.log("Results:", results);
-        navigate('/hotelsearch', { state: { hotels: results } });
-      } catch (error) {
-        console.error("Error fetching hotels:", error);
-      }
+
+    try {
+      const results = await GetSearchCage(filterAnimal, filterSearchCage);
+      setHotels(results.data);
+      console.log("Results:", results);
+      navigate("/hotelsearch", { state: { hotels: results } });
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    }
   };
 
-
-    const [searchClicked, setSearchClicked] = useState(false); // New state to track if search was clicked
-
+  const [searchClicked, setSearchClicked] = useState(false); // New state to track if search was clicked
 
   const location = useLocation();
   const hotel = location.state?.hotels || [];
@@ -86,6 +85,7 @@ function HotelSearch() {
   const [activeButton, setActiveButton] = useState<number | null>(null);
   const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
 
+  
   return (
     <div className="">
       <div className="w-full h-1/2 p-4 bg-white flex justify-center items-center relative">
@@ -118,11 +118,10 @@ function HotelSearch() {
           {/* Conditional Rendering */}
           {isEditing ? (
             // Edit Search Section
-            // <div className="w-3/4 absolute z-10 top-12 h-200 bg-white p-8 rounded-lg shadow-lg flex flex-col justify-between">
             <div className="w-3/4 border top-12 h-200 bg-white p-8 rounded-lg shadow-lg flex flex-col justify-between">
               <div className="grid grid-cols-2 gap-4 mb-6">
                 {/* Location Section */}
-                <div className="p-4 border border-gray-300  bg-white mt-8">
+                <div className="p-4 border border-gray-300 bg-white mt-8">
                   <label
                     htmlFor="location"
                     className="block text-lg font-semibold mb-2"
@@ -199,7 +198,10 @@ function HotelSearch() {
               </div>
               <div className="flex justify-center mt-auto">
                 <button
-                  onClick={handleSearch}
+                  onClick={() => {
+                    handleSearch();
+                    setIsEditing(false); // Exit edit mode on search
+                  }}
                   className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200"
                 >
                   Search
@@ -208,72 +210,71 @@ function HotelSearch() {
             </div>
           ) : (
             // Original Search Section
-            <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 w-3/4 px-20 ">
-            <div className="grid grid-cols-3 gap-20 justify-center">
-              <div className="text-xl p-2 mt-10">
-                <div className="flex flex-col">
-                  <label>Pet</label>
-                  {petOptions.map((pet) => (
-                    <label
-                      key={pet}
-                      className="flex items-center space-x-2 cursor-pointer"
-                    >
+            <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 w-3/4 px-20">
+              <div className="grid grid-cols-3 gap-20 justify-center">
+                <div className="text-xl p-2 mt-10">
+                  <div className="flex flex-col">
+                    <label>Pet</label>
+                    {petOptions.map((pet) => (
+                      <label
+                        key={pet}
+                        className="flex items-center space-x-2 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          value={pet}
+                          checked={selectedPets.includes(pet)}
+                          onChange={() => handlePetChange(pet)}
+                          className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
+                        />
+                        <span>{pet}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="text-xl p-2 mt-10">
+                  <div className="flex flex-col">
+                    <label>Location</label>
+                    <input
+                      type="text"
+                      id="longitude"
+                      value={longitude}
+                      onChange={(e) => setLongtitude(e.target.value)}
+                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                    />
+                  </div>
+                </div>
+
+                <div className="text-xl p-2 mt-10">
+                  <div className="flex flex-col">
+                    <label>Date</label>
+                    <div>
+                      Start
                       <input
-                        type="checkbox"
-                        value={pet}
-                        checked={selectedPets.includes(pet)}
-                        onChange={() => handlePetChange(pet)}
-                        className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
+                        type="date"
+                        id="start-date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
                       />
-                      <span>{pet}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="text-xl p-2 mt-10">
-                <div className="flex flex-col">
-                  <label>Location</label>
-                  <input
-                    type="text"
-                    id="longitude"
-                    value={longitude}
-                    onChange={(e) => setLongtitude(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                  />
-                </div>
-              </div>
-
-              <div className="text-xl p-2 mt-10">
-                <div className="flex flex-col">
-                  <label>Date</label>
-                  <div>
-                    Start
-                    <input
-                      type="date"
-                      id="start-date"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                    />
-                  </div>
-                  <div>
-                    End
-                    <input
-                      type="date"
-                      id="end-date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                    />
+                    </div>
+                    <div>
+                      End
+                      <input
+                        type="date"
+                        id="end-date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
 
-
-            </div>
-                          {/* Edit Search Button */}
-            <div className="flex justify-center mt-auto">
+              {/* Edit Search Button */}
+              <div className="flex justify-center mt-auto">
                 <button
                   onClick={() => setIsEditing(!isEditing)}
                   className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200 mb-6"
@@ -282,10 +283,7 @@ function HotelSearch() {
                 </button>
               </div>
             </div>
-            
           )}
-
-
         </div>
       </div>
       {/* </div> */}
@@ -309,8 +307,10 @@ function HotelSearch() {
             {label}
           </button>
         ))}
+
       </div>
-      <HotelData hotelList={hotel}/>
+      
+      <HotelData hotelList={hotel} />
     </div>
   );
 }
