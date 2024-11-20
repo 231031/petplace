@@ -1,5 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
+import UploadImage from "../components/UploadImage";
+import { UploadRes } from "@/types/response";
+
 
 const HotelDetailPage = () => {
     const [hotelName, setHotelName] = useState("");
@@ -7,9 +10,9 @@ const HotelDetailPage = () => {
     const [description, setDescription] = useState("");
     const [email, setEmail] = useState("");
     const [paypalEmail, setPaypalEmail] = useState("");
-    const [facilities, setFacilities] = useState<string[]>(["Parking", "CCTV", "Grooming"]);
+    const [facilities, setFacilities] = useState<string[]>([""]);
     const [newFacility, setNewFacility] = useState("");
-    const [images, setImages] = useState<File[]>([]);
+    const [images, setImages] = useState<UploadRes[]>([]);
     const navigate = useNavigate();
 
     const handleAddFacility = () => {
@@ -23,11 +26,8 @@ const HotelDetailPage = () => {
         setFacilities(facilities.filter((item) => item !== facility));
     };
 
-    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files) {
-            const uploadedFiles = Array.from(event.target.files);
-            setImages([...images, ...uploadedFiles].slice(0, 10)); // Limit to 10 images
-        }
+    const handleImageUpload = (uploadedFiles: UploadRes[]) => {
+        setImages(prev => [...prev, ...uploadedFiles].slice(0, 10));
     };
 
     const handleRemoveImage = (index: number) => {
@@ -144,34 +144,29 @@ const HotelDetailPage = () => {
                     {/* Hotel Overall Picture */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Hotel Overall Picture (Max. 10)</label>
-                        <div className="flex items-center gap-4">
-                            {images.map((image, index) => (
-                                <div
-                                    key={index}
-                                    className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
-                                >
-                                    <img
-                                        src={URL.createObjectURL(image)}
-                                        alt="Hotel"
-                                        className="w-full h-full object-cover"
-                                    />
-                                    <button
-                                        onClick={() => handleRemoveImage(index)}
-                                        className="absolute top-1 right-1 bg-navbar text-white text-xs rounded-lg px-1"
+                            <div className="flex items-center gap-4 flex-wrap">
+                                {images.map((image, index) => (
+                                    <div
+                                        key={index}
+                                        className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
                                     >
-                                        ×
-                                    </button>
-                                </div>
-                            ))}
-                            <label className="w-20 h-20 bg-gray-200 rounded-md flex justify-center items-center cursor-pointer">
-                                <input
-                                    type="file"
-                                    multiple
-                                    onChange={handleImageUpload}
-                                    className="hidden"
+                                        <img 
+                                            src={image.fileUrl} 
+                                            alt={`Uploaded ${index}`} 
+                                            className="w-full h-full object-cover"
+                                        />
+                                        <button
+                                            onClick={() => handleRemoveImage(index)}
+                                            className="absolute top-1 right-1 bg-navbar text-white text-xs rounded-lg px-1"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                                <UploadImage 
+                                    limit={10 - images.length} 
+                                    onComplete={handleImageUpload} 
                                 />
-                                <span>Upload</span>
-                            </label>
                         </div>
                     </div>
 

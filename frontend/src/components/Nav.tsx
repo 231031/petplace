@@ -25,7 +25,7 @@ const Nav: React.FC = () => {
                 <a href="/" className="text-white">Home</a>
               </li>
               <li>
-                <a href="/hotel" className="text-white">Hotel</a>
+                <a href="/hotelhome" className="text-white">Hotel</a>
               </li>
               <li>
                 <a href="/care" className="text-white">Care</a>
