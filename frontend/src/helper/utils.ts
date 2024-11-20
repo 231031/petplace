@@ -16,7 +16,7 @@ export async function RequestApi(endpoint:string, method:string, payload: any, c
       if (response.status != checkStatus) {
         return Promise.reject(data);
       }
-  
+
       return Promise.resolve(data);
     } catch (error) {
       return Promise.reject(error);

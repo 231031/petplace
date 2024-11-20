@@ -4,8 +4,6 @@ import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
 
 function Home  () {
- 
-  
     const [hotels, setHotels] = useState<any[]>([]);
     const [longitude, setLongtitude] = useState("");
     // const [latitude, setLatitude] = useState("");
