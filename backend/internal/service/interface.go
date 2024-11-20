@@ -27,7 +27,7 @@ type UsersServiceIn interface {
 }
 
 type ProfileServiceIn interface {
-	CreateProfile(profile model.Profile) error
+	CreateProfile(profile model.Profile) (int, string, error)
 	GetProfileByID(id uint) (model.Profile, error)
 	GetProfileByUserID(userID uint, role string) (model.Profile, string, error)
 	UpdateProfile(id uint, profile model.Profile) error

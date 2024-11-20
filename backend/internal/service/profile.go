@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"net/http"
 	"petplace/internal/auth"
 	"petplace/internal/model"
 	"petplace/internal/repository"
@@ -29,20 +30,20 @@ func NewProfileService(
 	}
 }
 
-func (s *ProfileService) CreateProfile(profile model.Profile) error {
+func (s *ProfileService) CreateProfile(profile model.Profile) (int, string, error) {
 	err := s.Validate.Struct(profile)
 	if err != nil {
-		return err
+		return http.StatusBadRequest, "profile detail is not correct", err
 	}
 
 	profile.Image = utils.MapStringArrayToText(profile.ImageArray)
 	profile.Facility = utils.MapStringArrayToText(profile.FacilityArray)
-	err = s.ProfileRepositoryIn.CreateProfile(profile)
+	status, strErr, err := s.ProfileRepositoryIn.CreateProfile(profile)
 	if err != nil {
-		return err
+		return http.StatusInternalServerError, strErr, err
 	}
 
-	return nil
+	return status, strErr, nil
 }
 
 func (s *ProfileService) GetProfileByID(id uint) (model.Profile, error) {
