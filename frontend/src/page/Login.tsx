@@ -32,9 +32,12 @@ export default function Login() {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("userId", data.user.id)
                 localStorage.setItem("username", data.user.firstname);
-                localStorage.setItem("role", data.user.profile[0].role);
+                // if (data.profile.role !== null) {
+                //     localStorage.setItem("role", data.user.profile[0].role);
+                // }
                 // setUsername(data.user.firstname);
-                console.log(data.user.profile[0].role)
+                // console.log(data.user.profile)
+                // console.log(data.user.profile)
                 // console.log("localstorge", userId)
                 console.log('Login successful:', data);
                 navigate('/'); // Redirect to dashboard or desired page

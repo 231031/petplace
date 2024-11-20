@@ -112,6 +112,15 @@ function CreateProfile() {
         );
     };
 
+    const handleImageUpload = (files: File[]) => {
+        // สมมุติว่าอัปโหลดได้หลายไฟล์, และเราเก็บชื่อไฟล์ในรูปแบบ array
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            image: files[0]?.name,  // ตัวอย่างการเก็บชื่อไฟล์ (หรือ URL ของไฟล์)
+            image_array: files.map(file => file.name), // เก็บชื่อไฟล์ทั้งหมด (ถ้าเลือกหลายไฟล์)
+        }));
+    };
+
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -156,8 +165,8 @@ function CreateProfile() {
             {/* container right */}
             <div className="flex justify-center bg-bgLogin w-3/4 items-baseline">
                 <div className="flex flex-col items-center w-1/2 gap-y-5 pt-36">
-                    <h1 className="text-3xl">Sign Up</h1>
-                    <p>Fill the form to sign up to Pet Place</p>
+                    <h1 className="text-3xl">Create Profile</h1>
+                    <p>Fill the form to Create your Profile</p>
                     <div className="flex flex-row gap-x-5 gap-y-5 pl-5 pt-5 w-full ">
                         <div className="flex flex-col gap-y-2 w-1/3">
                             <p>Profile</p>
@@ -234,7 +243,7 @@ function CreateProfile() {
                         </div>
                     </div>
                     {/* <Button label="Go to Full Map" onClick={FullMapClick} /> */}
-                    <Button label="Sign up" onClick={handleSignup} />
+                    <Button label="Create" onClick={handleSignup} />
                 </div>
             </div>
         </div>

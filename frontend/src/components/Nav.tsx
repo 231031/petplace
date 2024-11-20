@@ -83,7 +83,7 @@ const Nav: React.FC = () => {
                     <li><a href="/delivery" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Delivery</span></a></li>
                     <li><a href="/shop" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Shop</span></a></li>
                     <li><a href="/social" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Social</span></a></li>
-                    <li><button type="button" onClick={handleLogout} className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Log out</span></button></li>
+                    <li><button type="button" onClick={handleLogout} className="flex items-center p-2 text-base font-normal w-full text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Log out</span></button></li>
                   </ul>
                 </div>
               </aside>
