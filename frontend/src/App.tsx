@@ -15,7 +15,7 @@ import FormSignup from './page/FormSignup';
 import HotelHistory from './page/HotelHistory';
 import HotelHome from './page/HotelHome';
 import HotelDetail from './page/HotelDetail';
-import HotelPayment from './page/HotelPayment';
+import HotelFillPayment from './page/HotelFillPayment';
 import TestSearch from './page/TestSearch';
 import TestLogin from './page/TestLogin';
 import TestPost from './page/TestPost';
@@ -23,6 +23,7 @@ import TestBooking from './page/TestBooking';
 import TestProfile from './page/TestProfile';
 import CreateProfile from './page/CreateProfile';
 import HotelBookdetail from './page/HotelBookdetail';
+import TestSelectRoom from './page/TestSelectRoom';
 
 // import TestLogin from './page/TestLogin';
 
@@ -45,7 +46,7 @@ function App() {
         <Route path="/hotelhis" element={<HotelHistory />} />
         <Route path="/HotelHome" element={<HotelHome />} />
         <Route path="/hoteldetail" element={<HotelDetail />} />
-        <Route path="/hotelpayment" element={<HotelPayment />} />
+        <Route path="/hotelfillpayment" element={<HotelFillPayment />} />
         <Route path="/hotelbookdetail" element={<HotelBookdetail/>}/>
 
         {/* test api */}
@@ -54,6 +55,7 @@ function App() {
         <Route path="/test/post" element={<TestPost />} />
         <Route path="/test/booking" element={<TestBooking />} />
         <Route path="/test/profile" element={<TestProfile />} />
+        <Route path="/test/selectroom" element={<TestSelectRoom/>} />
         <Route path="/CreateProfile" element={<CreateProfile />} />
         {/* <Route path="/test/search" element={<TestSearch />} /> */}
         {/* <Route path="/test/login" element={<TestLogin />} /> */}

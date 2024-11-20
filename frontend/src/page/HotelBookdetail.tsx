@@ -1,7 +1,15 @@
 import CageCard from "@/components/Hotel-Bookdetail/CageCard";
 import PetCard from "@/components/Hotel-Bookdetail/PetCard";
+import { useSearchParams } from "react-router-dom";
 
 function HotelBookdetail() {
+    const [searchParams] = useSearchParams();
+    const cage_type = searchParams.get('cage_type')
+    const size = searchParams.get('size')
+    const price = searchParams.get('price')
+    const facility = searchParams.get('facility')
+    const max_capacity = searchParams.get('max_capacity')
+
     return (
         <div className="grid grid-row-3 gap-16">
 
@@ -31,7 +39,14 @@ function HotelBookdetail() {
 
             <div className="max-w-5xl w-full mx-auto">
                 <p className="text-2xl ">Room</p>
-                <CageCard />
+                <CageCard 
+                cage_type={cage_type ?? ""} 
+                size={size ?? ""}
+                price={price ?? ""}
+                facility={facility ?? ""} 
+                max_capacity ={max_capacity ?? ""}
+
+                />
                 <div className="flex justify-between">
                     <p className="text-2xl ">Pet</p>
                     <button className="w-fit px-2 h-8  rounded-full shadow shadow-gray-400">Add Pet</button>
