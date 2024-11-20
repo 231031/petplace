@@ -196,7 +196,7 @@ function Home  () {
                 {/* Hotel List */}
                 <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 mt-4">
                     {/* Single Hotel Card */}
-                    {[1, 2].map((_, index) => (
+                    {[1,2].map((_, index) => (
                     <div
                         key={index}
                         className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
