@@ -22,6 +22,8 @@ import TestPost from './page/TestPost';
 import TestBooking from './page/TestBooking';
 import TestProfile from './page/TestProfile';
 import CreateProfile from './page/CreateProfile';
+import HotelEdit from './page/HotelEdit';
+import RoomEdit from './page/RoomEdit';
 // import TestLogin from './page/TestLogin';
 
 
@@ -44,6 +46,8 @@ function App() {
         <Route path="/HotelHome" element={<HotelHome />} />
         <Route path="/hoteldetail" element={<HotelDetail />} />
         <Route path="/hotelbookdetail" element={<HotelBookDetail />} />
+        <Route path="/hotel/edit" element={<HotelEdit />} />
+        <Route path="/room/edit" element={<RoomEdit />} />
 
         {/* test api */}
         <Route path="/test/search" element={<TestSearch />} />
