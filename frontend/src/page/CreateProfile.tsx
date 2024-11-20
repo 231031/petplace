@@ -24,7 +24,7 @@ function Signup() {
         setFormData({ ...formData, [name]: value });
     };
 
-    const UserId = localStorage.getItem('userId');
+    const UserId = localStorage.getItem('userId') ?? '';
     const token = localStorage.getItem('token')
     
 

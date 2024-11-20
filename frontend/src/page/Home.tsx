@@ -4,6 +4,8 @@ import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
 
 function Home  () {
+ 
+  
     const [hotels, setHotels] = useState<any[]>([]);
     const [longitude, setLongtitude] = useState("");
     // const [latitude, setLatitude] = useState("");
@@ -19,6 +21,8 @@ function Home  () {
           prev.includes(pet) ? prev.filter((p) => p !== pet) : [...prev, pet]
         );
     };
+
+
 
     const handleSearch = async () => {
         const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
@@ -37,7 +41,7 @@ function Home  () {
             const results = await GetSearchCage(filterAnimal, filterSearchCage);
             setHotels(results.data);
             console.log("Results:", results);
-            navigate('/test/search', { state: { hotels: results } });
+            navigate('/hotelsearch', { state: { hotels: results } });
           } catch (error) {
             console.error("Error fetching hotels:", error);
           }
@@ -45,6 +49,7 @@ function Home  () {
 
     return (
         <div className="h-screen relative">
+            
             {/* First Section */}
             <div className="w-full h-1/2 bg-gray-100 relative">
                 <img
@@ -194,7 +199,7 @@ function Home  () {
                 {/* Hotel List */}
                 <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 mt-4">
                     {/* Single Hotel Card */}
-                    {[1, 2].map((_, index) => (
+                    {[1,2].map((_, index) => (
                     <div
                         key={index}
                         className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"

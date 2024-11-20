@@ -26,6 +26,8 @@ export default function Login() {
 
             if (response.ok) {
                 const data = await response.json();
+                localStorage.setItem("token", data.token);
+                // Handle successful login (e.g., save token, navigate to another page)
                 console.log('Userid', data.user.id);
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("userId", data.user.id)
