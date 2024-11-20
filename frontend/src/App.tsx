@@ -22,6 +22,7 @@ import TestPost from './page/TestPost';
 import TestBooking from './page/TestBooking';
 import TestProfile from './page/TestProfile';
 import CreateProfile from './page/CreateProfile';
+import HotelSearch from './page/HotelSearch';
 // import TestLogin from './page/TestLogin';
 
 
@@ -31,7 +32,7 @@ function App() {
       <Nav />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/hotelsearch" element={<Hotel />} />
+        <Route path="/hotelsearch" element={<HotelSearch />} />
         <Route path="/care" element={<Care />} />
         <Route path="/delivery" element={<Delivery />} />
         <Route path="/shop" element={<Shop />} />
