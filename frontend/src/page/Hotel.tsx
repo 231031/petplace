@@ -229,7 +229,7 @@ function Hotel() {
             </button>
           </div>
           {/* <CardHotel/> */}
-          {/* <HotelData/> */}
+          <HotelData hotelList={undefined}/>
           {/* <div className="grid grid-cols-10 gap-4 bg-red-700">
             <div className="col-span-2">
               <img

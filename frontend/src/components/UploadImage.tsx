@@ -29,9 +29,10 @@ function UploadImage({ limit, onComplete }: ImageUploadProps) {
 
     return (
         <div className="">
+            {/* <h3>UploadImage</h3> */}
             <UploadButton options={options} onComplete={handleUploadComplete}>
                 {({ onClick }) => (
-                    <button onClick={onClick} className="bg-navbar text-white px-4 py-2 rounded">
+                    <button onClick={onClick} className="bg-navbar text-white w-full h-12 rounded-lg">
                         Upload a file...
                     </button>
                 )}

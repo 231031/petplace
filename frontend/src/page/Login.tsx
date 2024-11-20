@@ -31,9 +31,13 @@ export default function Login() {
                 console.log('Userid', data.user.id);
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("userId", data.user.id)
+                localStorage.setItem("username", data.user.firstname);
+                localStorage.setItem("role", data.user.profile[0].role);
+                // setUsername(data.user.firstname);
+                console.log(data.user.profile[0].role)
                 // console.log("localstorge", userId)
                 console.log('Login successful:', data);
-                navigate('/dashboard'); // Redirect to dashboard or desired page
+                navigate('/'); // Redirect to dashboard or desired page
             } else {
                 const errorData = await response.json();
                 setError(errorData.message || 'Login failed');
@@ -51,10 +55,10 @@ export default function Login() {
     return (
         <div className="h-screen flex">
             {/* container left */}
-            <div className="flex justify-center bg-bgLogin w-3/4 items-baseline" >
-                <div className="flex flex-col  items-center w-1/2 gap-y-5 pt-64">
+            <div className="flex justify-center bg-bgLogin w-3/4 items-baseline" > 
+                <div className="flex flex-col items-center w-1/2 gap-y-5 pt-64">
                     <h1 className="text-5xl mb-10"> Log in to your account </h1>
-                    <div className='flex flex-col w-1/2 gap-y-2'>
+                    <div className='flex flex-col w-1/2 gap-y-2 pl-5'>
                         <p className=''>Username</p>
                         <InputBox placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
                         <p className=''>Password</p>

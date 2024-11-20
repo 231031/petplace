@@ -22,6 +22,7 @@ export default {
 			bg: '#FFFBF5',
 			onstep: '#C9933C',
 			nextstep: '#80591C',
+			navname: '#BCA683',
 			
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
