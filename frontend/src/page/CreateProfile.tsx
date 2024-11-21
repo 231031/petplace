@@ -23,7 +23,7 @@ function CreateProfile() {
     const [successMessage, setSuccessMessage] = useState('');
     const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
     const navigate = useNavigate();
-    const [images, setImages] = useState<UploadRes[]>([]);
+    const [image, setImage] = useState<string | null>(null); // Store one image URL or null
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -39,17 +39,7 @@ function CreateProfile() {
         setMarkerPosition([lat, lng]); // Update the marker position
     };
 
-    const handleImageUpload = (uploadedFiles: UploadRes[]) => {
-        // setImages(res.profile.image_array ? res.profile.image_array.map((url) => ({ fileUrl: url, filePath: '', accountId: '0' })) : []);
-        setImages(prev => [...prev, ...uploadedFiles].slice(0, 10));
-        
-    };
-
-    const handleRemoveImage = (index: number) => {
-        const updatedImages = images.filter((_, imgIndex) => imgIndex !== index);
-        setImages(updatedImages);
-    };
-
+    
     const [position, setPosition] = useState<[number, number] | null>(null);
     
     const LocationMarker = () => {
@@ -64,6 +54,17 @@ function CreateProfile() {
         return (
             <Marker position={markerPosition || [13.736717, 100.523186]} />
         );
+    };
+
+    const handleImageUpload = (uploadedFiles: UploadRes[]) => {
+        if (uploadedFiles.length > 0) {
+            const uploadedUrl = uploadedFiles[0].fileUrl;  // Get the first image's URL
+            setImage(uploadedUrl);  // Store the URL
+        }
+    };
+
+    const handleRemoveImage = () => {
+        setImage(null);  // Clear the image when removed
     };
 
 
@@ -106,7 +107,7 @@ function CreateProfile() {
             facility_array: ["string"],
             id: 0,
             // image: "",
-            image_array: images.map((image) => image.fileUrl),
+            image_profile: image,
             latitude: parseFloat(formData.lat), // Latitude from formData
             longitude: parseFloat(formData.long), // Longitude from formData
             name: formData.profileName,
@@ -170,34 +171,31 @@ function CreateProfile() {
                 <div className="flex flex-col items-center w-1/4 gap-y-5 pt-36">
                     <h1 className="text-3xl">Create Profile</h1>
                     <p>Fill the form to Create your Profile</p>
-                    <div className="flex justify-center ">
-                        {images.map((image, index) => (
-                            <div
-                                key={index}
-                                className="relative w-36 h-36 bg-gray-200 rounded-full overflow-hidden flex justify-center items-center mr-2"
-                            >
-                                <img
-                                    src={image.fileUrl}
-                                    alt={`Uploaded ${index}`}
-                                    className="w-full h-full object-cover"
-                                />
-                                <button
-                                    onClick={() => handleRemoveImage(index)}
-                                    className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full px-1"
+                    <div className="flex justify-center mt-10">
+                        {image ? (
+                                <div
+                                    className="relative w-36 h-36 bg-gray-200 rounded-full overflow-hidden flex justify-center items-center mr-2"
                                 >
-                                    ×
-                                </button>
-                            </div>
-                        ))}
-                        {/* Show Upload button if the limit is not reached */}
-                        {images.length < 1 && (
-                            <div className="relative w-20 h-20 bg-gray-200 rounded-full flex justify-center items-center cursor-pointer">
-                                <UploadImage
-                                    limit={10 - images.length}
-                                    onComplete={handleImageUpload}
-                                />
-                            </div>
-                        )}
+                                    <img
+                                        src={image}
+                                        alt="Uploaded Image"
+                                        className="w-full h-full object-cover"
+                                    />
+                                    <button
+                                        onClick={handleRemoveImage}
+                                        className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full px-1"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="relative w-20 h-20 bg-gray-200 rounded-full flex justify-center items-center cursor-pointer">
+                                    <UploadImage
+                                        limit={1} // Limit set to 1 image
+                                        onComplete={handleImageUpload}
+                                    />
+                                </div>
+                            )}
                         </div>
                     <div className="flex flex-row gap-x-5 gap-y-5 pl-5 pt-5 w-full items-end">
                         <div className="flex flex-col gap-y-2 w-1/2">

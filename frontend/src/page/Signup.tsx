@@ -19,19 +19,18 @@ function Signup() {
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
-    const [images, setImages] = useState<UploadRes[]>([]);
+    const [image, setImage] = useState<string | null>(null); // Store one image URL or null
 
     const handleImageUpload = (uploadedFiles: UploadRes[]) => {
-        // setImages(res.profile.image_array ? res.profile.image_array.map((url) => ({ fileUrl: url, filePath: '', accountId: '0' })) : []);
-        setImages(prev => [...prev, ...uploadedFiles].slice(0, 10));
-        
+        if (uploadedFiles.length > 0) {
+            const uploadedUrl = uploadedFiles[0].fileUrl;  // Get the first image's URL
+            setImage(uploadedUrl);  // Store the URL
+        }
     };
 
-    const handleRemoveImage = (index: number) => {
-        const updatedImages = images.filter((_, imgIndex) => imgIndex !== index);
-        setImages(updatedImages);
+    const handleRemoveImage = () => {
+        setImage(null);  // Clear the image when removed
     };
-
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -50,14 +49,13 @@ function Signup() {
             email: formData.email,
             expiry: "2025-12-31", // Example value
             first_name: formData.name,
-            // id: 1, // Replace or remove as necessary
             name: formData.name, // Duplicate to match API
-            number: "123456789", // Example value
+            number: "", // Example value
             password: formData.password,
             paypal_email: '', // Example value
             security_code: '', // Example value
             surename: formData.surname,
-            
+            image_profile: image,  // Send the image URL (if available)
         };
 
         try {
@@ -79,10 +77,7 @@ function Signup() {
             }
         } catch (error) {
             setError('An error occurred. Please try again.');
-            // console.error(error);
         }
-
-        
     };
 
     const LoginClick = () => {
@@ -108,34 +103,31 @@ function Signup() {
                     <h1 className="text-3xl">Sign Up</h1>
                     <p>Fill the form to sign up to Pet Place</p>
                     <div className="flex justify-center mt-10">
-                        {images.map((image, index) => (
+                        {image ? (
                             <div
-                                key={index}
                                 className="relative w-36 h-36 bg-gray-200 rounded-full overflow-hidden flex justify-center items-center mr-2"
                             >
                                 <img
-                                    src={image.fileUrl}
-                                    alt={`Uploaded ${index}`}
+                                    src={image}
+                                    alt="Uploaded Image"
                                     className="w-full h-full object-cover"
                                 />
                                 <button
-                                    onClick={() => handleRemoveImage(index)}
+                                    onClick={handleRemoveImage}
                                     className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full px-1"
                                 >
                                     ×
                                 </button>
                             </div>
-                        ))}
-                        {/* Show Upload button if the limit is not reached */}
-                        {images.length < 1 && (
+                        ) : (
                             <div className="relative w-20 h-20 bg-gray-200 rounded-full flex justify-center items-center cursor-pointer">
                                 <UploadImage
-                                    limit={10 - images.length}
+                                    limit={1} // Limit set to 1 image
                                     onComplete={handleImageUpload}
                                 />
                             </div>
                         )}
-                        </div>
+                    </div>
                     <div className="flex flex-wrap flex-row gap-x-5 gap-y-5 pl-5 pt-5 w-full">
                         <div className="flex flex-col gap-y-2">
                             <p>Name</p>

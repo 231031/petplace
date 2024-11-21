@@ -34,7 +34,7 @@ export default function Login() {
 
                 console.log('Userid', data.user.id);
                 console.log('Login successful:', data);
-                navigate('/'); // Redirect to dashboard or desired page
+                navigate('/SelectProfile'); // Redirect to dashboard or desired page
             } else {
                 const errorData = await response.json();
                 setError(errorData.message || 'Login failed');
