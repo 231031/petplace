@@ -46,7 +46,7 @@ const Nav: React.FC = () => {
           <div className="hidden md:flex justify-center flex-grow space-x-4">
             <ul className="flex space-x-4">
               <li><a href="/" className="text-white">Home</a></li>
-              <li><a href="/hotel" className="text-white">Hotel</a></li>
+              <li><a href="/hotelhome" className="text-white">Hotel</a></li>
               <li><a href="/care" className="text-white">Care</a></li>
               <li><a href="/delivery" className="text-white">Delivery</a></li>
               <li><a href="/shop" className="text-white">Shop</a></li>

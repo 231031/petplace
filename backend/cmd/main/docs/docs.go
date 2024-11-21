@@ -563,6 +563,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/hotel/client/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get all hotel service user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "HotelServices"
+                ],
+                "summary": "Get all Hotel Service User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/hotel/client/{id}/{status}": {
             "get": {
                 "security": [
@@ -570,14 +607,14 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "get hotel service user",
+                "description": "get hotel service user by status",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "HotelServices"
                 ],
-                "summary": "Get Hotel Service User",
+                "summary": "Get Hotel Service User by status",
                 "parameters": [
                     {
                         "type": "string",
@@ -1292,6 +1329,12 @@ const docTemplate = `{
                 "breed": {
                     "type": "string"
                 },
+                "gender": {
+                    "type": "string"
+                },
+                "hair_type": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -1424,6 +1467,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "check_out": {
+                    "type": "string"
+                },
+                "detail": {
                     "type": "string"
                 },
                 "email": {

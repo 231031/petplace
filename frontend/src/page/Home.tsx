@@ -4,15 +4,13 @@ import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
 
 function Home  () {
- 
-  
     const [hotels, setHotels] = useState<any[]>([]);
     const [longitude, setLongtitude] = useState("");
     // const [latitude, setLatitude] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [selectedPets, setSelectedPets] = useState<string[]>([]);
-    const navigate = useNavigate(); // Initialize useNavigate
+    const navigate = useNavigate();
     const petOptions = ["dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
 
   
@@ -55,6 +53,7 @@ function Home  () {
             <div className="w-full h-1/2 bg-gray-100 relative">
                 <img
                     src="/images/loginbg.png"
+                    // src="https://upcdn.io/FW25cHP/raw/uploads/2024/11/20/4kBdTokw6C-Breaking%20new%20Background.webp"
                     className="w-full h-full object-cover object-center"
                 />
                 <img

@@ -29,7 +29,8 @@ func (h *HotelHandler) RegisterRoutes(g *echo.Group) {
 	g.POST("/client/booking", h.handleBookHotelService)
 	g.PUT("/client/:id", h.handleManageRefundBookHotel)
 	g.PUT("/client/review/:id", h.handleReviewHotelService)
-	g.GET("/client/:id/:status", h.handleGetAllHotelServiceByUser)
+	g.GET("/client/:id/:status", h.handleGetStatusHotelServiceByUser)
+	g.GET("/client/:id", h.handleGetAllHotelServiceByUser)
 
 	// both
 }
@@ -87,8 +88,8 @@ func (h *HotelHandler) handleGetAllHotelServiceByHotel(c echo.Context) error {
 	return c.JSON(http.StatusOK, ser_info)
 }
 
-// @Summary		Get Hotel Service User
-// @Description	get hotel service user
+// @Summary		Get Hotel Service User by status
+// @Description	get hotel service user by status
 // @Produce application/json
 // @tags HotelServices
 // @Param id path string true "User ID"
@@ -98,7 +99,7 @@ func (h *HotelHandler) handleGetAllHotelServiceByHotel(c echo.Context) error {
 // @Failure 500
 // @Router /hotel/client/{id}/{status} [get]
 // @Security BearerAuth
-func (h *HotelHandler) handleGetAllHotelServiceByUser(c echo.Context) error {
+func (h *HotelHandler) handleGetStatusHotelServiceByUser(c echo.Context) error {
 	id := c.Param("id")
 	user_id, err := utils.ConvertTypeToUint(id)
 	if err != nil {
@@ -106,7 +107,32 @@ func (h *HotelHandler) handleGetAllHotelServiceByUser(c echo.Context) error {
 	}
 	status := c.Param("status")
 
-	ser_info, err := h.bookingServiceIn.GetAllBookingHotelByUser(user_id, status)
+	ser_info, err := h.bookingServiceIn.GetStatusBookingHotelByUser(user_id, status)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "falied to get reservation history", err)
+	}
+
+	return c.JSON(http.StatusOK, ser_info)
+}
+
+// @Summary		Get all Hotel Service User
+// @Description	get all hotel service user
+// @Produce application/json
+// @tags HotelServices
+// @Param id path string true "User ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /hotel/client/{id} [get]
+// @Security BearerAuth
+func (h *HotelHandler) handleGetAllHotelServiceByUser(c echo.Context) error {
+	id := c.Param("id")
+	user_id, err := utils.ConvertTypeToUint(id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
+	}
+
+	ser_info, err := h.bookingServiceIn.GetAllHotelServiceByUser(user_id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "falied to get reservation history", err)
 	}
