@@ -5,6 +5,7 @@ import InputBox from '../components/CreateProfile/InputBox';
 import Button from '../components/LoginSignup/Button';
 import { useNavigate } from 'react-router-dom';
 import UploadImage from "@/components/UploadImage";
+import { UploadRes } from '@/types/response';
 
 function CreateProfile() {
     const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ function CreateProfile() {
     const [successMessage, setSuccessMessage] = useState('');
     const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
     const navigate = useNavigate();
+    const [images, setImages] = useState<UploadRes[]>([]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -36,6 +38,55 @@ function CreateProfile() {
         setFormData({ ...formData, lat: lat.toString(), long: lng.toString() });
         setMarkerPosition([lat, lng]); // Update the marker position
     };
+
+    const handleImageUpload = (uploadedFiles: UploadRes[]) => {
+        // setImages(res.profile.image_array ? res.profile.image_array.map((url) => ({ fileUrl: url, filePath: '', accountId: '0' })) : []);
+        setImages(prev => [...prev, ...uploadedFiles].slice(0, 10));
+    };
+
+    const handleRemoveImage = (index: number) => {
+        const updatedImages = images.filter((_, imgIndex) => imgIndex !== index);
+        setImages(updatedImages);
+    };
+
+    const [position, setPosition] = useState<[number, number] | null>(null);
+    
+    const LocationMarker = () => {
+        useMapEvents({
+            click(e) {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                handleLocationChange(lat, lng); // Update formData with new lat/lng
+            },
+        });
+
+        return (
+            <Marker position={markerPosition || [13.736717, 100.523186]} />
+        );
+    };
+
+
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setPosition([latitude, longitude]);
+                    handleLocationChange(latitude, longitude); // Update formData with initial position
+                    
+                },
+                (err) => {
+                    setError('Unable to retrieve your location.');
+                    // setPosition([13.736717, 100.523186]); // Default to Bangkok if error
+                }
+            );
+        } else {
+            setError('Geolocation is not supported by this browser.');
+            // setPosition([13.736717, 100.523186]); // Default to Bangkok if geolocation not supported
+        }
+    }, []);
+
 
     const handleSignup = async () => {
         const userId = parseInt(UserId, 10);
@@ -53,8 +104,8 @@ function CreateProfile() {
             facility: "string",
             facility_array: ["string"],
             id: 0,
-            image: "string",
-            image_array: ["string"],
+            // image: "",
+            image_array: images.map((image) => image.fileUrl),
             latitude: parseFloat(formData.lat), // Latitude from formData
             longitude: parseFloat(formData.long), // Longitude from formData
             name: formData.profileName,
@@ -79,6 +130,7 @@ function CreateProfile() {
             if (response.ok) {
                 setSuccessMessage('Signup successful! Redirecting...');
                 setTimeout(() => navigate('/HotelHome'), 2000); // Redirect after success
+                
             } else {
                 const errorData = await response.json();
                 setError(errorData.message || 'Signup failed');
@@ -88,57 +140,7 @@ function CreateProfile() {
         }
     };
 
-    const LoginClick = () => {
-        navigate('/Login');
-    };
-
-    const FullMapClick = () => {
-        navigate('/FullMap');
-    };
-
-    const [position, setPosition] = useState<[number, number] | null>(null);
     
-    const LocationMarker = () => {
-        useMapEvents({
-            click(e) {
-                const lat = e.latlng.lat;
-                const lng = e.latlng.lng;
-                handleLocationChange(lat, lng); // Update formData with new lat/lng
-            },
-        });
-
-        return (
-            <Marker position={markerPosition || [13.736717, 100.523186]} />
-        );
-    };
-
-    const handleImageUpload = (files: File[]) => {
-        // สมมุติว่าอัปโหลดได้หลายไฟล์, และเราเก็บชื่อไฟล์ในรูปแบบ array
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            image: files[0]?.name,  // ตัวอย่างการเก็บชื่อไฟล์ (หรือ URL ของไฟล์)
-            image_array: files.map(file => file.name), // เก็บชื่อไฟล์ทั้งหมด (ถ้าเลือกหลายไฟล์)
-        }));
-    };
-
-    useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    setPosition([latitude, longitude]);
-                    handleLocationChange(latitude, longitude); // Update formData with initial position
-                },
-                (err) => {
-                    setError('Unable to retrieve your location.');
-                    // setPosition([13.736717, 100.523186]); // Default to Bangkok if error
-                }
-            );
-        } else {
-            setError('Geolocation is not supported by this browser.');
-            // setPosition([13.736717, 100.523186]); // Default to Bangkok if geolocation not supported
-        }
-    }, []);
 
     console.log("long", formData.long);
     console.log("lat", formData.lat);
@@ -190,7 +192,28 @@ function CreateProfile() {
                             />
                         </div>
                         <div className="flex flex-col justify-end w-1/3">
-                            <UploadImage limit={2} />
+                            {images.map((image, index) => (
+                                <div
+                                    key={index}
+                                    className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
+                                >
+                                    <img
+                                        src={image.fileUrl}
+                                        alt={`Uploaded ${index}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                    <button
+                                        onClick={() => handleRemoveImage(index)}
+                                        className="absolute top-1 right-1 bg-navbar text-white text-xs rounded-lg px-1"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            ))}
+                            <UploadImage
+                                limit={10 - images.length}
+                                onComplete={handleImageUpload}
+                            />
                         </div>
                     </div>
                     <div className="flex flex-wrap gap-y-5 gap-x-5 pl-5 mb-5">

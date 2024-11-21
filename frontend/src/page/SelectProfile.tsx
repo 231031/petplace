@@ -58,7 +58,7 @@ const [hotel, setHotel] = useState({
 
           {/* Circular Button with Logo */}
           <div
-            className="size-48 rounded-full bg-blue-500 flex items-center justify-center cursor-pointer overflow-auto "
+            className="size-48 rounded-full bg-blue-500 flex items-center justify-center cursor-pointer overflow-auto border-8 border-white hover:border-navbar"
             onClick={handleClick}
             >
                 {hotel.image_array && hotel.image_array.length > 0 ? (

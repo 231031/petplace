@@ -11,6 +11,37 @@ function HotelDetail() {
     const roomRef = useRef<HTMLDivElement>(null);
     const reviewRef = useRef<HTMLDivElement>(null);
 
+    const [rooms, setRooms] = useState({
+        quantity: "",
+        // size: "",
+
+        
+    });
+
+    // console.log(id)
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) throw new Error("Failed to fetch cage room data");
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Fetched cage room data:", data);
+            // console.log("Fetched cage room data:", data.address);
+            setRooms(data|| []); // เก็บข้อมูลห้องใน state
+          })
+          .catch((error) => console.error("Error fetching cage room data:", error));
+      }, []);
+      
+      console.log("cages", rooms)
 
 
 
@@ -73,8 +104,7 @@ function HotelDetail() {
                 </div>
                 <div className="flex flex-col w-full h-80 gap-y-5 ">
                     <h1 ref={hotelRef} id="hotel" className="text-4xl">{hotel.name}</h1>
-                    <CarouselDemo />
-
+                    <CarouselDemo images={hotel.image_array || []} />
                 </div>
                 {/* section2 */}
                 <div className="flex w-full h-72 mt-10">
@@ -137,47 +167,36 @@ function HotelDetail() {
                             {/* room container */}
                             <div className="flex flex-col bg-bg rounded-md w-full shadow shadow-gray-400">
                                 {/* room */}
-                                <div className="flex h-60 m-5 p-3 rounded-md shadow shadow-gray-400">
-                                    <div className="basis-1/3 bg-cover h-full w-72 " style={{ backgroundImage: "url('/images/map.png')" }}></div>
-                                    <div className="basis-1/3  flex flex-col space-y-5 pl-5 pt-4">
-                                        <h1 className="text-2xl">Capsule</h1>
-                                        <div>
-                                            <p>S Size 1.2 x 1.2 x 1.1 m</p>
-                                            <p>Accommodates: 1</p>
-                                            <p>Facility: Air, Bed, Open toilet</p>
+                                {/* room container */}
+                            {rooms && rooms.length > 0 ? (
+                                rooms.map((room, index) => (
+                                    <div key={index} className="flex h-60 m-5 p-3 rounded-md shadow shadow-gray-400">
+                                        <div
+                                            className="basis-1/3 bg-cover h-full w-72"
+                                            style={{ backgroundImage: `url(${room.image || "/images/default-room.png"})` }}
+                                        ></div>
+                                        <div className="basis-1/3 flex flex-col space-y-5 pl-5 pt-4">
+                                            <h1 className="text-2xl">{room.cage_type || "Room"}</h1>
+                                            <div>
+                                                <p>Size: {room.size || "N/A"} {room.length && room.width && room.height ? `${room.length} x ${room.width} x ${room.height}` : ""}</p>
+                                                <p>Capacity: {room.quantity || "N/A"}</p>
+                                                <p>Facility: {room.facility || "Standard facilities"}</p>
+                                            </div>
+                                            <a>More detail</a>
                                         </div>
-                                        <a>More detail</a>
-                                    </div>
-                                    <div className="basis-1/3  space-y-5 pl-5 pt-4 flex flex-col items-end pr-5">
-                                        <h1 className="text-2xl">1000$</h1>
-                                        <p>free cancel before 8 Oct 2024</p>
-                                        <div className="flex space-x-2">
-                                            <button className="w-fit px-2 h-8 bg-bg rounded-full shadow">Add to chart</button>
-                                            <button className="w-fit px-2 h-8  rounded-full bg-yellow hover:bg-navbar" onClick={ClickBookNow}>Book now</button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex h-60 m-5 p-3 rounded-md shadow shadow-gray-400">
-                                    <div className="basis-1/3 bg-cover h-full w-72 " style={{ backgroundImage: "url('/images/map.png')" }}></div>
-                                    <div className="basis-1/3  flex flex-col space-y-5 pl-5 pt-4">
-                                        <h1 className="text-2xl">Capsule</h1>
-                                        <div>
-                                            <p>S Size 1.2 x 1.2 x 1.1 m</p>
-                                            <p>Accommodates: 1</p>
-                                            <p>Facility: Air, Bed, Open toilet</p>
-                                        </div>
-                                        <a>More detail</a>
-                                    </div>
-                                    <div className="basis-1/3  space-y-5 pl-5 pt-4 flex flex-col items-end pr-5">
-                                        <h1 className="text-2xl">1000$</h1>
-                                        <p>free cancel before 8 Oct 2024</p>
-                                        <div className="flex space-x-2">
-                                            <button className="w-fit px-2 h-8 bg-bg rounded-full shadow">Add to chart</button>
-                                            <button className="w-fit px-2 h-8 rounded-full bg-yellow hover:bg-navbar" onClick={ClickBookNow}>Book now</button>
+                                        <div className="basis-1/3 space-y-5 pl-5 pt-4 flex flex-col items-end pr-5">
+                                            <h1 className="text-2xl">{room.price}$</h1>
+                                            <p>Free cancel before {new Date().toLocaleDateString()}</p>
+                                            <div className="flex space-x-2">
+                                                <button className="w-fit px-2 h-8 bg-bg rounded-full shadow">Add to chart</button>
+                                                <button className="w-fit px-2 h-8 bg-bg rounded-full bg-yellow  hover:bg-navbar" onClick={ClickBookNow}>Book now</button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                ))
+                            ) : (
+                                <p className="p-5 text-center">No rooms available.</p>
+                            )}
 
                             </div>
                             {/* room */}

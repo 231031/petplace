@@ -78,11 +78,9 @@ const Nav: React.FC = () => {
                   <ul className="space-y-2">
                     <li><a href="/CreateProfile" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Create Profile</span></a></li>
                     <li><a href="/SelectProfile" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Profile</span></a></li>
-                    <li><a href="/hotel" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Hotel</span></a></li>
-                    <li><a href="/care" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Care</span></a></li>
-                    <li><a href="/delivery" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Delivery</span></a></li>
-                    <li><a href="/shop" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Shop</span></a></li>
-                    <li><a href="/social" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Social</span></a></li>
+                    <li><a href="/" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Hotel</span></a></li>
+                    <li><a href="/care" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Care & Clinic</span></a></li>
+
                     <li><button type="button" onClick={handleLogout} className="flex items-center p-2 text-base font-normal w-full text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Log out</span></button></li>
                   </ul>
                 </div>
