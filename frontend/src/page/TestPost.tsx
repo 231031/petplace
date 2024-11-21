@@ -1,3 +1,4 @@
+import { stat } from "fs";
 import React from "react";
 
 const postBookingHotel = async () => {

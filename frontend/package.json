@@ -20,6 +20,7 @@
     "flowbite": "^2.5.2",
     "flowbite-react": "^0.10.1",
     "leaflet": "^1.9.4",
+    "leaflet-control-geocoder": "^2.4.0",
     "lucide-react": "^0.454.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

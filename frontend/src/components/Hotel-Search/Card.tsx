@@ -1,7 +1,7 @@
-import { Hotel } from "./HotelData";
+import { Profile } from "@/types/response";
+import HotelList  from "./HotelData";
 import React from "react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"; // Import star icons
-
 // function Card({hotel}:{hotel:Hotel}) {
 //     return (
 //         <div>
@@ -30,7 +30,7 @@ function HotelRating({ avgReview }: { avgReview: number }) {
   );
 }
 
-function Card({ hotel }: { hotel: Hotel }) {
+function Card({ hotel }: { hotel: Profile }) {
   return (
     <div className="grid grid-cols-10 gap-4 mb-10 mt-10 mx-40 *:rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
       <div className="col-span-2">
