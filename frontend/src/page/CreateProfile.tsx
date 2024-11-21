@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import InputBox from '../components/CreateProfile/InputBox';
 import Button from '../components/LoginSignup/Button';
 import { useNavigate } from 'react-router-dom';
-import UploadImage from "@/components/UploadImage";
+import UploadImage from "@/components/CreateProfile/UploadImage";
 import { UploadRes } from '@/types/response';
 
 function CreateProfile() {
@@ -42,6 +42,7 @@ function CreateProfile() {
     const handleImageUpload = (uploadedFiles: UploadRes[]) => {
         // setImages(res.profile.image_array ? res.profile.image_array.map((url) => ({ fileUrl: url, filePath: '', accountId: '0' })) : []);
         setImages(prev => [...prev, ...uploadedFiles].slice(0, 10));
+        
     };
 
     const handleRemoveImage = (index: number) => {
@@ -166,11 +167,40 @@ function CreateProfile() {
             </div> */}
             {/* container right */}
             <div className="flex justify-center bg-bgLogin w-full items-baseline">
-                <div className="flex flex-col items-center w-1/2 gap-y-5 pt-36">
+                <div className="flex flex-col items-center w-1/4 gap-y-5 pt-36">
                     <h1 className="text-3xl">Create Profile</h1>
                     <p>Fill the form to Create your Profile</p>
-                    <div className="flex flex-row gap-x-5 gap-y-5 pl-5 pt-5 w-full ">
-                        <div className="flex flex-col gap-y-2 w-1/3">
+                    <div className="flex justify-center ">
+                        {images.map((image, index) => (
+                            <div
+                                key={index}
+                                className="relative w-36 h-36 bg-gray-200 rounded-full overflow-hidden flex justify-center items-center mr-2"
+                            >
+                                <img
+                                    src={image.fileUrl}
+                                    alt={`Uploaded ${index}`}
+                                    className="w-full h-full object-cover"
+                                />
+                                <button
+                                    onClick={() => handleRemoveImage(index)}
+                                    className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full px-1"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        ))}
+                        {/* Show Upload button if the limit is not reached */}
+                        {images.length < 1 && (
+                            <div className="relative w-20 h-20 bg-gray-200 rounded-full flex justify-center items-center cursor-pointer">
+                                <UploadImage
+                                    limit={10 - images.length}
+                                    onComplete={handleImageUpload}
+                                />
+                            </div>
+                        )}
+                        </div>
+                    <div className="flex flex-row gap-x-5 gap-y-5 pl-5 pt-5 w-full items-end">
+                        <div className="flex flex-col gap-y-2 w-1/2">
                             <p>Profile</p>
                             <select
                                 name="profileType"
@@ -182,7 +212,7 @@ function CreateProfile() {
                                 <option value="hotel">Hotel</option>
                             </select>
                         </div>
-                        <div className="flex flex-col gap-y-2 w-1/3">
+                        <div className="flex flex-col gap-y-2 w-1/2 ">
                             <p>Profile Name</p>
                             <InputBox
                                 placeholder="Profile Name"
@@ -191,67 +221,49 @@ function CreateProfile() {
                                 onChange={handleChange}
                             />
                         </div>
-                        <div className="flex flex-col justify-end w-1/3">
-                            {images.map((image, index) => (
-                                <div
-                                    key={index}
-                                    className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
-                                >
-                                    <img
-                                        src={image.fileUrl}
-                                        alt={`Uploaded ${index}`}
-                                        className="w-full h-full object-cover"
-                                    />
-                                    <button
-                                        onClick={() => handleRemoveImage(index)}
-                                        className="absolute top-1 right-1 bg-navbar text-white text-xs rounded-lg px-1"
-                                    >
-                                        ×
-                                    </button>
-                                </div>
-                            ))}
-                            <UploadImage
-                                limit={10 - images.length}
-                                onComplete={handleImageUpload}
-                            />
-                        </div>
+                        
                     </div>
-                    <div className="flex flex-wrap gap-y-5 gap-x-5 pl-5 mb-5">
-                        <div className="flex flex-col gap-y-2">
-                            <p>Email</p>
-                            <InputBox
-                                placeholder="Email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                            />
+                    <div className='flex w-full '>
+                        <div className="flex flex-wrap flex-col gap-y-5 gap-x-5 pl-5 mb-5  w-1/2">
+                            <div className="flex flex-col gap-y-2 ">
+                                <p>Email</p>
+                                <InputBox
+                                    placeholder="Email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div className="flex flex-col gap-y-2  ">
+                                <p>Tel</p>
+                                <InputBox
+                                    placeholder="Tel"
+                                    name="tel"
+                                    value={formData.tel}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div className="flex flex-col gap-y-2  ">
+                                <p>PayPal Email</p>
+                                <InputBox
+                                    placeholder="PayPal Email"
+                                    name="paypal"
+                                    value={formData.paypal}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            
                         </div>
-                        <div className="flex flex-col gap-y-2">
-                            <p>Tel</p>
-                            <InputBox
-                                placeholder="Tel"
-                                name="tel"
-                                value={formData.tel}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className="flex flex-col gap-y-2">
-                            <p>PayPal Email</p>
-                            <InputBox
-                                placeholder="PayPal Email"
-                                name="paypal"
-                                value={formData.paypal}
-                                onChange={handleChange}
-                            />
-                        </div>
-                        <div className="flex flex-col gap-y-2 w-full">
+                        <div className="flex flex-col gap-y-2 w-full pl-5 ">
                             <p>Address</p>
                             <div className="flex gap-x-5">
                                 <input
                                     type="text"
-                                    className="rounded-lg text-yellow border border-2 border-bg hover:border-yellow focus:border-yellow focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow h-40 w-1/2"
+                                    className="flex rounded-lg text-yellow border border-2 border-bg hover:border-yellow focus:border-yellow focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow h-36 w-full "
                                 />
-                                <div className="h-40 w-1/2">
+                                
+                            </div>
+                            <div className="h-24 w-full rounded-lg">
                                     {geoError && <div>{geoError}</div>}
                                     <MapContainer
                                         center={position}
@@ -262,9 +274,9 @@ function CreateProfile() {
                                         <LocationMarker />
                                     </MapContainer>
                                 </div>
-                            </div>
                         </div>
                     </div>
+                    
                     {/* <Button label="Go to Full Map" onClick={FullMapClick} /> */}
                     <Button label="Create" onClick={handleSignup} />
                 </div>

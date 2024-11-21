@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import InputBox from '../components/LoginSignup/InputBox';
+import InputBox2 from '../components/LoginSignup/InputBox2';
 import Button from '../components/LoginSignup/Button';
 import { useNavigate } from 'react-router-dom';
+import UploadImage from "@/components/CreateProfile/UploadImage";
+import { UploadRes } from '@/types/response';
 
 function Signup() {
     const [formData, setFormData] = useState({
@@ -16,6 +19,19 @@ function Signup() {
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
+    const [images, setImages] = useState<UploadRes[]>([]);
+
+    const handleImageUpload = (uploadedFiles: UploadRes[]) => {
+        // setImages(res.profile.image_array ? res.profile.image_array.map((url) => ({ fileUrl: url, filePath: '', accountId: '0' })) : []);
+        setImages(prev => [...prev, ...uploadedFiles].slice(0, 10));
+        
+    };
+
+    const handleRemoveImage = (index: number) => {
+        const updatedImages = images.filter((_, imgIndex) => imgIndex !== index);
+        setImages(updatedImages);
+    };
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -91,14 +107,43 @@ function Signup() {
                 <div className="flex flex-col items-center w-1/2 gap-y-5 pt-36">
                     <h1 className="text-3xl">Sign Up</h1>
                     <p>Fill the form to sign up to Pet Place</p>
+                    <div className="flex justify-center mt-10">
+                        {images.map((image, index) => (
+                            <div
+                                key={index}
+                                className="relative w-36 h-36 bg-gray-200 rounded-full overflow-hidden flex justify-center items-center mr-2"
+                            >
+                                <img
+                                    src={image.fileUrl}
+                                    alt={`Uploaded ${index}`}
+                                    className="w-full h-full object-cover"
+                                />
+                                <button
+                                    onClick={() => handleRemoveImage(index)}
+                                    className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full px-1"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        ))}
+                        {/* Show Upload button if the limit is not reached */}
+                        {images.length < 1 && (
+                            <div className="relative w-20 h-20 bg-gray-200 rounded-full flex justify-center items-center cursor-pointer">
+                                <UploadImage
+                                    limit={10 - images.length}
+                                    onComplete={handleImageUpload}
+                                />
+                            </div>
+                        )}
+                        </div>
                     <div className="flex flex-wrap flex-row gap-x-5 gap-y-5 pl-5 pt-5 w-full">
                         <div className="flex flex-col gap-y-2">
                             <p>Name</p>
-                            <InputBox placeholder="Name" name="name" value={formData.name} onChange={handleChange} />
+                            <InputBox2 placeholder="Name" name="name" value={formData.name} onChange={handleChange} />
                         </div>
                         <div className="flex flex-col gap-y-2">
                             <p>Surname</p>
-                            <InputBox placeholder="Surname" name="surname" value={formData.surname} onChange={handleChange} />
+                            <InputBox2 placeholder="Surname" name="surname" value={formData.surname} onChange={handleChange} />
                         </div>
                         <div className="flex flex-col gap-y-2">
                             <p>Date of Birth</p>
@@ -107,7 +152,7 @@ function Signup() {
                                 name="dateOfBirth"
                                 value={formData.dateOfBirth}
                                 onChange={handleChange}
-                                className="w-80 h-12 p-4 text-sm text-yellow rounded-lg bg-white 
+                                className="w-52 h-12 p-4 text-sm text-yellow rounded-lg bg-white 
                                            placeholder:text-yellow border border-2 border-bg hover:border-yellow
                                            focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow"
                             />
