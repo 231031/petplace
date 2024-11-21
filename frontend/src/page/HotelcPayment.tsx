@@ -1,12 +1,20 @@
+import { Cage } from "@/types/response";
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 
 export default function HotelcPayment() {
     const [select, setSelect] = useState<number | null>(0);
+    const navigate = useNavigate();
+    const location = useLocation();
+    const selectedCage = location.state?.selectedCage || [];
 
     const handleSelect = (choice: number) => {
         setSelect(choice);
+    };
+    const handleCaegClick = (selectedCage: Cage) => {
+        navigate('/hotelfillpayment', { state: { selectedCage: selectedCage } });
     };
 
     return (
@@ -55,8 +63,8 @@ export default function HotelcPayment() {
 
                 <div className="max-w-sm w-full mx-auto mb-10">
                     <div className="flex justify-between space-x-6">
-                        <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400">Back</button>
-                        <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400">Next</button>
+                        <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400" onClick={() => { navigate(-1) }}>Back</button>
+                        <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400" onClick={() => {handleCaegClick(selectedCage)}}>Next</button>
                     </div>
                 </div>
 

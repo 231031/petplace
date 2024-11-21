@@ -9,7 +9,7 @@ interface CageCardType {
 }
 
 function CageCard({ cage_type, size, price, facility, max_capacity }: CageCardType) {
-    console.log({ price }, { cage_type }, { max_capacity })
+   
     return (
         <div>
 
