@@ -69,6 +69,15 @@ const HotelDetailPage = () => {
         }
 
         try {
+                const userId = localStorage.getItem("userId") || "";
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    toast.error("You are not authorized. Please log in.");
+                    // navigate("/login");
+                    return;
+                }
+
             const payload = {
                 id: profile.profile.id,
                 user_id: profile.profile.user_id,
@@ -87,12 +96,21 @@ const HotelDetailPage = () => {
                 image_array: images.map((image) => image.fileUrl),
             };
 
+            
+
             const res = await UpdateProfile(payload);
             toast.success("Profile updated successfully");
-            console.log(res);
-        } catch (err) {
-            toast.error("Failed to update profile");
-            console.error(err);
+            console.log("log", res);
+        } catch (err: any) {
+            if (err.response && err.response.data) {
+                // Handle server response if it's JSON
+                console.error("Server Response:", err.response.data);
+                toast.error(`Error: ${err.response.data.message || "Failed to update profile"}`);
+            } else {
+                // Handle non-JSON response or other errors
+                // console.error("Unexpected Error:", err.message || err);
+                toast.error("Unexpected error occurred. Please try again.");
+            }
         }
     };
 
