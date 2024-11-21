@@ -3,14 +3,15 @@ package model
 import "petplace/internal/types"
 
 type User struct {
-	ID          uint   `gorm:"primaryKey;autoIncrement;" json:"id" param:"id" query:"id"`
-	Email       string `gorm:"type:varchar(191);unique;not null" json:"email" query:"email" validate:"required"`
-	PaypalEmail string `gorm:"type:varchar(191);" json:"paypal_email" query:"paypal_email"`
-	Password    string `gorm:"type:varchar(191);not null" json:"password" query:"password" validate:"required"`
-	FirstName   string `gorm:"type:varchar(191);not null" json:"first_name" query:"first_name" validate:"required"`
-	Surename    string `gorm:"type:varchar(191);not null" json:"surename" query:"surename" validate:"required"`
-	Age         int    `gorm:"type:int;not null" json:"age" query:"age"`
-	CitizenID   string `gorm:"type:varchar(191);not null" json:"citizen_id" query:"citizen_id"`
+	ID           uint   `gorm:"primaryKey;autoIncrement;" json:"id" param:"id" query:"id"`
+	Email        string `gorm:"type:varchar(191);unique;not null" json:"email" query:"email" validate:"required"`
+	PaypalEmail  string `gorm:"type:varchar(191);" json:"paypal_email" query:"paypal_email"`
+	Password     string `gorm:"type:varchar(191);not null" json:"password" query:"password" validate:"required"`
+	FirstName    string `gorm:"type:varchar(191);not null" json:"first_name" query:"first_name" validate:"required"`
+	Surename     string `gorm:"type:varchar(191);not null" json:"surename" query:"surename" validate:"required"`
+	Age          int    `gorm:"type:int;not null" json:"age" query:"age"`
+	CitizenID    string `gorm:"type:varchar(191);not null" json:"citizen_id" query:"citizen_id"`
+	ImageProfile string `gorm:"type:text;" json:"image_profile" query:"image_profile"`
 
 	// credit card
 	Name         string `gorm:"type:varchar(191);" json:"name" query:"name"`

@@ -17,6 +17,7 @@ type ProfileRepositoryIn interface {
 	CreateProfile(profile model.Profile) (int, string, error)
 	GetProfileByID(id uint) (model.Profile, error)
 	GetProfileByUserID(userID uint, role string) (model.Profile, error)
+	GetAllProfileByUserID(userID uint) ([]model.Profile, error)
 	UpdateProfile(profile model.Profile) error
 	CountCompleteBookByID(profile_id uint) (int, error)
 }
