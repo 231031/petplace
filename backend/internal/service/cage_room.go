@@ -7,6 +7,7 @@ import (
 	"petplace/internal/utils"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -163,11 +164,11 @@ func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.Fi
 	}
 
 	// sort by
-	if filter.Sort == "price" {
+	if strings.ToLower(filter.Sort) == "price" {
 		sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].Cages[0].Price < profiles[j].Cages[0].Price })
-	} else if filter.Sort == "distance" {
+	} else if strings.ToLower(filter.Sort) == "distance" {
 		profiles = s.ProfileServiceIn.SortProfileByDistance(profiles)
-	} else if filter.Sort == "review" {
+	} else if strings.ToLower(filter.Sort) == "review" {
 		profiles = s.ProfileServiceIn.SortProfileByReviewRate(profiles)
 	}
 	return profiles, nil

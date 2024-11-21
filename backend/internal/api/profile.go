@@ -39,15 +39,18 @@ func (h *ProfileHandler) handleCreateProfile(c echo.Context) error {
 	profile := model.Profile{}
 	err := c.Bind(&profile)
 	if err != nil {
-		return utils.HandleError(c, http.StatusBadRequest, "Profile detail not correct", err)
+		return utils.HandleError(c, http.StatusBadRequest, "profile detail not correct", err)
 	}
 
-	err = h.profileServiceIn.CreateProfile(profile)
+	status, strErr, err := h.profileServiceIn.CreateProfile(profile)
 	if err != nil {
-		return utils.HandleError(c, http.StatusInternalServerError, "Create profile not success", err)
+		return utils.HandleError(c, status, strErr, err)
+	}
+	if status != http.StatusCreated {
+		return utils.HandleError(c, status, strErr, err)
 	}
 
-	return c.JSON(http.StatusCreated, "Create profile success")
+	return c.JSON(http.StatusCreated, "profile is created successfully")
 }
 
 // @Summary Update Profile
