@@ -897,6 +897,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/profile/{user_id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "get profile by user ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Profiles"
+                ],
+                "summary": "Get Profile By User ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/profile/{user_id}/{role}": {
             "get": {
                 "security": [
@@ -1307,6 +1344,55 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "update user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "user model",
+                        "name": "UserModel",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.User"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1496,6 +1582,9 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "image_profile": {
+                    "type": "string"
+                },
                 "latitude": {
                     "type": "number"
                 },
@@ -1548,6 +1637,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "image_profile": {
+                    "type": "string"
                 },
                 "name": {
                     "description": "credit card",

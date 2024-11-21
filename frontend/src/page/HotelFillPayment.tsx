@@ -9,11 +9,10 @@ export default function PaymentSelect() {
         setSelect(choice);
     };
     const location = useLocation();
-    const selectedCage = location.state.selectedCage;
-    const handleCaegClick = (selectedCage: Cage) => {
+    const selectedCage = location.state?.selectedCage;
+    const handleHotelClick = (selectedCage: Cage) => {
         navigate('/hotelbooksuccess', { state: { selectedCage: selectedCage } });
-    };
-    console.log("kuy",selectedCage);
+      };
     return (
         <div>
             <div className="max-w-2xl w-full mx-auto mt-10">
@@ -108,7 +107,7 @@ export default function PaymentSelect() {
                 <div className="max-w-sm w-full mx-auto mb-10">
                     <div className="flex justify-between space-x-6">
                         <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400" onClick={() => { navigate(-1) }}>Back</button>
-                        <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400" onClick={() => { handleCaegClick(selectedCage)}}>Next</button>
+                        <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400" onClick={() => { handleHotelClick(selectedCage)}}>Next</button>
                     </div>
                 </div>
 

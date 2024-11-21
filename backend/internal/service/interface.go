@@ -30,6 +30,7 @@ type ProfileServiceIn interface {
 	CreateProfile(profile model.Profile) (int, string, error)
 	GetProfileByID(id uint) (model.Profile, error)
 	GetProfileByUserID(userID uint, role string) (model.Profile, string, error)
+	GetAllProfileByUserID(userID uint) ([]model.Profile, error)
 	UpdateProfile(id uint, profile model.Profile) error
 
 	SortProfileByReviewRate(profiles []model.Profile) []model.Profile

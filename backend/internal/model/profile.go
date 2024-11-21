@@ -3,23 +3,24 @@ package model
 import "time"
 
 type Profile struct {
-	ID          uint    `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
-	UserID      uint    `gorm:"not null" json:"user_id" query:"user_id" validate:"required"`
-	Role        string  `gorm:"type:varchar(191); not null" json:"role" query:"role" validate:"required"`
-	Payment     string  `gorm:"type:varchar(191); not null" json:"payment" query:"payment"`
-	PaypalEmail string  `gorm:"type:varchar(191);" json:"paypal_email" query:"paypal_email"`
-	Email       string  `gorm:"type:varchar(191);" json:"email" query:"email"`
-	Tel         string  `gorm:"type:varchar(191);" json:"tel" query:"tel"`
-	Name        string  `gorm:"type:varchar(191);" json:"name" query:"name" validate:"required"`
-	Address     string  `gorm:"type:text;not null" json:"address" query:"address"`
-	Image       string  `gorm:"type:text;" json:"image" query:"image"`
-	Facility    string  `gorm:"type:text;" json:"facility" query:"facility"`
-	Detail      string  `gorm:"type:text;" json:"detail" query:"detail"`
-	Longitude   float64 `gorm:"type:float;not null" json:"longitude" query:"longitude" validate:"required"`
-	Latitude    float64 `gorm:"type:float;not null" json:"latitude" query:"latitude" validate:"required"`
-	CheckIn     string  `gorm:"type:varchar(191);" json:"check_in" query:"check_in" validate:"required"`
-	CheckOut    string  `gorm:"type:varchar(191);" json:"check_out" query:"check_out" validate:"required"`
-	AvgReview   float32 `gorm:"type:float;default:0" json:"avg_review" query:"avg_review"`
+	ID           uint    `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
+	UserID       uint    `gorm:"not null" json:"user_id" query:"user_id" validate:"required"`
+	Role         string  `gorm:"type:varchar(191); not null" json:"role" query:"role" validate:"required"`
+	Payment      string  `gorm:"type:varchar(191); not null" json:"payment" query:"payment"`
+	PaypalEmail  string  `gorm:"type:varchar(191);" json:"paypal_email" query:"paypal_email"`
+	Email        string  `gorm:"type:varchar(191);" json:"email" query:"email"`
+	Tel          string  `gorm:"type:varchar(191);" json:"tel" query:"tel"`
+	Name         string  `gorm:"type:varchar(191);" json:"name" query:"name" validate:"required"`
+	Address      string  `gorm:"type:text;not null" json:"address" query:"address"`
+	Image        string  `gorm:"type:text;" json:"image" query:"image"`
+	ImageProfile string  `gorm:"type:text;" json:"image_profile" query:"image_profile"`
+	Facility     string  `gorm:"type:text;" json:"facility" query:"facility"`
+	Detail       string  `gorm:"type:text;" json:"detail" query:"detail"`
+	Longitude    float64 `gorm:"type:float;not null" json:"longitude" query:"longitude" validate:"required"`
+	Latitude     float64 `gorm:"type:float;not null" json:"latitude" query:"latitude" validate:"required"`
+	CheckIn      string  `gorm:"type:varchar(191);" json:"check_in" query:"check_in" validate:"required"`
+	CheckOut     string  `gorm:"type:varchar(191);" json:"check_out" query:"check_out" validate:"required"`
+	AvgReview    float32 `gorm:"type:float;default:0" json:"avg_review" query:"avg_review"`
 
 	// Hotel   Hotel   `gorm:"foreignKey:ProfileID"`
 	Cages []CageRoom `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"cages" query:"cages" swaggerignore:"true"`

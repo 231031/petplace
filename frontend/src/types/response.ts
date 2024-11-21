@@ -61,6 +61,7 @@ export interface Profile {
     name:                string;
     address:             string;
     image:               string;
+    image_profile:       string;
     facility:            string;
     detail:              string;
     longitude:           number;
