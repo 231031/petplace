@@ -1,5 +1,5 @@
 import { Hotel } from "./HotelData";
-import React from "react";
+import React, { useState } from "react";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"; // Import star icons
 
 // function Card({hotel}:{hotel:Hotel}) {
@@ -14,6 +14,8 @@ import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"; // Import sta
 function HotelRating({ avgReview }: { avgReview: number }) {
   const fullStars = Math.floor(avgReview); // Number of full stars
   const halfStar = avgReview % 1 >= 0.5; // Whether to display a half star
+  const [activeButton, setActiveButton] = useState<number | null>(null);
+  const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
 
   return (
     <div className="flex items-center">
@@ -32,7 +34,8 @@ function HotelRating({ avgReview }: { avgReview: number }) {
 
 function Card({ hotel }: { hotel: Hotel }) {
   return (
-    <div className="grid grid-cols-10 gap-4 mb-10 mt-10 mx-40 *:rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
+    
+    <div className="grid grid-cols-10 gap-4 mb-10 mt-10 w-full *:rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
       <div className="col-span-2">
         <img
           src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"

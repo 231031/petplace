@@ -8,7 +8,6 @@ import { Cage } from "@/types/response";
 // import HotelSearch from "./TestSearch";
 
 function HotelSearch() {
-
   const [hotels, setHotels] = useState<any[]>([]);
   const [longitude, setLongtitude] = useState("");
   // const [latitude, setLatitude] = useState("");
@@ -18,7 +17,6 @@ function HotelSearch() {
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate(); // Initialize useNavigate
-
 
   const petOptions = [
     "dog",
@@ -86,7 +84,7 @@ function HotelSearch() {
   // const [isClicked, setIsClicked] = useState(false);
   const [activeButton, setActiveButton] = useState<number | null>(null);
   const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
-
+  console.log(hotel[0].name)
   return (
     <div className="">
       <div className="w-full h-1/2 p-4 bg-white flex justify-center items-center relative">
@@ -174,9 +172,7 @@ function HotelSearch() {
 
                 {/* Pet Section */}
                 <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
-                  <label className="block text-red-900 text-lg font-semibold mb-4">
-                    Pet
-                  </label>
+                  <label className="block text-red-900 text-lg font-semibold mb-4"></label>
                   <div className="grid grid-cols-2 gap-4">
                     {petOptions2.map((pet) => (
                       <label
@@ -208,112 +204,141 @@ function HotelSearch() {
                   Search
                 </button>
               </div>
+              <div className="flex flex-cols-10 gap-4 justify-center">
+                {buttons.map((label, index) => (
+                  <button
+                    key={index}
+                    type="submit"
+                    onClick={() => {
+                      setActiveButton(index);
+                      handleSearch(label);
+                    }}
+                    style={{
+                      backgroundColor:
+                        activeButton === index ? "#A08252" : "white",
+                      color: activeButton === index ? "white" : "#A08252",
+                    }}
+                    className={`${
+                      activeButton === index
+                        ? "hover:bg-egg focus:ring-red-300"
+                        : "hover:bg-gray-100 focus:ring-red-300"
+                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              <HotelData hotelList={hotel} />
             </div>
           ) : (
             // Original Search Section
-            <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 w-3/4 px-20">
-              <div className="grid grid-cols-3 gap-20 justify-center">
-                <div className="text-xl p-2 mt-10">
-                  <div className="flex flex-col">
-                    <label>Pet</label>
-                    {petOptions.map((pet) => (
-                      <label
-                        key={pet}
-                        className="flex items-center space-x-2 cursor-pointer"
-                      >
+            <div className="w-full max-w-6xl mx-auto">
+              <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 px-20">
+                <div className="grid grid-cols-3 gap-20 justify-center">
+                  <div className="text-xl p-2 mt-10">
+                    <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-4">
+                      <label>Pet</label>
+                      {petOptions.map((pet) => (
+                        <label
+                          key={pet}
+                          className="flex items-center space-x-2 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            value={pet}
+                            checked={selectedPets.includes(pet)}
+                            onChange={() => handlePetChange(pet)}
+                            className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
+                          />
+                          <span>{pet}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="text-xl p-2 mt-10">
+                    <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-4">
+                      <label>Location</label>
+                      <input
+                        type="text"
+                        id="longitude"
+                        value={longitude}
+                        onChange={(e) => setLongtitude(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="text-xl p-2 mt-10">
+                    <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-4">
+                      <label>Date</label>
+                      <div>
+                        Start
                         <input
-                          type="checkbox"
-                          value={pet}
-                          checked={selectedPets.includes(pet)}
-                          onChange={() => handlePetChange(pet)}
-                          className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
+                          type="date"
+                          id="start-date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
                         />
-                        <span>{pet}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="text-xl p-2 mt-10">
-                  <div className="flex flex-col">
-                    <label>Location</label>
-                    <input
-                      type="text"
-                      id="longitude"
-                      value={longitude}
-                      onChange={(e) => setLongtitude(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                    />
-                  </div>
-                </div>
-
-                <div className="text-xl p-2 mt-10">
-                  <div className="flex flex-col">
-                    <label>Date</label>
-                    <div>
-                      Start
-                      <input
-                        type="date"
-                        id="start-date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                      />
-                    </div>
-                    <div>
-                      End
-                      <input
-                        type="date"
-                        id="end-date"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                      />
+                      </div>
+                      <div>
+                        End
+                        <input
+                          type="date"
+                          id="end-date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                {/* Edit Search Button */}
+                <div className="flex justify-center mt-auto">
+                  <button
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200 mb-6"
+                  >
+                    {isEditing ? "Cancel Edit" : "Edit Search"}
+                  </button>
+                </div>
+              </div>
+              <div className="flex flex-cols-10 gap-4 justify-center">
+                {buttons.map((label, index) => (
+                  <button
+                    key={index}
+                    type="submit"
+                    onClick={() => {
+                      setActiveButton(index);
+                      handleSearch(label);
+                    }}
+                    style={{
+                      backgroundColor:
+                        activeButton === index ? "#A08252" : "white",
+                      color: activeButton === index ? "white" : "#A08252",
+                    }}
+                    className={`${
+                      activeButton === index
+                        ? "hover:bg-egg focus:ring-red-300"
+                        : "hover:bg-gray-100 focus:ring-red-300"
+                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
 
-              {/* Edit Search Button */}
-              <div className="flex justify-center mt-auto">
-                <button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200 mb-6"
-                >
-                  {isEditing ? "Cancel Edit" : "Edit Search"}
-                </button>
-              </div>
+              <HotelData hotelList={hotel} />
             </div>
+
           )}
         </div>
       </div>
       {/* </div> */}
-
-      <div className="flex flex-cols-10 gap-4 justify-center">
-        {buttons.map((label, index) => (
-          <button
-            key={index}
-            type="submit"
-            onClick={() => {
-              setActiveButton(index);
-              handleSearch(label);
-            }}
-            style={{
-              backgroundColor: activeButton === index ? "#A08252" : "white",
-              color: activeButton === index ? "white" : "#A08252",
-            }}
-            className={`${activeButton === index
-              ? "hover:bg-egg focus:ring-red-300"
-              : "hover:bg-gray-100 focus:ring-red-300"
-              } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
-          >
-            {label}
-          </button>
-        ))}
-
-      </div>
-
-      <HotelData hotelList={hotel} />
     </div>
   );
 }
