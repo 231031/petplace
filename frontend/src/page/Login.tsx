@@ -26,16 +26,13 @@ export default function Login() {
 
             if (response.ok) {
                 const data = await response.json();
-                localStorage.setItem("token", data.token);
                 // Handle successful login (e.g., save token, navigate to another page)
-                console.log('Userid', data.user.id);
+                
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("userId", data.user.id)
                 localStorage.setItem("username", data.user.firstname);
-                localStorage.setItem("role", data.user.profile[0].role);
-                // setUsername(data.user.firstname);
-                console.log(data.user.profile[0].role)
-                // console.log("localstorge", userId)
+
+                console.log('Userid', data.user.id);
                 console.log('Login successful:', data);
                 navigate('/'); // Redirect to dashboard or desired page
             } else {
@@ -62,7 +59,7 @@ export default function Login() {
                         <p className=''>Username</p>
                         <InputBox placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} />
                         <p className=''>Password</p>
-                        <InputBox placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
+                        <InputBox placeholder="Password" value={password} type="password" onChange={e => setPassword(e.target.value)} />
                     </div>
                     {error && <p className="text-red-500">{error}</p>}
                     <div className="flex flex-row gap-x-3">

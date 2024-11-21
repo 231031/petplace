@@ -33,6 +33,7 @@ import RoomEdit from './page/RoomEdit';
 import TestUpload from './page/TestUpload';
 import FullMap from './page/Fullmap';
 import HotelBookSuccess from './page/HotelBookSuccess';
+import SelectProfile from './page/SelectProfile';
 
 // import TestLogin from './page/TestLogin';
 
@@ -75,6 +76,7 @@ function App() {
         {/* <Route path="/test/login" element={<TestLogin />} /> */}
         <Route path="/test/upload" element={<TestUpload />} />
         <Route path="/FullMap" element={<FullMap/>} />
+        <Route path="/SelectProfile" element={<SelectProfile/>} />
 
       </Routes>
       <Footer />

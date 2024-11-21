@@ -54,29 +54,29 @@ function HotelSearch() {
 
   const handleSearch = async () => {
     const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
-        animal_type: pet,
-        cage_size: "m",
-      }));
-  
+      animal_type: pet,
+      cage_size: "m",
+    }));
+
     const filterSearchCage: FilterSearchCage = {
-        longitude: "99.3986862",
-        latitude: "18.3170581",
-        start_time: startDate,
-        end_time: endDate
+      longitude: "99.3986862",
+      latitude: "18.3170581",
+      start_time: startDate,
+      end_time: endDate
     };
-  
-      try {
-        const results = await GetSearchCage(filterAnimal, filterSearchCage);
-        setHotels(results.data);
-        console.log("Results:", results);
-        navigate('/hotelsearch', { state: { hotels: results } });
-      } catch (error) {
-        console.error("Error fetching hotels:", error);
-      }
+
+    try {
+      const results = await GetSearchCage(filterAnimal, filterSearchCage);
+      setHotels(results.data);
+      console.log("Results:", results);
+      navigate('/hotelsearch', { state: { hotels: results } });
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    }
   };
 
 
-    const [searchClicked, setSearchClicked] = useState(false); // New state to track if search was clicked
+  const [searchClicked, setSearchClicked] = useState(false); // New state to track if search was clicked
 
 
   const location = useLocation();
@@ -208,81 +208,102 @@ function HotelSearch() {
             </div>
           ) : (
             // Original Search Section
-            <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 w-3/4 px-20 ">
-            <div className="grid grid-cols-3 gap-20 justify-center">
-              <div className="text-xl p-2 mt-10">
-                <div className="flex flex-col">
-                  <label>Pet</label>
-                  {petOptions.map((pet) => (
-                    <label
-                      key={pet}
-                      className="flex items-center space-x-2 cursor-pointer"
-                    >
+            <div className="w-full max-w-6xl mx-auto">
+              <div className="rounded-2xl shadow-lg bg-red-300 shadow-egg border border-gray-300 px-20 ">
+                <div className="grid grid-cols-3 gap-20 justify-center">
+                  <div className="text-xl p-2 mt-10">
+                    <div className="flex flex-col">
+                      <label>Pet</label>
+                      {petOptions.map((pet) => (
+                        <label
+                          key={pet}
+                          className="flex items-center space-x-2 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            value={pet}
+                            checked={selectedPets.includes(pet)}
+                            onChange={() => handlePetChange(pet)}
+                            className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
+                          />
+                          <span>{pet}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="text-xl p-2 mt-10">
+                    <div className="flex flex-col">
+                      <label>Location</label>
                       <input
-                        type="checkbox"
-                        value={pet}
-                        checked={selectedPets.includes(pet)}
-                        onChange={() => handlePetChange(pet)}
-                        className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
+                        type="text"
+                        id="longitude"
+                        value={longitude}
+                        onChange={(e) => setLongtitude(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
                       />
-                      <span>{pet}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="text-xl p-2 mt-10">
-                <div className="flex flex-col">
-                  <label>Location</label>
-                  <input
-                    type="text"
-                    id="longitude"
-                    value={longitude}
-                    onChange={(e) => setLongtitude(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                  />
-                </div>
-              </div>
-
-              <div className="text-xl p-2 mt-10">
-                <div className="flex flex-col">
-                  <label>Date</label>
-                  <div>
-                    Start
-                    <input
-                      type="date"
-                      id="start-date"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                    />
+                    </div>
                   </div>
-                  <div>
-                    End
-                    <input
-                      type="date"
-                      id="end-date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                    />
+
+                  <div className="text-xl p-2 mt-10">
+                    <div className="flex flex-col">
+                      <label>Date</label>
+                      <div>
+                        Start
+                        <input
+                          type="date"
+                          id="start-date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                        />
+                      </div>
+                      <div>
+                        End
+                        <input
+                          type="date"
+                          id="end-date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                        />
+                      </div>
+                    </div>
                   </div>
+
+
+                </div>
+                {/* Edit Search Button */}
+                <div className="flex justify-center mt-auto">
+                  <button
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200 mb-6"
+                  >
+                    {isEditing ? "Cancel Edit" : "Edit Search"}
+                  </button>
                 </div>
               </div>
-
-
-            </div>
-                          {/* Edit Search Button */}
-            <div className="flex justify-center mt-auto">
-                <button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200 mb-6"
-                >
-                  {isEditing ? "Cancel Edit" : "Edit Search"}
-                </button>
+              <div className="flex flex-cols-10 gap-4 justify-center">
+                {buttons.map((label, index) => (
+                  <button
+                    key={index}
+                    type="submit"
+                    onClick={() => setActiveButton(index)}
+                    style={{
+                      backgroundColor: activeButton === index ? "#A08252" : "white",
+                      color: activeButton === index ? "white" : "#A08252",
+                    }}
+                    className={`${activeButton === index
+                      ? "hover:bg-egg focus:ring-red-300"
+                      : "hover:bg-gray-100 focus:ring-red-300"
+                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                  >
+                    {label}
+                  </button>
+                ))}
               </div>
+              <HotelData hotelList={hotel} />
             </div>
-            
           )}
 
 
@@ -290,27 +311,7 @@ function HotelSearch() {
       </div>
       {/* </div> */}
 
-      <div className="flex flex-cols-10 gap-4 justify-center">
-        {buttons.map((label, index) => (
-          <button
-            key={index}
-            type="submit"
-            onClick={() => setActiveButton(index)}
-            style={{
-              backgroundColor: activeButton === index ? "#A08252" : "white",
-              color: activeButton === index ? "white" : "#A08252",
-            }}
-            className={`${
-              activeButton === index
-                ? "hover:bg-egg focus:ring-red-300"
-                : "hover:bg-gray-100 focus:ring-red-300"
-            } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      <HotelData hotelList={hotel}/>
+
     </div>
   );
 }
