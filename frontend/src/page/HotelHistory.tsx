@@ -1,6 +1,12 @@
+import { useLocation } from "react-router-dom";
 import HotelData from "../components/Hotel-History/HotelData";
+import clsx from "clsx";
+import { ClientRequest } from "http";
 
 function HotelHistory() {
+    const location = useLocation();
+    const selectedCage = location.state?.selectedCage;
+    console.log("aaaa",selectedCage);
     return (
         <div className=''>
             <div className="flex justify-center bg-slate-200">
