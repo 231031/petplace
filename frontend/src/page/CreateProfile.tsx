@@ -151,7 +151,7 @@ function CreateProfile() {
 
     return (
         <div className="h-screen flex">
-            {/* container left */}
+            {/* container left
             <div
                 className="flex justify-center w-1/4 items-baseline bg-cover bg-center"
                 style={{ backgroundImage: "url('/images/loginbg.png')" }}
@@ -161,9 +161,9 @@ function CreateProfile() {
                     <p>Log in and explore Pet Place</p>
                     <Button label="Log in" onClick={LoginClick} />
                 </div>
-            </div>
+            </div> */}
             {/* container right */}
-            <div className="flex justify-center bg-bgLogin w-3/4 items-baseline">
+            <div className="flex justify-center bg-bgLogin w-full items-baseline">
                 <div className="flex flex-col items-center w-1/2 gap-y-5 pt-36">
                     <h1 className="text-3xl">Create Profile</h1>
                     <p>Fill the form to Create your Profile</p>

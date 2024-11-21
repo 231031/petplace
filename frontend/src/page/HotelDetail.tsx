@@ -1,7 +1,7 @@
 
 import { useNavigate } from "react-router-dom";
 import { CarouselDemo } from "../components/HotelDetailComponents/CarousolDemo";
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 function HotelDetail() {
     const navigate = useNavigate();
@@ -24,6 +24,40 @@ function HotelDetail() {
         }
     };
 
+    const [hotel, setHotel] = useState({
+        name: "",
+        email: "",
+        check_in:"",
+        check_out:"",
+        facility_array: "",
+        avg_review:"",
+        detail:"",
+    }
+    );
+    const id = localStorage.getItem("userId");
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        fetch(`http://localhost:5000/api/profile/${id}/hotel`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        })
+            .then((response) => {
+                if (!response.ok) throw new Error("Failed to fetch data");
+                return response.json();
+            })
+            .then((data) => {
+                console.log("Fetched hotel data:", data.profile);
+                setHotel(data.profile) // ตรวจสอบข้อมูลที่ดึงมาจาก API
+                
+            })
+            .catch((error) => console.error("Error fetching hotel data:", error));
+    }, []);
+    // console.log("hotel data", hotel.facility[])
+    // const navigate = useNavigate();
+
     return (
         <div className="flex justify-center bg-bg  pb-10">
             <div className="flex w-3/4 items-center flex-col gap-y-2 bg-bg">
@@ -38,7 +72,7 @@ function HotelDetail() {
                     </div>
                 </div>
                 <div className="flex flex-col w-full h-80 gap-y-5 ">
-                    <h1 ref={hotelRef} id="hotel" className="text-4xl">Hotel Name</h1>
+                    <h1 ref={hotelRef} id="hotel" className="text-4xl">{hotel.name}</h1>
                     <CarouselDemo />
 
                 </div>
@@ -49,10 +83,7 @@ function HotelDetail() {
                         <h1 ref={detailRef} id="detail" className="text-2xl">Detail</h1>
                         <div className="flex flex-col mr-5 bg-bg gap-y-5 p-5 rounded-xl shadow shadow-gray-400">
                             <p>
-                                At [Hotel Name], we believe your pets deserve a vacation too!
-                                Our pet hotel offers a safe, comfortable, and enriching environment
-                                for your furry family members, with amenities designed specifically
-                                for both cats and dogs.
+                                {hotel.detail}
 
                             </p>
                             <div>
@@ -77,11 +108,19 @@ function HotelDetail() {
                 {/* section3 */}
                 <div className="flex flex-col w-full gap-y-5 pb-5">
                     <h1 ref={facilityRef} id="facility" className="text-2xl"> Facility</h1>
-                    <div className="flex gap-x-2">
-                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">Parking</button>
-                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">CCTV</button>
-                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">Picture</button>
-                        <button className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400">Grooming</button>
+                    <div className="flex gap-x-2 flex-wrap">
+                        {hotel.facility_array && hotel.facility_array.length > 0 ? (
+                            hotel.facility_array.map((facility, index) => (
+                                <button 
+                                    key={index} 
+                                    className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400"
+                                >
+                                    {facility}
+                                </button>
+                            ))
+                        ) : (
+                            <p>No facilities available.</p>
+                        )}
                     </div>
                 </div>
                 {/* section4 */}
@@ -150,7 +189,7 @@ function HotelDetail() {
                 {/* section 5 */}
                 <div className="flex flex-col bg-bg w-full mt-10">
                     <div className="flex space-x-5">
-                        <h1 ref={reviewRef} id="review" className="text-2xl">Review</h1>
+                        <h1 ref={reviewRef} id="review" className="text-2xl">Review {hotel.avg_review}</h1>
                         <div className="size-7 bg-navbar rounded-full"></div>
                     </div>
                     <div className="shadow shadow-gray-400 rounded-md mt-5">

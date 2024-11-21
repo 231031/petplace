@@ -18,6 +18,7 @@ const [hotel, setHotel] = useState({
         check_out:"",
         facility_array: "",
         avg_review:"",
+        image_array:[],
     }
     );
     const id = localStorage.getItem("userId");
@@ -57,9 +58,18 @@ const [hotel, setHotel] = useState({
 
           {/* Circular Button with Logo */}
           <div
-            className="size-48 rounded-full bg-blue-500 flex items-center justify-center cursor-pointer " style={{ backgroundImage: "url('/images/hotel.png')" }}
-            onClick={handleClick}>
-        
+            className="size-48 rounded-full bg-blue-500 flex items-center justify-center cursor-pointer overflow-auto "
+            onClick={handleClick}
+            >
+                {hotel.image_array && hotel.image_array.length > 0 ? (
+                    <img
+                    src={hotel.image_array[0]} // รูปภาพแรกใน array
+                    alt="Hotel"
+                    className="w-full h-full object-cover"
+                    />
+                ) : (
+                    <span className="text-white">No Image</span> // ข้อความเมื่อไม่มีรูปภาพ
+                )}
           </div>
 
           {/* Additional content */}
