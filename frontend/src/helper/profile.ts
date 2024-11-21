@@ -1,6 +1,7 @@
 import { Profile } from "@/types/model";
 import { ProfileRes } from "@/types/response";
-import { RequestApi } from "./utils";
+import { RequestApi, UpdateImageArray } from "./utils";
+import { UploadRes } from "@/types/response";
 
 const baseApi = import.meta.env.VITE_BASEAPI;
 

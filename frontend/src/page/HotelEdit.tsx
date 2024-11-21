@@ -1,16 +1,46 @@
 import { useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import { useState } from "react";
+import UploadImage from "../components/UploadImage";
+import { UploadRes } from "@/types/response";
+import { ProfileRes } from "@/types/response";
+import { useEffect } from "react";
+import { GetProfileByID, UpdateProfile } from "@/helper/profile";
+import { toast } from "react-toastify";
 
 const HotelDetailPage = () => {
+    const navigate = useNavigate();
+    const [profile, setProfile] = useState<ProfileRes | null>(null);
     const [hotelName, setHotelName] = useState("");
     const [address, setAddress] = useState("");
-    const [description, setDescription] = useState("");
+    const [detail, setDetail] = useState("");
     const [email, setEmail] = useState("");
     const [paypalEmail, setPaypalEmail] = useState("");
-    const [facilities, setFacilities] = useState<string[]>(["Parking", "CCTV", "Grooming"]);
+    const [facilities, setFacilities] = useState<string[]>([]);
     const [newFacility, setNewFacility] = useState("");
-    const [images, setImages] = useState<File[]>([]);
-    const navigate = useNavigate();
+    const [images, setImages] = useState<UploadRes[]>([]);
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const userId = localStorage.getItem('userId') || '';
+                const res = await GetProfileByID(parseInt(userId), "hotel");
+
+                setProfile(res);
+                setHotelName(res.profile.name || "");
+                setAddress(res.profile.address || "");
+                setEmail(res.profile.email || "");
+                setPaypalEmail(res.profile.paypal_email || "");
+                setFacilities(Array.isArray(res.profile.facility_array) ? res.profile.facility_array : []);
+                setImages(res.profile.image_array ? res.profile.image_array.map((url) => ({ fileUrl: url, filePath: '', accountId: '0' })) : []);
+                setDetail(res.profile.detail || "");
+            } catch (err) {
+                toast.error("Failed to fetch profile");
+                console.error(err);
+            }
+        };
+
+        fetchProfile();
+    }, []);
 
     const handleAddFacility = () => {
         if (newFacility && !facilities.includes(newFacility)) {
@@ -23,11 +53,8 @@ const HotelDetailPage = () => {
         setFacilities(facilities.filter((item) => item !== facility));
     };
 
-    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files) {
-            const uploadedFiles = Array.from(event.target.files);
-            setImages([...images, ...uploadedFiles].slice(0, 10)); // Limit to 10 images
-        }
+    const handleImageUpload = (uploadedFiles: UploadRes[]) => {
+        setImages(prev => [...prev, ...uploadedFiles].slice(0, 10));
     };
 
     const handleRemoveImage = (index: number) => {
@@ -35,17 +62,38 @@ const HotelDetailPage = () => {
         setImages(updatedImages);
     };
 
-    const handleSubmit = () => {
-        const hotelData = {
-            hotelName,
-            address,
-            description,
-            email,
-            paypalEmail,
-            facilities,
-            images,
-        };
-        console.log("Saved Hotel Data:", hotelData);
+    const handleSubmit = async () => {
+        if (!profile) {
+            toast.error("Profile not loaded");
+            return;
+        }
+
+        try {
+            const payload = {
+                id: profile.profile.id,
+                user_id: profile.profile.user_id,
+                name: hotelName,
+                address: address,
+                email: email,
+                paypal_email: paypalEmail,
+                check_in: profile.profile.check_in || "",
+                check_out: profile.profile.check_out || "",
+                latitude: profile.profile.latitude || 0,
+                longitude: profile.profile.longitude || 0,
+                role: "hotel",
+                tel: profile.profile.tel || "",
+                facility_array: facilities,
+                detail: detail,
+                image_array: images.map((image) => image.fileUrl),
+            };
+
+            const res = await UpdateProfile(payload);
+            toast.success("Profile updated successfully");
+            console.log(res);
+        } catch (err) {
+            toast.error("Failed to update profile");
+            console.error(err);
+        }
     };
 
     return (
@@ -55,19 +103,19 @@ const HotelDetailPage = () => {
                     <div className="pt-10 space-x-1">
                         <button
                             className="bg-egg h-10 w-20 rounded-md text-navbar"
-                            onClick = {() => navigate('/hotelhome')}
-                            >view
-                        </button>  
-                        <button className="text-white bg-navbar h-10 w-20 rounded-md">edit</button>   
+                            onClick={() => navigate('/hotelhome')}
+                        >view
+                        </button>
+                        <button className="text-white bg-navbar h-10 w-20 rounded-md">edit</button>
                     </div>
                 </div>
             </div>
             <div className="flex flex-col gap-y-6 p-6 w-full max-w-4xl mx-auto">
-                <div className ="relative mb-8">
+                <div className="relative mb-8">
                     <div className="absolute top-0 left-0 flex justify-center gap-x-4">
-                                <button className="text-white text-xl bg-navbar p-3 rounded-lg">Hotel detail</button>
-                                <button className="text-gray-500 bg-egg py-1 px-2 rounded-lg"
-                                onClick = {() => navigate('/room/edit')}>Room detail</button>
+                        <button className="text-white text-xl bg-navbar p-3 rounded-lg">Hotel detail</button>
+                        <button className="text-gray-500 bg-egg py-1 px-2 rounded-lg"
+                            onClick={() => navigate('/room/edit')}>Room detail</button>
                     </div>
                 </div>
                 {/* Form */}
@@ -101,8 +149,8 @@ const HotelDetailPage = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Description</label>
                             <textarea
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                value={detail}
+                                onChange={(e) => setDetail(e.target.value)}
                                 placeholder="Briefly explain"
                                 className="w-full border border-gray-300 rounded-md p-2 h-20"
                             />
@@ -144,15 +192,15 @@ const HotelDetailPage = () => {
                     {/* Hotel Overall Picture */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Hotel Overall Picture (Max. 10)</label>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 flex-wrap">
                             {images.map((image, index) => (
                                 <div
                                     key={index}
                                     className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
                                 >
                                     <img
-                                        src={URL.createObjectURL(image)}
-                                        alt="Hotel"
+                                        src={image.fileUrl}
+                                        alt={`Uploaded ${index}`}
                                         className="w-full h-full object-cover"
                                     />
                                     <button
@@ -163,15 +211,10 @@ const HotelDetailPage = () => {
                                     </button>
                                 </div>
                             ))}
-                            <label className="w-20 h-20 bg-gray-200 rounded-md flex justify-center items-center cursor-pointer">
-                                <input
-                                    type="file"
-                                    multiple
-                                    onChange={handleImageUpload}
-                                    className="hidden"
-                                />
-                                <span>Upload</span>
-                            </label>
+                            <UploadImage
+                                limit={10 - images.length}
+                                onComplete={handleImageUpload}
+                            />
                         </div>
                     </div>
 

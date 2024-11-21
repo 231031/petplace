@@ -12,22 +12,23 @@ import (
 type HotelServiceRepository struct {
 	db *gorm.DB
 }
-func (r *HotelServiceRepository) UpdateHotel(hotel model.Hotel) error {
-    db := r.db.Model(&model.Hotel{}).Where("id = ?", hotel.ID)
 
-    // อัปเดตเฉพาะฟิลด์ที่มีการแก้ไข
-    if err := db.Updates(hotel).Error; err != nil {
-        return err
-    }
-    return nil
+func (r *HotelServiceRepository) UpdateHotel(hotel model.Hotel) error {
+	db := r.db.Model(&model.Hotel{}).Where("id = ?", hotel.ID)
+
+	// อัปเดตเฉพาะฟิลด์ที่มีการแก้ไข
+	if err := db.Updates(hotel).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *HotelServiceRepository) GetHotelByID(id uint) (model.Hotel, error) {
-    var hotel model.Hotel
-    if err := r.db.First(&hotel, id).Error; err != nil {
-        return hotel, err
-    }
-    return hotel, nil
+	var hotel model.Hotel
+	if err := r.db.First(&hotel, id).Error; err != nil {
+		return hotel, err
+	}
+	return hotel, nil
 }
 
 func NewHotelServiceRepository(db *gorm.DB) *HotelServiceRepository {
@@ -118,12 +119,28 @@ func (r *HotelServiceRepository) GetAllHotelServiceByHotel(profile_id uint, stat
 	return ser, nil
 }
 
-func (r *HotelServiceRepository) GetAllHotelServiceByUser(user_id uint, status string) ([]model.HotelService, error) {
+func (r *HotelServiceRepository) GetStatusBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error) {
 	ser := []model.HotelService{}
 	result := r.db.
 		Preload("AnimalHotelServices.AnimalUser").
 		Preload("CageRoom").
 		Where("animal_users.user_id = ? AND hotel_services.status = ?", user_id, status).
+		Joins("JOIN animal_hotel_services ON animal_hotel_services.hotel_service_id = hotel_services.id").
+		Joins("JOIN animal_users ON animal_hotel_services.animal_user_id = animal_users.id").
+		Group("hotel_services.id").
+		Find(&ser)
+	if result.Error != nil {
+		return ser, result.Error
+	}
+	return ser, nil
+}
+
+func (r *HotelServiceRepository) GetAllHotelServiceByUser(user_id uint) ([]model.HotelService, error) {
+	ser := []model.HotelService{}
+	result := r.db.
+		Preload("AnimalHotelServices.AnimalUser").
+		Preload("CageRoom").
+		Where("animal_users.user_id = ?", user_id).
 		Joins("JOIN animal_hotel_services ON animal_hotel_services.hotel_service_id = hotel_services.id").
 		Joins("JOIN animal_users ON animal_hotel_services.animal_user_id = animal_users.id").
 		Group("hotel_services.id").

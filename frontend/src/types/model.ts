@@ -52,5 +52,6 @@ export interface Profile {
     role:           string;
     tel:            string;
     user_id:        number;
+    detail?:         string;
 }
 

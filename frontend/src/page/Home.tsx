@@ -10,7 +10,7 @@ function Home  () {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [selectedPets, setSelectedPets] = useState<string[]>([]);
-    const navigate = useNavigate(); // Initialize useNavigate
+    const navigate = useNavigate();
     const petOptions = ["dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
 
   
@@ -48,10 +48,12 @@ function Home  () {
 
     return (
         <div className="h-screen relative">
+            
             {/* First Section */}
             <div className="w-full h-1/2 bg-gray-100 relative">
                 <img
                     src="/images/loginbg.png"
+                    // src="https://upcdn.io/FW25cHP/raw/uploads/2024/11/20/4kBdTokw6C-Breaking%20new%20Background.webp"
                     className="w-full h-full object-cover object-center"
                 />
                 <img
@@ -196,7 +198,7 @@ function Home  () {
                 {/* Hotel List */}
                 <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 mt-4">
                     {/* Single Hotel Card */}
-                    {[1, 2].map((_, index) => (
+                    {[1,2].map((_, index) => (
                     <div
                         key={index}
                         className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
