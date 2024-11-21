@@ -48,6 +48,7 @@ func (s *UserService) UpdateUser(id uint, user model.User) error {
 	}
 
 	updateUser := utils.CopyNonZeroFields(&user, &userDb).(*model.User)
+
 	err = s.UserRepositoryIn.UpdateUser(*updateUser)
 	if err != nil {
 		return err
@@ -91,10 +92,7 @@ func (s *UserService) UpdateAnimalUser(id uint, animal model.AnimalUser) error {
 		return err
 	}
 
-	if len(animal.ImageArray) > 0 {
-		updateImage := utils.MapStringArrayToText(animal.ImageArray)
-		animal.Image = updateImage
-	}
+	animal.Image = utils.MapStringArrayToText(animal.ImageArray)
 
 	updateAn := utils.CopyNonZeroFields(&animal, &animal_db).(*model.AnimalUser)
 	err = s.AnimalUserRepositoryIn.UpdateAnimalUser(*updateAn)

@@ -21,6 +21,7 @@ func NewProfileHandler(profileServiceIn service.ProfileServiceIn) *ProfileHandle
 func (h *ProfileHandler) RegisterRoutes(g *echo.Group) {
 	g.POST("/create", h.handleCreateProfile)
 	g.GET("/:id/:role", h.handleGetProfileByUserID)
+	g.GET("/:id", h.handleGetAllProfileByUserID)
 	g.PUT("/:id", h.handleUpdateProfile)
 }
 
@@ -116,4 +117,28 @@ func (h *ProfileHandler) handleGetProfileByUserID(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, response)
+}
+
+// @Summary Get Profile By User ID
+// @Description get profile by user ID
+// @tags Profiles
+// @Produce application/json
+// @Param user_id path string true "User ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /profile/{user_id} [get]
+// @Security BearerAuth
+func (h *ProfileHandler) handleGetAllProfileByUserID(c echo.Context) error {
+	param_id := c.Param("id")
+	userID, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
+	}
+
+	profiles, err := h.profileServiceIn.GetAllProfileByUserID(userID)
+	if len(profiles) == 0 {
+		return utils.HandleError(c, http.StatusBadRequest, "profile is not created, create first", err)
+	}
+	return c.JSON(http.StatusOK, profiles)
 }

@@ -69,6 +69,21 @@ func (r ProfileRepository) GetProfileByUserID(userID uint, role string) (model.P
 	return profile, nil
 }
 
+func (r ProfileRepository) GetAllProfileByUserID(userID uint) ([]model.Profile, error) {
+	profiles := []model.Profile{}
+	result := r.db.Where("user_id = ?", userID).
+		Find(&profiles)
+
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return profiles, nil
+	}
+
+	if result.Error != nil {
+		return profiles, result.Error
+	}
+	return profiles, nil
+}
+
 func (r ProfileRepository) UpdateProfile(profile model.Profile) error {
 	result := r.db.Save(&profile)
 	if result.Error != nil {

@@ -20,7 +20,8 @@ func NewUsersHandler(usersServiceIn service.UsersServiceIn) *UsersHandler {
 
 func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
 	// role : client
-	g.GET("/card/:id", h.GetCreaditCard)
+	g.GET("/card/:id", h.handleGetCreaditCard)
+	g.PUT("/:id", h.handleUpdateUser)
 
 	// animal
 	g.GET("/animal/:user_id/:animal_type", h.handleGetAnimalUserByType)
@@ -94,6 +95,39 @@ func (h *UsersHandler) handleUpdateAnimalUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, "updated animal successfully")
 }
 
+// @Summary Update user
+// @Description update user
+// @tags Users
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "User ID"
+// @Param   UserModel body model.User true "user model"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /user/{id} [put]
+// @Security BearerAuth
+func (h *UsersHandler) handleUpdateUser(c echo.Context) error {
+	param_id := c.Param("id")
+	id, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "animal information is not correct", err)
+	}
+
+	user := model.User{}
+	err = c.Bind(&user)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "user detail is not correct", err)
+	}
+
+	err = h.usersServiceIn.UpdateUser(id, user)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "failed to update user", err)
+	}
+
+	return c.JSON(http.StatusOK, "updated user successfully")
+}
+
 // @Summary Get Animals
 // @Description get animals
 // @tags Users
@@ -154,7 +188,7 @@ func (h *UsersHandler) handleGetAnimalUser(c echo.Context) error {
 // @Failure 500
 // @Router /user/card/{id} [get]
 // @Security BearerAuth
-func (h *UsersHandler) GetCreaditCard(c echo.Context) error {
+func (h *UsersHandler) handleGetCreaditCard(c echo.Context) error {
 	param_id := c.Param("id")
 	id, err := utils.ConvertTypeToUint(param_id)
 	if err != nil {
