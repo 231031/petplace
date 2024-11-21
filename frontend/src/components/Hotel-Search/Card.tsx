@@ -1,15 +1,9 @@
 import { Hotel } from "./HotelData";
 import React, { useState } from "react";
+import { Profile } from "@/types/response";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"; // Import star icons
+import { useNavigate } from "react-router-dom";
 
-// function Card({hotel}:{hotel:Hotel}) {
-//     return (
-//         <div>
-//         <div>{hotel.hotel_name}</div>
-//         {hotel.hotel_id == 1 ? <div>hi</div> : <div>ha</div>}
-//         </div>
-//     );
-//   }
 
 function HotelRating({ avgReview }: { avgReview: number }) {
   const fullStars = Math.floor(avgReview); // Number of full stars
@@ -32,10 +26,17 @@ function HotelRating({ avgReview }: { avgReview: number }) {
   );
 }
 
-function Card({ hotel }: { hotel: Hotel }) {
+function Card({ hotel }: { hotel: Profile }) {
+
+  const navigate = useNavigate();
+  const handleHotelClick = (hotel: Profile) => {
+    // Navigate to "/hotelbookdetail" and pass the hotel data as state
+    navigate('/hoteldetail', { state: { selectedHotel: hotel } });
+  };
+
   return (
-    
-    <div className="grid grid-cols-10 gap-4 mb-10 mt-10 w-full *:rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
+    <div className="grid grid-cols-10 gap-4 mb-10 mt-10  rounded-2xl shadow-lg shadow-egg border  border-gray-300  p-4" onClick={() => handleHotelClick(hotel)}
+    style={{ cursor: 'pointer' }}>
       <div className="col-span-2">
         <img
           src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
@@ -68,6 +69,10 @@ function Card({ hotel }: { hotel: Hotel }) {
       </div>
 
       <div className="flex flex-row gap-4 ml-5 mt-5">
+        {/* <h5>{hotel.cages[].animal_type}</h5>
+        {hotel.cages?.map((cage) => (
+          <h5>{cage.animal_type}</h5>
+        ))} */}
       </div>
     </div>
 

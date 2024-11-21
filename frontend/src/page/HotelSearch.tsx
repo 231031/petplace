@@ -58,13 +58,20 @@ function HotelSearch() {
       cage_size: "m",
     }));
 
-    const filterSearchCage: FilterSearchCage = {
+    const filterSearchCage: FilterSearchCage[] = [{
       longitude: "14.53",
       latitude: "100.77",
       start_time: startDate,
       end_time: endDate,
       sort: sort,
-    };
+    },
+    {
+      longitude: "99.3986862",
+      latitude: "18.3170581",
+      start_time: startDate,
+      end_time: endDate
+    }]
+
 
     try {
       const results = await GetSearchCage(filterAnimal, filterSearchCage);
@@ -239,6 +246,7 @@ function HotelSearch() {
                   <div className="text-xl p-2 mt-10">
                     <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-4">
                       <label>Pet</label>
+                      {/* console.log(hotel[0].name) */}
                       {petOptions.map((pet) => (
                         <label
                           key={pet}

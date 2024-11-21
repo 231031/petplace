@@ -8,7 +8,7 @@ function HotelBookDetail() {
     const navigate = useNavigate();    
     const selectedHotel = location.state?.selectedHotel;
 
-
+//asa
     // const handleCageSelect = (cage: Cage) => {
     //     navigate('/hotelbookdetail', { state: { selectedCage: cage, hotelName: selectedHotel?.name } });
     // };
