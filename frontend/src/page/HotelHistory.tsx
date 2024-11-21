@@ -2,7 +2,7 @@ import HotelData from "../components/Hotel-History/HotelData";
 
 function HotelHistory() {
     return (
-        <div className=''>
+        <div className='w-full max-w-6xl mx-auto'>
             <div className="flex justify-center bg-slate-200">
                 <span className="text-2xl"> Select History Service</span>
             </div>
@@ -13,12 +13,12 @@ function HotelHistory() {
                 <div className="flex justify-center bg-slate-500 px-5">4</div>
             </div>
             <div className="ml-20">
-                <span className="text-2xl">Upcoming</span>
+                <span className="text-2xl font-bold">Upcoming</span>
                 <HotelData></HotelData>
             </div>
             <hr className="border-black mx-40"/>
             <div className="ml-20 mt-10">
-                <span className="text-2xl">Passed By</span>
+                <span className="text-2xl font-bold">Passed By</span>
                 <HotelData></HotelData>
             </div>
         </div>

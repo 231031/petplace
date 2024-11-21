@@ -12,7 +12,7 @@ import React from "react";
 
 function Card({ hotel }: { hotel: Hotel }) {
   return (
-    <div className="grid grid-cols-10 gap-4 mb-10 mt-10 bg-slate-200 mr-20">
+    <div className="grid grid-cols-10 gap-4 mb-10 mt-10  mr-20">
       <div className="col-span-2 ">
         <img
           src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
