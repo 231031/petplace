@@ -1,6 +1,7 @@
 import CageCard from "@/components/Hotel-Bookdetail/CageCard";
 import PetCard from "@/components/Hotel-Bookdetail/PetCard";
-import { useSearchParams } from "react-router-dom";
+import { Cage, Profile } from "@/types/response";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 function HotelBookdetail() {
     const [searchParams] = useSearchParams();
@@ -9,6 +10,18 @@ function HotelBookdetail() {
     const price = searchParams.get('price')
     const facility = searchParams.get('facility')
     const max_capacity = searchParams.get('max_capacity')
+
+    const location = useLocation();
+    const navigate = useNavigate();
+    const selectedCage = location.state?.selectedCage || [];
+    console.log("CageSelected",selectedCage);
+
+    // const handleHotelClick = (hotel: Profile) => {
+    //     navigate('/hotelcpayment', { state: { selectedHotel: hotel } });
+    //   };
+    const handleHotelClick = (selectedCage: Cage) => {
+        navigate('/hotelcpayment', { state: { selectedCage: selectedCage } });
+      };
 
     return (
         <div className="grid grid-row-3 gap-16">
@@ -55,8 +68,8 @@ function HotelBookdetail() {
             </div>
             <div className="max-w-sm w-full mx-auto mb-10">
                 <div className="flex justify-between space-x-6">
-                    <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400">Back</button>
-                    <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400">Next</button>
+                    <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400 "  onClick={()=>navigate(-1)}>Back</button>
+                    <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400" onClick={()=>handleHotelClick(selectedCage)}>Next</button>
                 </div>
             </div>
         </div>

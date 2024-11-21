@@ -30,7 +30,7 @@ const HotelDetailPage = () => {
                 setAddress(res.profile.address || "");
                 setEmail(res.profile.email || "");
                 setPaypalEmail(res.profile.paypal_email || "");
-                setFacilities(Array.isArray(res.profile.facility) ? res.profile.facility : []);
+                setFacilities(Array.isArray(res.profile.facility_array) ? res.profile.facility_array : []);
                 setImages(res.profile.image_array ? res.profile.image_array.map((url) => ({ fileUrl: url, filePath: '', accountId: '0' })) : []);
                 setDetail(res.profile.detail || "");
             } catch (err) {
@@ -69,6 +69,15 @@ const HotelDetailPage = () => {
         }
 
         try {
+                const userId = localStorage.getItem("userId") || "";
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    toast.error("You are not authorized. Please log in.");
+                    // navigate("/login");
+                    return;
+                }
+
             const payload = {
                 id: profile.profile.id,
                 user_id: profile.profile.user_id,
@@ -82,17 +91,26 @@ const HotelDetailPage = () => {
                 longitude: profile.profile.longitude || 0,
                 role: "hotel",
                 tel: profile.profile.tel || "",
-                facilities: facilities,
+                facility_array: facilities,
                 detail: detail,
                 image_array: images.map((image) => image.fileUrl),
             };
 
+            
+
             const res = await UpdateProfile(payload);
             toast.success("Profile updated successfully");
-            console.log(res);
-        } catch (err) {
-            toast.error("Failed to update profile");
-            console.error(err);
+            console.log("log", res);
+        } catch (err: any) {
+            if (err.response && err.response.data) {
+                // Handle server response if it's JSON
+                console.error("Server Response:", err.response.data);
+                toast.error(`Error: ${err.response.data.message || "Failed to update profile"}`);
+            } else {
+                // Handle non-JSON response or other errors
+                // console.error("Unexpected Error:", err.message || err);
+                toast.error("Unexpected error occurred. Please try again.");
+            }
         }
     };
 
@@ -103,19 +121,19 @@ const HotelDetailPage = () => {
                     <div className="pt-10 space-x-1">
                         <button
                             className="bg-egg h-10 w-20 rounded-md text-navbar"
-                            onClick = {() => navigate('/hotelhome')}
-                            >view
-                        </button>  
-                        <button className="text-white bg-navbar h-10 w-20 rounded-md">edit</button>   
+                            onClick={() => navigate('/hotelhome')}
+                        >view
+                        </button>
+                        <button className="text-white bg-navbar h-10 w-20 rounded-md">edit</button>
                     </div>
                 </div>
             </div>
             <div className="flex flex-col gap-y-6 p-6 w-full max-w-4xl mx-auto">
-                <div className ="relative mb-8">
+                <div className="relative mb-8">
                     <div className="absolute top-0 left-0 flex justify-center gap-x-4">
-                                <button className="text-white text-xl bg-navbar p-3 rounded-lg">Hotel detail</button>
-                                <button className="text-gray-500 bg-egg py-1 px-2 rounded-lg"
-                                onClick = {() => navigate('/room/edit')}>Room detail</button>
+                        <button className="text-white text-xl bg-navbar p-3 rounded-lg">Hotel detail</button>
+                        <button className="text-gray-500 bg-egg py-1 px-2 rounded-lg"
+                            onClick={() => navigate('/room/edit')}>Room detail</button>
                     </div>
                 </div>
                 {/* Form */}
@@ -192,29 +210,29 @@ const HotelDetailPage = () => {
                     {/* Hotel Overall Picture */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Hotel Overall Picture (Max. 10)</label>
-                            <div className="flex items-center gap-4 flex-wrap">
-                                {images.map((image, index) => (
-                                    <div
-                                        key={index}
-                                        className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
+                        <div className="flex items-center gap-4 flex-wrap">
+                            {images.map((image, index) => (
+                                <div
+                                    key={index}
+                                    className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
+                                >
+                                    <img
+                                        src={image.fileUrl}
+                                        alt={`Uploaded ${index}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                    <button
+                                        onClick={() => handleRemoveImage(index)}
+                                        className="absolute top-1 right-1 bg-navbar text-white text-xs rounded-lg px-1"
                                     >
-                                        <img 
-                                            src={image.fileUrl} 
-                                            alt={`Uploaded ${index}`} 
-                                            className="w-full h-full object-cover"
-                                        />
-                                        <button
-                                            onClick={() => handleRemoveImage(index)}
-                                            className="absolute top-1 right-1 bg-navbar text-white text-xs rounded-lg px-1"
-                                        >
-                                            ×
-                                        </button>
-                                    </div>
-                                ))}
-                                <UploadImage 
-                                    limit={10 - images.length} 
-                                    onComplete={handleImageUpload} 
-                                />
+                                        ×
+                                    </button>
+                                </div>
+                            ))}
+                            <UploadImage
+                                limit={10 - images.length}
+                                onComplete={handleImageUpload}
+                            />
                         </div>
                     </div>
 

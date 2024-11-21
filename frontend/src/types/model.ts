@@ -43,6 +43,7 @@ export interface Profile {
     facility?:       string;
     facility_array?: string[];
     image?:          string;
+    image_profile?:  string;
     image_array?:    string[];
     latitude:       number;
     longitude:      number;

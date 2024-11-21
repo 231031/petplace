@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"net/http"
 	"petplace/internal/auth"
 	"petplace/internal/model"
 	"petplace/internal/repository"
@@ -29,20 +30,20 @@ func NewProfileService(
 	}
 }
 
-func (s *ProfileService) CreateProfile(profile model.Profile) error {
+func (s *ProfileService) CreateProfile(profile model.Profile) (int, string, error) {
 	err := s.Validate.Struct(profile)
 	if err != nil {
-		return err
+		return http.StatusBadRequest, "profile detail is not correct", err
 	}
 
 	profile.Image = utils.MapStringArrayToText(profile.ImageArray)
 	profile.Facility = utils.MapStringArrayToText(profile.FacilityArray)
-	err = s.ProfileRepositoryIn.CreateProfile(profile)
+	status, strErr, err := s.ProfileRepositoryIn.CreateProfile(profile)
 	if err != nil {
-		return err
+		return http.StatusInternalServerError, strErr, err
 	}
 
-	return nil
+	return status, strErr, nil
 }
 
 func (s *ProfileService) GetProfileByID(id uint) (model.Profile, error) {
@@ -73,7 +74,6 @@ func (s *ProfileService) GetProfileByUserID(userID uint, role string) (model.Pro
 		if err != nil {
 			return profile, "", err
 		}
-
 		profile.Email = user.Email
 	}
 
@@ -84,6 +84,15 @@ func (s *ProfileService) GetProfileByUserID(userID uint, role string) (model.Pro
 	}
 
 	return profile, tokenProfile, nil
+}
+
+func (s *ProfileService) GetAllProfileByUserID(userID uint) ([]model.Profile, error) {
+	profiles, err := s.ProfileRepositoryIn.GetAllProfileByUserID(userID)
+	if err != nil {
+		return profiles, err
+	}
+
+	return profiles, nil
 }
 
 func (s *ProfileService) UpdateProfile(id uint, profile model.Profile) error {
@@ -100,19 +109,8 @@ func (s *ProfileService) UpdateProfile(id uint, profile model.Profile) error {
 		return fmt.Errorf("role mismatch: cannot update profile with role %s", profile.Role)
 	}
 
-	if len(profile.ImageArray) > 0 {
-		updateImage := utils.MapStringArrayToText(profile.ImageArray)
-		profile.Image = updateImage
-	} else {
-		profile.Image = ""
-	}
-
-	if len(profile.FacilityArray) > 0 {
-		updateFacility := utils.MapStringArrayToText(profile.FacilityArray)
-		profile.Facility = updateFacility
-	} else {
-		profile.Facility = ""
-	}
+	profile.Image = utils.MapStringArrayToText(profile.ImageArray)
+	profile.Facility = utils.MapStringArrayToText(profile.FacilityArray)
 
 	updateProfile := utils.CopyNonZeroFields(&profile, &existingProfile).(*model.Profile)
 	err = s.ProfileRepositoryIn.UpdateProfile(*updateProfile)

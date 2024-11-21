@@ -27,9 +27,10 @@ type UsersServiceIn interface {
 }
 
 type ProfileServiceIn interface {
-	CreateProfile(profile model.Profile) error
+	CreateProfile(profile model.Profile) (int, string, error)
 	GetProfileByID(id uint) (model.Profile, error)
 	GetProfileByUserID(userID uint, role string) (model.Profile, string, error)
+	GetAllProfileByUserID(userID uint) ([]model.Profile, error)
 	UpdateProfile(id uint, profile model.Profile) error
 
 	SortProfileByReviewRate(profiles []model.Profile) []model.Profile
@@ -47,7 +48,8 @@ type BookingServiceIn interface {
 	GetAllBookingHotelByStatus(status string) ([]model.HotelService, error)
 	GetBookingHotel(id uint) (model.HotelService, error)
 	GetAllBookingHotelByHotel(profile_id uint, status string) ([]model.HotelService, error)
-	GetAllBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error)
+	GetStatusBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error)
+	GetAllHotelServiceByUser(user_id uint) ([]model.HotelService, error)
 	GetReviewByHotel(profile_id uint) ([]model.HotelService, error)
 }
 

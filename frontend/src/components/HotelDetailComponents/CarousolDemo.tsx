@@ -1,19 +1,11 @@
-import { CardContent } from "../../components/ui/card"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "../../components/ui/carousel"
-const images = [
-  "https://cdn.prod.website-files.com/602562669ad14425e292589e/6426d4739df8daa248bddc43_IMG_5936-Edit.jpg",
-  "https://media-be.chewy.com/wp-content/uploads/2018/12/40406006_169458200622378_1790431879520964301_n-cat-rooms.jpg",
-  "https://cdn.prod.website-files.com/602562669ad14425e292589e/6426d4739df8daa248bddc43_IMG_5936-Edit.jpg",
-  "https://media-be.chewy.com/wp-content/uploads/2018/12/40406006_169458200622378_1790431879520964301_n-cat-rooms.jpg",
-  "/images/loginbg.png",
-]
-export function CarouselDemo() {
+import { CardContent } from "../ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
+
+interface CarouselDemoProps {
+  images?: string[];
+}
+
+export function CarouselDemo({ images = [] }: CarouselDemoProps) {
   return (
     <Carousel className="w-full h-72">
       <CarouselContent className="w-full h-full ">
@@ -34,5 +26,5 @@ export function CarouselDemo() {
       <CarouselPrevious />
       <CarouselNext />
     </Carousel>
-  )
+  );
 }

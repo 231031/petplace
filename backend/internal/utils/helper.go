@@ -24,7 +24,7 @@ func HandleError(c echo.Context, status int, msg string, err error) error {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	return c.String(status, msg)
+	return c.JSON(status, msg)
 }
 
 func CopyNonZeroFields(data interface{}, data_db interface{}) interface{} {

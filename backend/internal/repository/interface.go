@@ -14,9 +14,10 @@ type UserRepositoryIn interface {
 }
 
 type ProfileRepositoryIn interface {
-	CreateProfile(profile model.Profile) error
+	CreateProfile(profile model.Profile) (int, string, error)
 	GetProfileByID(id uint) (model.Profile, error)
 	GetProfileByUserID(userID uint, role string) (model.Profile, error)
+	GetAllProfileByUserID(userID uint) ([]model.Profile, error)
 	UpdateProfile(profile model.Profile) error
 	CountCompleteBookByID(profile_id uint) (int, error)
 }
@@ -49,7 +50,8 @@ type HotelServiceRepositoryIn interface {
 
 	GetAllBookingHotelByStatus(status string) ([]model.HotelService, error)
 	GetAllHotelServiceByHotel(profile_id uint, status string) ([]model.HotelService, error)
-	GetAllHotelServiceByUser(user_id uint, status string) ([]model.HotelService, error)
+	GetStatusBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error)
+	GetAllHotelServiceByUser(user_id uint) ([]model.HotelService, error)
 	GetHotelService(id uint) (model.HotelService, error)
 	GetReviewByHotel(profile_id uint) ([]model.HotelService, error)
 }
