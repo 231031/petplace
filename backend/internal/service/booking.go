@@ -335,8 +335,17 @@ func (s *BookingService) GetBookingHotel(id uint) (model.HotelService, error) {
 }
 
 // role : client
-func (s *BookingService) GetAllBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error) {
-	ser, err := s.HotelServiceRepositoryIn.GetAllHotelServiceByUser(user_id, status)
+func (s *BookingService) GetStatusBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error) {
+	ser, err := s.HotelServiceRepositoryIn.GetStatusBookingHotelByUser(user_id, status)
+	if err != nil {
+		return ser, err
+	}
+
+	return ser, nil
+}
+
+func (s *BookingService) GetAllHotelServiceByUser(user_id uint) ([]model.HotelService, error) {
+	ser, err := s.HotelServiceRepositoryIn.GetAllHotelServiceByUser(user_id)
 	if err != nil {
 		return ser, err
 	}

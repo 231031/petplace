@@ -8,6 +8,10 @@ definitions:
         type: string
       breed:
         type: string
+      gender:
+        type: string
+      hair_type:
+        type: string
       id:
         type: integer
       image:
@@ -100,6 +104,8 @@ definitions:
         type: string
       check_out:
         type: string
+      detail:
+        type: string
       email:
         type: string
       facility:
@@ -116,6 +122,8 @@ definitions:
         items:
           type: string
         type: array
+      image_profile:
+        type: string
       latitude:
         type: number
       longitude:
@@ -155,6 +163,8 @@ definitions:
         type: string
       id:
         type: integer
+      image_profile:
+        type: string
       name:
         description: credit card
         type: string
@@ -656,9 +666,32 @@ paths:
       summary: Cancel or Refund Reservation
       tags:
       - HotelServices
+  /hotel/client/{id}:
+    get:
+      description: get all hotel service user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get all Hotel Service User
+      tags:
+      - HotelServices
   /hotel/client/{id}/{status}:
     get:
-      description: get hotel service user
+      description: get hotel service user by status
       parameters:
       - description: User ID
         in: path
@@ -681,7 +714,7 @@ paths:
           description: Internal Server Error
       security:
       - BearerAuth: []
-      summary: Get Hotel Service User
+      summary: Get Hotel Service User by status
       tags:
       - HotelServices
   /hotel/client/booking:
@@ -793,6 +826,29 @@ paths:
       summary: Update Profile
       tags:
       - Profiles
+  /profile/{user_id}:
+    get:
+      description: get profile by user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get Profile By User ID
+      tags:
+      - Profiles
   /profile/{user_id}/{role}:
     get:
       description: get profile by user ID and role
@@ -847,6 +903,37 @@ paths:
       summary: Create New Profile
       tags:
       - Profiles
+  /user/{id}:
+    put:
+      consumes:
+      - application/json
+      description: update user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: user model
+        in: body
+        name: UserModel
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Update user
+      tags:
+      - Users
   /user/animal/{id}:
     get:
       description: get animal

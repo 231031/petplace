@@ -1,5 +1,5 @@
 import { GetProfileByID, UpdateProfile } from "@/helper/profile";
-import { Profile } from "@/types/model";
+// import { Profile } from "@/types/model";
 import { ProfileRes } from "@/types/response";
 import { useEffect, useState } from "react";
 
@@ -38,7 +38,7 @@ function TestProfile() {
                 const res = await GetProfileByID(4, "hotel");
                 console.log(res);
                 setProfile(res);
-                localStorage.setItem("token", res.token); // set toekn of profile
+                localStorage.setItem("token", res.token);
             } catch (err) {
                 console.log(err);
             }

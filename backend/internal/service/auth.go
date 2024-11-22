@@ -25,14 +25,14 @@ func NewAuthService(
 	}
 }
 
-func (s *AuthService) SignUp(data model.User) error {
-	hashed, err := auth.HashPassword(data.Password)
+func (s *AuthService) SignUp(user model.User) error {
+	hashed, err := auth.HashPassword(user.Password)
 	if err != nil {
 		return err
 	}
 
-	data.Password = hashed
-	res := s.UserRepositoryIn.SignUp(data)
+	user.Password = hashed
+	res := s.UserRepositoryIn.SignUp(user)
 	if res != nil {
 		return res
 	}

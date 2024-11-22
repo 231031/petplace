@@ -8,6 +8,7 @@ import (
 	"petplace/internal/service"
 	"petplace/internal/types"
 	"petplace/internal/utils"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -190,10 +191,10 @@ func (h *CageRoomHandler) handleSearchCage(c echo.Context) error {
 
 	animals := []types.FilterInfo{}
 	for i := 0; ; i++ {
-		animalType := c.QueryParam(fmt.Sprintf("animals[%d].animal_type", i))
-		cageSize := c.QueryParam(fmt.Sprintf("animals[%d].cage_size", i))
+		animalType := strings.ToLower(c.QueryParam(fmt.Sprintf("animals[%d].animal_type", i)))
+		cageSize := strings.ToLower(c.QueryParam(fmt.Sprintf("animals[%d].cage_size", i)))
 		if animalType == "" && cageSize == "" {
-			break // End parsing when no more indexed parameters are found
+			break
 		}
 		animals = append(animals, types.FilterInfo{AnimalType: animalType, CageSize: cageSize})
 	}
