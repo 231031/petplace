@@ -60,6 +60,10 @@ const [hotel, setHotel] = useState({
     navigate('/HotelHome'); // Replace '/another-page' with the desired path
   };
 
+  const handleClickHome = () => {
+    navigate('/'); // Replace '/another-page' with the desired path
+  };
+
   return (
     <div className="h-screen flex">
       {/* container left */}
@@ -71,7 +75,7 @@ const [hotel, setHotel] = useState({
                 <div className='flex flex-col'>
                     <div
                     className="size-48 rounded-full flex items-center justify-center cursor-pointer overflow-auto border-8 border-white hover:border-navbar"
-                    onClick={handleClick}
+                    onClick={handleClickHome}
                     >
                         <img
                             src={image} // รูปภาพแรกใน array
@@ -80,7 +84,7 @@ const [hotel, setHotel] = useState({
                             />
                         
                     </div>
-                    <p className='flex  justify-center mt-5'>{hotel.role}</p>
+                    <p className='flex  justify-center mt-5'>client</p>
                 </div>
                 
                 
