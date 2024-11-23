@@ -64,6 +64,10 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 		return http.StatusInternalServerError, fmt.Errorf("cage room not available"), err
 	}
 
+	if len(payload.Animals) > cage.MaxCapacity {
+		return http.StatusBadRequest, fmt.Errorf("selected animals are more than max capacity"), err
+	}
+
 	startDate, err := time.Parse("2006-01-02", payload.StartTime)
 	if err != nil {
 		return http.StatusBadRequest, fmt.Errorf("the booking detail is not correct"), err
