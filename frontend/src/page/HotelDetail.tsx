@@ -11,9 +11,12 @@ function HotelDetail() {
     const facilityRef = useRef<HTMLDivElement>(null);
     const roomRef = useRef<HTMLDivElement>(null);
     const reviewRef = useRef<HTMLDivElement>(null);
+    const startDateRef = useRef<HTMLInputElement>(null);
+    const endDateRef = useRef<HTMLInputElement>(null);
     const location = useLocation();
     const selectedHotel = location.state?.selectedHotel;
-
+    const startDate = location.state?.startDate || '';
+    const endDate = location.state?.endDate || '';
 
 
     const handleCageSelect = (cage: Cage) => {
@@ -22,12 +25,20 @@ function HotelDetail() {
             cage_type: cage.cage_type,  // Replace with dynamic value if needed
             facility: cage.facility,
             price: cage.price.toString(),
-            max_capacity: cage.max_capacity.toString()     // Replace with dynamic value if needed
+            max_capacity: cage.max_capacity.toString(),     // Replace with dynamic value if needed
+            startDate: startDate,
+            endDate: endDate
         }).toString();
 
         // Navigate with query parameters
         
-        navigate(`/hotelbookdetail?${queryParams}`,{ state: { selectedCage: cage } });
+        navigate(`/hotelbookdetail?${queryParams}`,
+            { state: { 
+                selectedCage: cage, 
+                selectedHotel: location.state?.selectedHotel,
+                profile_name: location.state?.profile_name,
+                startDate: startDate, 
+                endDate: endDate } });
         
     };
 

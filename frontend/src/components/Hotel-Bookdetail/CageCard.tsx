@@ -6,10 +6,19 @@ interface CageCardType {
     price: string;
     facility: string;
     max_capacity: string;
+    startDate: string;  
+    endDate: string;    
 }
 
-function CageCard({ cage_type, size, price, facility, max_capacity }: CageCardType) {
-   
+function CageCard({ cage_type, size, price, facility, max_capacity,startDate,endDate }: CageCardType) {
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).replace(/\//g, '-');
+    };
     return (
         <div>
 
@@ -29,8 +38,8 @@ function CageCard({ cage_type, size, price, facility, max_capacity }: CageCardTy
                 <div className="basis-1/3  space-y-5 pl-5 pt-4 flex flex-col items-end pr-5">
                     <CounterButton />
                     <div>
-                        <p>Check in 09-10-2024</p>
-                        <p>Check out 10-10-2024</p>
+                        <p>Check in: {formatDate(startDate)}</p>
+                        <p>Check out: {formatDate(endDate)}</p>
                     </div>
                     <p className="text-2xl font-bold">{price}$</p>
                 </div>
