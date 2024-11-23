@@ -1,7 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import Button from '../components/LoginSignup/Button';
+
 
 export default function SelectProfile() {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ export default function SelectProfile() {
     navigate('/Signup'); // นำทางไปยังหน้า /signin
 };
 
+const location = useLocation();
+const [image, setImage] = useState('');
 
 const [hotel, setHotel] = useState({
         name: "",
@@ -25,6 +28,12 @@ const [hotel, setHotel] = useState({
     );
     const id = localStorage.getItem("userId");
     useEffect(() => {
+
+        if (location.state) {
+            setImage(location.state.image_profile)
+            console.log("image", location.state.image_profile)
+        }
+
         const token = localStorage.getItem("token");
         fetch(`http://localhost:5000/api/profile/${id}`, {
             method: "GET",
@@ -51,6 +60,10 @@ const [hotel, setHotel] = useState({
     navigate('/HotelHome'); // Replace '/another-page' with the desired path
   };
 
+  const handleClickHome = () => {
+    navigate('/'); // Replace '/another-page' with the desired path
+  };
+
   return (
     <div className="h-screen flex">
       {/* container left */}
@@ -62,16 +75,16 @@ const [hotel, setHotel] = useState({
                 <div className='flex flex-col'>
                     <div
                     className="size-48 rounded-full flex items-center justify-center cursor-pointer overflow-auto border-8 border-white hover:border-navbar"
-                    onClick={handleClick}
+                    onClick={handleClickHome}
                     >
                         <img
-                            src={hotel.image_profile} // รูปภาพแรกใน array
+                            src={image} // รูปภาพแรกใน array
                             alt="Hotel"
                             className="w-full h-full object-cover"
                             />
                         
                     </div>
-                    <p className='flex  justify-center mt-5'>{hotel.role}</p>
+                    <p className='flex  justify-center mt-5'>client</p>
                 </div>
                 
                 
