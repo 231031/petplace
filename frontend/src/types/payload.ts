@@ -19,15 +19,17 @@ export interface LoginPayload {
 export interface BookingPayload {
   animals:      number[];
   cage_id:      number;
-  card_detail:  CardDetail;
   client_id:    number;
   client_name:  string;
-  detail?:       string;
-  end_time:     string;
   profile_id:   number;
   profile_name: string;
+  detail?:       string;
   start_time:   string;
+  end_time:     string;
+  card_detail:  CardDetail;
 }
+
+
 
 export interface CardDetail {
   expiry:        string;
@@ -48,6 +50,28 @@ export interface RefundPayload {
   hotel_service_id: number;
   paypal_email:     string;
 }
+
+
+export interface AnimalUserPayload {
+  age:         number;
+  animal_type: string;
+  breed:       string;
+  gender:      string;
+  hair_type?:   string;
+  id?:          number;
+  image?:       string;
+  image_array: string[];
+  name:        string;
+  user_id:     number;
+  weight:      number;
+}
+
+export interface FavPayload {
+  cage_id: number;
+  user_id: number;
+}
+
+
 
 
 

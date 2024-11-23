@@ -15,8 +15,6 @@ type HotelServiceRepository struct {
 
 func (r *HotelServiceRepository) UpdateHotel(hotel model.Hotel) error {
 	db := r.db.Model(&model.Hotel{}).Where("id = ?", hotel.ID)
-
-	// อัปเดตเฉพาะฟิลด์ที่มีการแก้ไข
 	if err := db.Updates(hotel).Error; err != nil {
 		return err
 	}
@@ -89,9 +87,12 @@ func (r *HotelServiceRepository) ReviewHotelService(review types.ReviewPayload, 
 			ID: review.HotelServiceID,
 		},
 	}
+
 	result = tx.Model(&ser).Updates(model.HotelService{ServiceInfo: types.ServiceInfo{
 		ReviewRate:   review.ReviewRate,
 		ReviewDetail: review.ReviewDetail,
+		ReviewImage:  review.ReviewImage,
+		HideName:     review.HideName,
 	}})
 	if result.Error != nil {
 		tx.Rollback()
@@ -158,10 +159,10 @@ func (r *HotelServiceRepository) GetReviewByHotel(profile_id uint) ([]model.Hote
 		return db.Select("users.id", "FirstName", "Surename")
 	}).
 		Preload("CageRoom").
-		Where("profile_id = ?", profile_id).
+		Where("profile_id = ? AND hotel_services.status = ? AND review_rate > ?", profile_id, "completed", 0).
 		Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
 		Joins("JOIN profiles ON profiles.id = cage_rooms.profile_id").
-		Select("hotel_services.id", "ReviewDetail", "ReviewRate", "CageID").
+		Select("hotel_services.id", "ReviewDetail", "ReviewRate", "CageID", "ReviewImage", "HideName").
 		Find(&ser)
 	if result.Error != nil {
 		return ser, result.Error
@@ -194,7 +195,7 @@ func (r *HotelServiceRepository) GetAllBookingHotelByStatus(status string) ([]mo
 }
 
 func (r *HotelServiceRepository) UpdateHotelService(ser model.HotelService) error {
-	result := r.db.Save(&ser)
+	result := r.db.Model(&model.HotelService{}).Where("id = ?", ser.ID).Updates(ser)
 	if result.Error != nil {
 		return result.Error
 	}

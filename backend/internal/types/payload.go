@@ -49,10 +49,13 @@ type CardPayload struct {
 }
 
 type ReviewPayload struct {
-	HotelServiceID uint    `json:"hotel_service_id" query:"hotel_service_id" validate:"required"`
-	ProfileID      uint    `json:"profile_id" query:"profile_id" validate:"required"`
-	ReviewRate     float32 `json:"review_rate" query:"review_rate" validate:"required"`
-	ReviewDetail   string  `json:"review_detail" query:"review_detail"`
+	HotelServiceID   uint     `json:"hotel_service_id" query:"hotel_service_id" validate:"required"`
+	ProfileID        uint     `json:"profile_id" query:"profile_id" validate:"required"`
+	ReviewRate       float32  `json:"review_rate" query:"review_rate" validate:"required"`
+	ReviewDetail     string   `json:"review_detail" query:"review_detail"`
+	ReviewImageArray []string `json:"review_image_array" query:"review_image_array"`
+	ReviewImage      string   `json:"review_image" query:"review_image"`
+	HideName         bool     `json:"hide_name" query:"hide_name" validate:"required"`
 }
 
 type BookingDetail struct {
@@ -95,11 +98,10 @@ type Cage struct {
 }
 
 type UpdateHotelPayload struct {
-    HotelID  uint    `json:"hotel_id" validate:"required"`
-    Name     string  `json:"name" validate:"omitempty,min=2"`
-    Address  string  `json:"address" validate:"omitempty,min=5"`
-    Price    float32 `json:"price" validate:"omitempty,gt=0"`
-    Services string  `json:"services" validate:"omitempty"`
-    Rating   float32 `json:"rating" validate:"omitempty,gte=0,lte=5"`
+	HotelID  uint    `json:"hotel_id" validate:"required"`
+	Name     string  `json:"name" validate:"omitempty,min=2"`
+	Address  string  `json:"address" validate:"omitempty,min=5"`
+	Price    float32 `json:"price" validate:"omitempty,gt=0"`
+	Services string  `json:"services" validate:"omitempty"`
+	Rating   float32 `json:"rating" validate:"omitempty,gte=0,lte=5"`
 }
-

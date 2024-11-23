@@ -9,6 +9,7 @@ export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [image, setImage] = useState('');
 
     const handleLogin = async () => {
         try {
@@ -27,14 +28,18 @@ export default function Login() {
             if (response.ok) {
                 const data = await response.json();
                 // Handle successful login (e.g., save token, navigate to another page)
-                
+
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("userId", data.user.id)
                 localStorage.setItem("username", data.user.firstname);
+                setImage(data.user.image_profile)
 
                 console.log('Userid', data.user.id);
                 console.log('Login successful:', data);
-                navigate('/'); // Redirect to dashboard or desired page
+                console.log("failed")
+                navigate('/SelectProfile', { state: { image_profile: data.user.image_profile } });
+
+                // console.log("image", data.user.image_profile) // Redirect to dashboard or desired page
             } else {
                 const errorData = await response.json();
                 setError(errorData.message || 'Login failed');
@@ -52,7 +57,7 @@ export default function Login() {
     return (
         <div className="h-screen flex">
             {/* container left */}
-            <div className="flex justify-center bg-bgLogin w-3/4 items-baseline" > 
+            <div className="flex justify-center bg-bgLogin w-3/4 items-baseline" >
                 <div className="flex flex-col items-center w-1/2 gap-y-5 pt-64">
                     <h1 className="text-5xl mb-10"> Log in to your account </h1>
                     <div className='flex flex-col w-1/2 gap-y-2 pl-5'>

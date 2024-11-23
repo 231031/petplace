@@ -5,14 +5,14 @@ import Card from "./Card"
 
 
 export interface Hotel {
-    hotel_id : number
-    hotel_name : string
-    hotel_address : string
-    hotel_facility : string
-    img_url : string
+    hotel_id: number
+    hotel_name: string
+    hotel_address: string
+    hotel_facility: string
+    img_url: string
 }
 
-const hotelList:Hotel[] = [
+const hotelList: Hotel[] = [
     {
         hotel_id: 1,
         hotel_name: "A Hotel",
@@ -37,15 +37,15 @@ const hotelList:Hotel[] = [
 ]
 
 const HotelList = () => {
-    return(
+    return (
         <div>
-            {hotelList.map((hotel) => (
-                <Card hotel={hotel}/>
+            {hotelList.map((hotel, index) => (
+                <Card key={index} hotel={hotel} />
                 // <div>{hotel.hotel_name}</div>
-            ))}  
+            ))}
         </div>
 
-            
+
     )
 }
 export default HotelList

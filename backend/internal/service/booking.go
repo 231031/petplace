@@ -64,10 +64,6 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 		return http.StatusInternalServerError, fmt.Errorf("cage room not available"), err
 	}
 
-	if len(payload.Animals) > cage.MaxCapacity {
-		return http.StatusBadRequest, fmt.Errorf("selected animals are more than max capacity"), err
-	}
-
 	startDate, err := time.Parse("2006-01-02", payload.StartTime)
 	if err != nil {
 		return http.StatusBadRequest, fmt.Errorf("the booking detail is not correct"), err
@@ -113,8 +109,10 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 
 	// update payment id link to paypal service and status in database
 	updatedSer := model.HotelService{
-		PaymentID:     paymentID,
-		PaymentStatus: "hold",
+		ServiceInfo: types.ServiceInfo{
+			PaymentID:     paymentID,
+			PaymentStatus: "hold",
+		},
 	}
 
 	err = s.UpdateHotelService(bookID, updatedSer)
@@ -171,6 +169,7 @@ func (s *BookingService) AcceptRejectBookHotel(payload types.SelectStatusPayload
 		}
 		err := s.UpdateHotelService(bookID, updatedSer)
 		if err != nil {
+			fmt.Println(err.Error())
 			return err
 		}
 		return nil
@@ -178,25 +177,29 @@ func (s *BookingService) AcceptRejectBookHotel(payload types.SelectStatusPayload
 
 	ser, err := s.GetBookingHotel(bookID)
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 
 	cost := ser.Price - 0.08*ser.Price
 	profile, err := s.ProfileServiceIn.GetProfileByID(payload.ProfileID)
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 
 	payoutID, err := s.PaymentServiceIn.CreatePayout(cost, profile.PaypalEmail)
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 
 	updatedSer := model.HotelService{
-		PayoutID:      payoutID,
-		PaymentStatus: "completed",
 		ServiceInfo: types.ServiceInfo{
-			Status: payload.Status,
+
+			Status:        payload.Status,
+			PayoutID:      payoutID,
+			PaymentStatus: "completed",
 		},
 	}
 
@@ -204,7 +207,6 @@ func (s *BookingService) AcceptRejectBookHotel(payload types.SelectStatusPayload
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -235,10 +237,10 @@ func (s *BookingService) refundBookHotel(ser model.HotelService, payload types.R
 	}
 
 	updatedSer := model.HotelService{
-		PaymentStatus: "refunded",
-		PayoutID:      payoutID,
 		ServiceInfo: types.ServiceInfo{
-			Status: newStatus,
+			Status:        newStatus,
+			PaymentStatus: "refunded",
+			PayoutID:      payoutID,
 		},
 	}
 	err = s.UpdateHotelService(ser.ID, updatedSer)
@@ -296,6 +298,8 @@ func (s *BookingService) ReviewHotelService(payload types.ReviewPayload) (int, e
 
 	preAvg := float32(count) * profile.AvgReview
 	newAvg := (preAvg + payload.ReviewRate) / (float32(count) + 1)
+
+	payload.ReviewImage = utils.MapStringArrayToText(payload.ReviewImageArray)
 	err = s.HotelServiceRepositoryIn.ReviewHotelService(payload, newAvg)
 	if err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("review hotel service failed"), err
@@ -326,6 +330,11 @@ func (s *BookingService) GetAllBookingHotelByHotel(profile_id uint, status strin
 		return ser, err
 	}
 
+	for i := range ser {
+		ser[i].CageRoom.ImageArray = utils.MapTextToStringArray(ser[i].CageRoom.Image)
+		ser[i].CageRoom.FacilityArray = utils.MapTextToStringArray(ser[i].CageRoom.Facility)
+	}
+
 	return ser, nil
 }
 
@@ -335,6 +344,8 @@ func (s *BookingService) GetBookingHotel(id uint) (model.HotelService, error) {
 		return ser, err
 	}
 
+	ser.CageRoom.ImageArray = utils.MapTextToStringArray(ser.CageRoom.Image)
+	ser.CageRoom.FacilityArray = utils.MapTextToStringArray(ser.CageRoom.Facility)
 	return ser, nil
 }
 
@@ -343,6 +354,11 @@ func (s *BookingService) GetStatusBookingHotelByUser(user_id uint, status string
 	ser, err := s.HotelServiceRepositoryIn.GetStatusBookingHotelByUser(user_id, status)
 	if err != nil {
 		return ser, err
+	}
+
+	for i := range ser {
+		ser[i].CageRoom.ImageArray = utils.MapTextToStringArray(ser[i].CageRoom.Image)
+		ser[i].CageRoom.FacilityArray = utils.MapTextToStringArray(ser[i].CageRoom.Facility)
 	}
 
 	return ser, nil
@@ -354,6 +370,11 @@ func (s *BookingService) GetAllHotelServiceByUser(user_id uint) ([]model.HotelSe
 		return ser, err
 	}
 
+	for i := range ser {
+		ser[i].CageRoom.ImageArray = utils.MapTextToStringArray(ser[i].CageRoom.Image)
+		ser[i].CageRoom.FacilityArray = utils.MapTextToStringArray(ser[i].CageRoom.Facility)
+	}
+
 	return ser, nil
 }
 
@@ -361,6 +382,10 @@ func (s *BookingService) GetReviewByHotel(profile_id uint) ([]model.HotelService
 	ser, err := s.HotelServiceRepositoryIn.GetReviewByHotel(profile_id)
 	if err != nil {
 		return ser, err
+	}
+
+	for i := range ser {
+		ser[i].ReviewImageArray = utils.MapTextToStringArray(ser[i].ReviewImage)
 	}
 
 	return ser, nil
@@ -371,6 +396,11 @@ func (s *BookingService) GetAllBookingHotelByStatus(status string) ([]model.Hote
 	ser, err := s.HotelServiceRepositoryIn.GetAllBookingHotelByStatus(status)
 	if err != nil {
 		return ser, err
+	}
+
+	for i := range ser {
+		ser[i].CageRoom.ImageArray = utils.MapTextToStringArray(ser[i].CageRoom.Image)
+		ser[i].CageRoom.FacilityArray = utils.MapTextToStringArray(ser[i].CageRoom.Facility)
 	}
 
 	return ser, nil

@@ -1,8 +1,13 @@
-import {useNavigate } from "react-router-dom";
+import { Cage } from "@/types/response";
+import {useLocation, useNavigate } from "react-router-dom";
 
 export default function HotelBookSuccess() {
     const navigate = useNavigate();
-   
+    const location = useLocation();
+    const selectedCage = location.state?.selectedCage;
+    const handleBookSuccessClick = (selectedCage: Cage) => {
+        navigate('/hotelhis', { state: { selectedCage: selectedCage } });
+      };
 
     return (
         <div>
@@ -36,7 +41,7 @@ export default function HotelBookSuccess() {
                     </p>
                     <div className="flex justify-between space-x-1 text-sm">
                         <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400" onClick={()=>{navigate('/')}}>Find More Sevice</button>
-                        <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400" onClick={()=>{navigate('/hotelhis')}}>View History</button>
+                        <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400" onClick={()=>{handleBookSuccessClick(selectedCage)}}>View History</button>
                     </div>
                 </div>
             </div>

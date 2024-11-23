@@ -13,15 +13,25 @@ type ProfileInfo struct {
 }
 
 type ServiceInfo struct {
-	ID        uint `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Status    string  `gorm:"not null;default:'pending'" json:"status" query:"status"`
-	Price     float32 `gorm:"type:float;not null" json:"price" query:"price"`
-	Detail    string  `gorm:"type:text" json:"detail" query:"detail"`
+	ID            uint      `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
+	StartTime     time.Time `gorm:"not null" json:"start_time" query:"start_time" validate:"required"`
+	EndTime       time.Time `gorm:"not null" json:"end_time" query:"end_time" validate:"required"`
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Status        string  `gorm:"not null;default:'pending'" json:"status" query:"status"`
+	PaymentStatus string  `gorm:"not null;default:'pending'" json:"payment_status" query:"payment_status"`
+	Price         float32 `gorm:"type:float;not null" json:"price" query:"price"`
+	Detail        string  `gorm:"type:text" json:"detail" query:"detail"`
+	PaymentID     string  `gorm:"type:string" json:"payment_id" query:"payment_id"`
+	PayoutID      string  `gorm:"type:string" json:"payout_id" query:"payout_id"`
 
+	HideName     bool    `gorm:"default:true" json:"hide_name" query:"hide_name"`
 	ReviewRate   float32 `gorm:"type:float;default:0" json:"review_rate" query:"review_rate"`
 	ReviewDetail string  `gorm:"type:text;" json:"review_detail" query:"review_detail"`
+	ReviewImage  string  `gorm:"type:text;" json:"review_image" query:"review_image"`
+
+	// no in database
+	ReviewImageArray []string `gorm:"-" json:"review_image_array" query:"review_image_array"`
 }
 
 type ProductInfo struct {

@@ -2,6 +2,7 @@ import CageCard from "@/components/Hotel-Bookdetail/CageCard";
 import PetCard from "@/components/Hotel-Bookdetail/PetCard";
 import { Cage, Profile } from "@/types/response";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useState } from "react";
 
 function HotelBookdetail() {
     const [searchParams] = useSearchParams();
@@ -10,18 +11,53 @@ function HotelBookdetail() {
     const price = searchParams.get('price')
     const facility = searchParams.get('facility')
     const max_capacity = searchParams.get('max_capacity')
+    const [selectedPets, setSelectedPets] = useState<number[]>([]);
+    const [error, setError] = useState<string>('');
 
     const location = useLocation();
     const navigate = useNavigate();
     const selectedCage = location.state?.selectedCage || [];
-    console.log("Hee",selectedCage);
+    const selectedHotel = location.state?.selectedHotel || [];
+    const startDate = location.state?.startDate || '';
+    const endDate = location.state?.endDate || '';
+    const profile_name = location.state?.profile_name || '';
 
-    // const handleHotelClick = (hotel: Profile) => {
-    //     navigate('/hotelcpayment', { state: { selectedHotel: hotel } });
-    //   };
+
+    console.log("date", startDate, endDate);
+    console.log("CageSelected", selectedCage);
+    console.log("Location State:", location.state);
+    console.log("Selected Cage:", selectedCage);
+    console.log("Selected Hotel:", selectedHotel);
+    console.log("Profile from selectedCage:", selectedCage.profile);
+    console.log("Profile name:", profile_name);
+    
     const handleHotelClick = (selectedCage: Cage) => {
-        navigate('/hotelcpayment', { state: { selectedCage: selectedCage } });
-      };
+        if (!selectedPets || selectedPets.length === 0) {
+            setError('กรุณาเลือกสัตว์เลี้ยงอย่างน้อย 1 ตัว');
+            return;
+        }
+        // const profile_name = selectedCage.profile?.name || "ไม่ระบุชื่อโรงแรม";
+        const hotelName = location.state?.profile_name || selectedCage.profile?.name || "ไม่ระบุชื่อโรงแรม";
+        console.log("hotelNameasdasd",hotelName);
+
+        navigate('/hotelfillpayment', {
+            state: {
+                selectedCage: {
+                    ...selectedCage,
+                    cage_type: selectedCage.cage_type,
+                    price: selectedCage.price,
+                    size: selectedCage.size,
+                    facility: selectedCage.facility || "",
+                    max_capacity: selectedCage.max_capacity
+                },
+                hotelName,
+                selectedPets,
+                startDate,
+                endDate
+            }
+        });
+    };
+
 
     return (
         <div className="grid grid-row-3 gap-16">
@@ -52,28 +88,36 @@ function HotelBookdetail() {
 
             <div className="max-w-5xl w-full mx-auto">
                 <p className="text-2xl ">Room</p>
-                <CageCard 
-                cage_type={cage_type ?? ""} 
-                size={size ?? ""}
-                price={price ?? ""}
-                facility={facility ?? ""} 
-                max_capacity ={max_capacity ?? ""}
+                <CageCard
+                    cage_type={cage_type ?? ""}
+                    size={size ?? ""}
+                    price={price ?? ""}
+                    facility={facility ?? ""}
+                    max_capacity={max_capacity ?? ""}
+                    startDate={startDate ?? ""}
+                    endDate={endDate ?? ""}
 
                 />
                 <div className="flex justify-between">
                     <p className="text-2xl ">Pet</p>
                     <button className="w-fit px-2 h-8  rounded-full shadow shadow-gray-400">Add Pet</button>
                 </div>
-                <PetCard />
+                <PetCard onPetSelect={(petId: number) => {
+                    setSelectedPets(prev =>
+                        prev.includes(petId)
+                            ? prev.filter(id => id !== petId) // ถ้ามี petId อยู่แล้วให้ลบออก
+                            : [...prev, petId] // ถ้ายังไม่มีให้เพิ่มเข้าไป
+                    );
+                }} />
             </div>
             <div className="max-w-sm w-full mx-auto mb-10">
                 <div className="flex justify-between space-x-6">
-                    <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400 "  onClick={()=>navigate(-1)}>Back</button>
-                    <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400" onClick={()=>handleHotelClick(selectedCage)}>Next</button>
+                    <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400 " onClick={() => navigate(-1)}>Back</button>
+                    <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400" onClick={() => handleHotelClick(selectedCage)}>Next</button>
                 </div>
             </div>
         </div>
-        
+
     )
 }
 
