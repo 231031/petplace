@@ -11,65 +11,56 @@ function HotelHistory() {
   const token = localStorage.getItem("token");
   const storedUserId = localStorage.getItem('userId')
   console.log('ID', storedUserId)
+  const [hotelServiceUsers, setHotelServiceUsers] = useState([]);
+  const [error, setError] = useState(null);
 
+  // Fetch data using async function within useEffect
+  useEffect(() => {
+    const fetchHotelServiceUsers = async (userId) => {
+      try {
+        if (!userId || !token) {
+          throw new Error("Missing userId or token.");
+        }
 
-  const [userData, setUserData] = useState(null); // State to store fetched data
-  const [loading, setLoading] = useState(true); // State to track loading status
-  const [error, setError] = useState(null); // State to store error message
-
-  // Function to fetch hotel service users
-  const fetchHotelServiceUsers = async (userId) => {
-    try {
-      // Retrieve the token from localStorage
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        throw new Error("Authentication token not found. Please log in.");
-      }
-
-      // Check token format (for debugging purposes)
-      console.log("Using Token:", token);
-
-      // Define the API URL, replacing the static client ID with the dynamic userId
-      const apiUrl = `http://localhost:5000/api/hotel/client/${userId}`;
-
-      // Sending the fetch request
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`, // Token from localStorage
-          "Content-Type": "application/json",  // Ensure content type is set to JSON
-        },
-      });
-
-      // Check if the response status is not OK
-      if (!response.ok) {
-        const errorDetails = await response.text();  // Get the error response body
-        throw new Error(`HTTP error! status: ${response.status}, ${errorDetails}`);
-      }
-
-      // Parse the response data
-      const data = await response.json();
-      console.log("Hotel Service Users:", data);
-
-      // Set data to state
-      setUserData(data);
-      setLoading(false); // Set loading to false once data is fetched
-
-    } catch (error) {
-      setError(error.message); // Set error if something went wrong
-      setLoading(false); // Set loading to false on error
-      console.error("Error fetching hotel service users:", error.message);
-    }
-  };
-
-  // Call the function with the userId dynamically (for example, replace this with actual userId)
-  fetchHotelServiceUsers(storedUserId);
+        // Define the API URL, replacing the static client ID with the dynamic userId
+        const apiUrl = `http://localhost:5000/api/hotel/client/${userId}`;
   
+        // Sending the fetch request
+        const response = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,  // Token from localStorage
+            "Content-Type": "application/json",  // Ensure content type is set to JSON
+          },
+        });
+  
+        if (!response.ok) {
+          const errorDetails = await response.text();
+          throw new Error(`HTTP error! status: ${response.status}, ${errorDetails}`);
+        }
+  
+        // Parse the response data
+        const data = await response.json();
+        console.log('first', data)
+        setHotelServiceUsers(data);  // Set the data to state
+      } catch (error) {
+        setError(error.message);  // Set error state
+      }
+    };
+
+    fetchHotelServiceUsers(storedUserId);  // Call the function with storedUserId
+  }, []);  // Dependencies to run useEffect when userId or token changes
+
+  // Display error if occurs
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+ 
 
   return (
-    <div className="w-full max-w-6xl mx-auto mt-10">
-      {/* display id in index 0 here */}
+    <div className="w-full max-w-7xl mx-auto mt-10">
+      {/* {hotelServiceUsers[0].id} */}
+
       <div className="flex justify-center items-center mb-12">
         <span className="text-2xl font-bold"> Select History Service</span>
       </div>
@@ -94,12 +85,11 @@ function HotelHistory() {
 
       <div className="ml-20">
         <span className="text-2xl font-bold">Upcoming</span>
-        <HotelData></HotelData>
-      </div>
+        <HotelData hotelList={hotelServiceUsers}></HotelData>      </div>
       <hr className="border-black mx-40" />
       <div className="ml-20 mt-10">
         <span className="text-2xl font-bold">Passed By</span>
-        <HotelData></HotelData>
+        <HotelData hotelList={hotelServiceUsers}></HotelData>
       </div>
     </div>
   );
