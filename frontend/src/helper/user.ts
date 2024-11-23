@@ -1,13 +1,11 @@
-import { Profile } from "@/types/model";
-import { ProfileRes } from "@/types/response";
+import { FavPayload } from "@/types/payload";
 import { RequestApi } from "./utils";
-// import { UploadRes } from "@/types/response";
 
 const baseApi = import.meta.env.VITE_BASEAPI;
 
-export async function GetProfileByID(user_id:number, role:string): Promise<ProfileRes> {
+export async function GetAllFavCageByUserID(user_id:number): Promise<any> {
     try {
-        let endpoint = `${baseApi}/profile/${user_id}/${role}`
+        let endpoint = `${baseApi}/user/fav/${user_id}`
         const token = localStorage.getItem("token");
 
         const response = await fetch(endpoint, {
@@ -24,14 +22,11 @@ export async function GetProfileByID(user_id:number, role:string): Promise<Profi
       }
 }
 
-export async function UpdateProfile(profile:Profile): Promise<any> {
+export async function AddFavCage(fav: FavPayload): Promise<any> {
     try {
-        let endpoint = `${baseApi}/profile/${profile.id}`;
-        return RequestApi(endpoint, "PUT", profile, 200);
-
+        let endpoint = `${baseApi}/user/fav`
+        return RequestApi(endpoint, "POST", fav, 201);
       } catch (error) {
         return Promise.reject(error);
       }
 }
-
-
