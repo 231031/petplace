@@ -17,8 +17,8 @@ const Nav: React.FC = () => {
       setUsername(storedUsername);
       setRole(storedRole);
       setUserId(storedUserId);
-      console.log("username",username)
-      console.log("userId",userId)
+      console.log("username", username);
+      console.log("userId", userId);
     }
   }, [navigate]);
 
@@ -36,7 +36,7 @@ const Nav: React.FC = () => {
     navigate('/login');
   };
 
-  
+
 
   return (
     <nav>
@@ -62,8 +62,8 @@ const Nav: React.FC = () => {
           {/* Profile Icon */}
           <div className="flex items-center space-x-4">
             {username ? (
-              
-              <button  className="text-white text-sm bg-navname w-fit p-2 rounded-lg  "> {username}</button> // ปุ่ม Logout แทน Log in
+
+              <button className="text-white text-sm bg-navname w-fit p-2 rounded-lg  "> {username}</button> // ปุ่ม Logout แทน Log in
             ) : (
               <a href="/login" className="text-white">Log in</a> // ถ้ายังไม่ได้ล็อกอิน
             )}

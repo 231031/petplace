@@ -29,6 +29,7 @@ export interface User {
     password: string;
     paypal_email?: string;
     security_code?: string;
+    image_profile?: string;
     surename: string;
     id? :number;
 }
