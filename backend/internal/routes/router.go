@@ -61,7 +61,7 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 
 	// HotelService
 	ser_hotel := baseRouter.Group("/hotel")
-	ser_hotel.Use(auth.AuthMiddleware)
+	// ser_hotel.Use(auth.AuthMiddleware)
 	hotelServiceRepository := repository.NewHotelServiceRepository(db)
 	bookingService := service.NewBookingService(hotelServiceRepository, userService, profileService, cageRoomService, paymentService, validate)
 	hotelHandler := api.NewHotelHandler(bookingService)
@@ -71,8 +71,8 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 	tickerService := ticker.NewTickerService(bookingService)
 	go tickerService.StartTickerService()
 
-	// tickerDailyService := ticker.NewDailyTickerService()
-	// go tickerDailyService.StartDailyTicker()
+	tickerDailyService := ticker.NewDailyTickerService()
+	go tickerDailyService.StartDailyTicker()
 
 	// Protected route
 	// protected := baseRouter.Group("/protected")

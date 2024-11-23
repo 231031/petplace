@@ -159,10 +159,10 @@ func (r *HotelServiceRepository) GetReviewByHotel(profile_id uint) ([]model.Hote
 		return db.Select("users.id", "FirstName", "Surename")
 	}).
 		Preload("CageRoom").
-		Where("profile_id = ?", profile_id).
+		Where("profile_id = ? AND hotel_services.status = ? AND review_rate > ?", profile_id, "completed", 0).
 		Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
 		Joins("JOIN profiles ON profiles.id = cage_rooms.profile_id").
-		Select("hotel_services.id", "ReviewDetail", "ReviewRate", "CageID").
+		Select("hotel_services.id", "ReviewDetail", "ReviewRate", "CageID", "ReviewImage", "HideName").
 		Find(&ser)
 	if result.Error != nil {
 		return ser, result.Error
