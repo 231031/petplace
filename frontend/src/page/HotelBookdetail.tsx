@@ -14,7 +14,7 @@ function HotelBookdetail() {
     const location = useLocation();
     const navigate = useNavigate();
     const selectedCage = location.state?.selectedCage || [];
-    console.log("Hee",selectedCage);
+    console.log("CageSelected",selectedCage);
 
     // const handleHotelClick = (hotel: Profile) => {
     //     navigate('/hotelcpayment', { state: { selectedHotel: hotel } });

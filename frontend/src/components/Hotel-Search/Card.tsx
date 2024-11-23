@@ -1,5 +1,6 @@
 import { Hotel } from "./HotelData";
 import React, { useState } from "react";
+import { Profile } from "@/types/response";
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"; // Import star icons
 import { useNavigate } from "react-router-dom";
 
@@ -34,8 +35,8 @@ function Card({ hotel }: { hotel: Profile }) {
   };
 
   return (
-
-    <div className="grid grid-cols-10 gap-4 mb-10 mt-10 w-full *:rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
+    <div className="grid grid-cols-10 gap-4 mb-10 mt-10  rounded-2xl shadow-lg shadow-egg border  border-gray-300  p-4" onClick={() => handleHotelClick(hotel)}
+      style={{ cursor: 'pointer' }}>
       <div className="col-span-2">
         <img
           src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
@@ -68,8 +69,12 @@ function Card({ hotel }: { hotel: Profile }) {
       </div>
 
       <div className="flex flex-row gap-4 ml-5 mt-5">
-      </div >
-    </div >
+        {/* <h5>{hotel.cages[].animal_type}</h5>
+        {hotel.cages?.map((cage) => (
+          <h5>{cage.animal_type}</h5>
+        ))} */}
+      </div>
+    </div>
 
 
   );
