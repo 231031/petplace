@@ -19,15 +19,17 @@ export interface LoginPayload {
 export interface BookingPayload {
   animals:      number[];
   cage_id:      number;
-  card_detail:  CardDetail;
   client_id:    number;
   client_name:  string;
-  detail?:       string;
-  end_time:     string;
   profile_id:   number;
   profile_name: string;
+  detail?:       string;
   start_time:   string;
+  end_time:     string;
+  card_detail:  CardDetail;
 }
+
+
 
 export interface CardDetail {
   expiry:        string;

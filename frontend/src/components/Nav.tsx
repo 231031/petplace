@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const Nav: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [role, setRole] = useState<string | null>("None");
   const navigate = useNavigate();
 
@@ -11,10 +12,13 @@ const Nav: React.FC = () => {
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
     const storedRole = localStorage.getItem('role');
+    const storedUserId = localStorage.getItem('userId');
     if (storedUsername) {
       setUsername(storedUsername);
       setRole(storedRole);
-      console.log("username",username)
+      setUserId(storedUserId);
+      console.log("username", username);
+      console.log("userId", userId);
     }
   }, [navigate]);
 
@@ -28,6 +32,7 @@ const Nav: React.FC = () => {
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
     setUsername("")
+    setUserId(null)
     navigate('/login');
   };
 
