@@ -13,6 +13,8 @@ function HotelDetail() {
     const reviewRef = useRef<HTMLDivElement>(null);
     const startDateRef = useRef<HTMLInputElement>(null);
     const endDateRef = useRef<HTMLInputElement>(null);
+
+    
     const location = useLocation();
     const selectedHotel = location.state?.selectedHotel;
     const startDate = location.state?.startDate || '';
