@@ -169,6 +169,7 @@ func (s *BookingService) AcceptRejectBookHotel(payload types.SelectStatusPayload
 		}
 		err := s.UpdateHotelService(bookID, updatedSer)
 		if err != nil {
+			fmt.Println(err.Error())
 			return err
 		}
 		return nil
@@ -176,22 +177,26 @@ func (s *BookingService) AcceptRejectBookHotel(payload types.SelectStatusPayload
 
 	ser, err := s.GetBookingHotel(bookID)
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 
 	cost := ser.Price - 0.08*ser.Price
 	profile, err := s.ProfileServiceIn.GetProfileByID(payload.ProfileID)
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 
 	payoutID, err := s.PaymentServiceIn.CreatePayout(cost, profile.PaypalEmail)
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 
 	updatedSer := model.HotelService{
 		ServiceInfo: types.ServiceInfo{
+
 			Status:        payload.Status,
 			PayoutID:      payoutID,
 			PaymentStatus: "completed",
@@ -202,7 +207,6 @@ func (s *BookingService) AcceptRejectBookHotel(payload types.SelectStatusPayload
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -294,6 +298,8 @@ func (s *BookingService) ReviewHotelService(payload types.ReviewPayload) (int, e
 
 	preAvg := float32(count) * profile.AvgReview
 	newAvg := (preAvg + payload.ReviewRate) / (float32(count) + 1)
+
+	payload.ReviewImage = utils.MapStringArrayToText(payload.ReviewImageArray)
 	err = s.HotelServiceRepositoryIn.ReviewHotelService(payload, newAvg)
 	if err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("review hotel service failed"), err
@@ -376,6 +382,10 @@ func (s *BookingService) GetReviewByHotel(profile_id uint) ([]model.HotelService
 	ser, err := s.HotelServiceRepositoryIn.GetReviewByHotel(profile_id)
 	if err != nil {
 		return ser, err
+	}
+
+	for i := range ser {
+		ser[i].ReviewImageArray = utils.MapTextToStringArray(ser[i].ReviewImage)
 	}
 
 	return ser, nil

@@ -85,7 +85,7 @@ func (r ProfileRepository) GetAllProfileByUserID(userID uint) ([]model.Profile, 
 }
 
 func (r ProfileRepository) UpdateProfile(profile model.Profile) error {
-	result := r.db.Save(&profile)
+	result := r.db.Model(&model.Profile{}).Where("id = ?", profile.ID).Updates(profile)
 	if result.Error != nil {
 		return fmt.Errorf("error updating profile: %s", result.Error.Error())
 	}
