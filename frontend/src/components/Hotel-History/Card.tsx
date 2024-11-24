@@ -29,10 +29,10 @@ function Card({ hotel }: { hotel: Hotel }) {
         <h1 className="flex justify-end mr-10">Before include tax</h1>
       </div>
       <div className="flex flex-row gap-4 ml-5 mt-5">
-          <h5>cat</h5>
-          <h5>rabbit</h5>
-          <h5>hamster</h5>
-        </div>
+        <h5>cat</h5>
+        <h5>rabbit</h5>
+        <h5>hamster</h5>
+      </div>
     </div>
   );
 }

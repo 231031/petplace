@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"petplace/internal/auth"
 	"petplace/internal/service"
 	"petplace/internal/types"
 	"petplace/internal/utils"
@@ -20,17 +21,17 @@ func NewHotelHandler(bookingServiceIn service.BookingServiceIn) *HotelHandler {
 
 func (h *HotelHandler) RegisterRoutes(g *echo.Group) {
 	// hotel
-	g.GET("/:id/:status", h.handleGetAllHotelServiceByHotel)
-	g.GET("/:id", h.handleGetHotelService)
+	g.GET("/:id/:status", h.handleGetAllHotelServiceByHotel, auth.AuthMiddleware)
+	g.GET("/:id", h.handleGetHotelService, auth.AuthMiddleware)
 	g.GET("/review/:profile_id", h.handleGetReviewByHotel)
-	g.PUT("/:id", h.handleAcceptRejectBookHotel)
+	g.PUT("/:id", h.handleAcceptRejectBookHotel, auth.AuthMiddleware)
 
 	// client
-	g.POST("/client/booking", h.handleBookHotelService)
-	g.PUT("/client/:id", h.handleManageRefundBookHotel)
-	g.PUT("/client/review/:id", h.handleReviewHotelService)
-	g.GET("/client/:id/:status", h.handleGetStatusHotelServiceByUser)
-	g.GET("/client/:id", h.handleGetAllHotelServiceByUser)
+	g.POST("/client/booking", h.handleBookHotelService, auth.AuthMiddleware)
+	g.PUT("/client/:id", h.handleManageRefundBookHotel, auth.AuthMiddleware)
+	g.PUT("/client/review/:id", h.handleReviewHotelService, auth.AuthMiddleware)
+	g.GET("/client/:id/:status", h.handleGetStatusHotelServiceByUser, auth.AuthMiddleware)
+	g.GET("/client/:id", h.handleGetAllHotelServiceByUser, auth.AuthMiddleware)
 
 	// both
 }

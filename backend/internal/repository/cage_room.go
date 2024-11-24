@@ -48,7 +48,7 @@ func (r *CageRoomRepository) GetCageRoom(id uint) (model.CageRoom, error) {
 }
 
 func (r *CageRoomRepository) UpdateCageRoom(cage model.CageRoom) error {
-	result := r.db.Save(&cage)
+	result := r.db.Model(&model.CageRoom{}).Where("id = ?", cage.ID).Updates(cage)
 	if result.Error != nil {
 		return result.Error
 	}

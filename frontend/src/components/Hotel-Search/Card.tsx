@@ -27,7 +27,7 @@ function Card({ hotel, startDate, endDate }: { hotel: Profile, startDate: string
   console.log(startDate, endDate);
   const navigate = useNavigate();
   const handleHotelClick = (hotel: Profile) => {
-    console.log("hotelsssssss",hotel);
+    console.log("hotelsssssss", hotel);
     navigate('/hoteldetail', {
       state: {
         selectedHotel: hotel,
