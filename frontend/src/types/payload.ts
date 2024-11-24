@@ -71,6 +71,15 @@ export interface FavPayload {
   user_id: number;
 }
 
+export interface ReviewPayload {
+  hide_name:          boolean;
+  hotel_service_id:   number;
+  profile_id:         number;
+  review_detail?:      string;
+  review_image?:       string;
+  review_image_array: string[];
+  review_rate:        number;
+}
 
 
 
