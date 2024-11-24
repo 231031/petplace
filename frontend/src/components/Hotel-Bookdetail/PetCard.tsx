@@ -3,23 +3,18 @@ import { useState } from 'react';
 interface Pet {
     id: number;
     name: string;
-    type: string;
+    animal_type: string;
     breed: string;
     weight: string;
     age: string;
 }
 
 interface PetCardProps {
-    onPetSelect: (petId: number) => void; 
+    pets: Pet[];
+    onPetSelect: (petId: number) => void;
 }
 
-function PetCard({ onPetSelect }: PetCardProps) {
-    const mockPets: Pet[] = [
-        { id: 1, name: "Mali", type: "dog", breed: "chiwawa", weight: "2.5", age: "2" },
-        { id: 2, name: "Meaow", type: "cat", breed: "persian", weight: "3.6", age: "1" },
-        { id: 3, name: "Moodeng", type: "dog", breed: "poodle", weight: "5.2", age: "3" },
-    ];
-
+function PetCard({ pets, onPetSelect }: PetCardProps) {
     const [selectedPets, setSelectedPets] = useState<number[]>([]);
     const [newPet, setNewPet] = useState({
         name: '',
@@ -36,7 +31,7 @@ function PetCard({ onPetSelect }: PetCardProps) {
             onPetSelect(petId);
         }
     };
-    
+
     const handleRemovePet = (petId: number) => {
         const newSelection = selectedPets.filter(id => id !== petId);
         setSelectedPets(newSelection);
@@ -47,6 +42,8 @@ function PetCard({ onPetSelect }: PetCardProps) {
         // TODO: เพิ่มการบันทึกสัตว์เลี้ยงใหม่
         console.log('New pet data:', newPet);
     };
+    console.log("Received pets:", pets); // เพิ่ม log เพื่อดูข้อมูลที่ได้รับ
+
 
     return (
         <div className="space-y-4">
@@ -141,9 +138,9 @@ function PetCard({ onPetSelect }: PetCardProps) {
                             value=""
                         >
                             <option value="" disabled className='text-center'>Select your pet</option>
-                            {mockPets.map(pet => (
+                            {pets.map(pet => (
                                 <option key={pet.id} value={pet.id}>
-                                    {pet.name} - {pet.type} ({pet.breed})
+                                    {pet.name} - {pet.animal_type} ({pet.breed})
                                 </option>
                             ))}
                         </select>
@@ -159,21 +156,21 @@ function PetCard({ onPetSelect }: PetCardProps) {
                 </div>
             )}
 
-            {/* ส่วนแสดงสัตว์เลี้ยงที่เลือกแล้ว */}
+           
             {selectedPets.map((petId) => {
-                const pet = mockPets.find(p => p.id === petId);
+                const pet = pets.find(p => p.id === petId); 
                 if (!pet) return null;
 
                 return (
                     <div key={pet.id} className="p-3 rounded-lg shadow shadow-gray-400 flex m-5">
-                        {/* Image section - เหมือนเดิม */}
+                       
                         <div className="flex items-center justify-center w-52 h-52 bg-gray-200 rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-10 h-10 text-gray-500">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                             </svg>
                         </div>
 
-                        {/* Form section - ปรับ style ให้เหมือนฟอร์มแรก */}
+                      
                         <div className="ml-6 space-y-4">
                             <div className="flex space-x-4">
                                 <div className="flex items-center">
@@ -191,10 +188,10 @@ function PetCard({ onPetSelect }: PetCardProps) {
                                     <label className="block text-sm text-black">Pet type:</label>
                                     <select
                                         className="border rounded-3xl text-sm mx-2 shadow h-10 flex shadow-gray-400"
-                                        value={pet.type}
+                                        value={pet.animal_type}
                                         disabled
                                     >
-                                        <option>{pet.type}</option>
+                                        <option>{pet.animal_type}</option>
                                     </select>
                                 </div>
                                 <div className="flex items-center">
@@ -216,7 +213,7 @@ function PetCard({ onPetSelect }: PetCardProps) {
                                         className="h-10 mx-2 border rounded-3xl p-2 shadow shadow-gray-400"
                                         disabled
                                     />
-                                    
+
                                 </div>
                                 <div className="flex items-center">
                                     <label className="block text-sm text-black">Age:</label>
@@ -226,7 +223,7 @@ function PetCard({ onPetSelect }: PetCardProps) {
                                         className="mx-2 border rounded-3xl shadow shadow-gray-400 h-10 w-20"
                                         disabled
                                     />
-                                    
+
                                 </div>
                             </div>
                         </div>
@@ -247,11 +244,11 @@ function PetCard({ onPetSelect }: PetCardProps) {
                                 value=""
                             >
                                 <option value="" disabled>เพิ่มสัตว์เลี้ยง</option>
-                                {mockPets
+                                {pets 
                                     .filter(p => !selectedPets.includes(p.id))
                                     .map(pet => (
                                         <option key={pet.id} value={pet.id}>
-                                            {pet.name} - {pet.type}
+                                            {pet.name} - {pet.animal_type}
                                         </option>
                                     ))
                                 }
