@@ -3,11 +3,11 @@ import HotelData from "../components/Hotel-History/HotelData";
 import HotelDataPass from "../components/Hotel-History/HotelDataPass";
 import clsx from "clsx";
 import { ClientRequest } from "http";
-import { useEffect, useState } from "react";
 
 function HotelHistory() {
   const location = useLocation();
   const selectedCage = location.state?.selectedCage;
+<<<<<<< HEAD
   console.log(selectedCage);
   const token = localStorage.getItem("token");
   const storedUserId = localStorage.getItem('userId')
@@ -95,35 +95,40 @@ function HotelHistory() {
 
       <div className="flex justify-center items-center mb-12">
         <span className="text-2xl font-bold"> Select History Service</span>
+=======
+  console.log("aaaa", selectedCage);
+  return (
+    <div className=''>
+      <div className="flex justify-center bg-slate-200">
+        <span className="text-2xl"> Select History Service</span>
+>>>>>>> 208f78282ce3e34c81ff3804ce285b31dd0459de
       </div>
-      <div
-        // className="w-1/4 rounded-lg absolute mt-4 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-4"
-        className="w-1/4 rounded-lg absolute top-24 left-1/2 mt-10 transform -translate-x-1/2 flex justify-center items-center space-x-4"
-        style={{ backgroundColor: "#A08252" }}
-      >
-        <a href="/" className="text-xl text-white p-2">
-          Hotel
-        </a>
-        <a href="/" className="text-xl text-white p-2">
-          Care
-        </a>
-        <a href="/" className="text-xl text-white p-2">
-          Clinic
-        </a>
-        <a href="/" className="text-xl text-white p-2">
-          Delivery
-        </a>
+      <div className="flex flex-row mt-2 justify-center">
+        <div className="flex justify-center bg-slate-500 px-5">1</div>
+        <div className="flex justify-center bg-slate-500 px-5">2</div>
+        <div className="flex justify-center bg-slate-500 px-5">3</div>
+        <div className="flex justify-center bg-slate-500 px-5">4</div>
       </div>
-
       <div className="ml-20">
+<<<<<<< HEAD
         <span className="text-2xl font-bold">Upcoming</span>
         <HotelData hotelList={hotelServiceUsers}></HotelData>      </div>
       <hr className="border-black mx-40" />
       <div className="ml-20 mt-10">
         <span className="text-2xl font-bold">Passed By</span>
         <HotelDataPass hotelList={hotelServiceUsers}></HotelDataPass>
+=======
+        <span className="text-2xl">Upcoming</span>
+        <HotelData></HotelData>
+      </div>
+      <hr className="border-black mx-40" />
+      <div className="ml-20 mt-10">
+        <span className="text-2xl">Passed By</span>
+        <HotelData></HotelData>
+>>>>>>> 208f78282ce3e34c81ff3804ce285b31dd0459de
       </div>
     </div>
+
   );
 }
 

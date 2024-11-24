@@ -47,7 +47,7 @@ func (r *UserRepository) GetUserByID(id uint) (model.User, error) {
 }
 
 func (r *UserRepository) UpdateUser(user model.User) error {
-	result := r.db.Save(&user)
+	result := r.db.Model(&model.User{}).Where("id = ?", user.ID).Updates(user)
 	if result.Error != nil {
 		return result.Error
 	}
