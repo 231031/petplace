@@ -1766,11 +1766,15 @@ const docTemplate = `{
         "types.ReviewPayload": {
             "type": "object",
             "required": [
+                "hide_name",
                 "hotel_service_id",
                 "profile_id",
                 "review_rate"
             ],
             "properties": {
+                "hide_name": {
+                    "type": "boolean"
+                },
                 "hotel_service_id": {
                     "type": "integer"
                 },
@@ -1779,6 +1783,15 @@ const docTemplate = `{
                 },
                 "review_detail": {
                     "type": "string"
+                },
+                "review_image": {
+                    "type": "string"
+                },
+                "review_image_array": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "review_rate": {
                     "type": "number"

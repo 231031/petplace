@@ -80,8 +80,8 @@ function HotelSearch() {
 
 
   const location = useLocation();
-  const hotel = location.state?.hotels || [];
-  console.log(hotel);
+  const { hotels: hotel = [], startDate: searchStartDate = '', endDate: searchEndDate = '' } = location.state || {};
+  console.log(hotel, searchStartDate, searchEndDate);
   // const [isClicked, setIsClicked] = useState(false);
   const [activeButton, setActiveButton] = useState<number | null>(null);
   const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
@@ -302,7 +302,7 @@ function HotelSearch() {
                   </button>
                 ))}
               </div>
-              <HotelData hotelList={hotel} />
+              <HotelData hotelList={hotel} startDate={searchStartDate} endDate={searchEndDate} />
             </div>
           )}
 

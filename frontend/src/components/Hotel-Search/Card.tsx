@@ -23,17 +23,24 @@ function HotelRating({ avgReview }: { avgReview: number }) {
   );
 }
 
-function Card({ hotel }: { hotel: Profile }) {
-
+function Card({ hotel, startDate, endDate }: { hotel: Profile, startDate: string, endDate: string }) {
+  console.log(startDate, endDate);
   const navigate = useNavigate();
   const handleHotelClick = (hotel: Profile) => {
-    // Navigate to "/hotelbookdetail" and pass the hotel data as state
-    navigate('/hoteldetail', { state: { selectedHotel: hotel } });
+    console.log("hotelsssssss", hotel);
+    navigate('/hoteldetail', {
+      state: {
+        selectedHotel: hotel,
+        profile_name: hotel.name,
+        startDate: startDate,
+        endDate: endDate
+      }
+    });
   };
 
   return (
     <div className="grid grid-cols-10 gap-4 mb-10 mt-10  *:rounded-2xl shadow-lg shadow-egg border  border-gray-300  p-4" onClick={() => handleHotelClick(hotel)}
-    style={{ cursor: 'pointer' }}>
+      style={{ cursor: 'pointer' }}>
       <div className="col-span-2">
         <img
           src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"

@@ -1,7 +1,8 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from "react";
 import Button from '../components/LoginSignup/Button';
+
 
 export default function SelectProfile() {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ export default function SelectProfile() {
     navigate('/Signup'); // นำทางไปยังหน้า /signin
 };
 
+const location = useLocation();
+const [image, setImage] = useState('');
 
 const [hotel, setHotel] = useState({
         name: "",
@@ -19,12 +22,20 @@ const [hotel, setHotel] = useState({
         facility_array: "",
         avg_review:"",
         image_array:[],
+        image_profile: "",
+        role:""
     }
     );
     const id = localStorage.getItem("userId");
     useEffect(() => {
+
+        if (location.state) {
+            setImage(location.state.image_profile)
+            console.log("image", location.state.image_profile)
+        }
+
         const token = localStorage.getItem("token");
-        fetch(`http://localhost:5000/api/profile/${id}/hotel`, {
+        fetch(`http://localhost:5000/api/profile/${id}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -36,8 +47,8 @@ const [hotel, setHotel] = useState({
                 return response.json();
             })
             .then((data) => {
-                console.log("Fetched hotel data:", data.profile);
-                setHotel(data.profile) // ตรวจสอบข้อมูลที่ดึงมาจาก API
+                console.log("Fetched hotel data:", data);
+                setHotel(data[0]) // ตรวจสอบข้อมูลที่ดึงมาจาก API
                 
             })
             .catch((error) => console.error("Error fetching hotel data:", error));
@@ -49,33 +60,53 @@ const [hotel, setHotel] = useState({
     navigate('/HotelHome'); // Replace '/another-page' with the desired path
   };
 
+  const handleClickHome = () => {
+    navigate('/'); // Replace '/another-page' with the desired path
+  };
+
   return (
     <div className="h-screen flex">
       {/* container left */}
       <div className="flex justify-center bg-bgLogin w-full items-baseline">
         <div className="flex flex-col items-center w-1/2 gap-y-5 pt-64">
-          <h1 className="text-5xl mb-10">Select Profile</h1>
+        <h1 className="text-5xl mb-10">Select Profile</h1>
+        <div className='flex gap-x-10'>
+                {/* Circular Button with Logo */}
+                <div className='flex flex-col'>
+                    <div
+                    className="size-48 rounded-full flex items-center justify-center cursor-pointer overflow-auto border-8 border-white hover:border-navbar"
+                    onClick={handleClickHome}
+                    >
+                        <img
+                            src={image} // รูปภาพแรกใน array
+                            alt="Hotel"
+                            className="w-full h-full object-cover"
+                            />
+                        
+                    </div>
+                    <p className='flex  justify-center mt-5'>client</p>
+                </div>
+                
+                
+                <div className='flex flex-col'>
+                    <div
+                    className="size-48 rounded-full  flex items-center justify-center cursor-pointer overflow-auto border-8 border-white hover:border-navbar"
+                    onClick={handleClick}
+                    >
+                        <img
+                            src={hotel.image_profile} // รูปภาพแรกใน array
+                            alt="Hotel"
+                            className="w-full h-full object-cover"
+                            />
+                        
+                    </div>
+                    <p className='flex  justify-center mt-5'>{hotel.role}</p>
+                </div>
 
-          {/* Circular Button with Logo */}
-          <div
-            className="size-48 rounded-full bg-blue-500 flex items-center justify-center cursor-pointer overflow-auto border-8 border-white hover:border-navbar"
-            onClick={handleClick}
-            >
-                {hotel.image_array && hotel.image_array.length > 0 ? (
-                    <img
-                    src={hotel.image_array[0]} // รูปภาพแรกใน array
-                    alt="Hotel"
-                    className="w-full h-full object-cover"
-                    />
-                ) : (
-                    <span className="text-white">No Image</span> // ข้อความเมื่อไม่มีรูปภาพ
-                )}
-          </div>
-
-          {/* Additional content */}
-          <div className="flex flex-row gap-x-3">
-            <p className='text-xl'>{hotel.name} </p>
-          </div>
+                {/* Additional content */}
+                        </div>
+                        
+          
         </div>
       </div>
 
