@@ -33,7 +33,7 @@ type AnimalUser struct {
 	Image string `gorm:"type:text;not null" json:"image" query:"image"`
 
 	AnimalUserVaccines  []AnimalUserVaccine  `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animal_ser_vaccines" query:"animal_ser_vaccines" swaggerignore:"true"`
-	AnimalServices      []AnimalService      `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animal_services" query:"animal_services" swaggerignore:"true"`
+	AnimalBookServices  []AnimalBookService  `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animal_book_services" query:"animal_book_services" swaggerignore:"true"`
 	TransportServices   []TransportService   `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"transport_services" query:"transport_services" swaggerignore:"true"`
 	AnimalHotelServices []AnimalHotelService `gorm:"foreignKey:AnimalUserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animal_hotel_services" query:"animal_hotel_services" swaggerignore:"true"`
 

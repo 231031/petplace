@@ -7,20 +7,21 @@ import (
 )
 
 func Migrate(db *gorm.DB) error {
+	// & reserved clinic & care services
+	db.AutoMigrate(&model.ResevationTime{})
+	db.AutoMigrate(&model.AnimalBookExtra{}) // history service
+	db.AutoMigrate(&model.AnimalBookClinic{})
+	db.AutoMigrate(&model.AnimalBookService{})
+
 	// supply clinic
-	db.AutoMigrate(&model.NeuteringService{})
-	db.AutoMigrate(&model.VaccineService{})
-	db.AutoMigrate(&model.HealthCheckService{})
+	db.AutoMigrate(&model.ClinicSubPrice{})
+	db.AutoMigrate(&model.ClinicSubService{})
+	db.AutoMigrate(&model.ClinicService{})
 
 	// & care
+	db.AutoMigrate(&model.CareExtraService{})
+	db.AutoMigrate(&model.CareServicePrice{})
 	db.AutoMigrate(&model.CareService{})
-	db.AutoMigrate(&model.ExtraService{})
-
-	// & reserved clinic & care services
-	db.AutoMigrate(&model.ResevationTime{})     // history service
-	db.AutoMigrate(&model.AnimalService{})      // history service
-	db.AutoMigrate(&model.AnimalExtraService{}) // history extra service of each service history
-	db.AutoMigrate(&model.ServiceDetail{})      // available services
 
 	// supply hotel
 	db.AutoMigrate(&model.FavoriteCage{})
@@ -70,10 +71,26 @@ func Migrate(db *gorm.DB) error {
 	// db.Migrator().CreateConstraint(&model.HotelService{}, "AnimalHotelServices")
 	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalHotelServices")
 
+	// clinic & care
+	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalBookServices")
+	// db.Migrator().CreateConstraint(&model.Profile{}, "ClinicServices")
+	// db.Migrator().CreateConstraint(&model.Profile{}, "CareServices")
+	// db.Migrator().CreateConstraint(&model.Profile{}, "ResevationTimes")
+
 	// supply clinic
-	// db.Migrator().CreateConstraint(&model.Profile{}, "ServiceDetails")
-	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalServices")
-	// db.Migrator().CreateConstraint(&model.ServiceDetail{}, "AnimalServices")
+	// db.Migrator().CreateConstraint(&model.ClinicService{}, "ClinicSubServices")
+	// db.Migrator().CreateConstraint(&model.ClinicSubService{}, "ClinicSubPrices")
+	// db.Migrator().CreateConstraint(&model.ClinicSubPrice{}, "AnimalBookClinics")
+
+	// & care
+	// db.Migrator().CreateConstraint(&model.CareService{}, "CareServicePrices")
+	// db.Migrator().CreateConstraint(&model.CareService{}, "CareExtraServices")
+	// db.Migrator().CreateConstraint(&model.CareServicePrice{}, "AnimalBookServices")
+	// db.Migrator().CreateConstraint(&model.CareExtraService{}, "AnimalBookExtras")
+
+	// reservation clinic & care
+	// db.Migrator().CreateConstraint(&model.AnimalBookService{}, "AnimalBookExtras")
+	// db.Migrator().CreateConstraint(&model.AnimalBookService{}, "AnimalBookClinics")
 
 	// transportation
 	// db.Migrator().CreateConstraint(&model.Profile{}, "TransportCategorys")
@@ -110,3 +127,7 @@ func Migrate(db *gorm.DB) error {
 // db.Migrator().CreateConstraint(&model.Seller{}, "Animals")
 
 // db.Migrator().CreateConstraint(&model.HotelService{}, "CageRoom")
+
+// db.Migrator().CreateConstraint(&model.Profile{}, "ServiceDetails")
+// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalServices")
+// db.Migrator().CreateConstraint(&model.ServiceDetail{}, "AnimalServices")

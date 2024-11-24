@@ -55,13 +55,10 @@ type AnimalInfo struct {
 
 // detail affects estimating price of each service type
 type PriceServiceInfo struct {
-	ServiceDetialID uint `gorm:"not null" json:"service_detail_id" query:"service_detail_id" validate:"required"`
-
 	MinWeight  int     `gorm:"type:int;" json:"min_weight" query:"min_weight"`
 	MaxWeight  int     `gorm:"type:int;" json:"max_weight" query:"max_weight"`
 	Gender     int     `gorm:"type:varchar(191);" json:"gender" query:"gender"`
 	HairType   string  `gorm:"type:varchar(191);" json:"hair_type" query:"hair_type"`
 	AnimalType string  `gorm:"type:varchar(191);" json:"animal_type" query:"animal_type"`
-	Detail     string  `gorm:"type:text;" json:"detail" query:"detail"`
 	Price      float32 `gorm:"type:float;not null" json:"price" query:"price" validate:"required"`
 }

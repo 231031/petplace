@@ -26,7 +26,8 @@ type Profile struct {
 	Cages []CageRoom `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"cages" query:"cages" swaggerignore:"true"`
 
 	// Clinic  Clinic  `gorm:"foreignKey:ProfileID"`
-	ServiceDetails  []ServiceDetail  `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"service_details" query:"service_details" swaggerignore:"true"`
+	ClinicServices  []ClinicService  `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"clinic_services" query:"clinic_services" swaggerignore:"true"`
+	CareServices    []CareService    `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"care_services" query:"care_services" swaggerignore:"true"`
 	ResevationTimes []ResevationTime `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"reservation_time" query:"reservation_time" swaggerignore:"true"`
 
 	// Carrier Carrier `gorm:"foreignKey:ProfileID"`
