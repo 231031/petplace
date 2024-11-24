@@ -1,3 +1,4 @@
+import { AddAnimalsUser } from '@/helper/animal_user';
 import { useState } from 'react';
 
 interface Pet {
@@ -12,16 +13,19 @@ interface Pet {
 interface PetCardProps {
     pets: Pet[];
     onPetSelect: (petId: number) => void;
+    showPetForm: boolean;
 }
 
-function PetCard({ pets, onPetSelect }: PetCardProps) {
+function PetCard({ pets, onPetSelect, showPetForm }: PetCardProps) {
     const [selectedPets, setSelectedPets] = useState<number[]>([]);
     const [newPet, setNewPet] = useState({
         name: '',
         type: '',
         breed: '',
         weight: '',
-        age: ''
+        age: '',
+        gender: 'Not specified',
+        hair_type: 'Not specified'
     });
 
     const handlePetSelect = (petId: number) => {
@@ -38,17 +42,63 @@ function PetCard({ pets, onPetSelect }: PetCardProps) {
         onPetSelect(petId);
     };
 
-    const handleNewPetSubmit = () => {
-        // TODO: เพิ่มการบันทึกสัตว์เลี้ยงใหม่
-        console.log('New pet data:', newPet);
+    const handleNewPetSubmit = async () => {
+        try {
+
+            if (!newPet.name || !newPet.type || !newPet.breed || !newPet.weight || !newPet.age) {
+                alert('Please fill out all fields.');
+                return;
+            }
+
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                throw new Error('Please log in before adding pets.');
+            }
+
+
+            const petPayload = [{
+                user_id: Number(userId),
+                name: newPet.name,
+                animal_type: newPet.type,
+                breed: newPet.breed,
+                weight: parseFloat(newPet.weight.replace('kg', '').trim()),
+                age: parseFloat(newPet.age.replace('y', '').trim()),
+                gender: "Not specified",
+                image_array: [],
+                hair_type: "Not specified" // optional field
+            }];
+
+
+            await AddAnimalsUser(petPayload);
+
+            setNewPet({
+                name: '',
+                type: '',
+                breed: '',
+                weight: '',
+                age: '',
+                gender: 'ไม่ระบุ',
+                hair_type: 'ไม่ระบุ'
+            });
+
+
+            alert('เพิ่มสัตว์เลี้ยงสำเร็จ');
+
+
+            window.location.reload();
+
+        } catch (error) {
+            console.error('เกิดข้อผิดพลาดในการเพิ่มสัตว์เลี้ยง:', error);
+            alert('ไม่สามารถเพิ่มสัตว์เลี้ยงได้ กรุณาลองใหม่อีกครั้ง');
+        }
     };
-    console.log("Received pets:", pets); // เพิ่ม log เพื่อดูข้อมูลที่ได้รับ
+    console.log("Received pets:", pets);
 
 
     return (
         <div className="space-y-4">
-            {/* แสดงฟอร์มเปล่าเมื่อยังไม่มีการเลือกสัตว์ */}
-            {selectedPets.length === 0 && (
+
+            {showPetForm && selectedPets.length === 0 && (
                 <div className="p-3 rounded-lg shadow shadow-gray-400 flex m-5">
                     {/* Image section */}
                     <div className="flex items-center justify-center w-52 h-52 bg-gray-200 rounded-lg">
@@ -79,7 +129,7 @@ function PetCard({ pets, onPetSelect }: PetCardProps) {
                                     value={newPet.type}
                                     onChange={(e) => {
                                         setNewPet({ ...newPet, type: e.target.value });
-                                        // เมื่อเลือก type แล้วให้เปิดใช้งาน input อื่นๆ
+
                                         if (e.target.value) {
                                             const inputs = document.querySelectorAll('input[disabled]');
                                             inputs.forEach(input => input.removeAttribute('disabled'));
@@ -149,28 +199,28 @@ function PetCard({ pets, onPetSelect }: PetCardProps) {
                                 onClick={handleNewPetSubmit}
                                 className="bg-[#CBAD87] text-white rounded-3xl px-4 py-2 shadow shadow-gray-400 hover:bg-[#CBAD87]/90"
                             >
-                                บันทึกข้อมูล
+                                Save
                             </button>
                         )}
                     </div>
                 </div>
             )}
 
-           
+
             {selectedPets.map((petId) => {
-                const pet = pets.find(p => p.id === petId); 
+                const pet = pets.find(p => p.id === petId);
                 if (!pet) return null;
 
                 return (
                     <div key={pet.id} className="p-3 rounded-lg shadow shadow-gray-400 flex m-5">
-                       
+
                         <div className="flex items-center justify-center w-52 h-52 bg-gray-200 rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-10 h-10 text-gray-500">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                             </svg>
                         </div>
 
-                      
+
                         <div className="ml-6 space-y-4">
                             <div className="flex space-x-4">
                                 <div className="flex items-center">
@@ -243,8 +293,9 @@ function PetCard({ pets, onPetSelect }: PetCardProps) {
                                 onChange={(e) => handlePetSelect(Number(e.target.value))}
                                 value=""
                             >
-                                <option value="" disabled>เพิ่มสัตว์เลี้ยง</option>
-                                {pets 
+                                <option value="" disabled>
+                                    Add a pet</option>
+                                {pets
                                     .filter(p => !selectedPets.includes(p.id))
                                     .map(pet => (
                                         <option key={pet.id} value={pet.id}>
@@ -257,6 +308,19 @@ function PetCard({ pets, onPetSelect }: PetCardProps) {
                     </div>
                 );
             })}
+            { selectedPets.length === 0 && !showPetForm && (
+                <div className="p-3 rounded-lg shadow shadow-gray-400 flex m-5">
+                    <div className="flex items-center justify-center w-52 h-52 bg-gray-200 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-10 h-10 text-gray-500">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    <div className="ml-6 space-y-4">
+                        <p className="text-gray-500">
+                            Please select a pet or add a new pet.</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
