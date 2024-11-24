@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useEffect } from "react";
+import { GetProfileByID, UpdateProfile } from "@/helper/profile";
+import { GetSearchCageByHotel } from "@/helper/cage";
+import { Cage, UploadRes } from "@/types/response";
 
 const RoomDetailPage = () => {
+    
+    // const [profile, setProfile] = useState<Cage | null>(null);
     const [roomName, setRoomName] = useState("");
     const [description, setDescription] = useState("");
     const [capacity, setCapacity] = useState("");
@@ -11,9 +18,89 @@ const RoomDetailPage = () => {
     const [price, setPrice] = useState("");
     const [facilities, setFacilities] = useState<string[]>(["Air condition", "Live video", "Pet fountain"]);
     const [newFacility, setNewFacility] = useState("");
-    const [images, setImages] = useState<File[]>([]);
+    const [images, setImages] = useState<UploadRes[]>([]);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const id = localStorage.getItem("userId");
+        fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) throw new Error("Failed to fetch cage room data");
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Fetched cage room data:", data);
+            // setProfile(data);
+            setPetType(data.petType);
+            setRoomName(data.roomName);
+            setDescription(data.description);
+            setCapacity(data.capacity);
+            setSize(data.size);
+            setQuantity(data.quantity);
+            setPrice(data.price);
+            setFacilities(data.facilities);
+            setImages(data.images);
+          })
+          .catch((error) => console.error("Error fetching cage room data:", error));
+      }, []);
+      
+
+    const handleSubmit = async () => {
+        // if (!profile) {
+        //     toast.error("Profile not loaded");
+        //     return;
+        // }
+
+        try {
+                const userId = localStorage.getItem("userId") || "";
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    toast.error("You are not authorized. Please log in.");
+                    // navigate("/login");
+                    return;
+                }
+
+            const payload = {
+                userId: parseInt(userId),
+                role: "hotel",
+                data: {
+                    roomName,
+                    description,
+                    capacity,
+                    size,
+                    quantity,
+                    petType,
+                    price,
+                    facilities,
+                    images,
+                },
+            };
+
+            
+
+            const res = await UpdateProfile(payload);
+            toast.success("Profile updated successfully");
+            console.log("log", res);
+        } catch (err: any) {
+            if (err.response && err.response.data) {
+                // Handle server response if it's JSON
+                console.error("Server Response:", err.response.data);
+                toast.error(`Error: ${err.response.data.message || "Failed to update profile"}`);
+            } else {
+                // Handle non-JSON response or other errors
+                // console.error("Unexpected Error:", err.message || err);
+                toast.error("Unexpected error occurred. Please try again.");
+            }
+        }
+    };
     const handleAddFacility = () => {
         if (newFacility && !facilities.includes(newFacility)) {
             setFacilities([...facilities, newFacility]);
@@ -28,28 +115,13 @@ const RoomDetailPage = () => {
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
             const uploadedFiles = Array.from(event.target.files);
-            setImages([...images, ...uploadedFiles].slice(0, 10)); // Limit to 10 images
+            // setImages([...images, ...uploadedFiles].slice(0, 10)); // Limit to 10 images
         }
     };
 
     const handleRemoveImage = (index: number) => {
         const updatedImages = images.filter((_, imgIndex) => imgIndex !== index);
         setImages(updatedImages);
-    };
-
-    const handleSubmit = () => {
-        const roomData = {
-            roomName,
-            description,
-            capacity,
-            size,
-            quantity,
-            petType,
-            price,
-            facilities,
-            images,
-        };
-        console.log("Saved Room Data:", roomData);
     };
 
     return (
@@ -196,7 +268,7 @@ const RoomDetailPage = () => {
                                         className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
                                     >
                                         <img
-                                            src={URL.createObjectURL(image)}
+                                            // src={URL.createObjectURL(image)}
                                             alt="Room"
                                             className="w-full h-full object-cover"
                                         />

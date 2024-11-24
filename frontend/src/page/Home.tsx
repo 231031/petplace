@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
+import { useEffect } from "react";
 
 function Home  () {
     const [hotels, setHotels] = useState<any[]>([]);
@@ -12,6 +13,7 @@ function Home  () {
     const [selectedPets, setSelectedPets] = useState<string[]>([]);
     const navigate = useNavigate();
     const petOptions = ["dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
+    const [rooms, setRooms] = useState<any[]>([]);
 
   
     
@@ -21,6 +23,29 @@ function Home  () {
         );
     };
 
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const id = localStorage.getItem("userId");
+        fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) throw new Error("Failed to fetch cage room data");
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Fetched cage room data:", data);
+            // console.log("Fetched cage room data:", data.address);
+            setRooms(data|| []); // เก็บข้อมูลห้องใน state
+          })
+          .catch((error) => console.error("Error fetching cage room data:", error));
+      }, []);
+      
+      console.log("cages", rooms)
 
 
     const handleSearch = async () => {
