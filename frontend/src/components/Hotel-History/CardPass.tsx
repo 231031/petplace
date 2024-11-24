@@ -1,4 +1,4 @@
-import { Hotel } from "./HotelData";
+import { Hotel } from "./HotelDataPass";
 import React from "react";
 
 // function Card({hotel}:{hotel:Hotel}) {
@@ -13,7 +13,7 @@ import React from "react";
 function Card({ hotel }: { hotel: Hotel }) {
   return (
     <div>
-    {(hotel.status === "pending" || hotel.status === "accepted") && (
+    {(hotel.status === "canceled" || hotel.status === "rejected" || hotel.status === "completed") && (
       <div className="grid grid-cols-10 gap-4 mb-10 mt-10 rounded-2xl shadow-lg shadow-egg border  border-gray-300  p-4">
         <div className="col-span-2 ">
           <img

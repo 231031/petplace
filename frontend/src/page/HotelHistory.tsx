@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import HotelData from "../components/Hotel-History/HotelData";
+import HotelDataPass from "../components/Hotel-History/HotelDataPass";
 import clsx from "clsx";
 import { ClientRequest } from "http";
 import { useEffect, useState } from "react";
@@ -13,7 +14,6 @@ function HotelHistory() {
   console.log('ID', storedUserId)
   const [hotelServiceUsers, setHotelServiceUsers] = useState([]);
   const [error, setError] = useState(null);
-
   // Fetch data using async function within useEffect
   useEffect(() => {
     const fetchHotelServiceUsers = async (userId) => {
@@ -50,12 +50,44 @@ function HotelHistory() {
 
     fetchHotelServiceUsers(storedUserId);  // Call the function with storedUserId
   }, []);  // Dependencies to run useEffect when userId or token changes
-
   // Display error if occurs
   if (error) {
     return <div>Error: {error}</div>;
   }
- 
+
+  function ReviewForm({ userId }) {
+    const [reviewDetail, setReviewDetail] = useState('');
+    const [reviewRate, setReviewRate] = useState(0);
+    const [name, setName] = useState('');
+    const [isNameHidden, setIsNameHidden] = useState(false);
+  
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+  
+      const reviewData = {
+        hotel_service_id: 0, // Update with actual value
+        profile_id: 0, // Update with actual value
+        review_detail: reviewDetail,
+        review_rate: reviewRate,
+        name: isNameHidden ? '' : name, // If name is hidden, don't send it
+      };
+  
+      try {
+        const response = await fetch(`http://localhost:5000/api/hotel/client/review/${userId}`, {
+          method: 'PUT',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(reviewData),
+        });
+        const result = await response.json();
+        console.log(result); // Handle response accordingly
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };}  
+
 
   return (
     <div className="w-full max-w-7xl mx-auto mt-10">
@@ -89,7 +121,7 @@ function HotelHistory() {
       <hr className="border-black mx-40" />
       <div className="ml-20 mt-10">
         <span className="text-2xl font-bold">Passed By</span>
-        <HotelData hotelList={hotelServiceUsers}></HotelData>
+        <HotelDataPass hotelList={hotelServiceUsers}></HotelDataPass>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 // import { Card } from "flowbite-react";
 
-import Card from "./Card"
+import Card from "./CardPass"
 
 
 const HotelList = ({hotelList}:any) => {
