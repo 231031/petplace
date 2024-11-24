@@ -20,6 +20,9 @@ type ProfileRepositoryIn interface {
 	GetAllProfileByUserID(userID uint) ([]model.Profile, error)
 	UpdateProfile(profile model.Profile) error
 	CountCompleteBookByID(profile_id uint) (int, error)
+
+	// care & clinic
+	CreateCliniCare(profile model.Profile, reservations []model.ReservationTime) (string, error)
 }
 
 type FavoriteCageRepositoryIn interface {

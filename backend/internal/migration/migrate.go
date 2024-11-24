@@ -8,7 +8,7 @@ import (
 
 func Migrate(db *gorm.DB) error {
 	// & reserved clinic & care services
-	db.AutoMigrate(&model.ResevationTime{})
+	db.AutoMigrate(&model.ReservationTime{})
 	db.AutoMigrate(&model.AnimalBookExtra{}) // history service
 	db.AutoMigrate(&model.AnimalBookClinic{})
 	db.AutoMigrate(&model.AnimalBookService{})
@@ -75,7 +75,7 @@ func Migrate(db *gorm.DB) error {
 	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalBookServices")
 	// db.Migrator().CreateConstraint(&model.Profile{}, "ClinicServices")
 	// db.Migrator().CreateConstraint(&model.Profile{}, "CareServices")
-	// db.Migrator().CreateConstraint(&model.Profile{}, "ResevationTimes")
+	// db.Migrator().CreateConstraint(&model.Profile{}, "ReservationTimes")
 
 	// supply clinic
 	// db.Migrator().CreateConstraint(&model.ClinicService{}, "ClinicSubServices")

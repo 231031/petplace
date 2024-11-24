@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"petplace/internal/types"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -102,4 +104,15 @@ func BinaryConvertor(number int, bits int) []int {
 		result = append(result, 0)
 	}
 	return result
+}
+
+func CheckOpenDay(openDay []string, date time.Time) string {
+	weekDay := strings.ToLower(date.Weekday().String())
+	sort.Strings(openDay)
+	index := sort.SearchStrings(openDay, weekDay)
+	if index < 0 || index >= len(openDay) {
+		return "close"
+	}
+
+	return "open"
 }
