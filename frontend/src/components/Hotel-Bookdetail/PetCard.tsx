@@ -1,32 +1,31 @@
+import { AddAnimalsUser } from '@/helper/animal_user';
 import { useState } from 'react';
 
 interface Pet {
     id: number;
     name: string;
-    type: string;
+    animal_type: string;
     breed: string;
     weight: string;
     age: string;
 }
 
 interface PetCardProps {
-    onPetSelect: (petId: number) => void; 
+    pets: Pet[];
+    onPetSelect: (petId: number) => void;
+    showPetForm: boolean;
 }
 
-function PetCard({ onPetSelect }: PetCardProps) {
-    const mockPets: Pet[] = [
-        { id: 1, name: "Mali", type: "dog", breed: "chiwawa", weight: "2.5", age: "2" },
-        { id: 2, name: "Meaow", type: "cat", breed: "persian", weight: "3.6", age: "1" },
-        { id: 3, name: "Moodeng", type: "dog", breed: "poodle", weight: "5.2", age: "3" },
-    ];
-
+function PetCard({ pets, onPetSelect, showPetForm }: PetCardProps) {
     const [selectedPets, setSelectedPets] = useState<number[]>([]);
     const [newPet, setNewPet] = useState({
         name: '',
         type: '',
         breed: '',
         weight: '',
-        age: ''
+        age: '',
+        gender: 'Not specified',
+        hair_type: 'Not specified'
     });
 
     const handlePetSelect = (petId: number) => {
@@ -36,22 +35,70 @@ function PetCard({ onPetSelect }: PetCardProps) {
             onPetSelect(petId);
         }
     };
-    
+
     const handleRemovePet = (petId: number) => {
         const newSelection = selectedPets.filter(id => id !== petId);
         setSelectedPets(newSelection);
         onPetSelect(petId);
     };
 
-    const handleNewPetSubmit = () => {
-        // TODO: เพิ่มการบันทึกสัตว์เลี้ยงใหม่
-        console.log('New pet data:', newPet);
+    const handleNewPetSubmit = async () => {
+        try {
+
+            if (!newPet.name || !newPet.type || !newPet.breed || !newPet.weight || !newPet.age) {
+                alert('Please fill out all fields.');
+                return;
+            }
+
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                throw new Error('Please log in before adding pets.');
+            }
+
+
+            const petPayload = [{
+                user_id: Number(userId),
+                name: newPet.name,
+                animal_type: newPet.type,
+                breed: newPet.breed,
+                weight: parseFloat(newPet.weight.replace('kg', '').trim()),
+                age: parseFloat(newPet.age.replace('y', '').trim()),
+                gender: "Not specified",
+                image_array: [],
+                hair_type: "Not specified" // optional field
+            }];
+
+
+            await AddAnimalsUser(petPayload);
+
+            setNewPet({
+                name: '',
+                type: '',
+                breed: '',
+                weight: '',
+                age: '',
+                gender: 'ไม่ระบุ',
+                hair_type: 'ไม่ระบุ'
+            });
+
+
+            alert('เพิ่มสัตว์เลี้ยงสำเร็จ');
+
+
+            window.location.reload();
+
+        } catch (error) {
+            console.error('เกิดข้อผิดพลาดในการเพิ่มสัตว์เลี้ยง:', error);
+            alert('ไม่สามารถเพิ่มสัตว์เลี้ยงได้ กรุณาลองใหม่อีกครั้ง');
+        }
     };
+    console.log("Received pets:", pets);
+
 
     return (
         <div className="space-y-4">
-            {/* แสดงฟอร์มเปล่าเมื่อยังไม่มีการเลือกสัตว์ */}
-            {selectedPets.length === 0 && (
+
+            {showPetForm && selectedPets.length === 0 && (
                 <div className="p-3 rounded-lg shadow shadow-gray-400 flex m-5">
                     {/* Image section */}
                     <div className="flex items-center justify-center w-52 h-52 bg-gray-200 rounded-lg">
@@ -82,7 +129,7 @@ function PetCard({ onPetSelect }: PetCardProps) {
                                     value={newPet.type}
                                     onChange={(e) => {
                                         setNewPet({ ...newPet, type: e.target.value });
-                                        // เมื่อเลือก type แล้วให้เปิดใช้งาน input อื่นๆ
+
                                         if (e.target.value) {
                                             const inputs = document.querySelectorAll('input[disabled]');
                                             inputs.forEach(input => input.removeAttribute('disabled'));
@@ -141,9 +188,9 @@ function PetCard({ onPetSelect }: PetCardProps) {
                             value=""
                         >
                             <option value="" disabled className='text-center'>Select your pet</option>
-                            {mockPets.map(pet => (
+                            {pets.map(pet => (
                                 <option key={pet.id} value={pet.id}>
-                                    {pet.name} - {pet.type} ({pet.breed})
+                                    {pet.name} - {pet.animal_type} ({pet.breed})
                                 </option>
                             ))}
                         </select>
@@ -152,28 +199,28 @@ function PetCard({ onPetSelect }: PetCardProps) {
                                 onClick={handleNewPetSubmit}
                                 className="bg-[#CBAD87] text-white rounded-3xl px-4 py-2 shadow shadow-gray-400 hover:bg-[#CBAD87]/90"
                             >
-                                บันทึกข้อมูล
+                                Save
                             </button>
                         )}
                     </div>
                 </div>
             )}
 
-            {/* ส่วนแสดงสัตว์เลี้ยงที่เลือกแล้ว */}
+
             {selectedPets.map((petId) => {
-                const pet = mockPets.find(p => p.id === petId);
+                const pet = pets.find(p => p.id === petId);
                 if (!pet) return null;
 
                 return (
                     <div key={pet.id} className="p-3 rounded-lg shadow shadow-gray-400 flex m-5">
-                        {/* Image section - เหมือนเดิม */}
+
                         <div className="flex items-center justify-center w-52 h-52 bg-gray-200 rounded-lg">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-10 h-10 text-gray-500">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                             </svg>
                         </div>
 
-                        {/* Form section - ปรับ style ให้เหมือนฟอร์มแรก */}
+
                         <div className="ml-6 space-y-4">
                             <div className="flex space-x-4">
                                 <div className="flex items-center">
@@ -191,10 +238,10 @@ function PetCard({ onPetSelect }: PetCardProps) {
                                     <label className="block text-sm text-black">Pet type:</label>
                                     <select
                                         className="border rounded-3xl text-sm mx-2 shadow h-10 flex shadow-gray-400"
-                                        value={pet.type}
+                                        value={pet.animal_type}
                                         disabled
                                     >
-                                        <option>{pet.type}</option>
+                                        <option>{pet.animal_type}</option>
                                     </select>
                                 </div>
                                 <div className="flex items-center">
@@ -216,7 +263,7 @@ function PetCard({ onPetSelect }: PetCardProps) {
                                         className="h-10 mx-2 border rounded-3xl p-2 shadow shadow-gray-400"
                                         disabled
                                     />
-                                    
+
                                 </div>
                                 <div className="flex items-center">
                                     <label className="block text-sm text-black">Age:</label>
@@ -226,7 +273,7 @@ function PetCard({ onPetSelect }: PetCardProps) {
                                         className="mx-2 border rounded-3xl shadow shadow-gray-400 h-10 w-20"
                                         disabled
                                     />
-                                    
+
                                 </div>
                             </div>
                         </div>
@@ -246,12 +293,13 @@ function PetCard({ onPetSelect }: PetCardProps) {
                                 onChange={(e) => handlePetSelect(Number(e.target.value))}
                                 value=""
                             >
-                                <option value="" disabled>เพิ่มสัตว์เลี้ยง</option>
-                                {mockPets
+                                <option value="" disabled>
+                                    Add a pet</option>
+                                {pets
                                     .filter(p => !selectedPets.includes(p.id))
                                     .map(pet => (
                                         <option key={pet.id} value={pet.id}>
-                                            {pet.name} - {pet.type}
+                                            {pet.name} - {pet.animal_type}
                                         </option>
                                     ))
                                 }
@@ -260,6 +308,19 @@ function PetCard({ onPetSelect }: PetCardProps) {
                     </div>
                 );
             })}
+            { selectedPets.length === 0 && !showPetForm && (
+                <div className="p-3 rounded-lg shadow shadow-gray-400 flex m-5">
+                    <div className="flex items-center justify-center w-52 h-52 bg-gray-200 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-10 h-10 text-gray-500">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    <div className="ml-6 space-y-4">
+                        <p className="text-gray-500">
+                            Please select a pet or add a new pet.</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

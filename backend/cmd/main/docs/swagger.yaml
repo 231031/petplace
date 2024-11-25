@@ -256,15 +256,24 @@ definitions:
     type: object
   types.ReviewPayload:
     properties:
+      hide_name:
+        type: boolean
       hotel_service_id:
         type: integer
       profile_id:
         type: integer
       review_detail:
         type: string
+      review_image:
+        type: string
+      review_image_array:
+        items:
+          type: string
+        type: array
       review_rate:
         type: number
     required:
+    - hide_name
     - hotel_service_id
     - profile_id
     - review_rate

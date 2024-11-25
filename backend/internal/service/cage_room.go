@@ -164,9 +164,8 @@ func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.Fi
 	}
 
 	// sort by
-	if strings.ToLower(filter.Sort) == "price" {
-		sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].Cages[0].Price < profiles[j].Cages[0].Price })
-	} else if strings.ToLower(filter.Sort) == "distance" {
+	sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].Cages[0].Price < profiles[j].Cages[0].Price })
+	if strings.ToLower(filter.Sort) == "distance" {
 		profiles = s.ProfileServiceIn.SortProfileByDistance(profiles)
 	} else if strings.ToLower(filter.Sort) == "review" {
 		profiles = s.ProfileServiceIn.SortProfileByReviewRate(profiles)

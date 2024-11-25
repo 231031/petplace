@@ -25,7 +25,7 @@ func (r *AnimalUserRepository) CreateAnimalUser(animals []model.AnimalUser) erro
 }
 
 func (r *AnimalUserRepository) UpdateAnimalUser(animal model.AnimalUser) error {
-	result := r.db.Save(&animal)
+	result := r.db.Model(&model.AnimalUser{}).Where("id = ?", animal.ID).Updates(animal)
 	if result.Error != nil {
 		return fmt.Errorf("%s", result.Error.Error())
 	}
