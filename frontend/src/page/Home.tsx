@@ -54,7 +54,7 @@ function Home() {
             cage_size: "m",
         }));
 
-        const filterSearchCage: FilterSearchCage = {
+        const filterSearchCage = {
             longitude: "99.3986862",
             latitude: "18.3170581",
             start_time: startDate,
