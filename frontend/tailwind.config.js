@@ -24,6 +24,8 @@ export default {
 			nextstep: '#80591C',
 			navname: '#BCA683',
 			star: '#DBA54D',
+			button: '#CBAD87',
+			size: '#E8B564',
 			
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
