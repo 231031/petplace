@@ -66,7 +66,7 @@ function HotelBookdetail() {
         const hotelName = location.state?.profile_name || selectedCage.profile?.name || "ไม่ระบุชื่อโรงแรม";
         console.log("hotelNameasdasd", hotelName);
 
-        navigate('/hotelfillpayment', {
+        navigate('/hotelcpayment', {
             state: {
                 selectedCage: {
                     ...selectedCage,

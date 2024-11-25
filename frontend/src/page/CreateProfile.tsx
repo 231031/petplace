@@ -254,10 +254,13 @@ function CreateProfile() {
                         </div>
                         <div className="flex flex-col gap-y-2 w-full pl-5 ">
                             <p>Address</p>
-                            <div className="flex gap-x-5">
-                                <input
-                                    type="text"
-                                    className="flex rounded-lg text-yellow border border-2 border-bg hover:border-yellow focus:border-yellow focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow h-36 w-full "
+                            <div className="flex  gap-x-5">
+                                <textarea
+                                    name="address"
+                                    value={formData.address}
+                                    onChange={handleChange}
+                                    className="flex rounded-lg text-yellow border border-2 border-bg hover:border-yellow focus:border-yellow focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow h-36 w-full p-2"
+                                    style={{ resize: 'none', overflowY: 'auto' }} // Optional: prevent resizing
                                 />
                                 
                             </div>
