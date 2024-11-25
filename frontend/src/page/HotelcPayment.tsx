@@ -9,12 +9,20 @@ export default function HotelcPayment() {
     const navigate = useNavigate();
     const location = useLocation();
     const selectedCage = location.state?.selectedCage || [];
-
+    console.log("HotelcPayment location state:", location.state);
     const handleSelect = (choice: number) => {
         setSelect(choice);
     };
     const handleCaegClick = (selectedCage: Cage) => {
-        navigate('/hotelfillpayment', { state: { selectedCage: selectedCage } });
+        navigate('/hotelfillpayment', { 
+            state: { 
+                selectedCage: selectedCage,
+                selectedPets: location.state?.selectedPets, 
+                hotelName: location.state?.hotelName,       
+                startDate: location.state?.startDate,       
+                endDate: location.state?.endDate            
+            } 
+        });
     };
 
     return (

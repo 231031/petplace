@@ -5,7 +5,6 @@ import { FilterAnimal, FilterSearchCage } from "@/types/payload";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Profile } from "@/types/model";
 import { Cage } from "@/types/response";
-// import HotelSearch from "./TestSearch";
 
 function HotelSearch() {
 
@@ -18,13 +17,12 @@ function HotelSearch() {
 
   const [hotels, setHotels] = useState<any[]>([]);
   const [longitude, setLongtitude] = useState("");
-  // const [latitude, setLatitude] = useState("");
   const [startDate, setStartDate] = useState(startDateFromState);
   const [endDate, setEndDate] = useState(endDateFromState);
   const [sort, setSort] = useState("");
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); 
 
 
   const petOptions = [
@@ -92,7 +90,7 @@ function HotelSearch() {
     }
   };
 
-  const [searchClicked, setSearchClicked] = useState(false); // New state to track if search was clicked
+  const [searchClicked, setSearchClicked] = useState(false); 
 
  
   // const [isClicked, setIsClicked] = useState(false);
