@@ -1,21 +1,19 @@
 import { ReviewHotelService } from "@/helper/hotel";
 import { Hotel } from "./HotelDataPass";
-import React, { useState } from "react";
-
-
+import React, { useEffect, useState } from "react";
+import { ReviewPayload } from "@/types/payload";
 
 function Card({ hotel }: { hotel: Hotel }) {
-  const ReviewPayload: ReviewPayload = {
-    hide_name: false, // Boolean value (not an identifier)
-    hotel_service_id: 1, // Example service ID
-    profile_id: 1, // Example profile ID
-    review_detail: "", // Empty string for review details
-    review_image: "", // Single image URL
-    review_image_array: [], // Empty array for multiple images
-    review_rate: 1, // Example rating
-  };
+  const [reviewPayload, setReviewPayload] = useState<ReviewPayload>({
+    hide_name: false,
+    hotel_service_id: 1,
+    profile_id: hotel.cage_room.profile_id, // Use profile ID from `hotel`
+    review_detail: "",
+    review_image: "",
+    review_image_array: [],
+    review_rate: 1,
+  });
 
-  // console.log("profile id",hotel)
   // ReviewHotelService(ReviewPayload);
 
   const [isReviewing, setIsReviewing] = useState(false); // State to toggle between components
@@ -104,15 +102,32 @@ function ReviewForm({
   const [rating, setRating] = useState(0); // State for star rating
   const [hideName, setHideName] = useState(false); // State for "hide your name"
   const [reviewText, setReviewText] = useState(""); // State for review text
+  const [reviewImage, setReviewImage] = useState(""); // Single review image
+  const [hotelServiceId, setHotelServiceId] = useState(0); // Single review image
+  const [profileId, setProfileId] = useState(0); // Single review image
+  const [reviewImageArray, setReviewImageArray] = useState<string[]>([]); // Multiple images
 
-  const handleSubmit = () => {
-    const reviewPayload = {
-      rating,
-      hideName,
-      reviewText,
-    };
-    console.log("Review submitted for:", hotel, reviewPayload);
-    onReturn(); // Return to previous component (Card)
+  useEffect(() => {
+    setHotelServiceId(hotel.animal_hotel_services[0].hotel_service_id || 0); // Dynamically set service ID
+    setProfileId(hotel.cage_room?.profile_id || 0); // Dynamically set profile ID
+  }, [hotel]);
+
+  const handleSubmit = async () => {
+    try{
+      const reviewPayload: ReviewPayload = {
+        hide_name: hideName, // Use state value
+        hotel_service_id: hotelServiceId, // Prop passed to component
+        profile_id: profileId, // Prop passed to component
+        review_detail: reviewText, // Use state value
+        review_image: reviewImage, // Use state value
+        review_image_array: reviewImageArray, // Use state value
+        review_rate: rating, // Use state value
+      };
+      console.log("Review submitted for:", hotel, reviewPayload);
+      await ReviewHotelService(reviewPayload)
+      onReturn(); // Return to previous component (Card)
+    } catch(error){console.log('error review', error)}
+
   };
 
   return (
@@ -159,7 +174,9 @@ function ReviewForm({
         <textarea
           placeholder="Explain us your journey"
           value={reviewText}
-          onChange={(e) => setReviewText(e.target.value)}
+          onChange={(e) => {
+            setReviewText(e.target.value);
+          }}
           className="w-full h-32 border p-2 rounded-lg resize-none focus:ring-2 focus:ring-blue-300"
         />
       </div>
