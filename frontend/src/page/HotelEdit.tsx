@@ -121,8 +121,8 @@ const HotelDetailPage = () => {
                     <div className="pt-10 space-x-1">
                         <button
                             className="bg-egg h-10 w-20 rounded-md text-navbar"
-                            onClick={() => navigate('/hotelhome')}
-                        >view
+                            onClick={() => navigate('/hotelhome')}>
+                            view
                         </button>
                         <button className="text-white bg-navbar h-10 w-20 rounded-md">edit</button>
                     </div>

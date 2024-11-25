@@ -113,7 +113,7 @@ function ReviewForm({
   }, [hotel]);
 
   const handleSubmit = async () => {
-    try{
+    try {
       const reviewPayload: ReviewPayload = {
         hide_name: hideName, // Use state value
         hotel_service_id: hotelServiceId, // Prop passed to component
@@ -124,10 +124,11 @@ function ReviewForm({
         review_rate: rating, // Use state value
       };
       console.log("Review submitted for:", hotel, reviewPayload);
-      await ReviewHotelService(reviewPayload)
+      await ReviewHotelService(reviewPayload);
       onReturn(); // Return to previous component (Card)
-    } catch(error){console.log('error review', error)}
-
+    } catch (error) {
+      console.log("error review", error);
+    }
   };
 
   return (

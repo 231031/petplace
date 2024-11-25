@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
-import { GetProfileByID, UpdateProfile } from "@/helper/profile";
-import { GetSearchCageByHotel } from "@/helper/cage";
 import { Cage, UploadRes } from "@/types/response";
+import { UpdateCage } from "@/helper/cage";
+import UploadImage from "@/components/UploadImage";
+
 
 const RoomDetailPage = () => {
     
-    // const [profile, setProfile] = useState<Cage | null>(null);
+    const [profile, setProfile] = useState<Cage | null>(null);
     const [roomName, setRoomName] = useState("");
     const [description, setDescription] = useState("");
     const [capacity, setCapacity] = useState("");
@@ -42,7 +43,11 @@ const RoomDetailPage = () => {
             setRoomName(data.roomName);
             setDescription(data.description);
             setCapacity(data.capacity);
-            setSize(data.size);
+            setSize({
+              length: data.size.length,
+              width: data.size.width,
+              height: data.size.height,
+            });
             setQuantity(data.quantity);
             setPrice(data.price);
             setFacilities(data.facilities);
@@ -53,11 +58,6 @@ const RoomDetailPage = () => {
       
 
     const handleSubmit = async () => {
-        // if (!profile) {
-        //     toast.error("Profile not loaded");
-        //     return;
-        // }
-
         try {
                 const userId = localStorage.getItem("userId") || "";
                 const token = localStorage.getItem("token");
@@ -69,25 +69,25 @@ const RoomDetailPage = () => {
                 }
 
             const payload = {
-                userId: parseInt(userId),
-                role: "hotel",
-                data: {
-                    roomName,
-                    description,
-                    capacity,
-                    size,
-                    quantity,
-                    petType,
-                    price,
-                    facilities,
-                    images,
-                },
+                id: parseInt(userId),
+                animal_type:    petType,
+                cage_type:      roomName,
+                detail:         description,
+                facility:       facilities.join(","),
+                facility_array: facilities,
+                height:         parseFloat(size.height),
+                image_array: images.map((image) => image.fileUrl),
+                lenth:          parseFloat(size.length),
+                max_capacity:   parseInt(capacity, 10),
+                price:          parseFloat(price),
+                profile_id:     parseInt(userId),
+                quantity:       parseInt(quantity, 10),
+                size:           `${size.length}x${size.width}x${size.height}`,
+                width:          parseFloat(size.width),
             };
-
             
-
-            const res = await UpdateProfile(payload);
-            toast.success("Profile updated successfully");
+            const res = await UpdateCage(payload);
+            toast.success("Cage updated successfully");
             console.log("log", res);
         } catch (err: any) {
             if (err.response && err.response.data) {
@@ -112,11 +112,8 @@ const RoomDetailPage = () => {
         setFacilities(facilities.filter((item) => item !== facility));
     };
 
-    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files) {
-            const uploadedFiles = Array.from(event.target.files);
-            // setImages([...images, ...uploadedFiles].slice(0, 10)); // Limit to 10 images
-        }
+    const handleImageUpload = (files: UploadRes[]) => {
+        setImages([...images, ...files].slice(0, 10)); // Limit to 10 images
     };
 
     const handleRemoveImage = (index: number) => {
@@ -150,9 +147,10 @@ const RoomDetailPage = () => {
                 {/* Sub-tabs */}
                 <div className="bg-bg p-4 rounded-lg shadow-lg flex flex-col gap-y-6">
                     <div className="flex gap-x-4">
-                        <button className="text-white p-2 bg-navbar rounded-lg border-b-2 border-gold">Room type1</button>
-                        <button className="text-gray-500 p-2">Room type2</button>
-                        <button className="text-gray-500 p-2">Room type3</button>
+                        <button className="text-white p-2 bg-navbar rounded-lg border-b-2 border-gold">Luxury room</button>
+                        <button className="text-gray-500 p-2">Max luxury room</button>
+                        <button className="text-gray-500 p-2">Extra luxury room</button>
+                        <button className="text-gray-500 p-2">Normal room</button>
                     </div>
 
                     {/* Form */}
@@ -268,8 +266,8 @@ const RoomDetailPage = () => {
                                         className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
                                     >
                                         <img
-                                            // src={URL.createObjectURL(image)}
-                                            alt="Room"
+                                            src={image.fileUrl}
+                                            alt={`Uploaded ${index}`}
                                             className="w-full h-full object-cover"
                                         />
                                         <button
@@ -280,15 +278,10 @@ const RoomDetailPage = () => {
                                         </button>
                                     </div>
                                 ))}
-                                <label className="w-20 h-20 bg-gray-200 rounded-md flex justify-center items-center cursor-pointer">
-                                    <input
-                                        type="file"
-                                        multiple
-                                        onChange={handleImageUpload}
-                                        className="hidden"
-                                    />
-                                    <span>Upload</span>
-                                </label>
+                                <UploadImage
+                                    limit={10 - images.length}
+                                    onComplete={handleImageUpload}
+                                />
                             </div>
                         </div>
 

@@ -1,10 +1,10 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { CarouselDemo } from "../components/HotelDetailComponents/CarousolDemo";
 import { useEffect, useRef, useState } from 'react';
 import { Cage } from "@/types/response";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { AddFavCage } from "@/helper/user";
 
 
 function HotelDetail() {
@@ -25,7 +25,28 @@ function HotelDetail() {
     const startDate = location.state?.startDate || '';
     const endDate = location.state?.endDate || '';
 
+    const handleAddFavorite = async (cage: Cage) => {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            alert("You need to log in to add favorites.");
+            return;
+        }
 
+        const favPayload = {
+            cage_id: cage.id,
+            user_id: Number(userId),
+        };
+
+        try {
+            const response = await AddFavCage(favPayload);
+            alert("Cage added to favorites successfully!");
+            console.log("Favorite response:", response);
+        } catch (error) {
+            console.error("Error adding to favorites:", error);
+            alert("Failed to add cage to favorites. Please try again.");
+        }
+    };
+    
     const handleCageSelect = (cage: Cage) => {
         const queryParams = new URLSearchParams({
             size: cage.size,
@@ -205,7 +226,7 @@ function HotelDetail() {
                                                         <h1 className="text-2xl">{cage.price}$</h1>
                                                         <p>free cancel before 1 week</p>
                                                         <div className="flex space-x-2">
-                                                            <button className="w-fit px-2 h-8 bg-bg rounded-full shadow">Add to cart</button>
+                                                            <button className="w-fit px-2 h-8 bg-bg rounded-full shadow" onClick={() => handleAddFavorite(cage)}>Add Favorite</button>
                                                             <button className="w-fit px-2 h-8  rounded-full bg-yellow hover:bg-navbar" onClick={() => handleCageSelect(cage)}>Book now</button>
                                                         </div>
                                                     </div>

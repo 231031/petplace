@@ -1,27 +1,105 @@
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
-import { useEffect } from "react";
+import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from "react-leaflet";
+import { GetAllFavCageByUserID } from "@/helper/user";
+import { Cage } from "@/types/response";
+import { useLocation } from "react-router-dom";
 
 function Home() {
     const [hotels, setHotels] = useState<any[]>([]);
-    const [longitude, setLongtitude] = useState("");
-    // const [latitude, setLatitude] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [selectedPets, setSelectedPets] = useState<string[]>([]);
     const navigate = useNavigate();
-    const petOptions = ["dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
+    const petOptions = ["Dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
+    const [selectedCageSizes, setSelectedCageSizes] = useState<{ [key: string]: string }>({});
     const [rooms, setRooms] = useState<any[]>([]);
+    const location = useLocation();
 
+    const [error, setError] = useState(''); // Form error
+    const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
+    const [successMessage, setSuccessMessage] = useState('');
+    const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
+    const [position, setPosition] = useState<[number, number] | null>(null);
+    const [maplocation, setMapLocation] = useState({
+        long: '',
+        lat: '',
+    });
 
+    const handleCageSelect = (cage: Cage) => {
+        const queryParams = new URLSearchParams({
+            size: cage.size,
+            cage_type: cage.cage_type,
+            facility: cage.facility,
+            price: cage.price.toString(),
+            max_capacity: cage.max_capacity.toString(), 
+            startDate: startDate,
+            endDate: endDate
+        }).toString();
+
+        // Navigate with query parameters
+        
+        navigate(`/hotelbookdetail?${queryParams}`,
+            { state: { 
+                selectedCage: cage, 
+                selectedHotel: location.state?.selectedHotel,
+                profile_name: location.state?.profile_name,
+                startDate: startDate, 
+                endDate: endDate } });
+        
+    };
+
+    const handleCageSizeChange = (pet: string, size: string) => {
+        setSelectedCageSizes((prev) => ({
+            ...prev,
+            [pet]: size,
+        }));
+    };
 
     const handlePetChange = (pet: string) => {
         setSelectedPets((prev) =>
             prev.includes(pet) ? prev.filter((p) => p !== pet) : [...prev, pet]
         );
     };
+
+    const handleLocationChange = (lat: number, lng: number) => {
+        setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
+        setMarkerPosition([lat, lng]); // Update the marker position
+    };
+    
+    const LocationMarker = () => {
+        useMapEvents({
+            click(e) {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                handleLocationChange(lat, lng); // Update formData with new lat/lng
+            },
+        });
+
+        return (
+            <Marker position={markerPosition || [13.736717, 100.523186]} />
+        );
+    };
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setPosition([latitude, longitude]);
+                    handleLocationChange(latitude, longitude); // Update formData with initial position
+                    
+                },
+                (err) => {
+                    setError('Unable to retrieve your location.');
+                }
+            );
+        } else {
+            setError('Geolocation is not supported by this browser.');
+        }
+    }, []);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -39,19 +117,34 @@ function Home() {
           })
           .then((data) => {
             console.log("Fetched cage room data:", data);
-            // console.log("Fetched cage room data:", data.address);
-            setRooms(data|| []); // เก็บข้อมูลห้องใน state
+            setRooms(data|| []); 
           })
           .catch((error) => console.error("Error fetching cage room data:", error));
       }, []);
       
       console.log("cages", rooms)
 
+    useEffect(() => {
+        const fetchCageRooms = async () => {
+          try {
+            const id = localStorage.getItem("userId");
+            const data = await GetAllFavCageByUserID(parseInt(id as string));
+            console.log("FAV cage:", data);
+            setRooms(data || []);
+          } catch (error) {
+            console.error("Error fetching cage room data:", error);
+          }
+        };
+    
+        fetchCageRooms();
+      }, []);
+
+
 
     const handleSearch = async () => {
         const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
             animal_type: pet,
-            cage_size: "m",
+            cage_size: selectedCageSizes[pet] || "",
         }));
 
         const filterSearchCage = {
@@ -124,17 +217,27 @@ function Home() {
                 <div className="w-3/4 absolute z-10 top-12 h-200 bg-white p-8 rounded-lg shadow-lg">
                     {/* Location section */}
                     <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
-                            <label htmlFor="location" className="block text-lg font-semibold mb-2">
-                                Location
+                        <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
+                            <label htmlFor="location" className="block text-[#A08252] text-lg font-semibold mb-4">
+                            Location
                             </label>
-                            <input
-                                type="text"
-                                id="location"
-                                value={longitude}
-                                onChange={(e) => setLongtitude(e.target.value)}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                            />
+                            <div className="flex flex-col w-3/12 gap-y-5 pl-5">
+                                <div className="bg-bg rounded-xl flex flex-col h-32 w-64 shadow shadow-gray-400 p-2">
+                                    <div className="h-full w-full rounded-lg">
+                                        {geoError && <div>{geoError}</div>}
+                                        <MapContainer
+                                            center={position || [13.736717, 100.523186]}
+                                            zoom={13}
+                                            style={{ height: '100%', width: '100%' }}
+                                        >
+                                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                            <LocationMarker />
+                                        </MapContainer>
+                                    </div>
+                                <div>
+                            </div>
+                        </div>
+                    </div>
                         </div>
                         <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
                             <div>
@@ -163,24 +266,38 @@ function Home() {
                             </div>
                         </div>
                         <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
-                            <label className="block text-red-900 text-lg font-semibold mb-4">
+                            <label className="block text-[#A08252] text-lg font-semibold mb-4">
                                 Pet
                             </label>
                             <div className="grid grid-cols-2 gap-4">
                                 {petOptions.map((pet) => (
-                                    <label
-                                        key={pet}
-                                        className="flex items-center space-x-2 cursor-pointer"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            value={pet}
-                                            checked={selectedPets.includes(pet)}
-                                            onChange={() => handlePetChange(pet)}
-                                            className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
-                                        />
-                                        <span>{pet}</span>
-                                    </label>
+                                    <div key={pet} className="flex items-center justify-between space-x-2">
+                                        {/* Checkbox and Label */}
+                                        <label className="flex items-center space-x-2 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                value={pet}
+                                                checked={selectedPets.includes(pet)}
+                                                onChange={() => handlePetChange(pet)}
+                                                className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
+                                            />
+                                            <span className="text-[#5E4126] font-medium">{pet}</span>
+                                        </label>
+
+                                        {/* Dropdown for Cage Size */}
+                                        <select
+                                            value={selectedCageSizes[pet] || ""}
+                                            onChange={(e) => handleCageSizeChange(pet, e.target.value)}
+                                            className="w-1/2 border border-[#A08252] rounded-lg px-2 py-1 text-[#5E4126] focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                                        >
+                                            <option value="" disabled>
+                                                All size
+                                            </option>
+                                            <option value="s">Small (S)</option>
+                                            <option value="m">Medium (M)</option>
+                                            <option value="l">Large (L)</option>
+                                        </select>
+                                    </div>
                                 ))}
                             </div>
                         </div>
@@ -249,12 +366,7 @@ function Home() {
                                     <h2 className="text-lg font-bold text-[#333] mb-2">Hotel Name</h2>
                                     {/* Rating */}
                                     <div className="flex items-center mb-2">
-                                        <div className="text-yellow-500 text-sm flex space-x-1">
-                                            {[1, 2, 3, 4].map((star) => (
-                                                <span key={star}>★</span>
-                                            ))}
-                                            <span className="text-gray-400">★</span>
-                                        </div>
+                                        {/* <HotelRating avgReview={hotel.avg_review} /> */}
                                     </div>
                                     {/* Location */}
                                     <p className="text-gray-500 mb-2">Distinct, Province · 0.5 km</p>
@@ -298,9 +410,9 @@ function Home() {
                             {/* Price and Button */}
                             <div className="flex flex-col items-end space-y-4">
                                 <span className="text-lg font-bold text-[#333]">350 ฿</span>
-                                <button className="bg-[#A08252] text-white text-sm px-6 py-2 rounded-lg hover:bg-[#8a6e45] transition">
+                                {/* <button className="bg-[#A08252] text-white text-sm px-6 py-2 rounded-lg hover:bg-[#8a6e45] transition" onClick={() => handleCageSelect(Cage)}>
                                     Book now
-                                </button>
+                                </button> */}
                             </div>
                         </div>
                     ))}
