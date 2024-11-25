@@ -1,6 +1,6 @@
 import CageCard from "@/components/Hotel-Bookdetail/CageCard";
 import PetCard from "@/components/Hotel-Bookdetail/PetCard";
-import { Cage, Profile } from "@/types/response";
+import { Cage} from "@/types/response";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { GetAllAnimalByUserID } from '@/helper/animal_user';
