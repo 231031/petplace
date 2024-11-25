@@ -206,7 +206,7 @@ export default function HotelHome() {
                                             <p>Free cancel before {new Date().toLocaleDateString()}</p>
                                             <div className="flex space-x-2">
                                                 <button className="w-fit px-2 h-8 bg-bg rounded-full shadow">Add to chart</button>
-                                                <button className="w-fit px-2 h-8 bg-bg rounded-full bg-yellow">Book now</button>
+                                                <button className="w-fit px-2 h-8 rounded-full bg-yellow">Book now</button>
                                             </div>
                                         </div>
                                     </div>
@@ -223,9 +223,9 @@ export default function HotelHome() {
                         <h1  id="review" className="text-2xl">Review</h1>
                         {Array.from({ length: 5 }, (_, i) => (
                             <span key={i} className={` text-2xl`}>
-                                    {i < Math.floor(hotel.avg_review) ? (
+                                    {i < Math.floor(Number(hotel.avg_review)) ? (
                                         <i className="fa-sharp fa-solid fa-star "style={{ color: "#DBA54D" }} ></i> // ดาวเต็ม
-                                        ) : i < hotel.avg_review ? (
+                                        ) : i < Number(hotel.avg_review) ? (
                                         <i className="fa-solid fa-star-half-alt 0" style={{ color: "#DBA54D" }}></i> // ครึ่งดาว
                                         ) : (
                                         <i className="fa-regular fa-star" style={{ color: "#DBA54D" }}  ></i> // ดาวว่าง
@@ -258,7 +258,7 @@ export default function HotelHome() {
                                                 </div> 
                                                 <p className="mr-4 ">{item.review_detail ||" At {hotel.name}, we believe your pets deserve a vacation too Our pet hotel offers a safe, comfortable, and enriching environment for your furry family members, with amenities designed specifically for both cats and dogs."}</p>
                                         </div>
-                                        <div className="flex flex-col  w-2/12 h-full justify-end h-full">
+                                        <div className="flex flex-col  w-2/12 h-full justify-end">
                                             <div className="flex ">
                                                 <div className="m-1 text-white text-sm p-2 bg-onstep rounded-lg flex justify-center w-fit h-fit ">
                                                     {review[index].cage_room.animal_type}    
