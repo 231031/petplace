@@ -24,7 +24,7 @@ function HotelRating({ avgReview }: { avgReview: number }) {
 }
 
 function Card({ hotel, startDate, endDate }: { hotel: Profile, startDate: string, endDate: string }) {
-  console.log(startDate, endDate);
+  
   const navigate = useNavigate();
   const handleHotelClick = (hotel: Profile) => {
     console.log("hotelsssssss", hotel);
