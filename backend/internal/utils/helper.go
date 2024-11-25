@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/umahmood/haversine"
 )
 
 func ConvertTypeToUint(str string) (uint, error) {
@@ -108,11 +109,39 @@ func BinaryConvertor(number int, bits int) []int {
 
 func CheckOpenDay(openDay []string, date time.Time) string {
 	weekDay := strings.ToLower(date.Weekday().String())
+
+	fmt.Println(weekDay)
+	// if weekDay == "monday" || weekDay == "tuesday" || weekDay == "friday" {
+
+	// }
 	sort.Strings(openDay)
 	index := sort.SearchStrings(openDay, weekDay)
-	if index < 0 || index >= len(openDay) {
+	if index >= len(openDay) {
 		return "close"
 	}
 
-	return "open"
+	if openDay[index] == weekDay {
+		return "open"
+	}
+	return "close"
+}
+
+func CalculateDistance(userLoc types.LocationParams, profileLa float64, profileLong float64) (float64, error) {
+	userLong, err := strconv.ParseFloat(userLoc.Longitude, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	userLa, err := strconv.ParseFloat(userLoc.Latitude, 64)
+	if err != nil {
+		return 0, err
+	}
+
+	fmt.Println("profile ", profileLa, profileLong)
+	userHa := haversine.Coord{Lat: userLa, Lon: userLong}
+	profileHa := haversine.Coord{Lat: profileLa, Lon: profileLong}
+	_, km := haversine.Distance(profileHa, userHa)
+	fmt.Println(km)
+
+	return km, nil
 }

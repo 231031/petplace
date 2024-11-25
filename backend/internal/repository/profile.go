@@ -110,7 +110,7 @@ func (r ProfileRepository) CountCompleteBookByID(profile_id uint) (int, error) {
 }
 
 // clinic & care
-func (r ProfileRepository) CreateCliniCare(profile model.Profile, reservations []model.ReservationTime) (string, error) {
+func (r ProfileRepository) CreateCliniCareProfile(profile model.Profile, reservations []model.ReservationTime) (string, error) {
 	tx := r.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -143,4 +143,14 @@ func (r ProfileRepository) CreateCliniCare(profile model.Profile, reservations [
 	}
 
 	return "successfully to start clinic & care profile", nil
+}
+
+// use in daily task
+func (r ProfileRepository) GetProfileRoleClinic() ([]model.Profile, error) {
+	profiles := []model.Profile{}
+	result := r.db.Where("role = ?", "clinic").Find(&profiles)
+	if result.Error != nil {
+		return profiles, result.Error
+	}
+	return profiles, nil
 }

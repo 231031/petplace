@@ -45,12 +45,12 @@ type ProductInfo struct {
 }
 
 type AnimalInfo struct {
-	AnimalType string `gorm:"type:varchar(191);not null" json:"animal_type" query:"animal_type" validate:"required"`
-	Age        int    `gorm:"type:int;not null" json:"age" query:"age" validate:"required"`
-	Weight     int    `gorm:"type:int;not null" json:"weight" query:"weight" validate:"required"`
-	Breed      string `gorm:"type:varchar(191);not null" json:"breed" query:"breed"`
-	Gender     string `gorm:"type:varchar(191);not null" json:"gender" query:"gender"`
-	HairType   string `gorm:"type:varchar(191);" json:"hair_type" query:"hair_type"`
+	AnimalType string  `gorm:"type:varchar(191);not null" json:"animal_type" query:"animal_type" validate:"required"`
+	Age        int     `gorm:"type:int;not null" json:"age" query:"age" validate:"required"`
+	Weight     float32 `gorm:"type:float;not null" json:"weight" query:"weight" validate:"required"`
+	Breed      string  `gorm:"type:varchar(191);not null" json:"breed" query:"breed"`
+	Gender     string  `gorm:"type:varchar(191);not null" json:"gender" query:"gender"`
+	HairType   string  `gorm:"type:varchar(191);" json:"hair_type" query:"hair_type"`
 }
 
 // detail affects estimating price of each service type
@@ -61,4 +61,14 @@ type PriceServiceInfo struct {
 	HairType   string  `gorm:"type:varchar(191);" json:"hair_type" query:"hair_type"`
 	AnimalType string  `gorm:"type:varchar(191);" json:"animal_type" query:"animal_type"`
 	Price      float32 `gorm:"type:float;not null" json:"price" query:"price" validate:"required"`
+}
+
+type ReviewInfo struct {
+	HideName     bool    `gorm:"default:true" json:"hide_name" query:"hide_name"`
+	ReviewRate   float32 `gorm:"type:float;default:0" json:"review_rate" query:"review_rate"`
+	ReviewDetail string  `gorm:"type:text;" json:"review_detail" query:"review_detail"`
+	ReviewImage  string  `gorm:"type:text;" json:"review_image" query:"review_image"`
+
+	// no in database
+	ReviewImageArray []string `gorm:"-" json:"review_image_array" query:"review_image_array"`
 }

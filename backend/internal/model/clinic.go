@@ -41,11 +41,15 @@ type AnimalBookService struct {
 	AnimalUserID       uint `gorm:"not null" json:"animal_user_id" query:"animal_user_id"`
 	CareServicePriceID uint `gorm:"not null" json:"care_service_price_id" query:"care_service_price_id"`
 
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	Status          string    `gorm:"not null;default:'pending'" json:"status" query:"status"`
 	SelectedDate    time.Time `gorm:"not null" json:"selected_date" query:"selected_date" validate:"required"`
 	AppointmentDate time.Time `gorm:"" json:"appointment_date" query:"appointment_date"`
 	DayParting      time.Time `gorm:"varchar(191);not null" json:"day_parting" query:"day_parting" validate:"required"` // morning, afternoon
 	TotalPrice      float32   `gorm:"type:float;not null" json:"total_price" query:"total_price"`
 	Detail          string    `gorm:"type:text" json:"detail" query:"detail"`
+	types.ReviewInfo
 
 	// reference key
 	AnimalBookExtras  []AnimalBookExtra  `gorm:"foreignKey:AnimalBookServiceID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animal_book_extras" query:"animal_book_extras" swaggerignore:"true"`

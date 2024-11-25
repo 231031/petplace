@@ -142,7 +142,7 @@ func (s *ProfileService) CountCompleteBookByID(profile_id uint) (int, error) {
 }
 
 // care & clinic
-func (s *ProfileService) CreateCliniCare(profile model.Profile) (int, string, error) {
+func (s *ProfileService) CreateCliniCareProfile(profile model.Profile) (int, string, error) {
 	err := s.Validate.Struct(profile)
 	if err != nil {
 		return http.StatusBadRequest, "profile detail is not correct", err
@@ -165,24 +165,36 @@ func (s *ProfileService) CreateCliniCare(profile model.Profile) (int, string, er
 	)
 
 	reservations := []model.ReservationTime{}
-	for i := range 30 {
+	for i := 0; i < 30; i++ {
 		date := currentDay.AddDate(0, 0, i+1)
 		status := utils.CheckOpenDay(profile.OpenDayArray, date)
+
+		fmt.Println(date.String())
+		fmt.Println(status)
 
 		morning := model.ReservationTime{
 			Date:              date,
 			OpenStatus:        status,
 			ReservationStatus: status,
+			DayParting:        "morning",
 		}
 		noon := morning
 		noon.DayParting = "afternoon"
 		reservations = append(reservations, morning, noon)
 	}
 
-	strErr, err := s.ProfileRepositoryIn.CreateCliniCare(profile, reservations)
+	strErr, err := s.ProfileRepositoryIn.CreateCliniCareProfile(profile, reservations)
 	if err != nil {
 		return http.StatusInternalServerError, strErr, err
 	}
 
 	return http.StatusCreated, strErr, nil
+}
+
+func (s *ProfileService) GetProfileRoleClinic() ([]model.Profile, error) {
+	profiles, err := s.ProfileRepositoryIn.GetProfileRoleClinic()
+	if err != nil {
+		return profiles, err
+	}
+	return profiles, nil
 }
