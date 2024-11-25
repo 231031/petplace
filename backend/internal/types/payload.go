@@ -86,6 +86,11 @@ type FilterInfo struct {
 	CageSize   string `json:"cage_size" query:"cage_size" param:"cage_size"`
 }
 
+type LocationParams struct {
+	Latitude  string `json:"latitude" query:"latitude" param:"latitude"`
+	Longitude string `json:"longitude" query:"longitude" param:"longitude"`
+}
+
 type ProfileDistance struct {
 	ProfileID uint64  `json:"profile_id" query:"profile_id"`
 	Distance  float64 `json:"distance" query:"distance" param:"distance"`
