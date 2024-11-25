@@ -5,18 +5,25 @@ import { FilterAnimal, FilterSearchCage } from "@/types/payload";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Profile } from "@/types/model";
 import { Cage } from "@/types/response";
-// import HotelSearch from "./TestSearch";
 
 function HotelSearch() {
+
+  const location = useLocation();
+  const hotel = location.state?.hotels || [];
+  const startDateFromState= location.state?.startDate || "";  
+  const endDateFromState= location.state?.endDate || "";      
+  console.log(hotel);
+
+
   const [hotels, setHotels] = useState<any[]>([]);
   const [longitude, setLongtitude] = useState("");
-  // const [latitude, setLatitude] = useState("");
-  const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState(startDateFromState);
+  const [endDate, setEndDate] = useState(endDateFromState);
   const [sort, setSort] = useState("");
-  const [endDate, setEndDate] = useState("");
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); 
+
 
   const petOptions = [
     "dog",
@@ -83,15 +90,13 @@ function HotelSearch() {
     }
   };
 
-  const [searchClicked, setSearchClicked] = useState(false); // New state to track if search was clicked
+  const [searchClicked, setSearchClicked] = useState(false); 
 
-  const location = useLocation();
-  const hotel = location.state?.hotels || [];
-  console.log(hotel);
+ 
   // const [isClicked, setIsClicked] = useState(false);
   const [activeButton, setActiveButton] = useState<number | null>(null);
   const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
-  console.log(hotel[0].name)
+
   return (
     <div className="">
       <div className="w-full h-1/2 p-4 bg-white flex justify-center items-center relative">
@@ -225,11 +230,10 @@ function HotelSearch() {
                         activeButton === index ? "#A08252" : "white",
                       color: activeButton === index ? "white" : "#A08252",
                     }}
-                    className={`${
-                      activeButton === index
+                    className={`${activeButton === index
                         ? "hover:bg-egg focus:ring-red-300"
                         : "hover:bg-gray-100 focus:ring-red-300"
-                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
                   </button>
@@ -329,11 +333,10 @@ function HotelSearch() {
                         activeButton === index ? "#A08252" : "white",
                       color: activeButton === index ? "white" : "#A08252",
                     }}
-                    className={`${
-                      activeButton === index
+                    className={`${activeButton === index
                         ? "hover:bg-egg focus:ring-red-300"
                         : "hover:bg-gray-100 focus:ring-red-300"
-                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
                   </button>
