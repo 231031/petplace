@@ -66,11 +66,13 @@ type HotelServiceRepositoryIn interface {
 }
 
 type CageRoomRepositoryIn interface {
-	CreateCageRoom(ser []model.CageRoom) error
-	UpdateCageRoom(ser model.CageRoom) error
+	CreateCageRoom(cage model.CageRoom) error
+	UpdateCageRoom(cage model.CageRoom) error
 	DeleteCageRoom(id uint) error
 	GetCageRoom(id uint) (model.CageRoom, error)
 	GetAllCageRoom(id uint) ([]model.CageRoom, error)
 	FilterCages(animals []types.FilterInfo, startTime, endTime time.Time) ([]model.Profile, error)
 	FilterCagesByHotel(animals []types.FilterInfo, startTime, endTime time.Time, profile_id uint, user_id uint) (model.Profile, error)
+
+	GetSpecificCageRoomType(id uint, animal_type string, cage_type string) (model.CageRoom, error)
 }

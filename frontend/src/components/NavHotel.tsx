@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Nav: React.FC = () => {
+const NavHotel: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
@@ -47,12 +47,13 @@ const Nav: React.FC = () => {
             <img src="/images/logo.png" alt="Pet Place Logo" className="w-20 h-auto p-2" />
           </div>
 
-          {/* Navigation Links */}  
+          {/* Navigation Links */}
           <div className="hidden md:flex justify-center flex-grow space-x-4">
-            <ul className="flex space-x-4 gap-x-20 text-lg">
-              <li><a href="/" className="text-white ">Home</a></li>
-              <li><a href="/hotelsearch" className="text-white">Booking</a></li>
-              <li><a href="/hotelhis" className="text-white">History</a></li>
+            <ul className="flex space-x-3 gap-x-20 text-lg">
+              <li><a href="/HotelHome" className="text-white">Home</a></li>
+              <li><a href="/HotelRating" className="text-white">Rating</a></li>
+              <li><a href="/hotel/reservation" className="text-white">Reservation</a></li>
+              
             </ul>
           </div>
 
@@ -81,8 +82,6 @@ const Nav: React.FC = () => {
                     <li><a href="/CreateProfile" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Create Profile</span></a></li>
                     <li><a href="/SelectProfile" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Profile</span></a></li>
                     <li><a href="/" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Hotel</span></a></li>
-                    <li><a href="/care" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Care & Clinic</span></a></li>
-
                     <li><button type="button" onClick={handleLogout} className="flex items-center p-2 text-base font-normal w-full text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Log out</span></button></li>
                   </ul>
                 </div>
@@ -95,4 +94,4 @@ const Nav: React.FC = () => {
   );
 };
 
-export default Nav;
+export default NavHotel;

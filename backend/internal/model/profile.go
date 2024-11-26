@@ -38,8 +38,7 @@ type Profile struct {
 	Merchandises []Merchandise `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"merchandises" query:"merchandises" swaggerignore:"true"`
 	Animals      []Animal      `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animals" query:"animals" swaggerignore:"true"`
 
-	ChatSenders   []Chat `gorm:"foreignKey:SenderID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"sender_id" query:"sender_id" swaggerignore:"true"`
-	ChatReceivers []Chat `gorm:"foreignKey:ReceiverID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"receiver_id" query:"receiver_id" swaggerignore:"true"`
+	Chats []Chat `gorm:"foreignKey:ProfileID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"chats" query:"chats" swaggerignore:"true"`
 
 	// no in database
 	Distance      float64  `gorm:"-" swaggerignore:"true"`
@@ -57,9 +56,9 @@ type ReservationTime struct {
 }
 
 type Chat struct {
-	ID         uint `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
-	SenderID   uint `gorm:"not null" json:"sender_id" query:"sender_id"`
-	ReceiverID uint `gorm:"not null" json:"receiver_id" query:"receiver_id"`
-	CreatedAt  time.Time
-	Msg        string `gorm:"type:text; not null" json:"msg" query:"msg"`
+	ID        uint `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
+	UserID    uint `gorm:"not null" json:"user_id" query:"user_id"`
+	ProfileID uint `gorm:"not null" json:"profile_id" query:"profile_id"`
+	CreatedAt time.Time
+	Msg       string `gorm:"type:text; not null" json:"msg" query:"msg"`
 }

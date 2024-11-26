@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"petplace/internal/auth"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"gorm.io/gorm"
 )
 
 type ProfileService struct {
@@ -37,14 +39,18 @@ func (s *ProfileService) CreateProfile(profile model.Profile) (int, string, erro
 		return http.StatusBadRequest, "profile detail is not correct", err
 	}
 
-	profile.Image = utils.MapStringArrayToText(profile.ImageArray)
-	profile.Facility = utils.MapStringArrayToText(profile.FacilityArray)
-	status, strErr, err := s.ProfileRepositoryIn.CreateProfile(profile)
-	if err != nil {
-		return http.StatusInternalServerError, strErr, err
-	}
+	_, err = s.ProfileRepositoryIn.GetProfileByUserID(profile.UserID, profile.Role)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		profile.Image = utils.MapStringArrayToText(profile.ImageArray)
+		profile.Facility = utils.MapStringArrayToText(profile.FacilityArray)
+		status, msg, err := s.ProfileRepositoryIn.CreateProfile(profile)
+		if err != nil {
+			return http.StatusInternalServerError, msg, err
+		}
 
-	return status, strErr, nil
+		return status, msg, nil
+	}
+	return http.StatusBadRequest, "profile already exists", nil
 }
 
 func (s *ProfileService) GetProfileByID(id uint) (model.Profile, error) {

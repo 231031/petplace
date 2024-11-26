@@ -20,19 +20,11 @@ func NewProfileRepository(db *gorm.DB) *ProfileRepository {
 }
 
 func (r ProfileRepository) CreateProfile(profile model.Profile) (int, string, error) {
-	existProfile, err := r.GetProfileByUserID(profile.UserID, profile.Role)
-	if err != nil {
-		return http.StatusInternalServerError, "failed to created profile", err
+	result := r.db.Create(&profile)
+	if result.Error != nil {
+		return http.StatusInternalServerError, "failed to created profile", result.Error
 	}
-
-	if existProfile.ID == 0 {
-		result := r.db.Create(&profile)
-		if result.Error != nil {
-			return http.StatusInternalServerError, "failed to created profile", result.Error
-		}
-		return http.StatusCreated, "profile created successfully", nil
-	}
-	return http.StatusBadRequest, "profile already exists", nil
+	return http.StatusCreated, "profile created successfully", nil
 }
 
 func (r ProfileRepository) GetProfileByID(id uint) (model.Profile, error) {
@@ -58,10 +50,6 @@ func (r ProfileRepository) GetProfileByUserID(userID uint, role string) (model.P
 	}).
 		Where("user_id = ? AND role = ?", userID, strings.ToLower(role)).
 		First(&profile)
-
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return profile, nil
-	}
 
 	if result.Error != nil {
 		return profile, result.Error
