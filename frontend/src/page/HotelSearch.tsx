@@ -18,9 +18,8 @@ function HotelSearch() {
   const [longitude, setLongtitude] = useState("");
   const [startDate, setStartDate] = useState(startDateFromState);
   const [endDate, setEndDate] = useState(endDateFromState);
-  const [sort, setSort] = useState("");
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(true);
   const navigate = useNavigate();
   const [selectedCageSizes, setSelectedCageSizes] = useState<{
     [key: string]: string;
@@ -47,58 +46,55 @@ function HotelSearch() {
 
   console.log("Currently selected pets:", selectedPets);
 
-  const handleSearch = async () => {
+  const handleSearch = async (sort: string) => {
     const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
-        animal_type: pet,
-        cage_size: selectedCageSizes[pet] || "",
+      animal_type: pet,
+      cage_size: selectedCageSizes[pet] || "",
     }));
 
     const filterSearchCage = {
-        longitude: "99.3986862",
-        latitude: "18.3170581",
-        start_time: startDate,
-        end_time: endDate
-        
-
-
-
+      longitude: "99.3986862",
+      latitude: "18.3170581",
+      start_time: startDate,
+      end_time: endDate,
+      sort: sort
     };
 
     try {
-        const results = await GetSearchCage(filterAnimal, filterSearchCage);
-        setHotels(results.data);
-        console.log("Results:", results);
-        navigate('/hotelsearch', {
-            state: {
-                hotels: results,
-                startDate: startDate,
-                endDate: endDate
-            }
-        });
+      const results = await GetSearchCage(filterAnimal, filterSearchCage);
+      setHotels(results);
+      console.log("Results:", results);
+      // navigate('/hotelsearch', {
+      //   state: {
+      //     hotels: results,
+      //     startDate: startDate,
+      //     endDate: endDate
+      //   }
+      // });
     } catch (error) {
-        console.error("Error fetching hotels:", error);
+      console.error("Error fetching hotels:", error);
     }
-};
+  };
 
   const handleCageSizeChange = (pet: string, size: string) => {
     setSelectedCageSizes((prev) => ({
-        ...prev,
-        [pet]: size,
+      ...prev,
+      [pet]: size,
     }));
-};
+  };
 
   const [searchClicked, setSearchClicked] = useState(false);
 
   // const [isClicked, setIsClicked] = useState(false);
   const [activeButton, setActiveButton] = useState<number | null>(null);
-  const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
-  const uniqueAnimalTypes = [
-    ...new Set(
-      hotel.flatMap((hotelItem) =>
-        hotelItem.cages.map((cage) => cage.animal_type)
-      )
-    ),
-  ];
+  const buttons = ["Sort By", "Distance", "Price", "review", "Hot Deal"]; // Button labels
+  // const uniqueAnimalTypes = [
+  //   ...new Set(
+  //     hotel.flatMap((hotelItem) =>
+  //       hotelItem.cages.map((cage) => cage.animal_type)
+  //     )
+  //   ),
+  // ];
   return (
     <div className="">
       <div className="w-full h-1/2 p-4 bg-white flex justify-center items-center relative">
@@ -130,7 +126,7 @@ function HotelSearch() {
 
           {/* Conditional Rendering */}
           {isEditing ? (
-            // Edit Search Section
+            // Original Search Section
             <div className="w-3/4 border top-12 h-200 bg-white p-8 rounded-lg shadow-lg flex flex-col justify-between">
               <div className="grid grid-cols-2 gap-4 mb-6">
                 {/* Location Section */}
@@ -221,6 +217,7 @@ function HotelSearch() {
                           <option value="s">Small (S)</option>
                           <option value="m">Medium (M)</option>
                           <option value="l">Large (L)</option>
+                          <option value="xl">Extra Large (XL)</option>
                         </select>
                       </div>
                     ))}
@@ -231,7 +228,7 @@ function HotelSearch() {
               <div className="flex justify-center mt-auto">
                 <button
                   onClick={() => {
-                    handleSearch();
+                    handleSearch("");
                     setIsEditing(false); // Exit edit mode on search
                   }}
                   className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200"
@@ -253,11 +250,10 @@ function HotelSearch() {
                         activeButton === index ? "#A08252" : "white",
                       color: activeButton === index ? "white" : "#A08252",
                     }}
-                    className={`${
-                      activeButton === index
-                        ? "hover:bg-egg focus:ring-red-300"
-                        : "hover:bg-gray-100 focus:ring-red-300"
-                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                    className={`${activeButton === index
+                      ? "hover:bg-egg focus:ring-red-300"
+                      : "hover:bg-gray-100 focus:ring-red-300"
+                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
                   </button>
@@ -265,13 +261,13 @@ function HotelSearch() {
               </div>
 
               <HotelData
-                hotelList={hotel}
+                hotelList={hotels}
                 startDate={startDate}
                 endDate={endDate}
               />
             </div>
           ) : (
-            // Original Search Section
+            // Edit Search Section
             <div className="w-full max-w-6xl mx-auto">
               <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 px-20">
                 <div className="grid grid-cols-3 gap-20 justify-center">
@@ -279,7 +275,7 @@ function HotelSearch() {
                     <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-4">
                       <label>Pet</label>
                       <div className="space-y-4">
-                        {uniqueAnimalTypes.map((animal) => (
+                        {selectedPets.map((animal) => (
                           <div
                             key={animal}
                             className="flex items-center space-x-4"
@@ -317,6 +313,7 @@ function HotelSearch() {
                               <option value="s">Small (S)</option>
                               <option value="m">Medium (M)</option>
                               <option value="l">Large (L)</option>
+                              <option value="xl">Extra Large (XL)</option>
                             </select>
                           </div>
                         ))}
@@ -388,11 +385,10 @@ function HotelSearch() {
                         activeButton === index ? "#A08252" : "white",
                       color: activeButton === index ? "white" : "#A08252",
                     }}
-                    className={`${
-                      activeButton === index
-                        ? "hover:bg-egg focus:ring-red-300"
-                        : "hover:bg-gray-100 focus:ring-red-300"
-                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                    className={`${activeButton === index
+                      ? "hover:bg-egg focus:ring-red-300"
+                      : "hover:bg-gray-100 focus:ring-red-300"
+                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
                   </button>
@@ -400,7 +396,7 @@ function HotelSearch() {
               </div>
 
               <HotelData
-                hotelList={hotel}
+                hotelList={hotels}
                 startDate={startDate}
                 endDate={endDate}
               />
