@@ -1,5 +1,7 @@
 import { AddAnimalsUser } from '@/helper/animal_user';
+import { UploadRes } from '@/types/response';
 import { useState } from 'react';
+import UploadImage from '@/components/UploadImage';
 
 interface Pet {
     id: number;
@@ -8,6 +10,7 @@ interface Pet {
     breed: string;
     weight: string;
     age: string;
+    image_array: string[];
 }
 
 interface PetCardProps {
@@ -25,8 +28,14 @@ function PetCard({ pets, onPetSelect, showPetForm }: PetCardProps) {
         weight: '',
         age: '',
         gender: 'Not specified',
-        hair_type: 'Not specified'
+        hair_type: 'Not specified',
+        image_array: [],
     });
+
+    const [images, setImages] = useState<UploadRes[]>([]);
+    const handleImageUpload = (uploadedFiles: UploadRes[]) => {
+        setImages(prev => [...prev, ...uploadedFiles]);
+    };
 
     const handlePetSelect = (petId: number) => {
         if (!selectedPets.includes(petId)) {
@@ -64,8 +73,8 @@ function PetCard({ pets, onPetSelect, showPetForm }: PetCardProps) {
                 weight: parseFloat(newPet.weight.replace('kg', '').trim()),
                 age: parseFloat(newPet.age.replace('y', '').trim()),
                 gender: "Not specified",
-                image_array: [],
-                hair_type: "Not specified" // optional field
+                image_array: images.map(img => img.fileUrl), 
+                hair_type: "Not specified"
             }];
 
 
@@ -78,13 +87,12 @@ function PetCard({ pets, onPetSelect, showPetForm }: PetCardProps) {
                 weight: '',
                 age: '',
                 gender: 'ไม่ระบุ',
-                hair_type: 'ไม่ระบุ'
+                hair_type: 'ไม่ระบุ',
+                image_array: []
             });
-
+            setImages([]);
 
             alert('เพิ่มสัตว์เลี้ยงสำเร็จ');
-
-
             window.location.reload();
 
         } catch (error) {
@@ -101,10 +109,32 @@ function PetCard({ pets, onPetSelect, showPetForm }: PetCardProps) {
             {showPetForm && selectedPets.length === 0 && (
                 <div className="p-3 rounded-lg shadow shadow-gray-400 flex m-5">
                     {/* Image section */}
-                    <div className="flex items-center justify-center w-52 h-52 bg-gray-200 rounded-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-10 h-10 text-gray-500">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                        </svg>
+                    <div className="flex flex-col items-center justify-center w-52 space-y-2">
+                        {/* แสดงรูปภาพที่อัพโหลด */}
+                        {images.map((image, index) => (
+                            <div key={index} className="relative w-52 h-52">
+                                <img
+                                    src={image.fileUrl}
+                                    alt="Pet preview"
+                                    className="w-full h-full object-cover rounded-lg "
+                                />
+                                <button
+                                    onClick={() => setImages(images.filter((_, i) => i !== index))}
+                                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        ))}
+                        {/* ปุ่มอัพโหลด */}
+                        {images.length === 0 && (
+                            <div className="w-52 ">
+                                <UploadImage
+                                    limit={1}
+                                    onComplete={handleImageUpload}
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* Form section */}
@@ -213,11 +243,18 @@ function PetCard({ pets, onPetSelect, showPetForm }: PetCardProps) {
 
                 return (
                     <div key={pet.id} className="p-3 rounded-lg shadow shadow-gray-400 flex m-5">
-
-                        <div className="flex items-center justify-center w-52 h-52 bg-gray-200 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-10 h-10 text-gray-500">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                            </svg>
+                        <div className="flex items-center justify-center w-52 h-52 bg-gray-200 rounded-lg overflow-hidden">
+                            {pet.image_array && pet.image_array.length > 0 ? (
+                                <img
+                                    src={pet.image_array[0]}
+                                    alt={pet.name}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-10 h-10 text-gray-500">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                                </svg>
+                            )}
                         </div>
 
 
@@ -308,7 +345,7 @@ function PetCard({ pets, onPetSelect, showPetForm }: PetCardProps) {
                     </div>
                 );
             })}
-            { selectedPets.length === 0 && !showPetForm && (
+            {selectedPets.length === 0 && !showPetForm && (
                 <div className="p-3 rounded-lg shadow shadow-gray-400 flex m-5">
                     <div className="flex items-center justify-center w-52 h-52 bg-gray-200 rounded-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-10 h-10 text-gray-500">
