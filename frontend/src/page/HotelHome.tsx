@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { CarouselDemo } from "../components/HotelHome/CarousalDemo";
-import { CarouselCage } from "../components/HotelDetailComponents/CarousolCage";
+import { CarouselCage } from "../components/HotelHome/CarousalCage";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import ExtendDetail from "@/components/HotelDetailComponents/ExtendDetail";
 
 export default function HotelHome() {
     const [hotel, setHotel] = useState({
@@ -190,9 +189,12 @@ export default function HotelHome() {
                         edit
                     </button>
                 </div>
-                <div className="flex flex-col w-full h-[35rem] gap-y-5">
+                <div className="flex flex-col w-full h-[36rem] gap-y-5 ">
                     <h1 className="text-4xl ml-1">{hotel.name}</h1>
-                    <CarouselDemo images={hotel.image_array || []} />
+                    <div className="flex justify-center">
+                        <CarouselDemo images={hotel.image_array || []} />
+                    </div>
+
                 </div>
                 {/* section2 */}
                 <div className="flex w-full h-72 mt-10">
@@ -264,14 +266,14 @@ export default function HotelHome() {
                             <button className="w-16 h-8 bg-yellow rounded-md text-xs">Hamster</button>
                         </div>
 
-                        <div className="flex bg-bg w-full h-full flex-col shadow shadow-gray-400 rounded-md pb-5" >
+                        <div className="flex bg-bg w-full h-full  flex-col shadow shadow-gray-400 rounded-md pb-5" >
                             {/* room container */}
                             {rooms && rooms.length > 0 ? (
                                 rooms.map((room, index) => (
                                     <div className=" flex flex-col">
                                         <div
                                             key={index}
-                                            className={`flex h-60 mx-5 mt-5 p-3 shadow shadow-gray-400 bg-red-500${selectedRoomIndex === index
+                                            className={`flex h-60 mx-5 mt-5 p-3 shadow shadow-gray-400 h-80 ${selectedRoomIndex === index
                                                     ? 'rounded-t-md  shadow-tl shadow-tr shadow-bl shadow-br shadow-gray-400'  // มุมโค้งเฉพาะด้านบนและเงารอบๆ ยกเว้นด้านล่าง
                                                     : 'rounded-md shadow shadow-gray-400 '  // มุมโค้งรอบๆ ทุกด้านตอนแรก
                                                 }`}
@@ -279,14 +281,14 @@ export default function HotelHome() {
                                         // onClick={() => handleRoomClick(index)}
                                         >
                                             <div
-                                                className="basis-1/3 bg-cover h-full w-72 ">
-                                                <CarouselCage images={room.image_array || []} />
+                                                className="basis-1/3 bg-cover  w-72  pt-5 pl-5">
+                                                <CarouselCage images={hotel.image_array || []} />
                                             </div>
                                             <div className="basis-1/3 flex flex-col space-y-5 pl-5 pt-4 cursor-pointer"
                                                 onClick={() => handleRoomClick(index)}
                                             >
-                                                <h1 className="text-2xl">{room.cage_type || "Room"}</h1>
-                                                <div>
+                                                <h1 className="text-2xl font-semibold">{room.cage_type || "Room"}</h1>
+                                                <div className="flex flex-col gap-y-5 text-xl ">
                                                     <div className="flex items-center gap-1">
                                                         <p className="text-center font-bold bg-yellow p-1 w-10"> {room.size} </p>
                                                         <p>Size {room.height} X {room.width} X {room.lenth} </p>
@@ -296,8 +298,8 @@ export default function HotelHome() {
                                                     <p>Facility: {room.facility || "Standard facilities"}</p>
                                                 </div>
                                             </div>
-                                            <div className="basis-1/3 space-y-5 pl-5 pt-4 flex flex-col items-end pr-5">
-                                                <h1 className="text-2xl">{room.price}$</h1>
+                                            <div className="basis-1/3 space-y-5 pl-5 pt-4 flex flex-col items-end pr-5 gap-y-5">
+                                                <h1 className="text-2xl font-semibold">{room.price}$</h1>
                                                 <p>Free cancel before {new Date().toLocaleDateString()}</p>
                                                 <div className="flex space-x-2">
                                                     <button className="w-fit px-2 h-8 bg-bg rounded-full shadow">Add to chart</button>
@@ -378,8 +380,8 @@ export default function HotelHome() {
                                                     {review[index].cage_room.cage_type}
                                                 </div>
                                             </div>
-                                            <div className="mt-2">
-                                                <CarouselCage images={review[index].cage_room.image_array || []} />
+                                            <div className="my-2 mb-10">
+                                                <CarouselCage images={hotel.image_array || []} />
                                             </div>
                                         </div>
                                     </div>

@@ -59,7 +59,7 @@ function CreateProfile() {
     };
 
     var selectedPosition = localStorage.getItem('selectedLocation');
-    var parsedLocation = JSON.parse(selectedPosition) ;
+    var parsedLocation = JSON.parse(selectedPosition) || [];
 
     console.log("parsed location", parsedLocation)
 
@@ -195,8 +195,8 @@ function CreateProfile() {
                             />
                         </div>
                     </div>
-                    <div className="flex w-full">
-                        <div className="flex flex-wrap flex-col gap-y-5 gap-x-5 pl-5 mb-5  w-1/2">
+                    <div className="flex w-full bg-red-500">
+                        <div className="flex flex-wrap flex-col gap-y-5 gap-x-5 pl-5 mb-5  w-1/2 ">
                             <div className="flex flex-col gap-y-2">
                                 <p>Email</p>
                                 <InputBox
@@ -236,14 +236,14 @@ function CreateProfile() {
                                     style={{ resize: 'none', overflowY: 'auto' }}
                                 />
                             </div>
-                            
-                                <MapView
-                                    latitude={parsedLocation[0]}
-                                    longitude={parsedLocation[1]}
-                                />
-                            
+
+                            <MapView
+                                latitude={parsedLocation[0]}
+                                longitude={parsedLocation[1]}
+                            />
+
                             <div className="h-12 w-full mb-5 rounded-lg bg-onstep hover:bg-nextstep cursor-pointer text-white flex justify-center items-center" onClick={handleClickFullMap}>
-                                    Select Position
+                                Select Position
                             </div>
                         </div>
                     </div>
