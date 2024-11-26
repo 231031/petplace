@@ -9,6 +9,9 @@ export default {
   ],
   theme: {
   	extend: {
+		fontFamily: {
+			sans: ['Poppins', 'sans-serif'], // Set Poppins as the default sans-serif font
+		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
@@ -24,6 +27,8 @@ export default {
 			nextstep: '#80591C',
 			navname: '#BCA683',
 			star: '#DBA54D',
+			button: '#CBAD87',
+			size: '#E8B564',
 			
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
