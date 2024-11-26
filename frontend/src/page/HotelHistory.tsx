@@ -89,7 +89,7 @@ function HotelHistory() {
 
       <div className="ml-20">
         <span className="text-2xl font-medium">Upcoming</span>
-        <HotelData hotelList={hotelServiceUsers}></HotelData>      </div>
+        <HotelData hotelList={hotelServiceUsers}></HotelData>   </div>
       <hr className="border-black mx-40" />
       <div className="ml-20 mt-10">
         <span className="text-2xl font-midium">Passed By</span>
