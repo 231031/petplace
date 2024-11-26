@@ -30,6 +30,16 @@ function Home() {
         lat: '',
     });
 
+    // Create sets to collect unique values
+    const uniqueAnimalTypes = new Set<string>();
+    const uniqueFacilities = new Set<string>();
+    
+    // Iterate through rooms to populate sets
+    rooms.forEach((room) => {
+        if (room.animal_type) uniqueAnimalTypes.add(room.animal_type);
+        if (room.facility) uniqueFacilities.add(room.facility);
+    });
+
     const handleCageSelect = (cage: Cage) => {
         const queryParams = new URLSearchParams({
             size: cage.size,
@@ -349,17 +359,6 @@ function Home() {
                 </div>
                 <div>
                     <h1>Hotels</h1>
-
-                    {/* <ul>
-                    {hotels.map((hotel, index) => (
-                    <li key={index}>
-                        <h2>{hotel.name}</h2>
-                        <p>Location: {hotel.longitude}</p>
-                        <p>Price: {hotel.price} THB</p>
-                    </li>
-                    ))}
-                </ul> */}
-
                 </div>
             </div>
 
@@ -393,33 +392,50 @@ function Home() {
                             />
                         </div>
                         {/* Hotel Info */}
+
+                        
                         <div>
-                            <h2 className="text-lg font-bold text-[#333] mb-2">
-                            {cage.animal_type}
+                            <h2 className="text-lg text-[#333] mb-2 flex justify-between">
+                            <span className="text-gray-600">Facilities:</span>{' '}
+                            {[...uniqueFacilities].map((facility, index) => (
+                                <p key={index} className="text-gray-600 ml-4">
+                                {facility}
+                                </p>
+                            ))}
                             </h2>
                             {/* Location */}
                             <p className="text-gray-500 mb-2">
-                            {cage.detail || 'No additional details provided'}
+                            {/* {room.detail || 'No additional details provided'} */}
                             </p>
                             {/* Facilities */}
-                            <p className="text-gray-600 text-sm">
-                            <span className="text-[#A08252]">Facilities:</span>{' '}
-                            {cage.facility || 'N/A'}
+                            <p className="text-gray-600 text-sm flex">
+                            {[...uniqueAnimalTypes].map((type, index) => (
+                                <p key={index} className="border bg-[#A08252] px-4 py-2 rounded-lg text-white ml-4">
+                                {type}
+                                </p>
+                            ))}
                             </p>
                         </div>
+                        
                         </div>
 
                         {/* Capsule Info */}
                         <div className="flex-1 mx-8 border-l pl-6">
-                            <h3 className="text-[#333] font-bold mb-2">Capsule</h3>
-                                <span className="text-xs bg-[#A08252] text-white px-3 py-1 rounded-lg">
-                                    {cage.size}
-                                </span>
-                                <p className="text-sm text-gray-600 mt-2">
-                                    Size: {cage.width} x {cage.lenth} x {cage.height} m
-                                    <br />
-                                    Accommodates: {cage.max_capacity}
-                                </p>
+                            <h3 className="text-[#333] text-xl font-bold mb-2">Capsule</h3>
+                                <div className="flex">
+                                    <p className="text-sm text-gray-600 mt-2 mx-4">
+                                        <span className="text-lg bg-[#A08252] text-white px-2 py-1 rounded-lg">
+                                            {cage.size}
+                                        </span>
+                                        <span className="text-lg text-black px-2 py-1">
+                                            Size: {cage.width} x {cage.lenth} x {cage.height} m
+                                            <br />
+                                            Accommodates: {cage.max_capacity}
+                                            <br />
+                                            Facility : {cage.facility}
+                                        </span>
+                                    </p>
+                                </div>
                         </div>
 
                         {/* Price and Button */}
@@ -429,12 +445,13 @@ function Home() {
                         </span>
                         <button
                             className="bg-[#A08252] text-white text-sm px-6 py-2 rounded-lg hover:bg-[#8a6e45] transition"
-                            onClick={() => console.log('Book Now')}
+                            onClick={() => handleCageSelect(cage)}
                         >
                             Book now
                         </button>
                         </div>
                     </div>
+                    
                     ))}
                 </div>
 
