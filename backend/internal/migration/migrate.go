@@ -62,8 +62,8 @@ func Migrate(db *gorm.DB) error {
 	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalUserVaccines")
 
 	// chat
-	// db.Migrator().CreateConstraint(&model.Profile{}, "ChatSenders")
-	// db.Migrator().CreateConstraint(&model.Profile{}, "ChatReceivers")
+	// db.Migrator().CreateConstraint(&model.User{}, "Chats")
+	// db.Migrator().CreateConstraint(&model.Profile{}, "Chats")
 
 	// supply hotel
 	// db.Migrator().CreateConstraint(&model.Profile{}, "Cages")

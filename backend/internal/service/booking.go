@@ -75,6 +75,30 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 	ser.StartTime = startDate
 	ser.EndTime = endDate
 
+	location, err := time.LoadLocation("Asia/Bangkok")
+	if err != nil {
+		return http.StatusInternalServerError, fmt.Errorf("failed to get current time in location"), err
+	}
+
+	currentTime := time.Now().In(location)
+	// currentDay := time.Date(
+	// 	currentTime.Year(),
+	// 	currentTime.Month(),
+	// 	currentTime.Day()+1,
+	// 	0, 0, 0, 0, location,
+	// )
+	nextDay := time.Date(
+		currentTime.Year(),
+		currentTime.Month(),
+		currentTime.Day()+1,
+		0, 0, 0, 0, location,
+	)
+	// fmt.Println("reserve : ", ser.StartTime.In(location))
+	// fmt.Println("next : ", nextDay)
+	if (ser.StartTime.In(location)).Before(nextDay) {
+		return http.StatusBadRequest, fmt.Errorf("failed to reserve past day and current day"), err
+	}
+
 	if (ser.EndTime).Before(ser.StartTime) {
 		return http.StatusBadRequest, fmt.Errorf("end time must be after start time"), err
 	}

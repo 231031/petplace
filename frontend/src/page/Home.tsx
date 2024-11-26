@@ -2,10 +2,11 @@ import { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
-import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { GetAllFavCageByUserID } from "@/helper/user";
 import { Cage } from "@/types/response";
 import { useLocation } from "react-router-dom";
+import L from 'leaflet';
 
 function Home() {
     const [hotels, setHotels] = useState<any[]>([]);
@@ -29,6 +30,8 @@ function Home() {
         long: '',
         lat: '',
     });
+
+    const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
 
     const handleCageSelect = (cage: Cage) => {
         const queryParams = new URLSearchParams({
@@ -74,14 +77,13 @@ function Home() {
     const LocationMarker = () => {
         useMapEvents({
             click(e) {
-                const lat = e.latlng.lat;
-                const lng = e.latlng.lng;
-                handleLocationChange(lat, lng); // Update formData with new lat/lng
+                setSearchedPosition([e.latlng.lat, e.latlng.lng]); // Store clicked position
             },
         });
-
         return (
-            <Marker position={markerPosition || [13.736717, 100.523186]} />
+            <Marker position={searchedPosition || [13.736717, 100.523186]}>
+                <Popup>Selected Location</Popup>
+            </Marker>
         );
     };
 
@@ -170,7 +172,52 @@ function Home() {
       }
     },[]);
 
+    useEffect(() => {
+        // Fetch user's current location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setPosition([latitude, longitude]);
+                    setSearchedPosition([latitude, longitude]); // Default search position
+                },
+                () => {
+                    setError('Unable to retrieve your location.');
+                    setPosition([13.736717, 100.523186]); // Default to Bangkok
+                    setSearchedPosition([13.736717, 100.523186]); // Default search position
+                }
+            );
+        } else {
+            setError('Geolocation is not supported by this browser.');
+            setPosition([13.736717, 100.523186]);
+            setSearchedPosition([13.736717, 100.523186]);
+        }
+    }, []);
 
+    const MapWithGeocoder = () => {
+        const map = useMap();
+
+        useEffect(() => {
+            const geocoder = L.Control.geocoder({
+                defaultMarkGeocode: false, // Do not mark automatically
+            }).addTo(map);
+
+            geocoder.on('markgeocode', (e) => {
+                const latlng = e.geocode.center;
+                setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
+                map.setView(latlng, 13); // Center the map on the searched location
+            });
+
+            return () => {
+                map.removeControl(geocoder);
+            };
+        }, [map]);
+
+        return null;
+    };
+
+    
+    console.log(searchedPosition)
 
     const handleSearch = async () => {
         const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
@@ -178,12 +225,13 @@ function Home() {
             cage_size: selectedCageSizes[pet] || "",
         }));
 
-        const filterSearchCage = {
-            longitude: "99.3986862",
-            latitude: "18.3170581",
+        const filterSearchCage = searchedPosition ? {
+            longitude: JSON.stringify(searchedPosition[1]),
+            latitude: JSON.stringify(searchedPosition[0]),
             start_time: startDate,
             end_time: endDate
-        };
+        } : null; // or provide a default value if needed
+        
 
         try {
             const results = await GetSearchCage(filterAnimal, filterSearchCage);
@@ -215,19 +263,19 @@ function Home() {
                     src="/images/logo.png"
                     className="absolute top-0 left-16 w-64 h-64 z-20"
                 />
-                <div className="absolute z-20 top-80 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center">
-                    <a href="/" className="text-2xl text-white">Grooming</a>
-                    <span className="text-2xl text-white px-8 ">|</span>
-                    <a href="/" className="text-2xl text-white">Delivery</a>
-                    <span className="text-2xl text-white px-8 ">|</span>
-                    <a href="/" className="text-2xl text-white">Hotel Booking</a>
-                    <span className="text-2xl text-white px-8 ">|</span>
-                    <a href="/" className="text-2xl text-white">Clinic</a>
-                    <span className="text-2xl text-white px-8 ">|</span>
-                    <a href="/" className="text-2xl text-white">Shop</a>
+                <div className="absolute z-20 top-80 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-wrap justify-center gap-4 md:gap-0">
+                    <a href="/" className="text-lg md:text-2xl text-white">Grooming</a>
+                    <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
+                    <a href="/" className="text-lg md:text-2xl text-white">Delivery</a>
+                    <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
+                    <a href="/" className="text-lg md:text-2xl text-white">Hotel Booking</a>
+                    <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
+                    <a href="/" className="text-lg md:text-2xl text-white">Clinic</a>
+                    <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
+                    <a href="/" className="text-lg md:text-2xl text-white">Shop</a>
                 </div>
-                <div className="bg-white rounded-lg absolute bottom-0 left-1/2 transform -translate-x-1/2 z-10">
-                    <div className="font-semibold text-2xl px-8 py-2" style={{ color: '#A08252' }}>
+                <div className="bg-white rounded-lg absolute -bottom-0 left-1/2 transform -translate-x-1/2 z-10">
+                    <div className="font-semibold text-xl md:text-2xl px-4 md:px-8 py-2" style={{ color: '#A08252' }}>
                         Find your service
                     </div>
                 </div>
@@ -236,25 +284,26 @@ function Home() {
             {/* Second Section */}
             <div className="w-full h-full p-4 bg-white flex justify-center items-center relative">
                 {/* Nav bar */}
-                <div className="w-1/4 rounded-lg absolute z-20 mt-4 top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-4"
+                <div className="w-full md:w-1/2 lg:w-1/4 rounded-lg absolute z-20 mt-4 top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-2 md:space-x-4"
                     style={{ backgroundColor: "#A08252" }}
                 >
-                    <a href="/" className="text-xl text-white p-2">Hotel</a>
-                    <a href="/" className="text-xl text-white p-2">Care</a>
-                    <a href="/" className="text-xl text-white p-2">Clinic</a>
-                    <a href="/" className="text-xl text-white p-2">Delivery</a>
+                    <a href="/" className="text-sm md:text-xl text-white p-2">Hotel</a>
+                    <a href="/" className="text-sm md:text-xl text-white p-2">Care</a>
+                    <a href="/" className="text-sm md:text-xl text-white p-2">Clinic</a>
+                    <a href="/" className="text-sm md:text-xl text-white p-2">Delivery</a>
                 </div>
                 {/* Search box */}
-                <div className="w-3/4 absolute z-10 top-12 h-200 bg-white p-8 rounded-lg shadow-lg">
+                <div className="w-full md:w-11/12 lg:w-3/4 absolute z-10 top-16 bg-white p-4 md:p-8 rounded-lg shadow-lg">
                     {/* Location section */}
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
-                            <label htmlFor="location" className="block text-[#A08252] text-lg font-semibold mb-4">
-                            Location
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
+                            <label htmlFor="location" className="block text-lg font-semibold mb-2">
+                                Location
                             </label>
-                            <div className="flex flex-col w-3/12 gap-y-5 pl-5">
-                                <div className="bg-bg rounded-xl flex flex-col h-32 w-64 shadow shadow-gray-400 p-2">
+                            <div className="flex flex-col w-3/12 gap-y-5 pl-5 ">
+                                <div className="bg-bg rounded-xl flex  h-44 w-[37rem] shadow shadow-gray-400 p-1  ">
                                     <div className="h-full w-full rounded-lg">
+                                        
                                         {geoError && <div>{geoError}</div>}
                                         <MapContainer
                                             center={position || [13.736717, 100.523186]}
@@ -263,6 +312,7 @@ function Home() {
                                         >
                                             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                                             <LocationMarker />
+                                            <MapWithGeocoder/>
                                         </MapContainer>
                                     </div>
                                 <div>

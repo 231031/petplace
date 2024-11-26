@@ -184,6 +184,8 @@ definitions:
         type: string
       surename:
         type: string
+      tel:
+        type: string
     required:
     - email
     - first_name
@@ -366,9 +368,7 @@ paths:
         name: CageRoom
         required: true
         schema:
-          items:
-            $ref: '#/definitions/model.CageRoom'
-          type: array
+          $ref: '#/definitions/model.CageRoom'
       produces:
       - application/json
       responses:
@@ -571,6 +571,29 @@ paths:
         "500":
           description: Internal Server Error
       summary: Get Selected Cages by Hotel
+      tags:
+      - CageRooms
+  /cageroom/type/{id}:
+    get:
+      description: Get Cage type and animal type
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get Cage type and animal type
       tags:
       - CageRooms
   /hotel/{id}:

@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { CarouselDemo } from "../components/HotelDetailComponents/CarousolDemo";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import ExtendDetail from "@/components/HotelDetailComponents/ExtendDetail";
 
 export default function HotelHome() {
     const [hotel, setHotel] = useState({
@@ -14,7 +15,8 @@ export default function HotelHome() {
         avg_review:"",
         image_array:[],
         latitude: null,
-        longitude:  null
+        longitude:  null,
+        address: "",
     }
     );
     const id = localStorage.getItem("userId");
@@ -24,6 +26,63 @@ export default function HotelHome() {
 
         
     });
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        fetch(`http://localhost:5000/api/profile/${id}/hotel`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        })
+            .then((response) => {
+                if (!response.ok) throw new Error("Failed to fetch data");
+                return response.json();
+            })
+            .then((data) => {
+                console.log("Fetched hotel data:", data.profile);
+                setHotel(data.profile) // ตรวจสอบข้อมูลที่ดึงมาจาก API
+                
+            })
+            .catch((error) => console.error("Error fetching hotel data:", error));
+    }, []);
+
+    const [distance, setDistance] = useState(null); // to store the calculated distance
+
+    // Get user's current location and calculate distance to hotel
+    useEffect(() => {
+        if (hotel.latitude && hotel.longitude) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLat = position.coords.latitude;
+                    const userLon = position.coords.longitude;
+
+                    // Haversine formula to calculate the distance
+                    const toRad = (value: number) => value * (Math.PI / 180); // Convert degrees to radians
+
+                    const lat1 = toRad(userLat);
+                    const lon1 = toRad(userLon);
+                    const lat2 = toRad(hotel.latitude);
+                    const lon2 = toRad(hotel.longitude);
+
+                    const dLat = lat2 - lat1;
+                    const dLon = lon2 - lon1;
+
+                    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                              Math.cos(lat1) * Math.cos(lat2) *
+                              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                    const R = 6371; // Earth radius in kilometers
+                    const distance = R * c; // Distance in kilometers
+                    setDistance(distance); // Store the distance
+                },
+                (error) => {
+                    console.error("Error getting location:", error);
+                }
+            );
+        }
+    }, [hotel.latitude, hotel.longitude]);
 
     // console.log(id)
 
@@ -74,28 +133,29 @@ export default function HotelHome() {
       
     console.log("cages", rooms)
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        fetch(`http://localhost:5000/api/profile/${id}/hotel`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        })
-            .then((response) => {
-                if (!response.ok) throw new Error("Failed to fetch data");
-                return response.json();
-            })
-            .then((data) => {
-                console.log("Fetched hotel data:", data.profile);
-                setHotel(data.profile) // ตรวจสอบข้อมูลที่ดึงมาจาก API
-                
-            })
-            .catch((error) => console.error("Error fetching hotel data:", error));
-    }, []);
+    
     // console.log("hotel data", hotel.facility[])
     const navigate = useNavigate();
+
+    const [expandedRoomId, setExpandedRoomId] = useState<number | null>(null);
+
+    const toggleRoomDetails = (index: number) => {
+        setExpandedRoomId((prev) => (prev === index ? null : index));
+    };
+
+    const [hiddenRooms, setHiddenRooms] = useState<Set<number>>(new Set());
+
+    const toggleRoomVisibility = (index: number) => {
+        setHiddenRooms((prevHiddenRooms) => {
+            const newHiddenRooms = new Set(prevHiddenRooms);
+            if (newHiddenRooms.has(index)) {
+                newHiddenRooms.delete(index); // ถ้าห้องถูกกดแล้วจะทำการแสดงใหม่
+            } else {
+                newHiddenRooms.add(index); // ถ้าห้องยังไม่ถูกกด จะทำการซ่อน
+            }
+            return newHiddenRooms;
+        });
+    };
 
     return (
         <div className="flex justify-center bg-bg  pb-10">
@@ -111,7 +171,7 @@ export default function HotelHome() {
                         edit
                     </button>     
                 </div>
-                <div className="flex flex-col w-full h-80 gap-y-5 ">
+                <div className="flex flex-col  h-[35rem] gap-y-5 ">
                     <h1 className="text-4xl">{hotel.name}</h1>
                     <CarouselDemo images={hotel.image_array || []} />
                 </div>
@@ -149,8 +209,9 @@ export default function HotelHome() {
                             ) : (
                                 <p className="text-center mt-10">Location data not available.</p>
                             )}
-                            <div>
-                                distance
+                            <div className="pt-1">
+                                    <p>{hotel.address}</p>
+                                    <p> Distance: {distance ? distance.toFixed(2) : "Loading..."} Km</p> 
                             </div>
                         </div>
                     </div>
@@ -183,32 +244,49 @@ export default function HotelHome() {
                             <button className="w-16 h-8 bg-yellow rounded-md text-xs">Rabbit</button>
                             <button className="w-16 h-8 bg-yellow rounded-md text-xs">Hamster</button>
                         </div>
-                        <div className="flex bg-bg w-full h-full flex-col shadow shadow-gray-400 rounded-md">
+                        
+                        <div className="flex bg-bg w-full h-full flex-col shadow shadow-gray-400 rounded-md" >
                             {/* room container */}
                             {rooms && rooms.length > 0 ? (
                                 rooms.map((room, index) => (
-                                    <div key={index} className="flex h-60 m-5 p-3 rounded-md shadow shadow-gray-400">
-                                        <div
-                                            className="basis-1/3 bg-cover h-full w-72"
-                                            style={{ backgroundImage: `url(${room.image || "/images/default-room.png"})` }}
-                                        ></div>
-                                        <div className="basis-1/3 flex flex-col space-y-5 pl-5 pt-4">
-                                            <h1 className="text-2xl">{room.cage_type || "Room"}</h1>
-                                            <div>
-                                                <p>Size: {room.size || "N/A"} {room.length && room.width && room.height ? `${room.length} x ${room.width} x ${room.height}` : ""}</p>
-                                                <p>Capacity: {room.quantity || "N/A"}</p>
-                                                <p>Facility: {room.facility || "Standard facilities"}</p>
+                                    <div className=" flex flex-col">
+                                        <div    
+                                            key={index} 
+                                            className="flex h-60 m-5 p-3 rounded-md shadow shadow-gray-400 "  
+                                            onClick={() => toggleRoomDetails(index)}
+                                        >
+                                            <div
+                                                className="basis-1/3 bg-cover h-full w-72 "
+                                                
+                                                style={{ backgroundImage: `url(${room.image || "public/images/homebg.jpg"})` }}
+                                            ></div>
+                                            <div className="basis-1/3 flex flex-col space-y-5 pl-5 pt-4">
+                                                <h1 className="text-2xl">{room.cage_type || "Room"}</h1>
+                                                <div>
+                                                    <p>Size: {room.size || "N/A"} {room.length && room.width && room.height ? `${room.length} x ${room.width} x ${room.height}` : ""}</p>
+                                                    <p>Capacity: {room.quantity || "N/A"}</p>
+                                                    <p>Facility: {room.facility || "Standard facilities"}</p>
+                                                </div>
                                             </div>
-                                            <a>More detail</a>
-                                        </div>
-                                        <div className="basis-1/3 space-y-5 pl-5 pt-4 flex flex-col items-end pr-5">
-                                            <h1 className="text-2xl">{room.price}$</h1>
-                                            <p>Free cancel before {new Date().toLocaleDateString()}</p>
-                                            <div className="flex space-x-2">
-                                                <button className="w-fit px-2 h-8 bg-bg rounded-full shadow">Add to chart</button>
-                                                <button className="w-fit px-2 h-8 rounded-full bg-yellow">Book now</button>
+                                            <div className="basis-1/3 space-y-5 pl-5 pt-4 flex flex-col items-end pr-5">
+                                                <h1 className="text-2xl">{room.price}$</h1>
+                                                <p>Free cancel before {new Date().toLocaleDateString()}</p>
+                                                <div className="flex space-x-2">
+                                                    <button className="w-fit px-2 h-8 bg-bg rounded-full shadow">Add to chart</button>
+                                                    <button className="w-fit px-2 h-8 rounded-full bg-yellow">Book now</button>
+                                                </div>
                                             </div>
+                                            
                                         </div>
+                                        {/* {expandedRoomId === index && (
+                                            <div  className=" bg-orange-500 flex h-60 w-full ">
+                                                <div className="flex w-full mx-5 bg-red-500 ">
+                                                    <div className="basis-1/3 w-72"></div>
+                                                    <p className="flex w-full "> dsfkljadslk;fjkdajgkdjsaklfjdsalkfjldas;jf</p>
+                                                </div>
+                                            
+                                        </div>
+                                    )} */}
                                     </div>
                                 ))
                             ) : (
@@ -239,6 +317,7 @@ export default function HotelHome() {
                                 <div 
                                     key={index} 
                                     className="flex flex-col h-auto m-5 p-3 bg-bg rounded-md shadow shadow-gray-400 gap-y-5 "
+                                    
                                 >
                                     <div className="flex">
                                         <div className="flex  gap-x-2 gap-y-4 flex-col w-10/12 ">
@@ -272,6 +351,7 @@ export default function HotelHome() {
                                             </div>
                                         </div>   
                                     </div>
+                                    
                                 </div>
                             ))
                         ) : (

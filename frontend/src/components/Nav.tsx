@@ -47,15 +47,12 @@ const Nav: React.FC = () => {
             <img src="/images/logo.png" alt="Pet Place Logo" className="w-20 h-auto p-2" />
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation Links */}  
           <div className="hidden md:flex justify-center flex-grow space-x-4">
-            <ul className="flex space-x-4">
-              <li><a href="/" className="text-white">Home</a></li>
-              <li><a href="/hotelhome" className="text-white">Hotel</a></li>
-              <li><a href="/care" className="text-white">Care</a></li>
-              <li><a href="/delivery" className="text-white">Delivery</a></li>
-              <li><a href="/shop" className="text-white">Shop</a></li>
-              <li><a href="/social" className="text-white">Social</a></li>
+            <ul className="flex space-x-4 gap-x-20 text-lg">
+              <li><a href="/" className="text-white ">Home</a></li>
+              <li><a href="/hotelsearch" className="text-white">Booking</a></li>
+              <li><a href="/hotelhis" className="text-white">History</a></li>
             </ul>
           </div>
 
