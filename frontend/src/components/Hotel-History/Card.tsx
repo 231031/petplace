@@ -24,23 +24,7 @@ function Card({ hotel }: { hotel: Hotel }) {
   return (
     <div>
       {isCanceled
-        ? // <div className="p-4 border border-gray-300 rounded-lg shadow-md">
-          //   <h2 className="text-center text-xl font-semibold text-red-600">
-          //     Booking Canceled
-          //   </h2>
-          //   <p className="text-center text-gray-500">
-          //     You have successfully canceled your booking.
-          //   </p>
-          //   <div className="flex justify-center mt-4">
-          // <button
-          //   onClick={handleBackClick}
-          //   className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600"
-          // >
-          //   Back
-          // </button>
-          //   </div>
-          // </div>
-          (hotel.status === "pending" || hotel.status === "accepted") && (
+        ? (hotel.status === "pending" || hotel.status === "accepted") && (
             <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
               <div className="grid grid-cols-10 gap-4 mb-10 mt-10 ">
                 <div className="col-span-2">
@@ -111,28 +95,92 @@ function Card({ hotel }: { hotel: Hotel }) {
                   <h2 className="ml-auto text-right px-4 font-bold text-2xl ">
                     {hotel.price} ฿
                   </h2>
-                  {hotel.status === "pending" && (
-                    <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
-                      <button
-                        onClick={handleBackClick}
-                        className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600"
-                      >
-                        Back
-                      </button>
-                    </div>
-                  )}
                 </div>
                 {/* <div className="flex flex-row gap-4 ml-5 mt-5 w-full bg-red-600">
                   da
                 </div> */}
               </div>
-              <div className="grid grid-cols-10 bg-slate-500">
-                <div className="col-span-2 bg-red-600"></div>
-                <div className="col-span-8 bg-blue-600">
-                  <h1 className="text-medium text-lg">Cancelation</h1>
-                  
+              {/* {hotel.status === "accepted" && ( */}
+              {hotel.status === "pending" && (
+                <div className="grid grid-cols-10 ">
+                  <div className="col-span-2"></div>
+                  <div className="col-span-8 ml-5 border-t border-gray-500 pt-2">
+                    <h1 className="text-medium text-lg">Cancelation</h1>
+                    <h1 className="text-medium text-lg">
+                      Refund status: Acceptable
+                    </h1>
+                    <h1 className="text-medium text-lg flex items-center justify-between ">
+                      <div className="flex items-center">
+                        <span>Paypal email:</span>
+                        <input
+                          type="email"
+                          className="ml-2 px-3 py-1 border rounded focus:outline-none focus:ring focus:border-blue-300"
+                          placeholder="Enter PayPal email"
+                        />
+                      </div>
+                      <div className="space-x-2">
+                        {hotel.status === "pending" && (
+                          <button
+                            onClick={handleBackClick}
+                            className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                        {hotel.status === "pending" && (
+                          <button
+                            // onClick={handleBackClick}
+                            className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
+                          >
+                            Confirm
+                          </button>
+                        )}
+                      </div>
+                    </h1>
+                  </div>
                 </div>
-              </div>
+              )}
+              {hotel.status === "accept" && (
+                <div className="grid grid-cols-10 ">
+                  <div className="col-span-2"></div>
+                  <div className="col-span-8 ml-5 border-t border-gray-500 pt-2">
+                    <h1 className="text-medium text-lg">Cancelation</h1>
+                    <h1 className="text-medium text-lg">
+                      Refund status: Rejected
+                    </h1>
+                    {/* <h1 className="text-medium text-lg flex items-center justify-between "> */}
+                    <h1 className="text-medium text-lg flex">
+                      <div className="flex items-center ">
+                        <label>
+                          Lorem ipsum dolor sit amet consectetur, adipisicing
+                          elit. Pariatur aliquid hic doloremque aut nam fuga
+                          magni ducimus consectetur cum fugiat, fugit, eaque
+                          vero nulla consequuntur voluptate dolorem blanditiis
+                          provident non?
+                        </label>
+                      </div>
+                      <div className="space-x-2 ml-auto mr-0 flex">
+                        {hotel.status === "pending" && (
+                          <button
+                            onClick={handleBackClick}
+                            className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-1/2 w-1/2"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                        {hotel.status === "pending" && (
+                          <button
+                            // onClick={handleBackClick}
+                            className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-1/2 w-1/2"
+                          >
+                            Confirm
+                          </button>
+                        )}
+                      </div>
+                    </h1>
+                  </div>
+                </div>
+              )}
             </div>
           )
         : (hotel.status === "pending" || hotel.status === "accepted") && (
@@ -207,7 +255,7 @@ function Card({ hotel }: { hotel: Hotel }) {
                   <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
                     <button
                       onClick={handleCancelClick}
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600"
+                      className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg"
                     >
                       Cancel
                     </button>
