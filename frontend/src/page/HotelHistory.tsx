@@ -18,7 +18,7 @@ function HotelHistory() {
   const [error, setError] = useState(null);
   // Fetch data using async function within useEffect
   useEffect(() => {
-    const fetchHotelServiceUsers = async (userId) => {
+    const fetchHotelServiceUsers = async (userId: string) => {
       try {
         if (!userId || !token) {
           throw new Error("Missing userId or token.");
