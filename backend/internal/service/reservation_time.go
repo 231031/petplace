@@ -46,13 +46,16 @@ func (s *ReservationTimeService) UpdateDailyNewDate(previousDay, newDay time.Tim
 	reservations := []model.ReservationTime{}
 	for i := range profiles {
 		status := utils.CheckOpenDay(profiles[i].OpenDayArray, newDay)
-		new := model.ReservationTime{
+		newMorning := model.ReservationTime{
 			ProfileID:         profiles[i].ID,
 			ReservationStatus: status,
 			OpenStatus:        status,
 			Date:              newDay,
+			DayParting:        "morning",
 		}
-		reservations = append(reservations, new)
+		newNoon := newMorning
+		newNoon.DayParting = "afternoon"
+		reservations = append(reservations, newMorning, newNoon)
 	}
 
 	err = s.ReservationTimeRepositoryIn.UpdateDailyNewDate(previousDay, reservations)

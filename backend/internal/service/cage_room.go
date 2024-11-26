@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+	"net/http"
 	"petplace/internal/model"
 	"petplace/internal/repository"
 	"petplace/internal/types"
@@ -12,6 +14,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/umahmood/haversine"
+	"gorm.io/gorm"
 )
 
 // implement bussiness logic
@@ -33,20 +36,22 @@ func NewCageRoomService(
 	}
 }
 
-func (s *CageRoomService) CreateCageRoom(cages []model.CageRoom) error {
-	if len(cages) > 0 {
-		for i := range cages {
-			cages[i].Size = utils.MapCageSize(cages[i].MaxCapacity)
-			cages[i].Image = utils.MapStringArrayToText(cages[i].ImageArray)
-			cages[i].Facility = utils.MapStringArrayToText(cages[i].FacilityArray)
+func (s *CageRoomService) CreateCageRoom(cage model.CageRoom) (int, string, error) {
+
+	_, err := s.CageRoomRepositoryIn.GetSpecificCageRoomType(cage.ProfileID, cage.AnimalType, cage.CageType)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		cage.Size = utils.MapCageSize(cage.MaxCapacity)
+		cage.Image = utils.MapStringArrayToText(cage.ImageArray)
+		cage.Facility = utils.MapStringArrayToText(cage.FacilityArray)
+
+		err = s.CageRoomRepositoryIn.CreateCageRoom(cage)
+		if err != nil {
+			return http.StatusInternalServerError, "falied to create cage", err
 		}
+		return http.StatusCreated, "successfully added cage", nil
 	}
 
-	err := s.CageRoomRepositoryIn.CreateCageRoom(cages)
-	if err != nil {
-		return err
-	}
-	return nil
+	return http.StatusBadRequest, "this type of cage already exists", nil
 }
 
 func (s *CageRoomService) GetAllCageRoom(profile_id uint) ([]model.CageRoom, error) {
@@ -74,6 +79,34 @@ func (s *CageRoomService) GetCageRoom(id uint) (model.CageRoom, error) {
 	cage.ImageArray = utils.MapTextToStringArray(cage.Image)
 	cage.FacilityArray = utils.MapTextToStringArray(cage.Facility)
 	return cage, nil
+}
+
+func (s *CageRoomService) GetAllAnimalCageType(id uint) ([]types.CageAnimalType, error) {
+	var animalCageTypes []types.CageAnimalType
+	cages, err := s.GetAllCageRoom(id)
+	if err != nil {
+		return animalCageTypes, err
+	}
+
+	animalCageTypesMap := make(map[string]*types.CageAnimalType)
+	for _, c := range cages {
+		if _, exists := animalCageTypesMap[c.AnimalType]; !exists {
+			animalCageTypesMap[c.AnimalType] = &types.CageAnimalType{
+				AnimalType: c.AnimalType,
+				Cage:       []types.CageSpecific{},
+			}
+		}
+		animalCageTypesMap[c.AnimalType].Cage = append(animalCageTypesMap[c.AnimalType].Cage, types.CageSpecific{
+			CageID:   c.ID,
+			CageType: c.CageType,
+		})
+
+	}
+	for _, value := range animalCageTypesMap {
+		animalCageTypes = append(animalCageTypes, *value)
+	}
+	return animalCageTypes, nil
+
 }
 
 func (s *CageRoomService) UpdateCageRoom(id uint, cage model.CageRoom) error {

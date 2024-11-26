@@ -110,3 +110,13 @@ type UpdateHotelPayload struct {
 	Services string  `json:"services" validate:"omitempty"`
 	Rating   float32 `json:"rating" validate:"omitempty,gte=0,lte=5"`
 }
+
+type CageAnimalType struct {
+	AnimalType string         `json:"animal_type"`
+	Cage       []CageSpecific `json:"cage"`
+}
+
+type CageSpecific struct {
+	CageID   uint   `json:"cage_id"`
+	CageType string `json:"cage_type"`
+}
