@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import HotelData from "../components/Hotel-Search/HotelData";
 import { GetSearchCage, GetSearchCageByHotel } from "@/helper/cage";
 import { FilterAnimal, FilterSearchCage } from "@/types/payload";
@@ -12,7 +12,7 @@ function HotelSearch() {
   const startDateFromState = location.state?.startDate || "";
   const endDateFromState = location.state?.endDate || "";
   // console.log("test ",hotel[0].cages.animal_type);
-  console.log("test ", hotel[0].cages[0].size);
+  // console.log("test ", hotel[0].cages[0].size);
 
   const [hotels, setHotels] = useState<any[]>([]);
   const [longitude, setLongtitude] = useState("");
@@ -20,13 +20,14 @@ function HotelSearch() {
   const [endDate, setEndDate] = useState(endDateFromState);
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(true);
+  const [currentSort, setSort] = useState("");
   const navigate = useNavigate();
   const [selectedCageSizes, setSelectedCageSizes] = useState<{
     [key: string]: string;
   }>({});
 
   const petOptions = [
-    "dog",
+    "Dog",
     "Cat",
     "Fish",
     "Bird",
@@ -52,12 +53,18 @@ function HotelSearch() {
       cage_size: selectedCageSizes[pet] || "",
     }));
 
+    let finalSort = currentSort;
+    if (sort !== "") {
+      setSort(sort);
+      finalSort = sort;
+    }
+
     const filterSearchCage = {
       longitude: "99.3986862",
       latitude: "18.3170581",
       start_time: startDate,
       end_time: endDate,
-      sort: sort
+      sort: finalSort || "",
     };
 
     try {
@@ -82,6 +89,21 @@ function HotelSearch() {
       [pet]: size,
     }));
   };
+
+
+
+  useEffect(() => {
+    if (location.state) {
+      setIsEditing(false);
+      setHotels(location.state.hotels || []);
+      setStartDate(location.state.startDate || "");
+      setEndDate(location.state.endDate || "");
+      setSelectedPets(location.state.selectedPets || []);
+      setSelectedCageSizes(location.state.selectedCageSizes || []);
+      console.log(location.state.selectedPets)
+      console.log(location.state.selectedCageSizes)
+    }
+  }, []);
 
   const [searchClicked, setSearchClicked] = useState(false);
 
@@ -194,7 +216,7 @@ function HotelSearch() {
                           <input
                             type="checkbox"
                             value={pet}
-                            checked={selectedPets.includes(pet)}
+                            checked={selectedPets?.includes(pet)}
                             onChange={() => handlePetChange(pet)}
                             className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
                           />
@@ -275,7 +297,7 @@ function HotelSearch() {
                     <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-4">
                       <label>Pet</label>
                       <div className="space-y-4">
-                        {selectedPets.map((animal) => (
+                        {selectedPets?.map((animal) => (
                           <div
                             key={animal}
                             className="flex items-center space-x-4"
