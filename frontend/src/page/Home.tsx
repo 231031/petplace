@@ -16,7 +16,9 @@ function Home() {
     const petOptions = ["Dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
     const [selectedCageSizes, setSelectedCageSizes] = useState<{ [key: string]: string }>({});
     const [rooms, setRooms] = useState<any[]>([]);
+    const [favRooms, setFavRooms] = useState<any[]>([]);
     const location = useLocation();
+    const [cageDetails, setCageDetails] = useState<any[]>([]);
 
     const [error, setError] = useState(''); // Form error
     const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
@@ -104,6 +106,19 @@ function Home() {
     useEffect(() => {
         const token = localStorage.getItem("token");
         const id = localStorage.getItem("userId");
+        const fetchCageRooms = async () => {
+            try {
+              const id = localStorage.getItem("userId");
+              const data = await GetAllFavCageByUserID(parseInt(id as string));
+            //   console.log("FAV cage:", data);
+              setFavRooms(data || []);
+              console.log("FAV cage room:", favRooms);
+            } catch (error) {
+              console.error("Error fetching cage room data:", error);
+            }
+          };
+        fetchCageRooms();
+
         fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
           method: "GET",
           headers: {
@@ -116,28 +131,44 @@ function Home() {
             return response.json();
           })
           .then((data) => {
-            console.log("Fetched cage room data:", data);
-            setRooms(data|| []); 
+            setRooms(data|| []);
           })
           .catch((error) => console.error("Error fetching cage room data:", error));
       }, []);
       
-      console.log("cages", rooms)
-
-    useEffect(() => {
-        const fetchCageRooms = async () => {
-          try {
-            const id = localStorage.getItem("userId");
-            const data = await GetAllFavCageByUserID(parseInt(id as string));
-            console.log("FAV cage:", data);
-            setRooms(data || []);
-          } catch (error) {
-            console.error("Error fetching cage room data:", error);
-          }
+      useEffect(() => {
+        const fetchCageDetails = async (cageId: number, token: string) => {
+            try {
+              const response = await fetch(`http://localhost:5000/api/cageroom/${cageId}`, {
+                method: "GET",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  Accept: "application/json",
+                },
+              });
+              if (!response.ok) throw new Error("Failed to fetch cage details");
+              return await response.json();
+            } catch (error) {
+              console.error("Error fetching cage details:", error);
+            }
+          };
+      if (favRooms.length > 0) {
+        const token = localStorage.getItem("token");
+        // Fetch details for each cage in the favorite rooms list
+        const fetchAllCageDetails = async () => {
+          const details = await Promise.all(
+            favRooms.map(async (room) => {
+              const data = await fetchCageDetails(room.cage_id, token as string);
+              return data;
+            })
+          );
+          setCageDetails(details);
+          console.log("Cage details:", cageDetails);
+          console.log("Cage room test:", cageDetails.map(cage => cage.animal_type));
         };
-    
-        fetchCageRooms();
-      }, []);
+        fetchAllCageDetails();
+      }
+    },[]);
 
 
 
@@ -334,9 +365,9 @@ function Home() {
 
 
             {/* Third Section */}
-            <div className="w-full h-3/4 p-4 bg-yellow shadow  flex justify-center items-center relative">
-                <div className="w-1/4 bg-white rounded-lg absolute z-20 mt-4 top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-4"
-                >
+            <div className="w-full h-3/4 p-4 bg-yellow shadow flex justify-center items-center relative overflow-hidden">
+                {/* Top Navigation */}
+                <div className="w-1/4 bg-white rounded-lg absolute z-20 top-8 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-4">
                     <a href="/" className="text-xl text-yellow p-2">Hotel</a>
                     <a href="/" className="text-xl text-yellow p-2">Care</a>
                     <a href="/" className="text-xl text-yellow p-2">Clinic</a>
@@ -344,79 +375,69 @@ function Home() {
                 </div>
 
                 {/* Hotel List */}
-                <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 mt-4">
+                <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-1/2 px-4">
                     {/* Single Hotel Card */}
-                    {[1, 2].map((_, index) => (
-                        <div
-                            key={index}
-                            className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
-                        >
-                            {/* Hotel Image and Info */}
-                            <div className="flex space-x-6">
-                                {/* Image */}
-                                <div className="w-40 h-40 rounded-lg overflow-hidden">
-                                    <img
-                                        src="https://via.placeholder.com/150"
-                                        alt="Hotel"
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                                {/* Hotel Info */}
-                                <div>
-                                    <h2 className="text-lg font-bold text-[#333] mb-2">Hotel Name</h2>
-                                    {/* Rating */}
-                                    <div className="flex items-center mb-2">
-                                        {/* <HotelRating avgReview={hotel.avg_review} /> */}
-                                    </div>
-                                    {/* Location */}
-                                    <p className="text-gray-500 mb-2">Distinct, Province · 0.5 km</p>
-                                    {/* Facilities */}
-                                    <p className="text-gray-600 text-sm">
-                                        Facility: Air, Bed, Open toilet
-                                    </p>
-                                    {/* Supported Pets */}
-                                    <div className="flex space-x-2 mt-4">
-                                        {["Cat", "Rabbit", "Hamster"].map((pet) => (
-                                            <span
-                                                key={pet}
-                                                className="text-xs bg-[#A08252] text-white px-3 py-1 rounded-lg"
-                                            >
-                                                {pet}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
+                    {cageDetails.map((cage, index) => (
+                    <div
+                        key={index}
+                        className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
+                    >
+                        {/* Hotel Image and Info */}
+                        <div className="flex space-x-6">
+                        {/* Image */}
+                        <div className="w-40 h-40 rounded-lg overflow-hidden">
+                            <img
+                            src={cage.image || '/placeholder-image.png'} // Placeholder for missing images
+                            alt="Cage Room"
+                            className="w-full h-full object-cover"
+                            />
+                        </div>
+                        {/* Hotel Info */}
+                        <div>
+                            <h2 className="text-lg font-bold text-[#333] mb-2">
+                            {cage.animal_type}
+                            </h2>
+                            {/* Location */}
+                            <p className="text-gray-500 mb-2">
+                            {cage.detail || 'No additional details provided'}
+                            </p>
+                            {/* Facilities */}
+                            <p className="text-gray-600 text-sm">
+                            <span className="text-[#A08252]">Facilities:</span>{' '}
+                            {cage.facility || 'N/A'}
+                            </p>
+                        </div>
+                        </div>
 
-                            {/* Capsule Info */}
-                            <div className="flex-1 mx-8 border-l pl-6">
-                                <h3 className="text-[#333] font-bold mb-2">Capsule</h3>
+                        {/* Capsule Info */}
+                        <div className="flex-1 mx-8 border-l pl-6">
+                            <h3 className="text-[#333] font-bold mb-2">Capsule</h3>
                                 <span className="text-xs bg-[#A08252] text-white px-3 py-1 rounded-lg">
-                                    S
+                                    {cage.size}
                                 </span>
                                 <p className="text-sm text-gray-600 mt-2">
-                                    Size 1.2 x 1.2 x 1.1 m
+                                    Size: {cage.width} x {cage.lenth} x {cage.height} m
                                     <br />
-                                    Accommodates: 1
+                                    Accommodates: {cage.max_capacity}
                                 </p>
-                                <p className="text-sm text-gray-600 mt-2">
-                                    Facility: Air, Bed, Open toilet
-                                </p>
-                                <a href="/" className="text-[#A08252] text-sm underline mt-2 block">
-                                    More detail
-                                </a>
-                            </div>
-
-                            {/* Price and Button */}
-                            <div className="flex flex-col items-end space-y-4">
-                                <span className="text-lg font-bold text-[#333]">350 ฿</span>
-                                {/* <button className="bg-[#A08252] text-white text-sm px-6 py-2 rounded-lg hover:bg-[#8a6e45] transition" onClick={() => handleCageSelect(Cage)}>
-                                    Book now
-                                </button> */}
-                            </div>
                         </div>
+
+                        {/* Price and Button */}
+                        <div className="flex flex-col items-end space-y-4">
+                        <span className="text-lg font-bold text-[#333]">
+                            {cage.price} ฿
+                        </span>
+                        <button
+                            className="bg-[#A08252] text-white text-sm px-6 py-2 rounded-lg hover:bg-[#8a6e45] transition"
+                            onClick={() => console.log('Book Now')}
+                        >
+                            Book now
+                        </button>
+                        </div>
+                    </div>
                     ))}
                 </div>
+
             </div>
 
         </div>
