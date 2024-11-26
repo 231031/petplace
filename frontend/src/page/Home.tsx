@@ -2,10 +2,11 @@ import { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
-import { MapContainer, Marker, Popup, TileLayer, useMapEvents } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { GetAllFavCageByUserID } from "@/helper/user";
 import { Cage } from "@/types/response";
 import { useLocation } from "react-router-dom";
+import L from 'leaflet';
 
 function Home() {
     const [hotels, setHotels] = useState<any[]>([]);
@@ -29,6 +30,8 @@ function Home() {
         long: '',
         lat: '',
     });
+
+    const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
 
     const handleCageSelect = (cage: Cage) => {
         const queryParams = new URLSearchParams({
@@ -74,14 +77,13 @@ function Home() {
     const LocationMarker = () => {
         useMapEvents({
             click(e) {
-                const lat = e.latlng.lat;
-                const lng = e.latlng.lng;
-                handleLocationChange(lat, lng); // Update formData with new lat/lng
+                setSearchedPosition([e.latlng.lat, e.latlng.lng]); // Store clicked position
             },
         });
-
         return (
-            <Marker position={markerPosition || [13.736717, 100.523186]} />
+            <Marker position={searchedPosition || [13.736717, 100.523186]}>
+                <Popup>Selected Location</Popup>
+            </Marker>
         );
     };
 
@@ -170,7 +172,52 @@ function Home() {
       }
     },[]);
 
+    useEffect(() => {
+        // Fetch user's current location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setPosition([latitude, longitude]);
+                    setSearchedPosition([latitude, longitude]); // Default search position
+                },
+                () => {
+                    setError('Unable to retrieve your location.');
+                    setPosition([13.736717, 100.523186]); // Default to Bangkok
+                    setSearchedPosition([13.736717, 100.523186]); // Default search position
+                }
+            );
+        } else {
+            setError('Geolocation is not supported by this browser.');
+            setPosition([13.736717, 100.523186]);
+            setSearchedPosition([13.736717, 100.523186]);
+        }
+    }, []);
 
+    const MapWithGeocoder = () => {
+        const map = useMap();
+
+        useEffect(() => {
+            const geocoder = L.Control.geocoder({
+                defaultMarkGeocode: false, // Do not mark automatically
+            }).addTo(map);
+
+            geocoder.on('markgeocode', (e) => {
+                const latlng = e.geocode.center;
+                setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
+                map.setView(latlng, 13); // Center the map on the searched location
+            });
+
+            return () => {
+                map.removeControl(geocoder);
+            };
+        }, [map]);
+
+        return null;
+    };
+
+    
+    console.log(searchedPosition)
 
     const handleSearch = async () => {
         const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
@@ -178,12 +225,13 @@ function Home() {
             cage_size: selectedCageSizes[pet] || "",
         }));
 
-        const filterSearchCage = {
-            longitude: "99.3986862",
-            latitude: "18.3170581",
+        const filterSearchCage = searchedPosition ? {
+            longitude: JSON.stringify(searchedPosition[1]),
+            latitude: JSON.stringify(searchedPosition[0]),
             start_time: startDate,
             end_time: endDate
-        };
+        } : null; // or provide a default value if needed
+        
 
         try {
             const results = await GetSearchCage(filterAnimal, filterSearchCage);
@@ -245,16 +293,17 @@ function Home() {
                     <a href="/" className="text-xl text-white p-2">Delivery</a>
                 </div>
                 {/* Search box */}
-                <div className="w-3/4 absolute z-10 top-12 h-200 bg-white p-8 rounded-lg shadow-lg">
+                <div className="w-3/4 absolute top-12 h-200 bg-white p-8 rounded-lg shadow-lg">
                     {/* Location section */}
                     <div className="grid grid-cols-2 gap-4 mb-6">
                         <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
                             <label htmlFor="location" className="block text-[#A08252] text-lg font-semibold mb-4">
                             Location
                             </label>
-                            <div className="flex flex-col w-3/12 gap-y-5 pl-5">
-                                <div className="bg-bg rounded-xl flex flex-col h-32 w-64 shadow shadow-gray-400 p-2">
+                            <div className="flex flex-col w-3/12 gap-y-5 pl-5 ">
+                                <div className="bg-bg rounded-xl flex  h-44 w-[37rem] shadow shadow-gray-400 p-1  ">
                                     <div className="h-full w-full rounded-lg">
+                                        
                                         {geoError && <div>{geoError}</div>}
                                         <MapContainer
                                             center={position || [13.736717, 100.523186]}
@@ -263,6 +312,7 @@ function Home() {
                                         >
                                             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                                             <LocationMarker />
+                                            <MapWithGeocoder/>
                                         </MapContainer>
                                     </div>
                                 <div>
