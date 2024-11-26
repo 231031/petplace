@@ -1,13 +1,13 @@
 // import { Card } from "flowbite-react";
 
-import Card from "./CardPass"
+import CardPass from "./CardPass"
 
 
 const HotelList = ({hotelList}:any) => {
     return(
         <div>
-            {hotelList.map((hotel) => (
-                <Card hotel={hotel}/>
+            {hotelList.map((hotel:any) => (
+                <CardPass hotel={hotel}/>
                 // <div>{hotel.hotel_name}</div>
             ))}  
         </div>
