@@ -120,16 +120,6 @@ func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.Fi
 		return profiles, err
 	}
 
-	long, err := strconv.ParseFloat(filter.Longitude, 64)
-	if err != nil {
-		return profiles, err
-	}
-
-	la, err := strconv.ParseFloat(filter.Latitude, 64)
-	if err != nil {
-		return profiles, err
-	}
-
 	startDate, err := time.Parse("2006-01-02", filter.StartTime)
 	if err != nil {
 		return profiles, err
@@ -140,7 +130,7 @@ func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.Fi
 		return profiles, err
 	}
 
-	userLoc := haversine.Coord{Lat: la, Lon: long}
+	userLoc := types.LocationParams{Latitude: filter.Latitude, Longitude: filter.Longitude}
 	profilesBe, err := s.CageRoomRepositoryIn.FilterCages(animals, startDate, endDate)
 	for i := range profilesBe {
 		if len(profilesBe[i].Cages) > 0 {
@@ -148,8 +138,12 @@ func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.Fi
 			profilesBe[i].PaypalEmail = ""
 
 			// calculate distances
-			profileLoc := haversine.Coord{Lat: profilesBe[i].Latitude, Lon: profilesBe[i].Longitude}
-			_, km := haversine.Distance(profileLoc, userLoc)
+			km, err := utils.CalculateDistance(userLoc, profilesBe[i].Latitude, profilesBe[i].Longitude)
+			if err != nil {
+				return profiles, err
+			}
+			// profileLoc := haversine.Coord{Lat: profilesBe[i].Latitude, Lon: profilesBe[i].Longitude}
+			// _, km := haversine.Distance(profileLoc, userLoc)
 			profilesBe[i].Distance = km
 
 			// map text to array

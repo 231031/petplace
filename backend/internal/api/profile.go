@@ -5,6 +5,7 @@ import (
 	"petplace/internal/model"
 	"petplace/internal/service"
 	"petplace/internal/utils"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -23,6 +24,7 @@ func (h *ProfileHandler) RegisterRoutes(g *echo.Group) {
 	g.GET("/:id/:role", h.handleGetProfileByUserID)
 	g.GET("/:id", h.handleGetAllProfileByUserID)
 	g.PUT("/:id", h.handleUpdateProfile)
+
 }
 
 // @Summary Create New Profile
@@ -43,7 +45,14 @@ func (h *ProfileHandler) handleCreateProfile(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "profile detail not correct", err)
 	}
 
-	status, strErr, err := h.profileServiceIn.CreateProfile(profile)
+	var status int
+	var strErr string
+	if strings.ToLower(profile.Role) == "clinic" {
+		status, strErr, err = h.profileServiceIn.CreateCliniCareProfile(profile)
+	} else {
+		status, strErr, err = h.profileServiceIn.CreateProfile(profile)
+	}
+
 	if err != nil {
 		return utils.HandleError(c, status, strErr, err)
 	}

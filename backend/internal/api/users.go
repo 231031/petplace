@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"petplace/internal/model"
 	"petplace/internal/service"
+	"petplace/internal/types"
 	"petplace/internal/utils"
 
 	"github.com/labstack/echo/v4"
@@ -293,6 +294,8 @@ func (h *UsersHandler) handleDeleteFavoriteCage(c echo.Context) error {
 // @tags Users
 // @Produce application/json
 // @Param user_id path string true "User ID"
+// @Param latitude query string false "Filter by latitude"
+// @Param longitude query string false "Filter by longitude"
 // @Success 200
 // @Failure 400
 // @Failure 500
@@ -305,7 +308,13 @@ func (h *UsersHandler) handleGetFavoriteCageByUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
 	}
 
-	favorites, err := h.usersServiceIn.GetFavoriteCageByUser(id)
+	loc := types.LocationParams{}
+	err = (&echo.DefaultBinder{}).BindQueryParams(c, &loc)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "Search system not available", err)
+	}
+
+	favorites, err := h.usersServiceIn.GetFavoriteCageByUser(id, loc)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "favorite cage is not available", err)
 	}

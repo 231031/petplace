@@ -5,17 +5,24 @@ import { FilterAnimal, FilterSearchCage } from "@/types/payload";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Profile } from "@/types/model";
 import { Cage } from "@/types/response";
-// import HotelSearch from "./TestSearch";
 
 function HotelSearch() {
+
+  const location = useLocation();
+  const hotel = location.state?.hotels || [];
+  const startDateFromState= location.state?.startDate || "";  
+  const endDateFromState= location.state?.endDate || "";      
+  console.log(hotel);
+
+
   const [hotels, setHotels] = useState<any[]>([]);
   const [longitude, setLongtitude] = useState("");
-  // const [latitude, setLatitude] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(startDateFromState);
+  const [endDate, setEndDate] = useState(endDateFromState);
+  const [sort, setSort] = useState("");
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); 
 
 
   const petOptions = [
@@ -52,36 +59,40 @@ function HotelSearch() {
 
   console.log("Currently selected pets:", selectedPets);
 
-  const handleSearch = async () => {
+  const handleSearch = async (sort: string) => {
     const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
       animal_type: pet,
       cage_size: "m",
     }));
 
-    const filterSearchCage: FilterSearchCage = {
+    const filterSearchCage: FilterSearchCage[] = [{
+      longitude: "14.53",
+      latitude: "100.77",
+      start_time: startDate,
+      end_time: endDate,
+      sort: sort,
+    },
+    {
       longitude: "99.3986862",
       latitude: "18.3170581",
       start_time: startDate,
       end_time: endDate
-    };
+    }]
+
 
     try {
       const results = await GetSearchCage(filterAnimal, filterSearchCage);
       setHotels(results.data);
       console.log("Results:", results);
-      navigate('/hotelsearch', { state: { hotels: results } });
+      navigate("/hotelsearch", { state: { hotels: results } });
     } catch (error) {
       console.error("Error fetching hotels:", error);
     }
   };
 
+  const [searchClicked, setSearchClicked] = useState(false); 
 
-  const [searchClicked, setSearchClicked] = useState(false); // New state to track if search was clicked
-
-
-  const location = useLocation();
-  const { hotels: hotel = [], startDate: searchStartDate = '', endDate: searchEndDate = '' } = location.state || {};
-  console.log(hotel, searchStartDate, searchEndDate);
+ 
   // const [isClicked, setIsClicked] = useState(false);
   const [activeButton, setActiveButton] = useState<number | null>(null);
   const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
@@ -118,11 +129,10 @@ function HotelSearch() {
           {/* Conditional Rendering */}
           {isEditing ? (
             // Edit Search Section
-            // <div className="w-3/4 absolute z-10 top-12 h-200 bg-white p-8 rounded-lg shadow-lg flex flex-col justify-between">
             <div className="w-3/4 border top-12 h-200 bg-white p-8 rounded-lg shadow-lg flex flex-col justify-between">
               <div className="grid grid-cols-2 gap-4 mb-6">
                 {/* Location Section */}
-                <div className="p-4 border border-gray-300  bg-white mt-8">
+                <div className="p-4 border border-gray-300 bg-white mt-8">
                   <label
                     htmlFor="location"
                     className="block text-lg font-semibold mb-2"
@@ -174,9 +184,7 @@ function HotelSearch() {
 
                 {/* Pet Section */}
                 <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
-                  <label className="block text-red-900 text-lg font-semibold mb-4">
-                    Pet
-                  </label>
+                  <label className="block text-red-900 text-lg font-semibold mb-4"></label>
                   <div className="grid grid-cols-2 gap-4">
                     {petOptions2.map((pet) => (
                       <label
@@ -199,21 +207,50 @@ function HotelSearch() {
               </div>
               <div className="flex justify-center mt-auto">
                 <button
-                  onClick={handleSearch}
+                  onClick={() => {
+                    handleSearch("");
+                    setIsEditing(false); // Exit edit mode on search
+                  }}
                   className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200"
                 >
                   Search
                 </button>
               </div>
+              <div className="flex flex-cols-10 gap-4 justify-center">
+                {buttons.map((label, index) => (
+                  <button
+                    key={index}
+                    type="submit"
+                    onClick={() => {
+                      setActiveButton(index);
+                      handleSearch(label);
+                    }}
+                    style={{
+                      backgroundColor:
+                        activeButton === index ? "#A08252" : "white",
+                      color: activeButton === index ? "white" : "#A08252",
+                    }}
+                    className={`${activeButton === index
+                        ? "hover:bg-egg focus:ring-red-300"
+                        : "hover:bg-gray-100 focus:ring-red-300"
+                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              <HotelData hotelList={hotel} startDate={startDate} endDate={endDate} />
             </div>
           ) : (
             // Original Search Section
             <div className="w-full max-w-6xl mx-auto">
-              <div className="rounded-2xl shadow-lg bg-red-300 shadow-egg border border-gray-300 px-20 ">
+              <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 px-20">
                 <div className="grid grid-cols-3 gap-20 justify-center">
                   <div className="text-xl p-2 mt-10">
-                    <div className="flex flex-col">
+                    <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-4">
                       <label>Pet</label>
+                      {/* console.log(hotel[0].name) */}
                       {petOptions.map((pet) => (
                         <label
                           key={pet}
@@ -233,7 +270,7 @@ function HotelSearch() {
                   </div>
 
                   <div className="text-xl p-2 mt-10">
-                    <div className="flex flex-col">
+                    <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-4">
                       <label>Location</label>
                       <input
                         type="text"
@@ -246,7 +283,7 @@ function HotelSearch() {
                   </div>
 
                   <div className="text-xl p-2 mt-10">
-                    <div className="flex flex-col">
+                    <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-4">
                       <label>Date</label>
                       <div>
                         Start
@@ -270,9 +307,8 @@ function HotelSearch() {
                       </div>
                     </div>
                   </div>
-
-
                 </div>
+
                 {/* Edit Search Button */}
                 <div className="flex justify-center mt-auto">
                   <button
@@ -288,30 +324,32 @@ function HotelSearch() {
                   <button
                     key={index}
                     type="submit"
-                    onClick={() => setActiveButton(index)}
+                    onClick={() => {
+                      setActiveButton(index);
+                      handleSearch(label);
+                    }}
                     style={{
-                      backgroundColor: activeButton === index ? "#A08252" : "white",
+                      backgroundColor:
+                        activeButton === index ? "#A08252" : "white",
                       color: activeButton === index ? "white" : "#A08252",
                     }}
                     className={`${activeButton === index
-                      ? "hover:bg-egg focus:ring-red-300"
-                      : "hover:bg-gray-100 focus:ring-red-300"
+                        ? "hover:bg-egg focus:ring-red-300"
+                        : "hover:bg-gray-100 focus:ring-red-300"
                       } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
                   </button>
                 ))}
               </div>
-              <HotelData hotelList={hotel} startDate={searchStartDate} endDate={searchEndDate} />
+
+              <HotelData hotelList={hotel} startDate={startDate} endDate={endDate} />
             </div>
+
           )}
-
-
         </div>
       </div>
       {/* </div> */}
-
-
     </div>
   );
 }

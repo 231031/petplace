@@ -14,8 +14,7 @@ function HotelDetail() {
     const facilityRef = useRef<HTMLDivElement>(null);
     const roomRef = useRef<HTMLDivElement>(null);
     const reviewRef = useRef<HTMLDivElement>(null);
-    const startDateRef = useRef<HTMLInputElement>(null);
-    const endDateRef = useRef<HTMLInputElement>(null);
+
 
     
     const location = useLocation();
@@ -159,7 +158,7 @@ function HotelDetail() {
                     <h1 ref={facilityRef} id="facility" className="text-2xl"> Facility</h1>
                     <div className="flex gap-x-2">
                         {hotel.facility_array && hotel.facility_array.length > 0 ? (
-                            hotel.facility_array.map((facility, index) => (
+                            hotel.facility_array.map((facility:string, index:number) => (
                                 <button 
                                     key={index} 
                                     className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400"
@@ -266,7 +265,7 @@ function HotelDetail() {
                                                 </div> 
                                                 <p className="mr-4 ">{item.review_detail ||" At {hotel.name}, we believe your pets deserve a vacation too Our pet hotel offers a safe, comfortable, and enriching environment for your furry family members, with amenities designed specifically for both cats and dogs."}</p>
                                         </div>
-                                        <div className="flex flex-col  w-2/12 h-full justify-end h-full">
+                                        <div className="flex flex-col  w-2/12 justify-end h-full">
                                             <div className="flex ">
                                                 <div className="m-1 text-white text-sm p-2 bg-onstep rounded-lg flex justify-center w-fit h-fit ">
                                                     {review[index].cage_room.animal_type}    

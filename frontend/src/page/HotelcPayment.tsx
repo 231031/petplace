@@ -9,16 +9,24 @@ export default function HotelcPayment() {
     const navigate = useNavigate();
     const location = useLocation();
     const selectedCage = location.state?.selectedCage || [];
-
+    console.log("HotelcPayment location state:", location.state);
     const handleSelect = (choice: number) => {
         setSelect(choice);
     };
     const handleCaegClick = (selectedCage: Cage) => {
-        navigate('/hotelfillpayment', { state: { selectedCage: selectedCage } });
+        navigate('/hotelfillpayment', { 
+            state: { 
+                selectedCage: selectedCage,
+                selectedPets: location.state?.selectedPets, 
+                hotelName: location.state?.hotelName,       
+                startDate: location.state?.startDate,       
+                endDate: location.state?.endDate            
+            } 
+        });
     };
 
     return (
-        <div>
+        <div className="h-screen">
             <div className="max-w-2xl w-full mx-auto mt-10">
                 <ol className="flex items-center w-full text-xs text-gray-900 font-medium sm:text-base">
                     <li className="flex w-full relative text-black after:content-[''] after:w-full after:h-2 after:bg-gray-200 after:inline-block after:absolute lg:after:top-5 after:top-5 after:left-6">

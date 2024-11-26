@@ -34,7 +34,10 @@ func (r *FavoriteCageRepository) DelFavoriteCage(user_id uint, cage_id uint) err
 
 func (r *FavoriteCageRepository) GetFavoriteCageByUser(user_id uint) ([]model.FavoriteCage, error) {
 	favorites := []model.FavoriteCage{}
-	result := r.db.Where("user_id = ?", user_id).Find(&favorites)
+	result := r.db.Preload("CageRoom").Preload("CageRoom.Profile", func(db *gorm.DB) *gorm.DB {
+		return db.Select("ID", "CheckIn", "CheckOut", "Name", "AvgReview", "Facility", "Image", "ImageProfile",
+			"Longitude", "Latitude", "Address", "Email", "Tel")
+	}).Where("user_id = ?", user_id).Find(&favorites)
 	if result.Error != nil {
 		return favorites, result.Error
 	}

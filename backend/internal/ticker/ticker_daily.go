@@ -5,14 +5,21 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"petplace/internal/service"
 	"syscall"
 	"time"
 )
 
-type dailyTickerService struct{}
+type dailyTickerService struct {
+	ReservationTimeServiceIn service.ReservationTimeServiceIn
+}
 
-func NewDailyTickerService() *dailyTickerService {
-	return &dailyTickerService{}
+func NewDailyTickerService(
+	reservationTimeServiceIn service.ReservationTimeServiceIn,
+) *dailyTickerService {
+	return &dailyTickerService{
+		ReservationTimeServiceIn: reservationTimeServiceIn,
+	}
 }
 
 func (ds *dailyTickerService) StartDailyTicker() {
@@ -56,4 +63,44 @@ func (ds *dailyTickerService) runDailyTicker(ctx context.Context) {
 }
 func (ds *dailyTickerService) taskDaily() {
 	fmt.Println("Invoked everyday at 00:000")
+	location, err := time.LoadLocation("Asia/Bangkok")
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Println("failed to load time zone")
+		return
+	}
+	currentTime := time.Now().In(location)
+	currentDay := time.Date(
+		currentTime.Year(),
+		currentTime.Month(),
+		currentTime.Day(),
+		0, 0, 0, 0, location,
+	)
+	previousDay := time.Date(
+		currentTime.Year(),
+		currentTime.Month(),
+		(currentTime.Day())-1,
+		0, 0, 0, 0, location,
+	)
+
+	// update date for next 30 days from current day
+	newDay := previousDay.AddDate(0, 0, 30)
+	strMsg, err := ds.ReservationTimeServiceIn.UpdateDailyNewDate(previousDay, newDay)
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Println(strMsg)
+		return
+	}
+	fmt.Println(strMsg)
+
+	// transaction
+	// update reservation status -> auto close
+	// update status -> auto rejected all requests
+	strMsg, err = ds.ReservationTimeServiceIn.UpdateDailyReservationAndBook(currentDay)
+	if err != nil {
+		fmt.Println(err.Error())
+		fmt.Println(strMsg)
+		return
+	}
+	fmt.Println(strMsg)
 }

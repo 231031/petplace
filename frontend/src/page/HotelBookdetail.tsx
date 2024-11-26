@@ -1,6 +1,6 @@
 import CageCard from "@/components/Hotel-Bookdetail/CageCard";
 import PetCard from "@/components/Hotel-Bookdetail/PetCard";
-import { Cage, Profile } from "@/types/response";
+import { Cage } from "@/types/response";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { GetAllAnimalByUserID } from '@/helper/animal_user';
@@ -24,6 +24,7 @@ function HotelBookdetail() {
     const endDate = location.state?.endDate || '';
     const profile_name = location.state?.profile_name || '';
     const [pets, setPets] = useState<any[]>([]);
+    const [showPetForm, setShowPetForm] = useState<boolean>(true);
 
     console.log("date", startDate, endDate);
     console.log("CageSelected", selectedCage);
@@ -52,18 +53,20 @@ function HotelBookdetail() {
         fetchPets();
     }, []);
 
-
+    const handleAddPetClick = () => {
+        setShowPetForm(!showPetForm);
+    };
     const handleHotelClick = (selectedCage: Cage) => {
         if (!selectedPets || selectedPets.length === 0) {
             setError('กรุณาเลือกสัตว์เลี้ยงอย่างน้อย 1 ตัว');
             return;
         }
 
-        // const profile_name = selectedCage.profile?.name || "ไม่ระบุชื่อโรงแรม";
+       
         const hotelName = location.state?.profile_name || selectedCage.profile?.name || "ไม่ระบุชื่อโรงแรม";
         console.log("hotelNameasdasd", hotelName);
 
-        navigate('/hotelfillpayment', {
+        navigate('/hotelcpayment', {
             state: {
                 selectedCage: {
                     ...selectedCage,
@@ -74,9 +77,9 @@ function HotelBookdetail() {
                     max_capacity: selectedCage.max_capacity
                 },
                 hotelName,
-                selectedPets,
-                startDate,
-                endDate
+                selectedPets: selectedPets, 
+                startDate: startDate,      
+                endDate: endDate          
             }
         });
     };
@@ -119,21 +122,29 @@ function HotelBookdetail() {
                     max_capacity={max_capacity ?? ""}
                     startDate={startDate ?? ""}
                     endDate={endDate ?? ""}
-
                 />
                 <div className="flex justify-between">
                     <p className="text-2xl ">Pet</p>
-                    <button className="w-fit px-2 h-8  rounded-full shadow shadow-gray-400">Add Pet</button>
+                    {selectedPets.length === 0 && (
+                        <button
+                            className="w-fit px-4 h-8 rounded-full shadow shadow-gray-400 bg-[#CBAD87] text-white"
+                            onClick={handleAddPetClick}
+                        >
+                            Add Pet
+                        </button>
+                    )}
                 </div>
                 <PetCard
-                    pets={pets} // ส่ง pets เป็น props
+                    pets={pets}
                     onPetSelect={(petId: number) => {
                         setSelectedPets(prev =>
                             prev.includes(petId)
                                 ? prev.filter(id => id !== petId)
                                 : [...prev, petId]
                         );
+                        setShowPetForm(false);
                     }}
+                    showPetForm={showPetForm}
                 />
             </div>
             <div className="max-w-sm w-full mx-auto mb-10">

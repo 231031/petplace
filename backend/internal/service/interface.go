@@ -3,6 +3,7 @@ package service
 import (
 	"petplace/internal/model"
 	"petplace/internal/types"
+	"time"
 )
 
 type AuthServiceIn interface {
@@ -23,7 +24,7 @@ type UsersServiceIn interface {
 
 	AddFavoriteCage(fav model.FavoriteCage) error
 	DelFavoriteCage(user_id uint, cage_id uint) error
-	GetFavoriteCageByUser(user_id uint) ([]model.FavoriteCage, error)
+	GetFavoriteCageByUser(user_id uint, userLoc types.LocationParams) ([]model.FavoriteCage, error)
 }
 
 type ProfileServiceIn interface {
@@ -36,6 +37,15 @@ type ProfileServiceIn interface {
 	SortProfileByReviewRate(profiles []model.Profile) []model.Profile
 	SortProfileByDistance(profiles []model.Profile) []model.Profile
 	CountCompleteBookByID(profile_id uint) (int, error)
+
+	// clinic & care
+	CreateCliniCareProfile(profile model.Profile) (int, string, error)
+	GetProfileRoleClinic() ([]model.Profile, error) // use in daily task ticker service
+}
+
+type ReservationTimeServiceIn interface {
+	UpdateDailyNewDate(previousDay, newDay time.Time) (string, error)
+	UpdateDailyReservationAndBook(currentDay time.Time) (string, error)
 }
 
 type BookingServiceIn interface {
