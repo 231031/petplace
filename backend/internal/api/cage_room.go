@@ -28,6 +28,7 @@ func (h *CageRoomHandler) RegisterRoutes(g *echo.Group) {
 	g.DELETE("/:id", h.handleDeleteCageRoom, auth.AuthMiddleware)
 	g.GET("/all/:profile_id", h.handleGetAllCageRoomByHotel, auth.AuthMiddleware)
 	g.GET("/:id", h.handleGetCageRoom, auth.AuthMiddleware)
+	g.GET("/type/:id", h.handleGetTypeCageRoom, auth.AuthMiddleware)
 
 	g.GET("/search", h.handleSearchCage)
 	g.GET("/search/:user_id/:profile_id", h.handleSearchCageByHotel)
@@ -38,25 +39,28 @@ func (h *CageRoomHandler) RegisterRoutes(g *echo.Group) {
 // @Accept application/json
 // @Produce application/json
 // @tags CageRooms
-// @Param   CageRoom body  []model.CageRoom true "cageroom payload"
+// @Param   CageRoom body  model.CageRoom true "cageroom payload"
 // @Success 201
 // @Failure 400
 // @Failure 500
 // @Router /cageroom [post]
 // @Security BearerAuth
 func (h *CageRoomHandler) handleCreateCageRoom(c echo.Context) error {
-	cages := []model.CageRoom{}
-	err := c.Bind(&cages)
+	cage := model.CageRoom{}
+	err := c.Bind(&cage)
 	if err != nil {
-		return utils.HandleError(c, http.StatusBadRequest, "Cage detail not correct", err)
+		return utils.HandleError(c, http.StatusBadRequest, "cage detail not correct", err)
 	}
 
-	err = h.cageRoomServiceIn.CreateCageRoom(cages)
+	status, msg, err := h.cageRoomServiceIn.CreateCageRoom(cage)
 	if err != nil {
-		return utils.HandleError(c, http.StatusInternalServerError, "Add cage not success", err)
+		return utils.HandleError(c, status, msg, err)
+	}
+	if status != http.StatusCreated {
+		return utils.HandleError(c, status, msg, err)
 	}
 
-	return c.JSON(http.StatusCreated, "Add cage success")
+	return c.JSON(status, msg)
 }
 
 // @Summary		Update Cage
@@ -136,6 +140,31 @@ func (h *CageRoomHandler) handleGetCageRoom(c echo.Context) error {
 	}
 
 	cage, err := h.cageRoomServiceIn.GetCageRoom(id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "Cage room not available", err)
+	}
+
+	return c.JSON(http.StatusOK, cage)
+}
+
+// @Summary		Get Cage type and animal type
+// @Description	Get Cage type and animal type
+// @Produce application/json
+// @tags CageRooms
+// @Param id path string true "ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /cageroom/type/{id} [get]
+// @Security BearerAuth
+func (h *CageRoomHandler) handleGetTypeCageRoom(c echo.Context) error {
+	param_id := c.Param("id")
+	id, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "Cannot get cage room", err)
+	}
+
+	cage, err := h.cageRoomServiceIn.GetAllAnimalCageType(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Cage room not available", err)
 	}

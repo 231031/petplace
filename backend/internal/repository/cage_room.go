@@ -18,7 +18,7 @@ func NewCageRoomRepository(db *gorm.DB) *CageRoomRepository {
 	return &CageRoomRepository{db: db}
 }
 
-func (r *CageRoomRepository) CreateCageRoom(cage []model.CageRoom) error {
+func (r *CageRoomRepository) CreateCageRoom(cage model.CageRoom) error {
 	result := r.db.Create(&cage)
 	if result.Error != nil {
 		return result.Error
@@ -40,6 +40,16 @@ func (r *CageRoomRepository) GetCageRoom(id uint) (model.CageRoom, error) {
 	result := r.db.Preload("Profile", func(db *gorm.DB) *gorm.DB {
 		return db.Select("ID", "CheckIn", "CheckOut")
 	}).First(&cage)
+
+	if result.Error != nil {
+		return cage, result.Error
+	}
+	return cage, nil
+}
+
+func (r *CageRoomRepository) GetSpecificCageRoomType(id uint, animal_type string, cage_type string) (model.CageRoom, error) {
+	cage := model.CageRoom{}
+	result := r.db.Where("profile_id = ? AND animal_type = ? AND cage_type = ?", id, animal_type, cage_type).First(&cage)
 
 	if result.Error != nil {
 		return cage, result.Error

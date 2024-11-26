@@ -114,10 +114,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.CageRoom"
-                            }
+                            "$ref": "#/definitions/model.CageRoom"
                         }
                     }
                 ],
@@ -292,6 +289,43 @@ const docTemplate = `{
                         "description": "Sort by sort",
                         "name": "sort",
                         "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/cageroom/type/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get Cage type and animal type",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CageRooms"
+                ],
+                "summary": "Get Cage type and animal type",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1679,6 +1713,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "surename": {
+                    "type": "string"
+                },
+                "tel": {
                     "type": "string"
                 }
             }

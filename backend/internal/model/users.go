@@ -10,6 +10,7 @@ type User struct {
 	FirstName    string `gorm:"type:varchar(191);not null" json:"first_name" query:"first_name" validate:"required"`
 	Surename     string `gorm:"type:varchar(191);not null" json:"surename" query:"surename" validate:"required"`
 	Age          int    `gorm:"type:int;not null" json:"age" query:"age"`
+	Tel          string `gorm:"type:varchar(191);" json:"tel" query:"tel"`
 	CitizenID    string `gorm:"type:varchar(191);not null" json:"citizen_id" query:"citizen_id"`
 	ImageProfile string `gorm:"type:text;" json:"image_profile" query:"image_profile"`
 
@@ -23,6 +24,7 @@ type User struct {
 	FavoriteCages []FavoriteCage `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"user_id" query:"user_id" swaggerignore:"true"`
 	Animals       []AnimalUser   `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"animals" query:"animals" swaggerignore:"true"`
 	Orders        []Order        `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"orders" query:"orders" swaggerignore:"true"`
+	Chats         []Chat         `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE;not null" json:"chats" query:"chats" swaggerignore:"true"`
 }
 
 type AnimalUser struct {

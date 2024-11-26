@@ -2,51 +2,71 @@ import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useState, useEffect } from 'react';
 
+interface MapProps {
+  latitude?: number;
+  longitude?: number;
+}
 
-const Map = () => {
-  const [position, setPosition] = useState<[number, number] | null>(null); // รอการโหลดตำแหน่ง
-  const [error, setError] = useState<string | null>(null);
+const Map = ({ latitude, longitude }: MapProps) => {
+  const [position, setPosition] = useState<[number, number] | null>(null); // User's location
+  const [error, setError] = useState<string | null>(null); // Error state
 
-  // ใช้ Geolocation API เพื่อดึงตำแหน่งของผู้ใช้
+  // If latitude and longitude are passed, use them as the initial position
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setPosition([latitude, longitude]); // ตั้งค่าตำแหน่งผู้ใช้
-          console.log(position.coords);
-        },
-        (err) => {
-          setError('Unable to retrieve your location.');
-          // ถ้าไม่สามารถดึงตำแหน่งได้, ใช้กรุงเทพฯ เป็นตำแหน่งเริ่มต้น
-          setPosition([13.736717, 100.523186]);
-        }
-      );
+    if (latitude && longitude) {
+      setPosition([latitude, longitude]);
     } else {
-      setError('Geolocation is not supported by this browser.');
-      setPosition([13.736717, 100.523186]); // ถ้าไม่รองรับ Geolocation, ใช้กรุงเทพฯ
+      // Use Geolocation API to get the user's current position
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setPosition([latitude, longitude]); // Set user's position
+            console.log(position.coords);
+          },
+          (err) => {
+            setError('Unable to retrieve your location.');
+            // Default to Bangkok if geolocation fails
+            setPosition([13.736717, 100.523186]);
+          }
+        );
+      } else {
+        setError('Geolocation is not supported by this browser.');
+        setPosition([13.736717, 100.523186]); // Default to Bangkok if geolocation is not supported
+      }
     }
-  }, []);
+  }, [latitude, longitude]);
 
+  // Location marker component that updates the position on click
   const LocationMarker = () => {
     useMapEvents({
       click(e) {
-        setPosition([e.latlng.lat, e.latlng.lng]); // อัปเดตตำแหน่งเมื่อคลิก
+        setPosition([e.latlng.lat, e.latlng.lng]); // Update position on map click
         console.log(`New position: ${e.latlng.lat}, ${e.latlng.lng}`);
       },
     });
-    return <Marker position={position || [13.736717, 100.523186]} />; // ใช้ตำแหน่งจาก state หรือกรุงเทพฯ
+    return <Marker position={position || [13.736717, 100.523186]} />;
   };
 
-  // รอให้ตำแหน่งผู้ใช้โหลดก่อน
+  // Wait until the user's location is loaded
   if (!position) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Loading state until position is set
   }
 
   return (
-    <div className='h-full'>
-      {error && <div>{error}</div>}
-      <MapContainer center={position} zoom={13} style={{ height: '100%', width: '100%' }}>
+    <div className="h-full">
+      {error && <div>{error}</div>} {/* Show error message if any */}
+      <MapContainer
+        center={position}
+        zoom={13}
+        style={{ height: '100%', width: '100%' }}
+        whenCreated={(map) => {
+          // Set the map's zoom level or adjust based on user's location
+          if (position) {
+            map.setZoom(13); // Set a default zoom level
+          }
+        }}
+      >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <LocationMarker />
       </MapContainer>
