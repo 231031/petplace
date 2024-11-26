@@ -39,6 +39,10 @@ func (s *UserService) GetUserByID(id uint) (model.User, error) {
 	}
 
 	user.Password = ""
+	user.Name = ""
+	user.SecurityCode = ""
+	user.Number = ""
+	user.Expiry = ""
 	return user, nil
 }
 

@@ -22,6 +22,7 @@ func NewUsersHandler(usersServiceIn service.UsersServiceIn) *UsersHandler {
 func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
 	// role : client
 	g.GET("/card/:id", h.handleGetCreaditCard)
+	g.GET("/:id", h.handleGetUserByID)
 	g.PUT("/:id", h.handleUpdateUser)
 
 	// animal
@@ -199,6 +200,31 @@ func (h *UsersHandler) handleGetCreaditCard(c echo.Context) error {
 	card, err := h.usersServiceIn.GetCreditCard(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "credit card not available", err)
+	}
+
+	return c.JSON(http.StatusOK, card)
+}
+
+// @Summary Get user information
+// @Description get user information
+// @tags Users
+// @Produce application/json
+// @Param id path string true "User ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /user/{id} [get]
+// @Security BearerAuth
+func (h *UsersHandler) handleGetUserByID(c echo.Context) error {
+	param_id := c.Param("id")
+	id, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
+	}
+
+	card, err := h.usersServiceIn.GetUserByID(id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "user information card not available", err)
 	}
 
 	return c.JSON(http.StatusOK, card)
