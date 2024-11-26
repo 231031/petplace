@@ -5,7 +5,6 @@ import { UpdateCage } from "../helper/cage";
 import { UploadRes } from "@/types/response";
 import UploadImage from "../components/UploadImage";
 import { mapCageSize } from "../helper/cage";
-import { set } from "lodash";
 // import { Toast } from "node_modules/react-toastify/dist/components";
 
 
@@ -14,8 +13,6 @@ const RoomDetailPage = () => {
     const [selectedAnimal, setSelectedAnimal] = useState<string>('');
     const [selectedCage, setSelectedCage] = useState<string>('');
     const [filteredCageData, setFilteredCageData] = useState<any>({});
-    const [newFacility, setNewFacility] = useState<string>('');
-    const [facilities, setFacilities] = useState<string[]>([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -64,7 +61,6 @@ const RoomDetailPage = () => {
             if (!response.ok) throw new Error("Failed to fetch cage room data");
             const data = await response.json();
             setFilteredCageData(data);
-            console.log("data bla", data);
         } catch (error) {
             console.error("Error fetching cage room data from pet and type:", error);
         }
@@ -83,10 +79,10 @@ const RoomDetailPage = () => {
                 cage_type: filteredCageData.cage_type,
                 detail: filteredCageData.detail,
                 facility: filteredCageData.facility,
-                facility_array: filteredCageData.facility_array || [],
+                facility_array: filteredCageData.facility_array,
                 height: parseFloat(filteredCageData.height),
-                image: filteredCageData.image || '',
-                image_array: (filteredCageData.image_array).map((img: UploadRes) => img.fileUrl),
+                image: filteredCageData.image,
+                image_array: filteredCageData.image_array,
                 lenth: parseFloat(filteredCageData.lenth),
                 max_capacity: parseInt(filteredCageData.max_capacity),
                 price: parseFloat(filteredCageData.price),
@@ -99,54 +95,53 @@ const RoomDetailPage = () => {
     
             const res = await UpdateCage(payload);
             alert("Cage updated successfully");
-            console.log("log", res);
+            console.log("Blabla", res);
         } catch (err: any) {
-            if (err.response && err.response.data) {
-                console.error("Server Response:", err.response.data);
-                alert(err.response.data.message);
-            } else {
-                alert(err.message);
-                alert("Unexpected error occurred. Please try again.");
-            }
+            alert(err);
+            // if (err.response && err.response.data) {
+            //     console.error("Server Response:", err.response.data);
+            //     alert(err.response.data.message);
+            // } else {
+            //     alert(err.message);
+            //     alert("Unexpected error occurred. Please try again.");
+            // }
         }
     };
 
     const handleAddFacility = () => {
-        if (newFacility && !facilities.includes(newFacility)) {
-            const updatedFacilities = [...facilities, newFacility];
-            setFacilities(updatedFacilities);
-            setFilteredCageData({
-                ...filteredCageData, 
-                facility_array: updatedFacilities
-            });
-            setNewFacility('');
-        }
-    };
+        const currentFacilities = filteredCageData.facility_array || [];
+        const newFacility = filteredCageData.facility;
+        const updatedFacilities = [...currentFacilities, newFacility];
+        console.log("newFacility", newFacility);
+        console.log("currentFacilities", currentFacilities);
+        console.log("updatedFacilities", updatedFacilities);
+        setFilteredCageData({ ...filteredCageData, facility_array: updatedFacilities, facility: '' });
+    }
 
-    const handleRemoveFacility = (facility: string) => {
-        const updatedFacilities = facilities.filter(item => item !== facility);
-        setFacilities(updatedFacilities);
-        setFilteredCageData({
-            ...filteredCageData, 
-            facility_array: updatedFacilities
-        });
-    };
+
+    const handleRemoveFacility = ( facility: string ) => {
+        const updatedFacilities = (filteredCageData.facility_array || []).filter((f: string) => f !== facility);
+        setFilteredCageData({ ...filteredCageData, facility_array: updatedFacilities });
+    }
 
     const handleImageUpload = (files: UploadRes[]) => {
         const currentImages = filteredCageData.image_array || [];
-        const newImageArray = [...currentImages, ...files];
+        //map the new images to the current images
+        const newImageArray = files.map((file) => (file.fileUrl));
+        const updatedImages = [...currentImages, ...newImageArray];
+
         console.log("newImageArray", newImageArray);
         console.log("currentImages", currentImages);
         
         // Limit to 10 images
-        const limitedImageArray = newImageArray.slice(0, 10);
+        const limitedImageArray = updatedImages.slice(0, 10);
         console.log("limitedImageArray", limitedImageArray);
         
         setFilteredCageData({ 
             ...filteredCageData, 
             image_array: limitedImageArray,
-            image: limitedImageArray[0]?.fileUrl || '' 
-        });    
+            image : filteredCageData.image
+        });
         console.log("filteredCageDataupload", filteredCageData.image_array);
         console.log("filteredCageDataupload", filteredCageData.image);
 
@@ -336,13 +331,13 @@ const RoomDetailPage = () => {
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Room Picture (Max. 10)</label>
                         <div className="flex items-center gap-4">
-                            {(filteredCageData.image_array || []).map((image: UploadRes, index: number) => (  
+                            {(filteredCageData.image_array || []).map((image: string, index: number) => (  
                                 <div
                                     key={index}
                                     className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
                                 >
                                     <img
-                                        src={image.fileUrl}
+                                        src={image}
                                         alt={`Uploaded ${index}`}
                                         className="w-full h-full object-cover"
                                     />
@@ -365,8 +360,8 @@ const RoomDetailPage = () => {
                         <div className="flex gap-2 mb-4">
                             <input
                                 type="text"
-                                value={newFacility}
-                                onChange={(e) => setNewFacility(e.target.value)}
+                                value={ filteredCageData.facility }
+                                onChange={(e) => setFilteredCageData({ ...filteredCageData, facility: e.target.value })}
                                 placeholder="Add new facility"
                                 className="w-full border border-gray-300 rounded-md p-2"
                             />
@@ -378,7 +373,7 @@ const RoomDetailPage = () => {
                             </button>
                         </div>
                         <div className="flex gap-2 flex-wrap">
-                            {facilities.map((facility, index) => (
+                            {(filteredCageData.facility_array || []).map((facility : string, index : number) => (
                                 <div
                                     key={index}
                                     className="flex items-center gap-2 bg-gray-200 px-4 py-2 rounded-md"
