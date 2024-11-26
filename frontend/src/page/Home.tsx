@@ -66,19 +66,19 @@ function Home() {
                     src="/images/logo.png"
                     className="absolute top-0 left-16 w-64 h-64 z-20"
                 />
-                <div className="absolute z-20 top-80 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center">
-                    <a href="/" className="text-2xl text-white">Grooming</a>
-                    <span className="text-2xl text-white px-8 ">|</span>
-                    <a href="/" className="text-2xl text-white">Delivery</a>
-                    <span className="text-2xl text-white px-8 ">|</span>
-                    <a href="/" className="text-2xl text-white">Hotel Booking</a>
-                    <span className="text-2xl text-white px-8 ">|</span>
-                    <a href="/" className="text-2xl text-white">Clinic</a>
-                    <span className="text-2xl text-white px-8 ">|</span>
-                    <a href="/" className="text-2xl text-white">Shop</a>
+                <div className="absolute z-20 top-80 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-wrap justify-center gap-4 md:gap-0">
+                    <a href="/" className="text-lg md:text-2xl text-white">Grooming</a>
+                    <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
+                    <a href="/" className="text-lg md:text-2xl text-white">Delivery</a>
+                    <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
+                    <a href="/" className="text-lg md:text-2xl text-white">Hotel Booking</a>
+                    <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
+                    <a href="/" className="text-lg md:text-2xl text-white">Clinic</a>
+                    <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
+                    <a href="/" className="text-lg md:text-2xl text-white">Shop</a>
                 </div>
-                <div className="bg-white rounded-lg absolute bottom-0 left-1/2 transform -translate-x-1/2 z-10">
-                    <div className="font-semibold text-2xl px-8 py-2" style={{ color: '#A08252' }}>
+                <div className="bg-white rounded-lg absolute -bottom-0 left-1/2 transform -translate-x-1/2 z-10">
+                    <div className="font-semibold text-xl md:text-2xl px-4 md:px-8 py-2" style={{ color: '#A08252' }}>
                         Find your service
                     </div>
                 </div>
@@ -87,18 +87,18 @@ function Home() {
             {/* Second Section */}
             <div className="w-full h-full p-4 bg-white flex justify-center items-center relative">
                 {/* Nav bar */}
-                <div className="w-1/4 rounded-lg absolute z-20 mt-4 top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-4"
+                <div className="w-full md:w-1/2 lg:w-1/4 rounded-lg absolute z-20 mt-4 top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-2 md:space-x-4"
                     style={{ backgroundColor: "#A08252" }}
                 >
-                    <a href="/" className="text-xl text-white p-2">Hotel</a>
-                    <a href="/" className="text-xl text-white p-2">Care</a>
-                    <a href="/" className="text-xl text-white p-2">Clinic</a>
-                    <a href="/" className="text-xl text-white p-2">Delivery</a>
+                    <a href="/" className="text-sm md:text-xl text-white p-2">Hotel</a>
+                    <a href="/" className="text-sm md:text-xl text-white p-2">Care</a>
+                    <a href="/" className="text-sm md:text-xl text-white p-2">Clinic</a>
+                    <a href="/" className="text-sm md:text-xl text-white p-2">Delivery</a>
                 </div>
                 {/* Search box */}
-                <div className="w-3/4 absolute z-10 top-12 h-200 bg-white p-8 rounded-lg shadow-lg">
+                <div className="w-full md:w-11/12 lg:w-3/4 absolute z-10 top-16 bg-white p-4 md:p-8 rounded-lg shadow-lg">
                     {/* Location section */}
-                    <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
                             <label htmlFor="location" className="block text-lg font-semibold mb-2">
                                 Location
@@ -192,27 +192,27 @@ function Home() {
 
 
             {/* Third Section */}
-            <div className="w-full h-3/4 p-4 bg-yellow shadow  flex justify-center items-center relative">
-                <div className="w-1/4 bg-white rounded-lg absolute z-20 mt-4 top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-4"
-                >
-                    <a href="/" className="text-xl text-yellow p-2">Hotel</a>
-                    <a href="/" className="text-xl text-yellow p-2">Care</a>
-                    <a href="/" className="text-xl text-yellow p-2">Clinic</a>
-                    <a href="/" className="text-xl text-yellow p-2">Delivery</a>
+            <div className="w-full min-h-[75vh] p-4 bg-yellow shadow relative">
+                {/* Nav bar */}
+                <div className="w-full sm:w-2/3 md:w-1/4 bg-white rounded-lg mx-auto flex justify-center items-center space-x-2 sm:space-x-4">
+                    <a href="/" className="text-sm sm:text-xl text-yellow p-2">Hotel</a>
+                    <a href="/" className="text-sm sm:text-xl text-yellow p-2">Care</a>
+                    <a href="/" className="text-sm sm:text-xl text-yellow p-2">Clinic</a>
+                    <a href="/" className="text-sm sm:text-xl text-yellow p-2">Delivery</a>
                 </div>
 
                 {/* Hotel List */}
-                <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 mt-4">
+                <div className="w-full md:w-3/4 max-w-6xl mx-auto space-y-6 mt-16">
                     {/* Single Hotel Card */}
                     {[1, 2].map((_, index) => (
                         <div
                             key={index}
-                            className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
+                            className="bg-white rounded-lg shadow-md flex flex-col md:flex-row justify-between items-start md:items-center p-4 md:p-6"
                         >
                             {/* Hotel Image and Info */}
-                            <div className="flex space-x-6">
+                            <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6 w-full md:w-auto">
                                 {/* Image */}
-                                <div className="w-40 h-40 rounded-lg overflow-hidden">
+                                <div className="w-full md:w-40 h-40 rounded-lg overflow-hidden">
                                     <img
                                         src="https://via.placeholder.com/150"
                                         alt="Hotel"
