@@ -10,8 +10,8 @@ function HotelSearch() {
 
   const location = useLocation();
   const hotel = location.state?.hotels || [];
-  const startDateFromState= location.state?.startDate || "";  
-  const endDateFromState= location.state?.endDate || "";      
+  const startDateFromState = location.state?.startDate || "";
+  const endDateFromState = location.state?.endDate || "";
   console.log(hotel);
 
 
@@ -22,7 +22,7 @@ function HotelSearch() {
   const [sort, setSort] = useState("");
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
 
   const petOptions = [
@@ -65,19 +65,26 @@ function HotelSearch() {
       cage_size: "m",
     }));
 
-    const filterSearchCage: FilterSearchCage[] = [{
+    // const filterSearchCage: FilterSearchCage[] = [{
+    //   longitude: "14.53",
+    //   latitude: "100.77",
+    //   start_time: startDate,
+    //   end_time: endDate,
+    //   sort: sort,
+    // },
+    // {
+    //   longitude: "99.3986862",
+    //   latitude: "18.3170581",
+    //   start_time: startDate,
+    //   end_time: endDate
+    // }]
+    const filterSearchCage: FilterSearchCage = {
       longitude: "14.53",
       latitude: "100.77",
       start_time: startDate,
       end_time: endDate,
       sort: sort,
-    },
-    {
-      longitude: "99.3986862",
-      latitude: "18.3170581",
-      start_time: startDate,
-      end_time: endDate
-    }]
+    }
 
 
     try {
@@ -90,9 +97,9 @@ function HotelSearch() {
     }
   };
 
-  const [searchClicked, setSearchClicked] = useState(false); 
+  const [searchClicked, setSearchClicked] = useState(false);
 
- 
+
   // const [isClicked, setIsClicked] = useState(false);
   const [activeButton, setActiveButton] = useState<number | null>(null);
   const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
@@ -231,8 +238,8 @@ function HotelSearch() {
                       color: activeButton === index ? "white" : "#A08252",
                     }}
                     className={`${activeButton === index
-                        ? "hover:bg-egg focus:ring-red-300"
-                        : "hover:bg-gray-100 focus:ring-red-300"
+                      ? "hover:bg-egg focus:ring-red-300"
+                      : "hover:bg-gray-100 focus:ring-red-300"
                       } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
@@ -334,8 +341,8 @@ function HotelSearch() {
                       color: activeButton === index ? "white" : "#A08252",
                     }}
                     className={`${activeButton === index
-                        ? "hover:bg-egg focus:ring-red-300"
-                        : "hover:bg-gray-100 focus:ring-red-300"
+                      ? "hover:bg-egg focus:ring-red-300"
+                      : "hover:bg-gray-100 focus:ring-red-300"
                       } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}

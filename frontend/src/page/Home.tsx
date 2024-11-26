@@ -1,4 +1,4 @@
-import { useState ,useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
@@ -39,21 +39,24 @@ function Home() {
             cage_type: cage.cage_type,
             facility: cage.facility,
             price: cage.price.toString(),
-            max_capacity: cage.max_capacity.toString(), 
+            max_capacity: cage.max_capacity.toString(),
             startDate: startDate,
             endDate: endDate
         }).toString();
 
         // Navigate with query parameters
-        
+
         navigate(`/hotelbookdetail?${queryParams}`,
-            { state: { 
-                selectedCage: cage, 
-                selectedHotel: location.state?.selectedHotel,
-                profile_name: location.state?.profile_name,
-                startDate: startDate, 
-                endDate: endDate } });
-        
+            {
+                state: {
+                    selectedCage: cage,
+                    selectedHotel: location.state?.selectedHotel,
+                    profile_name: location.state?.profile_name,
+                    startDate: startDate,
+                    endDate: endDate
+                }
+            });
+
     };
 
     const handleCageSizeChange = (pet: string, size: string) => {
@@ -73,7 +76,7 @@ function Home() {
         setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
         setMarkerPosition([lat, lng]); // Update the marker position
     };
-    
+
     const LocationMarker = () => {
         useMapEvents({
             click(e) {
@@ -94,7 +97,7 @@ function Home() {
                     const { latitude, longitude } = position.coords;
                     setPosition([latitude, longitude]);
                     handleLocationChange(latitude, longitude); // Update formData with initial position
-                    
+
                 },
                 (err) => {
                     setError('Unable to retrieve your location.');
@@ -110,67 +113,67 @@ function Home() {
         const id = localStorage.getItem("userId");
         const fetchCageRooms = async () => {
             try {
-              const id = localStorage.getItem("userId");
-              const data = await GetAllFavCageByUserID(parseInt(id as string));
-            //   console.log("FAV cage:", data);
-              setFavRooms(data || []);
-              console.log("FAV cage room:", favRooms);
+                const id = localStorage.getItem("userId");
+                const data = await GetAllFavCageByUserID(parseInt(id as string));
+                //   console.log("FAV cage:", data);
+                setFavRooms(data || []);
+                console.log("FAV cage room:", favRooms);
             } catch (error) {
-              console.error("Error fetching cage room data:", error);
+                console.error("Error fetching cage room data:", error);
             }
-          };
+        };
         fetchCageRooms();
 
         fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
         })
-          .then((response) => {
-            if (!response.ok) throw new Error("Failed to fetch cage room data");
-            return response.json();
-          })
-          .then((data) => {
-            setRooms(data|| []);
-          })
-          .catch((error) => console.error("Error fetching cage room data:", error));
-      }, []);
-      
-      useEffect(() => {
+            .then((response) => {
+                if (!response.ok) throw new Error("Failed to fetch cage room data");
+                return response.json();
+            })
+            .then((data) => {
+                setRooms(data || []);
+            })
+            .catch((error) => console.error("Error fetching cage room data:", error));
+    }, []);
+
+    useEffect(() => {
         const fetchCageDetails = async (cageId: number, token: string) => {
             try {
-              const response = await fetch(`http://localhost:5000/api/cageroom/${cageId}`, {
-                method: "GET",
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  Accept: "application/json",
-                },
-              });
-              if (!response.ok) throw new Error("Failed to fetch cage details");
-              return await response.json();
+                const response = await fetch(`http://localhost:5000/api/cageroom/${cageId}`, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                });
+                if (!response.ok) throw new Error("Failed to fetch cage details");
+                return await response.json();
             } catch (error) {
-              console.error("Error fetching cage details:", error);
+                console.error("Error fetching cage details:", error);
             }
-          };
-      if (favRooms.length > 0) {
-        const token = localStorage.getItem("token");
-        // Fetch details for each cage in the favorite rooms list
-        const fetchAllCageDetails = async () => {
-          const details = await Promise.all(
-            favRooms.map(async (room) => {
-              const data = await fetchCageDetails(room.cage_id, token as string);
-              return data;
-            })
-          );
-          setCageDetails(details);
-          console.log("Cage details:", cageDetails);
-          console.log("Cage room test:", cageDetails.map(cage => cage.animal_type));
         };
-        fetchAllCageDetails();
-      }
-    },[]);
+        if (favRooms.length > 0) {
+            const token = localStorage.getItem("token");
+            // Fetch details for each cage in the favorite rooms list
+            const fetchAllCageDetails = async () => {
+                const details = await Promise.all(
+                    favRooms.map(async (room) => {
+                        const data = await fetchCageDetails(room.cage_id, token as string);
+                        return data;
+                    })
+                );
+                setCageDetails(details);
+                console.log("Cage details:", cageDetails);
+                console.log("Cage room test:", cageDetails.map(cage => cage.animal_type));
+            };
+            fetchAllCageDetails();
+        }
+    }, []);
 
     useEffect(() => {
         // Fetch user's current location
@@ -181,6 +184,7 @@ function Home() {
                     setPosition([latitude, longitude]);
                     setSearchedPosition([latitude, longitude]); // Default search position
                 },
+
                 () => {
                     setError('Unable to retrieve your location.');
                     setPosition([13.736717, 100.523186]); // Default to Bangkok
@@ -216,7 +220,7 @@ function Home() {
         return null;
     };
 
-    
+
     console.log(searchedPosition)
 
     const handleSearch = async () => {
@@ -225,13 +229,13 @@ function Home() {
             cage_size: selectedCageSizes[pet] || "",
         }));
 
-        const filterSearchCage = searchedPosition ? {
-            longitude: JSON.stringify(searchedPosition[1]),
-            latitude: JSON.stringify(searchedPosition[0]),
+        const filterSearchCage: FilterSearchCage = {
+            longitude: searchedPosition ? JSON.stringify(searchedPosition[1]) : "",
+            latitude: searchedPosition ? JSON.stringify(searchedPosition[0]) : "",
             start_time: startDate,
             end_time: endDate
-        } : null; // or provide a default value if needed
-        
+        };
+
 
         try {
             const results = await GetSearchCage(filterAnimal, filterSearchCage);
@@ -298,12 +302,12 @@ function Home() {
                     <div className="grid grid-cols-2 gap-4 mb-6">
                         <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
                             <label htmlFor="location" className="block text-[#A08252] text-lg font-semibold mb-4">
-                            Location
+                                Location
                             </label>
                             <div className="flex flex-col w-3/12 gap-y-5 pl-5 ">
                                 <div className="bg-bg rounded-xl flex  h-44 w-[37rem] shadow shadow-gray-400 p-1  ">
                                     <div className="h-full w-full rounded-lg">
-                                        
+
                                         {geoError && <div>{geoError}</div>}
                                         <MapContainer
                                             center={position || [13.736717, 100.523186]}
@@ -312,13 +316,13 @@ function Home() {
                                         >
                                             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                                             <LocationMarker />
-                                            <MapWithGeocoder/>
+                                            <MapWithGeocoder />
                                         </MapContainer>
                                     </div>
-                                <div>
+                                    <div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
                         </div>
                         <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
                             <div>
@@ -428,40 +432,40 @@ function Home() {
                 <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-1/2 px-4">
                     {/* Single Hotel Card */}
                     {cageDetails.map((cage, index) => (
-                    <div
-                        key={index}
-                        className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
-                    >
-                        {/* Hotel Image and Info */}
-                        <div className="flex space-x-6">
-                        {/* Image */}
-                        <div className="w-40 h-40 rounded-lg overflow-hidden">
-                            <img
-                            src={cage.image || '/placeholder-image.png'} // Placeholder for missing images
-                            alt="Cage Room"
-                            className="w-full h-full object-cover"
-                            />
-                        </div>
-                        {/* Hotel Info */}
-                        <div>
-                            <h2 className="text-lg font-bold text-[#333] mb-2">
-                            {cage.animal_type}
-                            </h2>
-                            {/* Location */}
-                            <p className="text-gray-500 mb-2">
-                            {cage.detail || 'No additional details provided'}
-                            </p>
-                            {/* Facilities */}
-                            <p className="text-gray-600 text-sm">
-                            <span className="text-[#A08252]">Facilities:</span>{' '}
-                            {cage.facility || 'N/A'}
-                            </p>
-                        </div>
-                        </div>
+                        <div
+                            key={index}
+                            className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
+                        >
+                            {/* Hotel Image and Info */}
+                            <div className="flex space-x-6">
+                                {/* Image */}
+                                <div className="w-40 h-40 rounded-lg overflow-hidden">
+                                    <img
+                                        src={cage.image || '/placeholder-image.png'} // Placeholder for missing images
+                                        alt="Cage Room"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                {/* Hotel Info */}
+                                <div>
+                                    <h2 className="text-lg font-bold text-[#333] mb-2">
+                                        {cage.animal_type}
+                                    </h2>
+                                    {/* Location */}
+                                    <p className="text-gray-500 mb-2">
+                                        {cage.detail || 'No additional details provided'}
+                                    </p>
+                                    {/* Facilities */}
+                                    <p className="text-gray-600 text-sm">
+                                        <span className="text-[#A08252]">Facilities:</span>{' '}
+                                        {cage.facility || 'N/A'}
+                                    </p>
+                                </div>
+                            </div>
 
-                        {/* Capsule Info */}
-                        <div className="flex-1 mx-8 border-l pl-6">
-                            <h3 className="text-[#333] font-bold mb-2">Capsule</h3>
+                            {/* Capsule Info */}
+                            <div className="flex-1 mx-8 border-l pl-6">
+                                <h3 className="text-[#333] font-bold mb-2">Capsule</h3>
                                 <span className="text-xs bg-[#A08252] text-white px-3 py-1 rounded-lg">
                                     {cage.size}
                                 </span>
@@ -470,21 +474,21 @@ function Home() {
                                     <br />
                                     Accommodates: {cage.max_capacity}
                                 </p>
-                        </div>
+                            </div>
 
-                        {/* Price and Button */}
-                        <div className="flex flex-col items-end space-y-4">
-                        <span className="text-lg font-bold text-[#333]">
-                            {cage.price} ฿
-                        </span>
-                        <button
-                            className="bg-[#A08252] text-white text-sm px-6 py-2 rounded-lg hover:bg-[#8a6e45] transition"
-                            onClick={() => console.log('Book Now')}
-                        >
-                            Book now
-                        </button>
+                            {/* Price and Button */}
+                            <div className="flex flex-col items-end space-y-4">
+                                <span className="text-lg font-bold text-[#333]">
+                                    {cage.price} ฿
+                                </span>
+                                <button
+                                    className="bg-[#A08252] text-white text-sm px-6 py-2 rounded-lg hover:bg-[#8a6e45] transition"
+                                    onClick={() => console.log('Book Now')}
+                                >
+                                    Book now
+                                </button>
+                            </div>
                         </div>
-                    </div>
                     ))}
                 </div>
 

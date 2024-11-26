@@ -72,4 +72,27 @@ export async function UpdateCage(cage:CageRoom): Promise<any> {
     }
 }
 
+export async function GetAnimalCageType(): Promise<any> {
+  try {
+    let apiPath = `${baseApi}/cageroom/${cage.id}`;
+    let queryParams = "";
+
+    queryParams = MapArrayToQuery(filterAnimal, filterSearchCage);
+    apiPath = apiPath + queryParams;
+    const token = localStorage.getItem("token");
+    const response = await fetch(apiPath, {
+      headers: { authorization: `Bearer ${token}` },
+    });
+    // console.log("Response:", response);
+    const data = await response.json();
+    if (response.status != 200) {
+      return Promise.reject(data);
+    }
+
+    return Promise.resolve(data);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
 
