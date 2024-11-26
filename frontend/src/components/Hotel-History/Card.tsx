@@ -17,13 +17,14 @@ function Card({ hotel }: { hotel: Hotel }) {
     setIsCanceled(true); // Switch to canceled view
   };
 
+
   const handleBackClick = () => {
     setIsCanceled(false); // Switch back to default view
   };
 
   return (
     <div>
-      {isCanceled
+      {isCanceled 
         ? (hotel.status === "pending" || hotel.status === "accepted") && (
             <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
               <div className="grid grid-cols-10 gap-4 mb-10 mt-10 ">
@@ -140,7 +141,7 @@ function Card({ hotel }: { hotel: Hotel }) {
                   </div>
                 </div>
               )}
-              {hotel.status === "accept" && (
+              {hotel.status === "accepted" && (
                 <div className="grid grid-cols-10 ">
                   <div className="col-span-2"></div>
                   <div className="col-span-8 ml-5 border-t border-gray-500 pt-2">
@@ -160,7 +161,7 @@ function Card({ hotel }: { hotel: Hotel }) {
                         </label>
                       </div>
                       <div className="space-x-2 ml-auto mr-0 flex">
-                        {hotel.status === "pending" && (
+                        {hotel.status === "accepted" && (
                           <button
                             onClick={handleBackClick}
                             className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-1/2 w-1/2"
@@ -168,7 +169,7 @@ function Card({ hotel }: { hotel: Hotel }) {
                             Cancel
                           </button>
                         )}
-                        {hotel.status === "pending" && (
+                        {hotel.status === "accepted" && (
                           <button
                             // onClick={handleBackClick}
                             className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-1/2 w-1/2"
@@ -183,6 +184,7 @@ function Card({ hotel }: { hotel: Hotel }) {
               )}
             </div>
           )
+          
         : (hotel.status === "pending" || hotel.status === "accepted") && (
             <div className="grid grid-cols-10 gap-4 mb-10 mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
               <div className="col-span-2">
@@ -252,6 +254,16 @@ function Card({ hotel }: { hotel: Hotel }) {
                   {hotel.price} ฿
                 </h2>
                 {hotel.status === "pending" && (
+                  <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
+                    <button
+                      onClick={handleCancelClick}
+                      className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+                {hotel.status === "accepted" && (
                   <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
                     <button
                       onClick={handleCancelClick}

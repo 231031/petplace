@@ -7,13 +7,12 @@ import { Profile } from "@/types/model";
 import { Cage } from "@/types/response";
 
 function HotelSearch() {
-
   const location = useLocation();
   const hotel = location.state?.hotels || [];
-  const startDateFromState= location.state?.startDate || "";  
-  const endDateFromState= location.state?.endDate || "";      
-  console.log(hotel);
-
+  const startDateFromState = location.state?.startDate || "";
+  const endDateFromState = location.state?.endDate || "";
+  // console.log("test ",hotel[0].cages.animal_type);
+  console.log("test ", hotel[0].cages[0].size);
 
   const [hotels, setHotels] = useState<any[]>([]);
   const [longitude, setLongtitude] = useState("");
@@ -22,23 +21,12 @@ function HotelSearch() {
   const [sort, setSort] = useState("");
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const navigate = useNavigate(); 
-
+  const navigate = useNavigate();
+  const [selectedCageSizes, setSelectedCageSizes] = useState<{
+    [key: string]: string;
+  }>({});
 
   const petOptions = [
-    "dog",
-    "Cat",
-    // "Fish",
-    // "Bird",
-    // "Chinchilla",
-    // "Ferret",
-    // "Rabbit",
-    // "Hamster",
-    // "Hedgehog",
-    // "Sugar Glider",
-  ];
-
-  const petOptions2 = [
     "dog",
     "Cat",
     "Fish",
@@ -51,52 +39,66 @@ function HotelSearch() {
     "Sugar Glider",
   ];
 
-  const handlePetChange = (pet: string) => {
+  const handlePetChange = (pet) => {
     setSelectedPets((prev) =>
-      prev.includes(pet) ? prev.filter((p) => p !== pet) : [...prev, pet]
+      prev.includes(pet) ? prev.filter((item) => item !== pet) : [...prev, pet]
     );
   };
 
   console.log("Currently selected pets:", selectedPets);
 
-  const handleSearch = async (sort: string) => {
+  const handleSearch = async () => {
     const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
-      animal_type: pet,
-      cage_size: "m",
+        animal_type: pet,
+        cage_size: selectedCageSizes[pet] || "",
     }));
 
-    const filterSearchCage: FilterSearchCage[] = [{
-      longitude: "14.53",
-      latitude: "100.77",
-      start_time: startDate,
-      end_time: endDate,
-      sort: sort,
-    },
-    {
-      longitude: "99.3986862",
-      latitude: "18.3170581",
-      start_time: startDate,
-      end_time: endDate
-    }]
+    const filterSearchCage = {
+        longitude: "99.3986862",
+        latitude: "18.3170581",
+        start_time: startDate,
+        end_time: endDate
+        
 
+
+
+    };
 
     try {
-      const results = await GetSearchCage(filterAnimal, filterSearchCage);
-      setHotels(results.data);
-      console.log("Results:", results);
-      navigate("/hotelsearch", { state: { hotels: results } });
+        const results = await GetSearchCage(filterAnimal, filterSearchCage);
+        setHotels(results.data);
+        console.log("Results:", results);
+        navigate('/hotelsearch', {
+            state: {
+                hotels: results,
+                startDate: startDate,
+                endDate: endDate
+            }
+        });
     } catch (error) {
-      console.error("Error fetching hotels:", error);
+        console.error("Error fetching hotels:", error);
     }
-  };
+};
 
-  const [searchClicked, setSearchClicked] = useState(false); 
+  const handleCageSizeChange = (pet: string, size: string) => {
+    setSelectedCageSizes((prev) => ({
+        ...prev,
+        [pet]: size,
+    }));
+};
 
- 
+  const [searchClicked, setSearchClicked] = useState(false);
+
   // const [isClicked, setIsClicked] = useState(false);
   const [activeButton, setActiveButton] = useState<number | null>(null);
   const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
-
+  const uniqueAnimalTypes = [
+    ...new Set(
+      hotel.flatMap((hotelItem) =>
+        hotelItem.cages.map((cage) => cage.animal_type)
+      )
+    ),
+  ];
   return (
     <div className="">
       <div className="w-full h-1/2 p-4 bg-white flex justify-center items-center relative">
@@ -186,20 +188,41 @@ function HotelSearch() {
                 <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
                   <label className="block text-red-900 text-lg font-semibold mb-4"></label>
                   <div className="grid grid-cols-2 gap-4">
-                    {petOptions2.map((pet) => (
-                      <label
+                    {petOptions.map((pet) => (
+                      <div
                         key={pet}
-                        className="flex items-center space-x-2 cursor-pointer"
+                        className="flex items-center justify-between space-x-2"
                       >
-                        <input
-                          type="checkbox"
-                          value={pet}
-                          checked={selectedPets.includes(pet)}
-                          onChange={() => handlePetChange(pet)}
-                          className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
-                        />
-                        <span>{pet}</span>
-                      </label>
+                        {/* Checkbox and Label */}
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            value={pet}
+                            checked={selectedPets.includes(pet)}
+                            onChange={() => handlePetChange(pet)}
+                            className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
+                          />
+                          <span className="text-[#5E4126] font-medium">
+                            {pet}
+                          </span>
+                        </label>
+
+                        {/* Dropdown for Cage Size */}
+                        <select
+                          value={selectedCageSizes[pet] || ""}
+                          onChange={(e) =>
+                            handleCageSizeChange(pet, e.target.value)
+                          }
+                          className="w-1/2 border border-[#A08252] rounded-lg px-2 py-1 text-[#5E4126] focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                        >
+                          <option value="" disabled>
+                            All size
+                          </option>
+                          <option value="s">Small (S)</option>
+                          <option value="m">Medium (M)</option>
+                          <option value="l">Large (L)</option>
+                        </select>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -208,7 +231,7 @@ function HotelSearch() {
               <div className="flex justify-center mt-auto">
                 <button
                   onClick={() => {
-                    handleSearch("");
+                    handleSearch();
                     setIsEditing(false); // Exit edit mode on search
                   }}
                   className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200"
@@ -230,17 +253,22 @@ function HotelSearch() {
                         activeButton === index ? "#A08252" : "white",
                       color: activeButton === index ? "white" : "#A08252",
                     }}
-                    className={`${activeButton === index
+                    className={`${
+                      activeButton === index
                         ? "hover:bg-egg focus:ring-red-300"
                         : "hover:bg-gray-100 focus:ring-red-300"
-                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
                   </button>
                 ))}
               </div>
 
-              <HotelData hotelList={hotel} startDate={startDate} endDate={endDate} />
+              <HotelData
+                hotelList={hotel}
+                startDate={startDate}
+                endDate={endDate}
+              />
             </div>
           ) : (
             // Original Search Section
@@ -250,22 +278,49 @@ function HotelSearch() {
                   <div className="text-xl p-2 mt-10">
                     <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-4">
                       <label>Pet</label>
-                      {/* console.log(hotel[0].name) */}
-                      {petOptions.map((pet) => (
-                        <label
-                          key={pet}
-                          className="flex items-center space-x-2 cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            value={pet}
-                            checked={selectedPets.includes(pet)}
-                            onChange={() => handlePetChange(pet)}
-                            className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
-                          />
-                          <span>{pet}</span>
-                        </label>
-                      ))}
+                      <div className="space-y-4">
+                        {uniqueAnimalTypes.map((animal) => (
+                          <div
+                            key={animal}
+                            className="flex items-center space-x-4"
+                          >
+                            <label className="flex items-center space-x-2 cursor-pointer flex-grow">
+                              <input
+                                type="checkbox"
+                                value={animal}
+                                checked={selectedPets.includes(animal)}
+                                onChange={() => handlePetChange(animal)}
+                                className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
+                              />
+                              <span>{animal}</span>
+                            </label>
+
+                            <select
+                              value={
+                                selectedCageSizes[animal] ||
+                                hotel
+                                  ?.find((h) =>
+                                    h.cages?.some(
+                                      (cage) => cage.animal_type === animal
+                                    )
+                                  )
+                                  ?.cages?.find(
+                                    (cage) => cage.animal_type === animal
+                                  )?.size ||
+                                "" // Default to an empty string if no matching animal is found
+                              }
+                              onChange={(e) =>
+                                handleCageSizeChange(animal, e.target.value)
+                              }
+                              className="border border-[#A08252] rounded-lg px-2 py-1 text-[#5E4126] focus:outline-none focus:ring-2 focus:ring-[#A08252] ml-2"
+                            >
+                              <option value="s">Small (S)</option>
+                              <option value="m">Medium (M)</option>
+                              <option value="l">Large (L)</option>
+                            </select>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -333,19 +388,23 @@ function HotelSearch() {
                         activeButton === index ? "#A08252" : "white",
                       color: activeButton === index ? "white" : "#A08252",
                     }}
-                    className={`${activeButton === index
+                    className={`${
+                      activeButton === index
                         ? "hover:bg-egg focus:ring-red-300"
                         : "hover:bg-gray-100 focus:ring-red-300"
-                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
                   </button>
                 ))}
               </div>
 
-              <HotelData hotelList={hotel} startDate={startDate} endDate={endDate} />
+              <HotelData
+                hotelList={hotel}
+                startDate={startDate}
+                endDate={endDate}
+              />
             </div>
-
           )}
         </div>
       </div>
