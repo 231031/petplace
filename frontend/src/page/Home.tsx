@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
-import { GetAllFavCageByUserID } from "@/helper/user";
 import { Cage } from "@/types/response";
 import { useLocation } from "react-router-dom";
 import L from 'leaflet';
@@ -118,19 +117,7 @@ function Home() {
     useEffect(() => {
         const token = localStorage.getItem("token");
         const id = localStorage.getItem("userId");
-        const fetchCageRooms = async () => {
-            try {
-              const id = localStorage.getItem("userId");
-              const data = await GetAllFavCageByUserID(parseInt(id as string));
-            //   console.log("FAV cage:", data);
-              setFavRooms(data || []);
-              console.log("FAV cage room:", favRooms);
-            } catch (error) {
-              console.error("Error fetching cage room data:", error);
-            }
-          };
-        fetchCageRooms();
-
+        
         fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
           method: "GET",
           headers: {
@@ -144,43 +131,10 @@ function Home() {
           })
           .then((data) => {
             setRooms(data|| []);
+            console.log("Cage room for search:", rooms);
           })
           .catch((error) => console.error("Error fetching cage room data:", error));
       }, []);
-      
-      useEffect(() => {
-        const fetchCageDetails = async (cageId: number, token: string) => {
-            try {
-              const response = await fetch(`http://localhost:5000/api/cageroom/${cageId}`, {
-                method: "GET",
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  Accept: "application/json",
-                },
-              });
-              if (!response.ok) throw new Error("Failed to fetch cage details");
-              return await response.json();
-            } catch (error) {
-              console.error("Error fetching cage details:", error);
-            }
-          };
-      if (favRooms.length > 0) {
-        const token = localStorage.getItem("token");
-        // Fetch details for each cage in the favorite rooms list
-        const fetchAllCageDetails = async () => {
-          const details = await Promise.all(
-            favRooms.map(async (room) => {
-              const data = await fetchCageDetails(room.cage_id, token as string);
-              return data;
-            })
-          );
-          setCageDetails(details);
-          console.log("Cage details:", cageDetails);
-          console.log("Cage room test:", cageDetails.map(cage => cage.animal_type));
-        };
-        fetchAllCageDetails();
-      }
-    },[]);
 
     useEffect(() => {
         // Fetch user's current location
@@ -204,6 +158,48 @@ function Home() {
         }
     }, []);
 
+    const [favData, setFavData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchFavorites = async () => {
+          try {
+            // Retrieve user ID from localStorage
+            const userId = localStorage.getItem("userId");
+            const token = localStorage.getItem("token");
+            if (!userId) throw new Error("User ID is not available");
+    
+            const [latitude, longitude] = position || [13.736717, 100.523186];
+    
+            // Construct the API URL
+            const apiUrl = `http://localhost:5000/api/user/fav/${userId}?latitude=${latitude}&longitude=${longitude}`;
+    
+            // Fetch data
+            const response = await fetch(apiUrl, {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+              },
+            });
+            console.log("Response:", response);
+            if (!response.ok) {
+              throw new Error(`Error fetching data: ${response.statusText}`);
+            }
+    
+            const data = await response.json();
+            setFavData(data); // Update state with fetched data
+            console.log("User favorites:", data);
+          } catch (err) {
+            console.error("Error fetching user favorites:", err);
+          } finally {
+            setLoading(false); // Stop the loading spinner
+          }
+        };
+    
+        fetchFavorites();
+      }, []);
+
     const MapWithGeocoder = () => {
         const map = useMap();
 
@@ -226,7 +222,6 @@ function Home() {
         return null;
     };
 
-    
     console.log(searchedPosition)
 
     const handleSearch = async () => {
@@ -235,12 +230,12 @@ function Home() {
             cage_size: selectedCageSizes[pet] || "",
         }));
 
-        const filterSearchCage = searchedPosition ? {
-            longitude: JSON.stringify(searchedPosition[1]),
-            latitude: JSON.stringify(searchedPosition[0]),
+        const filterSearchCage: FilterSearchCage = {
+            longitude: searchedPosition ? JSON.stringify(searchedPosition[1]) : "",
+            latitude: searchedPosition ? JSON.stringify(searchedPosition[0]) : "",
             start_time: startDate,
             end_time: endDate
-        } : null; // or provide a default value if needed
+        };
         
 
         try {
@@ -310,8 +305,8 @@ function Home() {
                             <label htmlFor="location" className="block text-[#A08252] text-lg font-semibold mb-4">
                             Location
                             </label>
-                            <div className="flex flex-col w-3/12 gap-y-5 pl-5 ">
-                                <div className="bg-bg rounded-xl flex  h-44 w-[37rem] shadow shadow-gray-400 p-1  ">
+                            <div className="flex flex-col w-full gap-y-5 pl-5 ">
+                                <div className="bg-bg rounded-xl flex  h-44 w-full shadow shadow-gray-400 p-1  ">
                                     <div className="h-full w-full rounded-lg">
                                         
                                         {geoError && <div>{geoError}</div>}
@@ -434,16 +429,17 @@ function Home() {
                         {/* Hotel Image and Info */}
                         <div className="flex space-x-6">
                         {/* Image */}
-                        <div className="w-40 h-40 rounded-lg overflow-hidden">
-                            <img
-                            src={cage.image || '/placeholder-image.png'} // Placeholder for missing images
-                            alt="Cage Room"
-                            className="w-full h-full object-cover"
-                            />
-                        </div>
+                            
+                            <div className="w-40 h-40 rounded-lg overflow-hidden"
+                                key={index}>
+                                <img
+                                 src={cage.image_array?.[0]}
+                                alt="Cage Room"
+                                className="w-full h-full object-cover"
+                                />
+                            </div>
+                     
                         {/* Hotel Info */}
-
-                        
                         <div>
                             <h2 className="text-lg text-[#333] mb-2 flex justify-between">
                             <span className="text-gray-600">Facilities:</span>{' '}
