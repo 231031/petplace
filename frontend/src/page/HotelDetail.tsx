@@ -110,6 +110,42 @@ function HotelDetail() {
     // }
     // );
 
+    const [distance, setDistance] = useState(null); // to store the calculated distance
+
+    // Get user's current location and calculate distance to hotel
+    useEffect(() => {
+        if (hotel.latitude && hotel.longitude) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLat = position.coords.latitude;
+                    const userLon = position.coords.longitude;
+
+                    // Haversine formula to calculate the distance
+                    const toRad = (value: number) => value * (Math.PI / 180); // Convert degrees to radians
+
+                    const lat1 = toRad(userLat);
+                    const lon1 = toRad(userLon);
+                    const lat2 = toRad(hotel.latitude);
+                    const lon2 = toRad(hotel.longitude);
+
+                    const dLat = lat2 - lat1;
+                    const dLon = lon2 - lon1;
+
+                    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                              Math.cos(lat1) * Math.cos(lat2) *
+                              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                    const R = 6371; // Earth radius in kilometers
+                    const distance = R * c; // Distance in kilometers
+                    setDistance(distance); // Store the distance
+                },
+                (error) => {
+                    console.error("Error getting location:", error);
+                }
+            );
+        }
+    }, [hotel.latitude, hotel.longitude]);
+
    
     const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
         if (ref.current) {
@@ -130,7 +166,7 @@ function HotelDetail() {
                         <button className="h-10 w-20 rounded-md " onClick={() => scrollToSection(reviewRef)}>Review</button>
                     </div>
                 </div>
-                <div className="flex flex-col w-full h-80 gap-y-5  ">
+                <div className="flex flex-col w-full h-[32rem]  gap-y-5  ">
                     <h1 ref={hotelRef} id="hotel" className="text-4xl">{hotel.name}</h1>
                     <CarouselDemo images={hotel.image_array || []}/>
 
@@ -169,7 +205,7 @@ function HotelDetail() {
                                 <p className="text-center mt-10">Location data not available.</p>
                             )}
                             <div>
-                                distance
+                                <p>Distance: {distance ? distance.toFixed(2) : "Loading..."}</p> 
                             </div>
                         </div>
                     </div>
