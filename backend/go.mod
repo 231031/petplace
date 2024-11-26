@@ -3,7 +3,6 @@ module petplace
 go 1.23.1
 
 require (
-	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/coocood/freecache v1.2.4
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/validator/v10 v10.22.1
@@ -11,7 +10,6 @@ require (
 	github.com/jinzhu/copier v0.4.0
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/plutov/paypal/v4 v4.11.0
-	github.com/stretchr/testify v1.9.0
 	github.com/swaggo/echo-swagger v1.4.1
 	github.com/swaggo/swag v1.16.3
 	github.com/umahmood/haversine v0.0.0-20151105152445-808ab04add26
@@ -22,9 +20,7 @@ require (
 )
 
 require (
-	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 )
 

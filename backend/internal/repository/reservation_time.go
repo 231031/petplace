@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"petplace/internal/model"
 	"time"
 
@@ -33,41 +34,25 @@ func (r *ReservationTimeRepository) UpdateDailyReservationAndBook(previousDay, c
 }
 
 func (r *ReservationTimeRepository) UpdateDailyNewDate(previousDay time.Time, reservations []model.ReservationTime) error {
-	query := "UPDATE reservation_times SET reservation_status = CASE "
-	var updateVal []interface{}
-
-	for _, reservation := range reservations {
-		query += " WHEN profile_id = ? THEN ? "
-		updateVal = append(updateVal, reservation.ProfileID, reservation.ReservationStatus)
-	}
-
-	query += " END, open_status = CASE "
-
-	for _, reservation := range reservations {
-		query += " WHEN profile_id = ? THEN ? "
-		updateVal = append(updateVal, reservation.ProfileID, reservation.OpenStatus)
-	}
-
-	query += "END, date = CASE "
-	query += "WHEN date = ? THEN ? "
-	updateVal = append(updateVal, previousDay, reservations[0].Date)
-
-	query += "END WHERE profile_id IN ("
-
-	for i, reservation := range reservations {
-		query += "?"
-		if i < len(reservations) {
-			query += ","
+	tx := r.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
 		}
-		updateVal = append(updateVal, reservation.ProfileID)
-	}
-	query += ") AND date = ? AND reservation_status = ?;"
-	updateVal = append(updateVal, previousDay, "open")
+	}()
 
-	res := r.db.Exec(query, updateVal...)
+	res := tx.Delete(&model.ReservationTime{}, "date = ?", previousDay)
 	if res.Error != nil {
+		tx.Rollback()
+		fmt.Println("failed to create clinic & care profile")
 		return res.Error
 	}
 
+	res = tx.Create(&reservations)
+	if res.Error != nil {
+		tx.Rollback()
+		fmt.Println("failed to create clinic & care profile")
+		return res.Error
+	}
 	return nil
 }

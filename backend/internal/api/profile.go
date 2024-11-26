@@ -46,21 +46,21 @@ func (h *ProfileHandler) handleCreateProfile(c echo.Context) error {
 	}
 
 	var status int
-	var strErr string
+	var msg string
 	if strings.ToLower(profile.Role) == "clinic" {
-		status, strErr, err = h.profileServiceIn.CreateCliniCareProfile(profile)
+		status, msg, err = h.profileServiceIn.CreateCliniCareProfile(profile)
 	} else {
-		status, strErr, err = h.profileServiceIn.CreateProfile(profile)
+		status, msg, err = h.profileServiceIn.CreateProfile(profile)
 	}
 
 	if err != nil {
-		return utils.HandleError(c, status, strErr, err)
+		return utils.HandleError(c, status, msg, err)
 	}
 	if status != http.StatusCreated {
-		return utils.HandleError(c, status, strErr, err)
+		return utils.HandleError(c, status, msg, err)
 	}
 
-	return c.JSON(http.StatusCreated, "profile is created successfully")
+	return c.JSON(http.StatusCreated, msg)
 }
 
 // @Summary Update Profile
