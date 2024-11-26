@@ -1,6 +1,6 @@
 import CageCard from "@/components/Hotel-Bookdetail/CageCard";
 import PetCard from "@/components/Hotel-Bookdetail/PetCard";
-import { Cage} from "@/types/response";
+import { Cage } from "@/types/response";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { GetAllAnimalByUserID } from '@/helper/animal_user';
@@ -62,7 +62,7 @@ function HotelBookdetail() {
             return;
         }
 
-        // const profile_name = selectedCage.profile?.name || "ไม่ระบุชื่อโรงแรม";
+       
         const hotelName = location.state?.profile_name || selectedCage.profile?.name || "ไม่ระบุชื่อโรงแรม";
         console.log("hotelNameasdasd", hotelName);
 
@@ -77,9 +77,9 @@ function HotelBookdetail() {
                     max_capacity: selectedCage.max_capacity
                 },
                 hotelName,
-                selectedPets,
-                startDate,
-                endDate
+                selectedPets: selectedPets, 
+                startDate: startDate,      
+                endDate: endDate          
             }
         });
     };

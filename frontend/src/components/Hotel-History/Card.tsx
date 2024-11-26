@@ -1,5 +1,5 @@
 import { Hotel } from "./HotelData";
-import React from "react";
+import React, { useState } from "react";
 
 // function Card({hotel}:{hotel:Hotel}) {
 //     return (
@@ -11,48 +11,260 @@ import React from "react";
 //   }
 
 function Card({ hotel }: { hotel: Hotel }) {
+  const [isCanceled, setIsCanceled] = useState(false); // State to handle cancellation
+
+  const handleCancelClick = () => {
+    setIsCanceled(true); // Switch to canceled view
+  };
+
+  const handleBackClick = () => {
+    setIsCanceled(false); // Switch back to default view
+  };
+
   return (
     <div>
-    {(hotel.status === "pending" || hotel.status === "accepted") && (
-      <div className="grid grid-cols-10 gap-4 mb-10 mt-10 rounded-2xl shadow-lg shadow-egg border  border-gray-300  p-4">
-        <div className="col-span-2 ">
-          <img
-            src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-            className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
-          />
-        </div>
-    
-        <div className="col-span-2 ml-5 mt-5">
-          <h2>{hotel.cage_room.cage_type}</h2>
-          <h1>
-            {hotel.cage_room.size} {hotel.cage_room.width} x
-            {hotel.cage_room.lenth} x {hotel.cage_room.height}
-          </h1>
-          <h2>Accommodates: {hotel.cage_room.max_capacity} </h2>
-          <h2>Facility: {hotel.cage_room.facility}</h2>
-        </div>
-        <div className="col-span-3 ml-5 mt-5">
-          <h1>{hotel.animal_hotel_services[0].animal_user.name}</h1>
-          <h1>
-            Pet type: {hotel.animal_hotel_services[0].animal_user.animal_type}
-          </h1>
-          <h2>Age: {hotel.animal_hotel_services[0].animal_user.age}</h2>
-          <h2>Pet breed: {hotel.animal_hotel_services[0].animal_user.breed}</h2>
-          <h2>Weight: {hotel.animal_hotel_services[0].animal_user.weight}</h2>
-        </div>
-        <div className="col-span-3 ml-5 mt-5">
-          <h1>Check in {hotel.start_time}</h1>
-          <h1>Check out {hotel.end_time}</h1>
-          <h2>{hotel.price}</h2>
-        </div>
-        <div className="flex flex-row gap-4 ml-5 mt-5">
-          {/* <h5>{hotel.cages[].animal_type}</h5>
-          {hotel.cages?.map((cage) => (
-            <h5>{cage.animal_type}</h5>
-          ))} */}
-        </div>
-      </div>
-    )}
+      {isCanceled
+        ? (hotel.status === "pending" || hotel.status === "accepted") && (
+            <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
+              <div className="grid grid-cols-10 gap-4 mb-10 mt-10 ">
+                <div className="col-span-2">
+                  <img
+                    src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+                    className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
+                  />
+                </div>
+
+                <div className="col-span-3 ml-5 mt-5">
+                  <h2 className="text-xl font-medium">
+                    {hotel.cage_room.cage_type}
+                  </h2>
+                  <h1 className="space-x-2 text-lg">
+                    <span className="bg-size pl-2 pr-1 ">
+                      {hotel.cage_room.size}{" "}
+                    </span>
+                    <span className="">Size</span>
+                    <span>{hotel.cage_room.width} x</span>
+                    <span>{hotel.cage_room.lenth} x</span>
+                    <span>{hotel.cage_room.height}</span>
+                  </h1>
+
+                  <h2 className="text-lg">
+                    Accommodates: {hotel.cage_room.max_capacity}{" "}
+                  </h2>
+                  <h2 className="text-lg">
+                    Facility: {hotel.cage_room.facility}
+                  </h2>
+                </div>
+                <div className="col-span-2 ml-5 mt-5">
+                  <h1 className="text-xl font-medium">
+                    {hotel.animal_hotel_services[0].animal_user.name}
+                  </h1>
+                  <h1 className="flex items-center space-x-2">
+                    <span className="text-lg">Pet type:</span>
+                    <span>
+                      {hotel.animal_hotel_services[0].animal_user.animal_type}
+                    </span>
+                  </h1>
+
+                  <h2>
+                    <span className="text-lg">Age:</span>
+                    <span>
+                      {hotel.animal_hotel_services[0].animal_user.age}
+                    </span>
+                  </h2>
+                  <h2>
+                    <span className="text-lg">Pet breed:</span>
+                    <span>
+                      {hotel.animal_hotel_services[0].animal_user.breed}
+                    </span>
+                  </h2>
+                  <h2>
+                    <span className="text-lg">Weight:</span>
+                    <span>
+                      {hotel.animal_hotel_services[0].animal_user.weight}
+                    </span>
+                  </h2>
+                </div>
+                <div className="col-span-3 ml-5 mt-5 space-y-1">
+                  <h1 className="ml-auto text-lg px-4 text-right">
+                    Check in {hotel.start_time}
+                  </h1>
+                  <h1 className="ml-auto text-lg px-4 text-right">
+                    Check out {hotel.end_time}
+                  </h1>
+                  <h2 className="ml-auto text-right px-4 font-bold text-2xl ">
+                    {hotel.price} ฿
+                  </h2>
+                </div>
+                {/* <div className="flex flex-row gap-4 ml-5 mt-5 w-full bg-red-600">
+                  da
+                </div> */}
+              </div>
+              {/* {hotel.status === "accepted" && ( */}
+              {hotel.status === "pending" && (
+                <div className="grid grid-cols-10 ">
+                  <div className="col-span-2"></div>
+                  <div className="col-span-8 ml-5 border-t border-gray-500 pt-2">
+                    <h1 className="text-medium text-lg">Cancelation</h1>
+                    <h1 className="text-medium text-lg">
+                      Refund status: Acceptable
+                    </h1>
+                    <h1 className="text-medium text-lg flex items-center justify-between ">
+                      <div className="flex items-center">
+                        <span>Paypal email:</span>
+                        <input
+                          type="email"
+                          className="ml-2 px-3 py-1 border rounded focus:outline-none focus:ring focus:border-blue-300"
+                          placeholder="Enter PayPal email"
+                        />
+                      </div>
+                      <div className="space-x-2">
+                        {hotel.status === "pending" && (
+                          <button
+                            onClick={handleBackClick}
+                            className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                        {hotel.status === "pending" && (
+                          <button
+                            // onClick={handleBackClick}
+                            className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
+                          >
+                            Confirm
+                          </button>
+                        )}
+                      </div>
+                    </h1>
+                  </div>
+                </div>
+              )}
+              {hotel.status === "accept" && (
+                <div className="grid grid-cols-10 ">
+                  <div className="col-span-2"></div>
+                  <div className="col-span-8 ml-5 border-t border-gray-500 pt-2">
+                    <h1 className="text-medium text-lg">Cancelation</h1>
+                    <h1 className="text-medium text-lg">
+                      Refund status: Rejected
+                    </h1>
+                    {/* <h1 className="text-medium text-lg flex items-center justify-between "> */}
+                    <h1 className="text-medium text-lg flex">
+                      <div className="flex items-center ">
+                        <label>
+                          Lorem ipsum dolor sit amet consectetur, adipisicing
+                          elit. Pariatur aliquid hic doloremque aut nam fuga
+                          magni ducimus consectetur cum fugiat, fugit, eaque
+                          vero nulla consequuntur voluptate dolorem blanditiis
+                          provident non?
+                        </label>
+                      </div>
+                      <div className="space-x-2 ml-auto mr-0 flex">
+                        {hotel.status === "pending" && (
+                          <button
+                            onClick={handleBackClick}
+                            className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-1/2 w-1/2"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                        {hotel.status === "pending" && (
+                          <button
+                            // onClick={handleBackClick}
+                            className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-1/2 w-1/2"
+                          >
+                            Confirm
+                          </button>
+                        )}
+                      </div>
+                    </h1>
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        : (hotel.status === "pending" || hotel.status === "accepted") && (
+            <div className="grid grid-cols-10 gap-4 mb-10 mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
+              <div className="col-span-2">
+                <img
+                  src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+                  className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
+                />
+              </div>
+
+              <div className="col-span-3 ml-5 mt-5">
+                <h2 className="text-xl font-medium">
+                  {hotel.cage_room.cage_type}
+                </h2>
+                <h1 className="space-x-2 text-lg">
+                  <span className="bg-size pl-2 pr-1 ">
+                    {hotel.cage_room.size}{" "}
+                  </span>
+                  <span className="">Size</span>
+                  <span>{hotel.cage_room.width} x</span>
+                  <span>{hotel.cage_room.lenth} x</span>
+                  <span>{hotel.cage_room.height}</span>
+                </h1>
+
+                <h2 className="text-lg">
+                  Accommodates: {hotel.cage_room.max_capacity}{" "}
+                </h2>
+                <h2 className="text-lg">
+                  Facility: {hotel.cage_room.facility}
+                </h2>
+              </div>
+              <div className="col-span-2 ml-5 mt-5">
+                <h1 className="text-xl font-medium">
+                  {hotel.animal_hotel_services[0].animal_user.name}
+                </h1>
+                <h1 className="flex items-center space-x-2">
+                  <span className="text-lg">Pet type:</span>
+                  <span>
+                    {hotel.animal_hotel_services[0].animal_user.animal_type}
+                  </span>
+                </h1>
+
+                <h2>
+                  <span className="text-lg">Age:</span>
+                  <span>{hotel.animal_hotel_services[0].animal_user.age}</span>
+                </h2>
+                <h2>
+                  <span className="text-lg">Pet breed:</span>
+                  <span>
+                    {hotel.animal_hotel_services[0].animal_user.breed}
+                  </span>
+                </h2>
+                <h2>
+                  <span className="text-lg">Weight:</span>
+                  <span>
+                    {hotel.animal_hotel_services[0].animal_user.weight}
+                  </span>
+                </h2>
+              </div>
+              <div className="col-span-3 ml-5 mt-5 space-y-1">
+                <h1 className="ml-auto text-lg px-4 text-right">
+                  Check in {hotel.start_time}
+                </h1>
+                <h1 className="ml-auto text-lg px-4 text-right">
+                  Check out {hotel.end_time}
+                </h1>
+                <h2 className="ml-auto text-right px-4 font-bold text-2xl ">
+                  {hotel.price} ฿
+                </h2>
+                {hotel.status === "pending" && (
+                  <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
+                    <button
+                      onClick={handleCancelClick}
+                      className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-row gap-4 ml-5 mt-5 w-full bg-red-600"></div>
+            </div>
+          )}
     </div>
   );
 }

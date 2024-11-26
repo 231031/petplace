@@ -20,6 +20,15 @@ type ProfileRepositoryIn interface {
 	GetAllProfileByUserID(userID uint) ([]model.Profile, error)
 	UpdateProfile(profile model.Profile) error
 	CountCompleteBookByID(profile_id uint) (int, error)
+
+	// care & clinic
+	CreateCliniCareProfile(profile model.Profile, reservations []model.ReservationTime) (string, error)
+	GetProfileRoleClinic() ([]model.Profile, error) // use in daily task
+}
+
+type ReservationTimeRepositoryIn interface {
+	UpdateDailyReservationAndBook(previousDay, currentDate time.Time, reservations []model.ReservationTime) (string, error)
+	UpdateDailyNewDate(previousDay time.Time, reservations []model.ReservationTime) error
 }
 
 type FavoriteCageRepositoryIn interface {

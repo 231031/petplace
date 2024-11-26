@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"petplace/internal/model"
 	"petplace/internal/repository"
 	"petplace/internal/types"
@@ -157,10 +158,27 @@ func (s *UserService) DelFavoriteCage(user_id uint, cage_id uint) error {
 	return nil
 }
 
-func (s *UserService) GetFavoriteCageByUser(user_id uint) ([]model.FavoriteCage, error) {
+func (s *UserService) GetFavoriteCageByUser(user_id uint, userLoc types.LocationParams) ([]model.FavoriteCage, error) {
 	fav, err := s.FavoriteCageRepositoryIn.GetFavoriteCageByUser(user_id)
 	if err != nil {
 		return []model.FavoriteCage{}, nil
 	}
+	fmt.Println(userLoc)
+	if len(fav) > 0 {
+		for i := range fav {
+			fav[i].CageRoom.ImageArray = utils.MapTextToStringArray(fav[i].CageRoom.Image)
+			fav[i].CageRoom.FacilityArray = utils.MapTextToStringArray(fav[i].CageRoom.Facility)
+
+			fav[i].CageRoom.Profile.ImageArray = utils.MapTextToStringArray(fav[i].CageRoom.Profile.Image)
+			fav[i].CageRoom.Profile.FacilityArray = utils.MapTextToStringArray(fav[i].CageRoom.Profile.Facility)
+
+			km, err := utils.CalculateDistance(userLoc, fav[i].CageRoom.Profile.Latitude, fav[i].CageRoom.Profile.Longitude)
+			if err != nil {
+				return fav, err
+			}
+			fav[i].CageRoom.Profile.Distance = km
+		}
+	}
+
 	return fav, nil
 }

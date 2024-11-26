@@ -50,6 +50,7 @@ type AnimalHotelService struct {
 }
 
 type FavoriteCage struct {
-	UserID uint `gorm:"primaryKey;not null" json:"user_id" query:"user_id" validate:"required"`
-	CageID uint `gorm:"primaryKey;not null" json:"cage_id" query:"cage_id" validate:"required"`
+	UserID   uint     `gorm:"primaryKey;not null" json:"user_id" query:"user_id" validate:"required"`
+	CageID   uint     `gorm:"primaryKey;not null" json:"cage_id" query:"cage_id" validate:"required"`
+	CageRoom CageRoom `gorm:"foreignKey:CageID;references:ID" json:"cage_room" swaggerignore:"true"`
 }

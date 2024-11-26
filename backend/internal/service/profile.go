@@ -8,6 +8,7 @@ import (
 	"petplace/internal/repository"
 	"petplace/internal/utils"
 	"sort"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -138,4 +139,62 @@ func (s *ProfileService) CountCompleteBookByID(profile_id uint) (int, error) {
 	}
 
 	return count, nil
+}
+
+// care & clinic
+func (s *ProfileService) CreateCliniCareProfile(profile model.Profile) (int, string, error) {
+	err := s.Validate.Struct(profile)
+	if err != nil {
+		return http.StatusBadRequest, "profile detail is not correct", err
+	}
+
+	profile.Image = utils.MapStringArrayToText(profile.ImageArray)
+	profile.OpenDay = utils.MapStringArrayToText(profile.OpenDayArray)
+
+	// reservation information
+	location, err := time.LoadLocation("Asia/Bangkok")
+	if err != nil {
+		return http.StatusInternalServerError, "failed to load time zone", err
+	}
+	currentTime := time.Now().In(location)
+	currentDay := time.Date(
+		currentTime.Year(),
+		currentTime.Month(),
+		currentTime.Day(),
+		0, 0, 0, 0, location,
+	)
+
+	reservations := []model.ReservationTime{}
+	for i := 0; i < 30; i++ {
+		date := currentDay.AddDate(0, 0, i+1)
+		status := utils.CheckOpenDay(profile.OpenDayArray, date)
+
+		fmt.Println(date.String())
+		fmt.Println(status)
+
+		morning := model.ReservationTime{
+			Date:              date,
+			OpenStatus:        status,
+			ReservationStatus: status,
+			DayParting:        "morning",
+		}
+		noon := morning
+		noon.DayParting = "afternoon"
+		reservations = append(reservations, morning, noon)
+	}
+
+	strErr, err := s.ProfileRepositoryIn.CreateCliniCareProfile(profile, reservations)
+	if err != nil {
+		return http.StatusInternalServerError, strErr, err
+	}
+
+	return http.StatusCreated, strErr, nil
+}
+
+func (s *ProfileService) GetProfileRoleClinic() ([]model.Profile, error) {
+	profiles, err := s.ProfileRepositoryIn.GetProfileRoleClinic()
+	if err != nil {
+		return profiles, err
+	}
+	return profiles, nil
 }

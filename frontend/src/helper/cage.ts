@@ -59,12 +59,12 @@ export async function GetSearchCageByHotel(
   }
 }
 
-export async function UpdateCage(cage:CageRoom, newImages: UploadRes[]): Promise<any> {
+export async function UpdateCage(cage:CageRoom): Promise<any> {
   try {
       let endpoint = `${baseApi}/cageroom/${cage.id}`;
-      if (newImages.length > 0) {
-        cage.image_array = UpdateImageArray(newImages, cage.image_array, cage.image)
-      }
+      // if (newImages.length > 0) {
+      //   cage.image_array = UpdateImageArray(newImages, cage.image_array, cage.image)
+      // }
       return RequestApi(endpoint, "PUT", cage, 200);
 
     } catch (error) {

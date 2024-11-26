@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useEffect } from "react";
+import { Cage, UploadRes } from "@/types/response";
+import { UpdateCage } from "@/helper/cage";
+import UploadImage from "@/components/UploadImage";
+
 
 const RoomDetailPage = () => {
+    
+    const [profile, setProfile] = useState<Cage | null>(null);
     const [roomName, setRoomName] = useState("");
     const [description, setDescription] = useState("");
     const [capacity, setCapacity] = useState("");
@@ -11,9 +19,88 @@ const RoomDetailPage = () => {
     const [price, setPrice] = useState("");
     const [facilities, setFacilities] = useState<string[]>(["Air condition", "Live video", "Pet fountain"]);
     const [newFacility, setNewFacility] = useState("");
-    const [images, setImages] = useState<File[]>([]);
+    const [images, setImages] = useState<UploadRes[]>([]);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const id = localStorage.getItem("userId");
+        fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) throw new Error("Failed to fetch cage room data");
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Fetched cage room data:", data);
+            // setProfile(data);
+            setPetType(data.petType);
+            setRoomName(data.roomName);
+            setDescription(data.description);
+            setCapacity(data.capacity);
+            setSize({
+              length: data.size.length,
+              width: data.size.width,
+              height: data.size.height,
+            });
+            setQuantity(data.quantity);
+            setPrice(data.price);
+            setFacilities(data.facilities);
+            setImages(data.images);
+          })
+          .catch((error) => console.error("Error fetching cage room data:", error));
+      }, []);
+      
+
+    const handleSubmit = async () => {
+        try {
+                const userId = localStorage.getItem("userId") || "";
+                const token = localStorage.getItem("token");
+
+                if (!token) {
+                    toast.error("You are not authorized. Please log in.");
+                    // navigate("/login");
+                    return;
+                }
+
+            const payload = {
+                id: parseInt(userId),
+                animal_type:    petType,
+                cage_type:      roomName,
+                detail:         description,
+                facility:       facilities.join(","),
+                facility_array: facilities,
+                height:         parseFloat(size.height),
+                image_array: images.map((image) => image.fileUrl),
+                lenth:          parseFloat(size.length),
+                max_capacity:   parseInt(capacity, 10),
+                price:          parseFloat(price),
+                profile_id:     parseInt(userId),
+                quantity:       parseInt(quantity, 10),
+                size:           `${size.length}x${size.width}x${size.height}`,
+                width:          parseFloat(size.width),
+            };
+            
+            const res = await UpdateCage(payload);
+            toast.success("Cage updated successfully");
+            console.log("log", res);
+        } catch (err: any) {
+            if (err.response && err.response.data) {
+                // Handle server response if it's JSON
+                console.error("Server Response:", err.response.data);
+                toast.error(`Error: ${err.response.data.message || "Failed to update profile"}`);
+            } else {
+                // Handle non-JSON response or other errors
+                // console.error("Unexpected Error:", err.message || err);
+                toast.error("Unexpected error occurred. Please try again.");
+            }
+        }
+    };
     const handleAddFacility = () => {
         if (newFacility && !facilities.includes(newFacility)) {
             setFacilities([...facilities, newFacility]);
@@ -25,31 +112,13 @@ const RoomDetailPage = () => {
         setFacilities(facilities.filter((item) => item !== facility));
     };
 
-    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files) {
-            const uploadedFiles = Array.from(event.target.files);
-            setImages([...images, ...uploadedFiles].slice(0, 10)); // Limit to 10 images
-        }
+    const handleImageUpload = (files: UploadRes[]) => {
+        setImages([...images, ...files].slice(0, 10)); // Limit to 10 images
     };
 
     const handleRemoveImage = (index: number) => {
         const updatedImages = images.filter((_, imgIndex) => imgIndex !== index);
         setImages(updatedImages);
-    };
-
-    const handleSubmit = () => {
-        const roomData = {
-            roomName,
-            description,
-            capacity,
-            size,
-            quantity,
-            petType,
-            price,
-            facilities,
-            images,
-        };
-        console.log("Saved Room Data:", roomData);
     };
 
     return (
@@ -78,9 +147,10 @@ const RoomDetailPage = () => {
                 {/* Sub-tabs */}
                 <div className="bg-bg p-4 rounded-lg shadow-lg flex flex-col gap-y-6">
                     <div className="flex gap-x-4">
-                        <button className="text-white p-2 bg-navbar rounded-lg border-b-2 border-gold">Room type1</button>
-                        <button className="text-gray-500 p-2">Room type2</button>
-                        <button className="text-gray-500 p-2">Room type3</button>
+                        <button className="text-white p-2 bg-navbar rounded-lg border-b-2 border-gold">Luxury room</button>
+                        <button className="text-gray-500 p-2">Max luxury room</button>
+                        <button className="text-gray-500 p-2">Extra luxury room</button>
+                        <button className="text-gray-500 p-2">Normal room</button>
                     </div>
 
                     {/* Form */}
@@ -196,8 +266,8 @@ const RoomDetailPage = () => {
                                         className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
                                     >
                                         <img
-                                            src={URL.createObjectURL(image)}
-                                            alt="Room"
+                                            src={image.fileUrl}
+                                            alt={`Uploaded ${index}`}
                                             className="w-full h-full object-cover"
                                         />
                                         <button
@@ -208,15 +278,10 @@ const RoomDetailPage = () => {
                                         </button>
                                     </div>
                                 ))}
-                                <label className="w-20 h-20 bg-gray-200 rounded-md flex justify-center items-center cursor-pointer">
-                                    <input
-                                        type="file"
-                                        multiple
-                                        onChange={handleImageUpload}
-                                        className="hidden"
-                                    />
-                                    <span>Upload</span>
-                                </label>
+                                <UploadImage
+                                    limit={10 - images.length}
+                                    onComplete={handleImageUpload}
+                                />
                             </div>
                         </div>
 

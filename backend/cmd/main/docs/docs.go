@@ -1286,6 +1286,18 @@ const docTemplate = `{
                         "name": "user_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by latitude",
+                        "name": "latitude",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by longitude",
+                        "name": "longitude",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1441,7 +1453,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "weight": {
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },
@@ -1593,6 +1605,15 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "open_day": {
+                    "type": "string"
+                },
+                "open_day_array": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "payment": {
                     "type": "string"
