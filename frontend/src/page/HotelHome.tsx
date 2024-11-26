@@ -15,7 +15,8 @@ export default function HotelHome() {
         avg_review:"",
         image_array:[],
         latitude: null,
-        longitude:  null
+        longitude:  null,
+        address: "",
     }
     );
     const id = localStorage.getItem("userId");
@@ -208,8 +209,9 @@ export default function HotelHome() {
                             ) : (
                                 <p className="text-center mt-10">Location data not available.</p>
                             )}
-                            <div>
-                            <p>Distance: {distance ? distance.toFixed(2) : "Loading..."}</p> 
+                            <div className="pt-1">
+                                    <p>{hotel.address}</p>
+                                    <p> Distance: {distance ? distance.toFixed(2) : "Loading..."} Km</p> 
                             </div>
                         </div>
                     </div>
@@ -255,6 +257,7 @@ export default function HotelHome() {
                                         >
                                             <div
                                                 className="basis-1/3 bg-cover h-full w-72 "
+                                                
                                                 style={{ backgroundImage: `url(${room.image || "public/images/homebg.jpg"})` }}
                                             ></div>
                                             <div className="basis-1/3 flex flex-col space-y-5 pl-5 pt-4">
@@ -275,54 +278,15 @@ export default function HotelHome() {
                                             </div>
                                             
                                         </div>
-                                        {expandedRoomId === index && (
-                                            <div  className=" bg-bg rounded-lg flex flex-col w-full h-96 shadow shadow-gray-400">
-                                            <div className="bg-bg shadow shadow-gray-400 w-auto h-full m-5 flex flex-col gap-y-2 p-5 rounded-lg">
-                                                <div className="flex "> capsule</div>
-                                                <div className="flex justify-center bg-green w-full h-full">
-                                                    <div className=" bg-cover h-full w-72  "
-                                                        style={{ backgroundImage: `url(${"public/images/homebg.jpg"})`}}
-                                                    >
-                                                    </div>
+                                        {/* {expandedRoomId === index && (
+                                            <div  className=" bg-orange-500 flex h-60 w-full ">
+                                                <div className="flex w-full mx-5 bg-red-500 ">
+                                                    <div className="basis-1/3 w-72"></div>
+                                                    <p className="flex w-full "> dsfkljadslk;fjkdajgkdjsaklfjdsalkfjldas;jf</p>
                                                 </div>
-                                                <div className=""> detail </div>
-                                                <div className="flex bg-green-500"> 
-                                                    <p className="w-1/2 p-5">dfasdfjgasdjglkasjdglkjasdlkgjlkadsjgljldsglsda</p>
-                                                    <div className="flex flex-col w-1/2 bg-blue-500 items-end p-5">
-                                                        <p>size</p>
-                                                        <p>Capacity</p>
-                                                        <p> 350B</p>
-                                                    </div>
-                                                </div>
-                                                <p> Room facility </p>  
-                                                <div className="flex w-full ">
-                                                   <div className="flex flex-wrap gap-x-2 w-1/2 p-5 bg-orange-400">
-                                                        {hotel.facility_array && hotel.facility_array.length > 0 ? (
-                                                        hotel.facility_array.map((facility, index) => (
-                                                            <button 
-                                                                key={index} 
-                                                                className="w-28 h-10 bg-bg rounded-md shadow shadow-gray-400"
-                                                            >
-                                                                {facility}
-                                                            </button>
-                                                        ))
-                                                    ) : (
-                                                        <p>No facilities available.</p>
-                                                    )}
-                                                   </div>
-                                                   <div className="flex flex-col items-end p-5 bg-blue-300 w-1/2 gap-y-2">
-                                                        
-                                                        <p>cancle</p>
-                                                        <div className="flex space-x-2">
-                                                                <button className="w-fit px-2 h-8 bg-bg rounded-full shadow">Add to chart</button>
-                                                                <button className="w-fit px-2 h-8 rounded-full bg-yellow">Book now</button>
-                                                        </div>
-                                                   </div>
-                                                </div>
-                                            </div>
                                             
                                         </div>
-                                    )}
+                                    )} */}
                                     </div>
                                 ))
                             ) : (
