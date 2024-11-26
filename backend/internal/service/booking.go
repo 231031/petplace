@@ -8,6 +8,7 @@ import (
 	"petplace/internal/types"
 	"petplace/internal/utils"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -349,6 +350,7 @@ func (s *BookingService) UpdateHotelService(id uint, ser model.HotelService) err
 
 // role : hotel
 func (s *BookingService) GetAllBookingHotelByHotel(profile_id uint, status string) ([]model.HotelService, error) {
+	status = strings.ToLower(status)
 	ser, err := s.HotelServiceRepositoryIn.GetAllHotelServiceByHotel(profile_id, status)
 	if err != nil {
 		return ser, err

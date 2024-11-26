@@ -37,7 +37,7 @@ func NewCageRoomService(
 }
 
 func (s *CageRoomService) CreateCageRoom(cage model.CageRoom) (int, string, error) {
-
+	cage.AnimalType = strings.ToLower(cage.AnimalType)
 	_, err := s.CageRoomRepositoryIn.GetSpecificCageRoomType(cage.ProfileID, cage.AnimalType, cage.CageType)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		cage.Size = utils.MapCageSize(cage.MaxCapacity)
@@ -115,6 +115,10 @@ func (s *CageRoomService) UpdateCageRoom(id uint, cage model.CageRoom) error {
 		return err
 	}
 
+	if cage.AnimalType != "" {
+		cage.AnimalType = strings.ToLower(cage.AnimalType)
+	}
+
 	if len(cage.ImageArray) > 0 {
 		updateImage := utils.MapStringArrayToText(cage.ImageArray)
 		cage.Image = updateImage
@@ -127,6 +131,10 @@ func (s *CageRoomService) UpdateCageRoom(id uint, cage model.CageRoom) error {
 		cage.Facility = updateFacility
 	} else {
 		cage.Facility = ""
+	}
+
+	if cage.MaxCapacity > 0 {
+		cage.Size = utils.MapCageSize(cage.MaxCapacity)
 	}
 
 	updateCage := utils.CopyNonZeroFields(&cage, &cageDb).(*model.CageRoom)
@@ -194,7 +202,7 @@ func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.Fi
 	sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].Cages[0].Price < profiles[j].Cages[0].Price })
 	if strings.ToLower(filter.Sort) == "distance" {
 		profiles = s.ProfileServiceIn.SortProfileByDistance(profiles)
-	} else if strings.ToLower(filter.Sort) == "review" {
+	} else if strings.ToLower(filter.Sort) == "rating" {
 		profiles = s.ProfileServiceIn.SortProfileByReviewRate(profiles)
 	}
 	return profiles, nil
