@@ -32,7 +32,7 @@ function UploadImage({ limit, onComplete }: ImageUploadProps) {
             {/* <h3>UploadImage</h3> */}
             <UploadButton options={options} onComplete={handleUploadComplete}>
                 {({ onClick }) => (
-                    <button onClick={onClick} className="bg-navbar text-white w-full h-12 rounded-lg">
+                    <button onClick={onClick} className="bg-navbar hover:bg-gray-800 text-white w-full h-12 rounded-lg">
                         Upload a file...
                     </button>
                 )}
@@ -40,5 +40,5 @@ function UploadImage({ limit, onComplete }: ImageUploadProps) {
         </div>
     );
 }
-
+  
 export default UploadImage;
