@@ -2,6 +2,7 @@ import { FilterAnimal, FilterSearchCage } from "@/types/payload";
 import { MapArrayToQuery, RequestApi, UpdateImageArray } from "./utils";
 import { CageRoom } from "@/types/model";
 import { UploadRes } from "@/types/response";
+import { Cage } from "@/types/response";
 
 const baseApi = import.meta.env.VITE_BASEAPI;
 
@@ -72,4 +73,14 @@ export async function UpdateCage(cage:CageRoom): Promise<any> {
     }
 }
 
+export function mapCageSize(max_capacity: number): string {
+    if (max_capacity >= 1 && max_capacity <= 2) {
+        return "s";
+    } else if (max_capacity >= 3 && max_capacity <= 4) {
+        return "m";
+    } else if (max_capacity >= 5 && max_capacity <= 6) {
+        return "l";
+    }
 
+    return "xl";
+}

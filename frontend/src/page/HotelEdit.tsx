@@ -69,7 +69,7 @@ const HotelDetailPage = () => {
         }
 
         try {
-                const userId = localStorage.getItem("userId") || "";
+                // const userId = localStorage.getItem("userId") || "";
                 const token = localStorage.getItem("token");
 
                 if (!token) {
@@ -100,6 +100,7 @@ const HotelDetailPage = () => {
 
             const res = await UpdateProfile(payload);
             toast.success("Profile updated successfully");
+            alert("Profile updated successfully");
             console.log("log", res);
         } catch (err: any) {
             if (err.response && err.response.data) {

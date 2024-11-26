@@ -16,7 +16,6 @@ function Home() {
     const petOptions = ["Dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
     const [selectedCageSizes, setSelectedCageSizes] = useState<{ [key: string]: string }>({});
     const [rooms, setRooms] = useState<any[]>([]);
-    const [favRooms, setFavRooms] = useState<any[]>([]);
     const location = useLocation();
     const [cageDetails, setCageDetails] = useState<any[]>([]);
 
@@ -158,7 +157,7 @@ function Home() {
         }
     }, []);
 
-    const [favData, setFavData] = useState([]);
+    const [favData, setFavData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -198,7 +197,7 @@ function Home() {
         };
     
         fetchFavorites();
-      }, []);
+      }, [position]);
 
     const MapWithGeocoder = () => {
         const map = useMap();
@@ -421,7 +420,7 @@ function Home() {
                 {/* Hotel List */}
                 <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-1/2 px-4">
                     {/* Single Hotel Card */}
-                    {cageDetails.map((cage, index) => (
+                    {favData.map((fav, index) => (
                     <div
                         key={index}
                         className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
@@ -429,76 +428,85 @@ function Home() {
                         {/* Hotel Image and Info */}
                         <div className="flex space-x-6">
                         {/* Image */}
-                            
-                            <div className="w-40 h-40 rounded-lg overflow-hidden"
-                                key={index}>
-                                <img
-                                 src={cage.image_array?.[0]}
-                                alt="Cage Room"
-                                className="w-full h-full object-cover"
-                                />
-                            </div>
-                     
+                        <div className="w-40 h-40 rounded-lg overflow-hidden">
+                            <img
+                            src={
+                                fav.cage_room.profile.image_array?.[0] ||
+                                "/images/default-room.jpg"
+                            }
+                            alt="Cage Room"
+                            className="w-full h-full object-cover"
+                            />
+                        </div>
+
                         {/* Hotel Info */}
                         <div>
-                            <h2 className="text-lg text-[#333] mb-2 flex justify-between">
-                            <span className="text-gray-600">Facilities:</span>{' '}
-                            {[...uniqueFacilities].map((facility, index) => (
-                                <p key={index} className="text-gray-600 ml-4">
-                                {facility}
-                                </p>
-                            ))}
+                            <h2 className="text-lg text-[#333] mb-2">
+                            {fav.cage_room.profile.name || "Unknown Hotel"}
                             </h2>
-                            {/* Location */}
-                            <p className="text-gray-500 mb-2">
-                            {/* {room.detail || 'No additional details provided'} */}
-                            </p>
-                            {/* Facilities */}
-                            <p className="text-gray-600 text-sm flex">
-                            {[...uniqueAnimalTypes].map((type, index) => (
-                                <p key={index} className="border bg-[#A08252] px-4 py-2 rounded-lg text-white ml-4">
-                                {type}
-                                </p>
+                            {Array.from({ length: 5 }, (_, i) => (
+                                <span key={i} className="text-yellow-500 text-lg">
+                                {i < Math.floor(fav.cage_room.profile.avg_review) ? (
+                                    <i className="fa-solid fa-star" style={{ color: "#DBA54D" }}></i> // Full star
+                                ) : i < fav.cage_room.profile.avg_review ? (
+                                    <i
+                                    className="fa-solid fa-star-half-alt"
+                                    style={{ color: "#DBA54D" }}
+                                    ></i> // Half star
+                                ) : (
+                                    <i className="fa-regular fa-star" style={{ color: "#DBA54D" }}></i> // Empty star
+                                )}
+                                </span>
                             ))}
+                            <p className="text-gray-500 mb-2">
+                            {fav.cage_room.profile.address || ""}
+                            </p>
+                            <p className="text-gray-500 mb-2">
+                            {fav.cage_room.profile.Distance || ""}
+                            </p>
+                            <p className="text-gray-600 text-sm">
+                            <span className="font-semibold">Facilities:</span>{" "}
+                            {fav.cage_room.profile.facility || "No facilities listed"}
+                            </p>
+                            <p className="text-gray-600 text-sm">
+                            <span className="font-semibold">Animal Type:</span>{" "}
+                            {fav.cage_room.animal_type || "Unknown"}
                             </p>
                         </div>
-                        
                         </div>
 
                         {/* Capsule Info */}
                         <div className="flex-1 mx-8 border-l pl-6">
-                            <h3 className="text-[#333] text-xl font-bold mb-2">Capsule</h3>
-                                <div className="flex">
-                                    <p className="text-sm text-gray-600 mt-2 mx-4">
-                                        <span className="text-lg bg-[#A08252] text-white px-2 py-1 rounded-lg">
-                                            {cage.size}
-                                        </span>
-                                        <span className="text-lg text-black px-2 py-1">
-                                            Size: {cage.width} x {cage.lenth} x {cage.height} m
-                                            <br />
-                                            Accommodates: {cage.max_capacity}
-                                            <br />
-                                            Facility : {cage.facility}
-                                        </span>
-                                    </p>
-                                </div>
+                        <h3 className="text-[#333] text-xl font-bold mb-2">Capsule</h3>
+                        <div className="flex flex-col space-y-2">
+                            <p className="text-sm text-gray-600">
+                            <span className="font-semibold">Size:</span>{" "}
+                            {fav.cage_room.size || "Unknown"} ({fav.cage_room.width} x{" "}
+                            {fav.cage_room.lenth} x {fav.cage_room.height} m)
+                            </p>
+                            <p className="text-sm text-gray-600">
+                            <span className="font-semibold">Max Capacity:</span>{" "}
+                            {fav.cage_room.max_capacity || "N/A"}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                            <span className="font-semibold">Facilities:</span>{" "}
+                            {fav.cage_room.facility || "N/A"}
+                            </p>
+                        </div>
                         </div>
 
-                        {/* Price and Button */}
+                        {/* Price and Action */}
                         <div className="flex flex-col items-end space-y-4">
                         <span className="text-lg font-bold text-[#333]">
-                            {cage.price} ฿
+                            {fav.cage_room.price} ฿
                         </span>
-                        <button
-                            className="bg-[#A08252] text-white text-sm px-6 py-2 rounded-lg hover:bg-[#8a6e45] transition"
-                            onClick={() => handleCageSelect(cage)}
-                        >
-                            Book now
+                        <button className="bg-[#A08252] text-white px-4 py-2 rounded-lg" onClick={() => handleCageSelect(fav.cage_room)}>
+                            Book Now
                         </button>
                         </div>
                     </div>
-                    
                     ))}
+
                 </div>
 
             </div>
