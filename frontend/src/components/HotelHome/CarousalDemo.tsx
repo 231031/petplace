@@ -18,7 +18,7 @@ export function CarouselDemo({ images = [] }: CarouselDemoProps) {
   };
 
   return (
-    <div className="relative w-[rem] h-[32rem]">
+    <div className="relative w-[60rem] h-[32rem]">
       <div className="w-full h-full">
         <img
           src={images[activeIndex]}  // ใช้ activeIndex เพื่อเลือกภาพปัจจุบัน
