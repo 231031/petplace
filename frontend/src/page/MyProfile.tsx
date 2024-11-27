@@ -9,14 +9,7 @@ export default function MyProfile() {
 
     const [currentTab, setCurrentTab] = useState<string>("MyProfile");
     
-    const [formData, setFormData] = useState<any>({
-        name: "",
-        surname: "",
-        email: "",
-        dob: "",
-        citizenId: "",
-        phone: "",
-    });
+    const [formData, setFormData] = useState<any>(null);
 
     
 
@@ -35,16 +28,17 @@ export default function MyProfile() {
                     },
                 });
                 const data = response.data;
+                console.log("user data", data);
                 setProfileData(data);
                 setFormData({
-                    name: data.name,
-                    surname: data.surname,
+                    first_name: data.first_name,
+                    surename: data.surename,
                     email: data.email,
-                    dob: data.dob,
-                    citizenId: data.citizenId,
-                    phone: data.phone,
+                    age: data.age,
+                    citizen_d: data.citizen_id,
+                    number: data.number,
                 });
-                console.log("user data", response.data);
+                
             } catch (error) {
                 console.error("Error fetching profile:", error);
             } finally {
@@ -137,8 +131,9 @@ export default function MyProfile() {
                 },
             });
             console.log("User profile updated:", response.data);
-            setProfileData(response.data);
+            setFormData(response.data);
             setIsEditing(false); // Exit edit mode after saving
+            // window.location.reload();
         } catch (error) {
             console.error("Error updating profile:", error);
         }
@@ -167,7 +162,7 @@ export default function MyProfile() {
                     <div className="flex mt-10   gap-x-20 pl-20 items-center">
                         <div className="overflow-hidden rounded-full h-full ">
                                     <img
-                                        // src={profile.image_profile}
+                                        src={formData.image_profile}
                                         // alt="Uploaded"
                                         className="size-44 object-cover"
                                     />
@@ -178,13 +173,13 @@ export default function MyProfile() {
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
+                                    name="first_name"
+                                    value={formData.first_name}
                                     onChange={handleInputChange}
                                     className="text-gray-500 rounded-lg border-gray-400 w-48 h-14 mt-5"
                                 />
                             ) : (
-                                <p className="text-gray-500 mt-5">{formData.name}</p>
+                                <p className="text-gray-500 mt-5">{formData.first_name}</p>
                             )}
                         </div>
 
@@ -193,13 +188,13 @@ export default function MyProfile() {
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
+                                    name="surename"
+                                    value={formData.surename}
                                     onChange={handleInputChange}
                                     className="text-gray-500 rounded-lg border-gray-400 w-48 mt-5 h-14"
                                 />
                             ) : (
-                                <p className="text-gray-500 mt-5">{formData.name}</p>
+                                <p className="text-gray-500 mt-5">{formData.surename}</p>
                             )}
                         </div>
                     </div>
@@ -212,28 +207,28 @@ export default function MyProfile() {
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
+                                    name="email"
+                                    value={formData.email}
                                     onChange={handleInputChange}
                                     className="text-gray-500 rounded-lg border-gray-400 w-48 mt-5 h-14"
                                 />
                             ) : (
-                                <p className="text-gray-500 mt-5">{formData.name}</p>
+                                <p className="text-gray-500 mt-5">{formData.email}</p>
                             )}
                     </div>
                     <div className="flex flex-col  text-xl w-1/2 pl-10">
-                            <p>Date of birth</p>
+                            <p>Age</p>
                             
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
+                                    name="age"
+                                    value={parseInt(formData.age)}
                                     onChange={handleInputChange}
                                     className="text-gray-500 rounded-lg border-gray-400 w-48 mt-5 h-14"
                                 />
                             ) : (
-                                <p className="text-gray-500 mt-5">{formData.name}</p>
+                                <p className="text-gray-500 mt-5">{formData.age}</p>
                             )}
                     </div>
                 
@@ -245,13 +240,13 @@ export default function MyProfile() {
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
+                                    name="citizen_id"
+                                    value={parseInt(formData.citizen_id)}
                                     onChange={handleInputChange}
                                     className="text-gray-500 rounded-lg border-gray-400 w-48 mt-5 h-14"
                                 />
                             ) : (
-                                <p className="text-gray-500 mt-5">{formData.name}</p>
+                                <p className="text-gray-500 mt-5">{formData.citizen_id}</p>
                             )}
                         </div>
                         <div className="flex flex-col text-xl w-1/2 pl-10">
@@ -260,13 +255,13 @@ export default function MyProfile() {
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
+                                    name="number"
+                                    value={parseInt(formData.number)}
                                     onChange={handleInputChange}
                                     className="text-gray-500 rounded-lg border-gray-400 w-48 mt-5 h-14"
                                 />
                             ) : (
-                                <p className="text-gray-500 mt-5">{formData.name}</p>
+                                <p className="text-gray-500 mt-5">{formData.number}</p>
                             )}
                     </div>
                 </div>
