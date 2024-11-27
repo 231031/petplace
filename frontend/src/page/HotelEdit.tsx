@@ -18,6 +18,8 @@ const HotelDetailPage = () => {
     const [address, setAddress] = useState("");
     const [detail, setDetail] = useState("");
     const [email, setEmail] = useState("");
+    const [checkin, setCheckin] = useState("");
+    const [checkout, setCheckout] = useState("");
     const [paypalEmail, setPaypalEmail] = useState("");
     const [facilities, setFacilities] = useState<string[]>([]);
     const [newFacility, setNewFacility] = useState("");
@@ -33,6 +35,8 @@ const HotelDetailPage = () => {
                 setHotelName(res.profile.name || "");
                 setAddress(res.profile.address || "");
                 setEmail(res.profile.email || "");
+                setCheckin(res.profile.check_in || "");
+                setCheckout(res.profile.check_out || "");
                 setPaypalEmail(res.profile.paypal_email || "");
                 setFacilities(Array.isArray(res.profile.facility_array) ? res.profile.facility_array : []);
                 setImages(res.profile.image_array ? res.profile.image_array.map((url) => ({ fileUrl: url, filePath: '', accountId: '0' })) : []);
@@ -128,8 +132,8 @@ const HotelDetailPage = () => {
                 address: address,
                 email: email,
                 paypal_email: paypalEmail,
-                check_in: profile.profile.check_in || "",
-                check_out: profile.profile.check_out || "",
+                check_in: checkin,
+                check_out: checkout,
                 latitude: profile.profile.latitude || 0,
                 longitude: profile.profile.longitude || 0,
                 role: "hotel",
@@ -143,7 +147,7 @@ const HotelDetailPage = () => {
 
             const res = await UpdateProfile(payload);
             toast.success("Profile updated successfully");
-            alert("Profile updated successfully");
+            window.location.reload();
             console.log("log", res);
         } catch (err: any) {
             if (err.response && err.response.data) {
@@ -164,19 +168,19 @@ const HotelDetailPage = () => {
                 <div className="flex w-3/4 items-center flex-col gap-y-2">
                     <div className="pt-10 space-x-1">
                         <button
-                            className="bg-egg h-10 w-20 rounded-md text-navbar"
+                            className="bg-[#FFFBF5] border shadow-lg h-10 w-20 rounded-md text-navbar"
                             onClick={() => navigate('/hotelhome')}>
-                            view
+                            View
                         </button>
-                        <button className="text-white bg-navbar h-10 w-20 rounded-md">edit</button>
+                        <button className="text-white bg-nextstep border shadow-lg h-10 w-20 rounded-md">Edit</button>
                     </div>
                 </div>
             </div>
             <div className="flex flex-col gap-y-6 p-6 w-full max-w-4xl mx-auto">
                 <div className="relative mb-8">
                     <div className="absolute top-0 left-0 flex justify-center gap-x-4">
-                        <button className="text-white text-xl bg-navbar p-3 rounded-lg">Hotel detail</button>
-                        <button className="text-gray-500 bg-egg py-1 px-2 rounded-lg"
+                        <button className="text-white text-xl bg-nextstep p-3 rounded-lg">Hotel detail</button>
+                        <button className="text-gray-500 bg-egg border shadow-lg py-1 px-2 rounded-lg"
                             onClick={() => navigate('/room/edit')}>Room detail</button>
                     </div>
                 </div>
@@ -191,7 +195,7 @@ const HotelDetailPage = () => {
                                 value={hotelName}
                                 onChange={(e) => setHotelName(e.target.value)}
                                 placeholder="Hotel Name"
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
                             />
                         </div>
                         <div>
@@ -201,7 +205,7 @@ const HotelDetailPage = () => {
                                 value={address}
                                 onChange={(e) => setAddress(e.target.value)}
                                 placeholder="Ex. city, state or province, country, and postal code"
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
                             />
                         </div>
                     </div>
@@ -214,7 +218,7 @@ const HotelDetailPage = () => {
                                 value={detail}
                                 onChange={(e) => setDetail(e.target.value)}
                                 placeholder="Briefly explain"
-                                className="w-full border border-gray-300 rounded-md p-2 h-20"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2 h-20"
                             />
                         </div>
                         <div>
@@ -230,10 +234,6 @@ const HotelDetailPage = () => {
                                             <MapWithGeocoder/>
                             </MapContainer>
                         </div>
-                    </div>
-
-                    {/* Email and Paypal Email */}
-                    <div className="grid grid-cols-2 gap-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Email</label>
                             <input
@@ -241,17 +241,41 @@ const HotelDetailPage = () => {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="Hotel personal email"
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
                             />
                         </div>
-                        <div>
+                    </div>
+
+                    {/* Email and Paypal Email */}
+                    <div className="grid grid-cols-2 gap-6">
+                        <div className ="flex col-span-1 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Check-in</label>
+                                <input
+                                    type="time"
+                                    value={checkin}
+                                    onChange={(e) => setCheckin(e.target.value)}
+                                    className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700">Check-out</label>
+                                <input
+                                    type="time"
+                                    value={checkout}
+                                    onChange={(e) => setCheckout(e.target.value)}
+                                    className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
+                                />
+                            </div>
+                        </div>
+                        <div className="col-span-1">
                             <label className="block text-sm font-medium text-gray-700">Paypal email</label>
                             <input
                                 type="email"
                                 value={paypalEmail}
                                 onChange={(e) => setPaypalEmail(e.target.value)}
                                 placeholder="Paypal email for payment method"
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
                             />
                         </div>
                     </div>
@@ -259,7 +283,7 @@ const HotelDetailPage = () => {
                     {/* Hotel Overall Picture */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Hotel Overall Picture (Max. 10)</label>
-                        <div className="flex items-center gap-4 flex-wrap">
+                        <div className="flex bg-[#FFFBF5] border border-gray-400 p-1 rounded-md items-center gap-4 flex-wrap">
                             {images.map((image, index) => (
                                 <div
                                     key={index}
@@ -294,11 +318,11 @@ const HotelDetailPage = () => {
                                 value={newFacility}
                                 onChange={(e) => setNewFacility(e.target.value)}
                                 placeholder="Add new facility"
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-300 rounded-md p-2"
                             />
                             <button
                                 onClick={handleAddFacility}
-                                className="bg-navbar text-white px-4 py-2 rounded-md"
+                                className="bg-nextstep text-white px-4 py-2 rounded-md"
                             >
                                 Add
                             </button>
@@ -307,12 +331,12 @@ const HotelDetailPage = () => {
                             {facilities.map((facility, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-center gap-2 bg-gray-200 px-4 py-2 rounded-md"
+                                    className="flex items-center gap-2 bg-[#FFFBF5] border border-gray-300 px-4 py-2 rounded-md"
                                 >
-                                    <span>{facility}</span>
+                                    <span className="text-gray-500">{facility}</span>
                                     <button
                                         onClick={() => handleRemoveFacility(facility)}
-                                        className="text-red-500"
+                                        className="text-gray-500"
                                     >
                                         ×
                                     </button>
@@ -326,7 +350,7 @@ const HotelDetailPage = () => {
                 <div className="flex justify-center w-1/2 pt-4 pb-16">
                     <button
                         onClick={handleSubmit}
-                        className="bg-navbar text-white w-1/2 py-2 rounded-md mt-4"
+                        className="bg-nextstep text-white w-1/4 py-2 rounded-2xl mt-4"
                     >
                         Save
                     </button>
