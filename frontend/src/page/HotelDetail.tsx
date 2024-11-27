@@ -250,11 +250,11 @@ function HotelDetail() {
                     <h1 ref={roomRef} id="room" className="text-2xl">Cage</h1>
                     <div className="flex flex-col">
                         {/* selection */}
-                        <div className="flex justify-end gap-x-2 my-2">
+                        {/* <div className="flex justify-end gap-x-2 my-2">
                             <button className="w-16 h-8 bg-navbar rounded-md text-xs">Cat</button>
                             <button className="w-16 h-8 bg-yellow rounded-md text-xs">Rabbit</button>
                             <button className="w-16 h-8 bg-yellow rounded-md text-xs">Hamster</button>
-                        </div>
+                        </div> */}
                         <div className="flex w-full h-full flex-col shadow shadow-gray-400 rounded-md pb-5">
                             {/* room container */}
                             
@@ -275,8 +275,9 @@ function HotelDetail() {
                                                     >
                                                
                                                     <div className="basis-1/3 bg-cover h-full w-72 pt-5 pl-5 "  >
-                                                        {/* <CarouselCage images={cage.image_array || []}/> */}
-                                                        <CarouselCage images={hotel.image_array|| []}/>
+                                                    <CarouselCage images={Array.isArray(cage.image) ? cage.image : cage.image ? [cage.image] : []} />
+
+                                                        {/* <CarouselCage images={cage.image || []}/> */}
                                                     </div>
                                                     <div className="basis-1/3  flex flex-col space-y-5 pl-5 pt-4 cursor-pointer "
                                                         onClick={() => handleRoomClick(index)}
@@ -383,7 +384,7 @@ function HotelDetail() {
                                             </div>
                                             <div className="mt-2 mb-10">
                                                 {/* <CarouselCage images={review[index].cage_room.image_array || []}/> */}
-                                                <CarouselCage images={hotel.image_array|| []}/>
+                                                <CarouselCage images={review[index].review_image_array|| []}/>
                                             </div>
                                         </div>   
                                     </div>

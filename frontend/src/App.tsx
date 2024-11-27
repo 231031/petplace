@@ -109,7 +109,7 @@ function App() {
           <Route path="/HotelHome" element={<HotelHome />} />
           <Route path="/hotel/edit" element={<HotelEdit />} />
           <Route path="/room/edit" element={<RoomEdit />} />
-          <Route path="/hotel/reservation" element={<HotelReservation />} />
+          {/* <Route path="/hotel/reservation" element={<HotelReservation />} /> */}
           <Route path="/hotel/MyProfileHotel" element={<MyprofileHotel />} />
           
           <Route path="/hotel/reservation/upcoming" element={<HotelResUpcom />} />
