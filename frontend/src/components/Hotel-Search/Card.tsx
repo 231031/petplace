@@ -24,7 +24,7 @@ function HotelRating({ avgReview }: { avgReview: number }) {
 }
 
 function Card({ hotel, startDate, endDate }: { hotel: Profile, startDate: string, endDate: string }) {
-  
+
   const navigate = useNavigate();
   const handleHotelClick = (hotel: Profile) => {
     console.log("hotelsssssss", hotel);
@@ -43,7 +43,7 @@ function Card({ hotel, startDate, endDate }: { hotel: Profile, startDate: string
       style={{ cursor: 'pointer' }}>
       <div className="col-span-2">
         <img
-          src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+          src={hotel.image_profile}
           className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
         />
       </div>

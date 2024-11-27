@@ -5,6 +5,7 @@ import Button from '../components/LoginSignup/Button';
 import UploadImage from "@/components/CreateProfile/UploadImage";
 import { UploadRes } from '@/types/response';
 import MapView from '@/components/CreateProfile/Map'; // Assuming you have a map component
+import toast, { Toaster } from 'react-hot-toast';
 
 function CreateProfile() {
     const [formData, setFormData] = useState({
@@ -28,6 +29,28 @@ function CreateProfile() {
         setError('Authorization token is missing');
         return;
     }
+
+    const MapWithGeocoder = () => {
+        const map = useMap();
+
+        useEffect(() => {
+            const geocoder = L.Control.geocoder({
+                defaultMarkGeocode: false, // Do not mark automatically
+            }).addTo(map);
+
+            geocoder.on('markgeocode', (e) => {
+                const latlng = e.geocode.center;
+                setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
+                map.setView(latlng, 13); // Center the map on the searched location
+            });
+
+            return () => {
+                map.removeControl(geocoder);
+            };
+        }, [map]);
+
+        return null;
+    };
 
     // Save form data to localStorage whenever form data changes
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -59,7 +82,7 @@ function CreateProfile() {
     };
 
     var selectedPosition = localStorage.getItem('selectedLocation');
-    var parsedLocation = JSON.parse(selectedPosition) ;
+    var parsedLocation = JSON.parse(selectedPosition) || [];
 
     console.log("parsed location", parsedLocation)
 
@@ -81,6 +104,7 @@ function CreateProfile() {
     //         address: 'Selected Location', // You can modify this to show a more specific address if needed
     //     }));
     // };
+
 
     const handleSignup = async () => {
         const userId = parseInt(UserId, 10);
@@ -128,7 +152,8 @@ function CreateProfile() {
                 }, 2000);
             } else {
                 const errorData = await response.json();
-                setError(errorData.message || 'Signup failed');
+                setError(errorData || 'Signup failed');
+                toast.error(errorData)
             }
         } catch (error) {
             setError('An error occurred. Please try again.');
@@ -139,12 +164,13 @@ function CreateProfile() {
         navigate('/FullMap');
     };
 
-    if (!parsedLocation[0]) {
-        return <div>Loading...</div>;
-    }
+    // if (!parsedLocation[0]) {
+    //     return <div>Loading...</div>;
+    // }
 
     return (
         <div className="h-screen flex">
+            <Toaster position='top-center' reverseOrder={false}></Toaster>
             <div className="flex justify-center bg-bgLogin w-full items-baseline">
                 <div className="flex flex-col items-center w-1/4 gap-y-5 pt-36">
                     <h1 className="text-3xl">Create Profile</h1>
@@ -179,7 +205,7 @@ function CreateProfile() {
                                 name="profileType"
                                 value={formData.profileType}
                                 onChange={handleChange}
-                                className="rounded-lg text-yellow border border-2 border-bg hover:border-yellow focus:border-yellow focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow h-12"
+                                className="rounded-lg w-52 text-yellow border border-2 border-bg hover:border-yellow focus:border-yellow focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow h-12"
                             >
                                 <option value="">Select profile</option>
                                 <option value="hotel">Hotel</option>
@@ -195,8 +221,8 @@ function CreateProfile() {
                             />
                         </div>
                     </div>
-                    <div className="flex w-full">
-                        <div className="flex flex-wrap flex-col gap-y-5 gap-x-5 pl-5 mb-5  w-1/2">
+                    <div className="flex w-full  gap-x-3">
+                        <div className="flex flex-wrap flex-col gap-y-5 gap-x-5  pl-5 mb-5  w-1/2 ">
                             <div className="flex flex-col gap-y-2">
                                 <p>Email</p>
                                 <InputBox
@@ -236,14 +262,14 @@ function CreateProfile() {
                                     style={{ resize: 'none', overflowY: 'auto' }}
                                 />
                             </div>
-                            
-                                <MapView
-                                    latitude={parsedLocation[0]}
-                                    longitude={parsedLocation[1]}
-                                />
-                            
+
+                            <MapView
+                                latitude={parsedLocation[0]}
+                                longitude={parsedLocation[1]}
+                            />
+
                             <div className="h-12 w-full mb-5 rounded-lg bg-onstep hover:bg-nextstep cursor-pointer text-white flex justify-center items-center" onClick={handleClickFullMap}>
-                                    Select Position
+                                Select Position
                             </div>
                         </div>
                     </div>

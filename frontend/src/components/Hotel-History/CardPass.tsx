@@ -3,8 +3,10 @@ import { Hotel } from "./HotelDataPass";
 import React, { useEffect, useState } from "react";
 import { ReviewPayload } from "@/types/payload";
 import { FaRegStar, FaStar } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-function Card({ hotel }: { hotel: Hotel }) {
+
+function CardPass({ hotel }: { hotel: Hotel }) {
   const [reviewPayload, setReviewPayload] = useState<ReviewPayload>({
     hide_name: false,
     hotel_service_id: 1,
@@ -15,8 +17,16 @@ function Card({ hotel }: { hotel: Hotel }) {
     review_rate: 1,
   });
 
-  // ReviewHotelService(ReviewPayload);
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).replace(/\//g, '-');
+  };
 
+  const navigate =useNavigate();
   const [isReviewing, setIsReviewing] = useState(false); // State to toggle between components
 
   // Function to handle Review button click
@@ -82,13 +92,13 @@ function Card({ hotel }: { hotel: Hotel }) {
             </div>
             <div className="col-span-3 ml-5 mt-5 space-y-1">
               <h1 className="ml-auto text-lg  px-4 text-right">
-                Check in {hotel.start_time}
+                Check in : {formatDate(hotel.start_time)}
               </h1>
               <h1 className="ml-auto text-lg  px-4 text-right">
-                Check out {hotel.end_time}
+                Check out : {formatDate(hotel.end_time)}
               </h1>
               <h2 className="ml-auto text-right  px-4 font-bold text-2xl ">
-                {hotel.price} ฿
+                {hotel.price} à¸¿
               </h2>
               {hotel.status === "completed" && (
                 <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
@@ -99,7 +109,7 @@ function Card({ hotel }: { hotel: Hotel }) {
                     Review
                   </button>
                   <button
-                    // onClick={handleReviewClick}
+                    onClick={()=>navigate("/hotelsearch")}
                     className="bg-button  px-4 py-2 border rounded-2xl shadow-lg shadow-egg"
                   >
                     Book Again
@@ -272,7 +282,7 @@ function ReviewForm({
     //             rating >= star ? "text-yellow-500" : "text-gray-400"
     //           }`}
     //         >
-    //           ★
+    //           â˜…
     //         </button>
     //       ))}
     //     </div>
@@ -323,4 +333,4 @@ function ReviewForm({
     // </div>
   );
 }
-export default Card;
+export default CardPass;

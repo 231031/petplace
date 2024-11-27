@@ -1,9 +1,8 @@
-import { useState ,useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
-import { GetAllFavCageByUserID } from "@/helper/user";
 import { Cage } from "@/types/response";
 import { useLocation } from "react-router-dom";
 import L from 'leaflet';
@@ -17,7 +16,6 @@ function Home() {
     const petOptions = ["Dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
     const [selectedCageSizes, setSelectedCageSizes] = useState<{ [key: string]: string }>({});
     const [rooms, setRooms] = useState<any[]>([]);
-    const [favRooms, setFavRooms] = useState<any[]>([]);
     const location = useLocation();
     const [cageDetails, setCageDetails] = useState<any[]>([]);
 
@@ -33,27 +31,40 @@ function Home() {
 
     const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
 
+    // Create sets to collect unique values
+    const uniqueAnimalTypes = new Set<string>();
+    const uniqueFacilities = new Set<string>();
+
+    // Iterate through rooms to populate sets
+    rooms.forEach((room) => {
+        if (room.animal_type) uniqueAnimalTypes.add(room.animal_type);
+        if (room.facility) uniqueFacilities.add(room.facility);
+    });
+
     const handleCageSelect = (cage: Cage) => {
         const queryParams = new URLSearchParams({
             size: cage.size,
             cage_type: cage.cage_type,
             facility: cage.facility,
             price: cage.price.toString(),
-            max_capacity: cage.max_capacity.toString(), 
+            max_capacity: cage.max_capacity.toString(),
             startDate: startDate,
             endDate: endDate
         }).toString();
 
         // Navigate with query parameters
-        
+
         navigate(`/hotelbookdetail?${queryParams}`,
-            { state: { 
-                selectedCage: cage, 
-                selectedHotel: location.state?.selectedHotel,
-                profile_name: location.state?.profile_name,
-                startDate: startDate, 
-                endDate: endDate } });
-        
+            {
+                state: {
+                    selectedCage: cage,
+                    selectedHotel: location.state?.selectedHotel,
+                    profile_name: location.state?.profile_name,
+                    startDate: startDate,
+                    endDate: endDate
+                }
+            });
+
     };
 
     const handleCageSizeChange = (pet: string, size: string) => {
@@ -73,7 +84,7 @@ function Home() {
         setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
         setMarkerPosition([lat, lng]); // Update the marker position
     };
-    
+
     const LocationMarker = () => {
         useMapEvents({
             click(e) {
@@ -94,7 +105,7 @@ function Home() {
                     const { latitude, longitude } = position.coords;
                     setPosition([latitude, longitude]);
                     handleLocationChange(latitude, longitude); // Update formData with initial position
-                    
+
                 },
                 (err) => {
                     setError('Unable to retrieve your location.');
@@ -108,69 +119,24 @@ function Home() {
     useEffect(() => {
         const token = localStorage.getItem("token");
         const id = localStorage.getItem("userId");
-        const fetchCageRooms = async () => {
-            try {
-              const id = localStorage.getItem("userId");
-              const data = await GetAllFavCageByUserID(parseInt(id as string));
-            //   console.log("FAV cage:", data);
-              setFavRooms(data || []);
-              console.log("FAV cage room:", favRooms);
-            } catch (error) {
-              console.error("Error fetching cage room data:", error);
-            }
-          };
-        fetchCageRooms();
 
         fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
         })
-          .then((response) => {
-            if (!response.ok) throw new Error("Failed to fetch cage room data");
-            return response.json();
-          })
-          .then((data) => {
-            setRooms(data|| []);
-          })
-          .catch((error) => console.error("Error fetching cage room data:", error));
-      }, []);
-      
-      useEffect(() => {
-        const fetchCageDetails = async (cageId: number, token: string) => {
-            try {
-              const response = await fetch(`http://localhost:5000/api/cageroom/${cageId}`, {
-                method: "GET",
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  Accept: "application/json",
-                },
-              });
-              if (!response.ok) throw new Error("Failed to fetch cage details");
-              return await response.json();
-            } catch (error) {
-              console.error("Error fetching cage details:", error);
-            }
-          };
-      if (favRooms.length > 0) {
-        const token = localStorage.getItem("token");
-        // Fetch details for each cage in the favorite rooms list
-        const fetchAllCageDetails = async () => {
-          const details = await Promise.all(
-            favRooms.map(async (room) => {
-              const data = await fetchCageDetails(room.cage_id, token as string);
-              return data;
+            .then((response) => {
+                if (!response.ok) throw new Error("Failed to fetch cage room data");
+                return response.json();
             })
-          );
-          setCageDetails(details);
-          console.log("Cage details:", cageDetails);
-          console.log("Cage room test:", cageDetails.map(cage => cage.animal_type));
-        };
-        fetchAllCageDetails();
-      }
-    },[]);
+            .then((data) => {
+                setRooms(data || []);
+                console.log("Cage room for search:", rooms);
+            })
+            .catch((error) => console.error("Error fetching cage room data:", error));
+    }, []);
 
     useEffect(() => {
         // Fetch user's current location
@@ -194,6 +160,48 @@ function Home() {
         }
     }, []);
 
+    const [favData, setFavData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchFavorites = async () => {
+            try {
+                // Retrieve user ID from localStorage
+                const userId = localStorage.getItem("userId");
+                const token = localStorage.getItem("token");
+                if (!userId) throw new Error("User ID is not available");
+
+                const [latitude, longitude] = position || [13.736717, 100.523186];
+
+                // Construct the API URL
+                const apiUrl = `http://localhost:5000/api/user/fav/${userId}?latitude=${latitude}&longitude=${longitude}`;
+
+                // Fetch data
+                const response = await fetch(apiUrl, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                });
+                console.log("Response:", response);
+                if (!response.ok) {
+                    throw new Error(`Error fetching data: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                setFavData(data); // Update state with fetched data
+                console.log("User favorites:", data);
+            } catch (err) {
+                console.error("Error fetching user favorites:", err);
+            } finally {
+                setLoading(false); // Stop the loading spinner
+            }
+        };
+
+        fetchFavorites();
+    }, [position]);
+
     const MapWithGeocoder = () => {
         const map = useMap();
 
@@ -216,7 +224,6 @@ function Home() {
         return null;
     };
 
-    
     console.log(searchedPosition)
 
     const handleSearch = async () => {
@@ -225,13 +232,13 @@ function Home() {
             cage_size: selectedCageSizes[pet] || "",
         }));
 
-        const filterSearchCage = searchedPosition ? {
-            longitude: JSON.stringify(searchedPosition[1]),
-            latitude: JSON.stringify(searchedPosition[0]),
+        const filterSearchCage: FilterSearchCage = {
+            longitude: searchedPosition ? JSON.stringify(searchedPosition[1]) : "",
+            latitude: searchedPosition ? JSON.stringify(searchedPosition[0]) : "",
             start_time: startDate,
             end_time: endDate
-        } : null; // or provide a default value if needed
-        
+        };
+
 
         try {
             const results = await GetSearchCage(filterAnimal, filterSearchCage);
@@ -241,7 +248,9 @@ function Home() {
                 state: {
                     hotels: results,
                     startDate: startDate,
-                    endDate: endDate
+                    endDate: endDate,
+                    selectedPets: selectedPets,
+                    selectedCageSizes: selectedCageSizes
                 }
             });
         } catch (error) {
@@ -263,19 +272,19 @@ function Home() {
                     src="/images/logo.png"
                     className="absolute top-0 left-16 w-64 h-64 z-20"
                 />
-                <div className="absolute z-20 top-80 left-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center">
-                    <a href="/" className="text-2xl text-white">Grooming</a>
-                    <span className="text-2xl text-white px-8 ">|</span>
-                    <a href="/" className="text-2xl text-white">Delivery</a>
-                    <span className="text-2xl text-white px-8 ">|</span>
-                    <a href="/" className="text-2xl text-white">Hotel Booking</a>
-                    <span className="text-2xl text-white px-8 ">|</span>
-                    <a href="/" className="text-2xl text-white">Clinic</a>
-                    <span className="text-2xl text-white px-8 ">|</span>
-                    <a href="/" className="text-2xl text-white">Shop</a>
+                <div className="absolute z-20 top-80 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-wrap justify-center gap-4 md:gap-0">
+                    <a href="/" className="text-lg md:text-2xl text-white">Grooming</a>
+                    <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
+                    <a href="/" className="text-lg md:text-2xl text-white">Delivery</a>
+                    <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
+                    <a href="/" className="text-lg md:text-2xl text-white">Hotel Booking</a>
+                    <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
+                    <a href="/" className="text-lg md:text-2xl text-white">Clinic</a>
+                    <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
+                    <a href="/" className="text-lg md:text-2xl text-white">Shop</a>
                 </div>
-                <div className="bg-white rounded-lg absolute bottom-0 left-1/2 transform -translate-x-1/2 z-10">
-                    <div className="font-semibold text-2xl px-8 py-2" style={{ color: '#A08252' }}>
+                <div className="bg-white rounded-lg absolute -bottom-0 left-1/2 transform -translate-x-1/2 z-10">
+                    <div className="font-semibold text-xl md:text-2xl px-4 md:px-8 py-2" style={{ color: '#A08252' }}>
                         Find your service
                     </div>
                 </div>
@@ -284,26 +293,26 @@ function Home() {
             {/* Second Section */}
             <div className="w-full h-full p-4 bg-white flex justify-center items-center relative">
                 {/* Nav bar */}
-                <div className="w-1/4 rounded-lg absolute z-20 mt-4 top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-4"
+                <div className="w-full md:w-1/2 lg:w-1/4 rounded-lg absolute z-20 mt-4 top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-2 md:space-x-4"
                     style={{ backgroundColor: "#A08252" }}
                 >
-                    <a href="/" className="text-xl text-white p-2">Hotel</a>
-                    <a href="/" className="text-xl text-white p-2">Care</a>
-                    <a href="/" className="text-xl text-white p-2">Clinic</a>
-                    <a href="/" className="text-xl text-white p-2">Delivery</a>
+                    <a href="/" className="text-sm md:text-xl text-white p-2">Hotel</a>
+                    <a href="/" className="text-sm md:text-xl text-white p-2">Care</a>
+                    <a href="/" className="text-sm md:text-xl text-white p-2">Clinic</a>
+                    <a href="/" className="text-sm md:text-xl text-white p-2">Delivery</a>
                 </div>
                 {/* Search box */}
-                <div className="w-3/4 absolute top-12 h-200 bg-white p-8 rounded-lg shadow-lg">
+                <div className="w-full md:w-11/12 lg:w-3/4 absolute z-10 top-16 bg-white p-4 md:p-8 rounded-lg shadow-lg">
                     {/* Location section */}
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
-                            <label htmlFor="location" className="block text-[#A08252] text-lg font-semibold mb-4">
-                            Location
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
+                            <label htmlFor="location" className="block text-lg font-semibold mb-2">
+                                Location
                             </label>
-                            <div className="flex flex-col w-3/12 gap-y-5 pl-5 ">
-                                <div className="bg-bg rounded-xl flex  h-44 w-[37rem] shadow shadow-gray-400 p-1  ">
+                            <div className="flex flex-col w-full gap-y-5 pl-5 ">
+                                <div className="bg-bg rounded-xl flex  h-44 w-full shadow shadow-gray-400 p-1  ">
                                     <div className="h-full w-full rounded-lg">
-                                        
+
                                         {geoError && <div>{geoError}</div>}
                                         <MapContainer
                                             center={position || [13.736717, 100.523186]}
@@ -312,13 +321,13 @@ function Home() {
                                         >
                                             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                                             <LocationMarker />
-                                            <MapWithGeocoder/>
+                                            <MapWithGeocoder />
                                         </MapContainer>
                                     </div>
-                                <div>
+                                    <div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
                         </div>
                         <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
                             <div>
@@ -377,6 +386,7 @@ function Home() {
                                             <option value="s">Small (S)</option>
                                             <option value="m">Medium (M)</option>
                                             <option value="l">Large (L)</option>
+                                            <option value="xl">Extra Large (XL)</option>
                                         </select>
                                     </div>
                                 ))}
@@ -399,17 +409,6 @@ function Home() {
                 </div>
                 <div>
                     <h1>Hotels</h1>
-
-                    {/* <ul>
-                    {hotels.map((hotel, index) => (
-                    <li key={index}>
-                        <h2>{hotel.name}</h2>
-                        <p>Location: {hotel.longitude}</p>
-                        <p>Price: {hotel.price} THB</p>
-                    </li>
-                    ))}
-                </ul> */}
-
                 </div>
             </div>
 
@@ -425,67 +424,96 @@ function Home() {
                 </div>
 
                 {/* Hotel List */}
-                <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-1/2 px-4">
+                < div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-1/2 px-4">
                     {/* Single Hotel Card */}
-                    {cageDetails.map((cage, index) => (
-                    <div
-                        key={index}
-                        className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
-                    >
-                        {/* Hotel Image and Info */}
-                        <div className="flex space-x-6">
-                        {/* Image */}
-                        <div className="w-40 h-40 rounded-lg overflow-hidden">
-                            <img
-                            src={cage.image || '/placeholder-image.png'} // Placeholder for missing images
-                            alt="Cage Room"
-                            className="w-full h-full object-cover"
-                            />
-                        </div>
-                        {/* Hotel Info */}
-                        <div>
-                            <h2 className="text-lg font-bold text-[#333] mb-2">
-                            {cage.animal_type}
-                            </h2>
-                            {/* Location */}
-                            <p className="text-gray-500 mb-2">
-                            {cage.detail || 'No additional details provided'}
-                            </p>
-                            {/* Facilities */}
-                            <p className="text-gray-600 text-sm">
-                            <span className="text-[#A08252]">Facilities:</span>{' '}
-                            {cage.facility || 'N/A'}
-                            </p>
-                        </div>
-                        </div>
-
-                        {/* Capsule Info */}
-                        <div className="flex-1 mx-8 border-l pl-6">
-                            <h3 className="text-[#333] font-bold mb-2">Capsule</h3>
-                                <span className="text-xs bg-[#A08252] text-white px-3 py-1 rounded-lg">
-                                    {cage.size}
-                                </span>
-                                <p className="text-sm text-gray-600 mt-2">
-                                    Size: {cage.width} x {cage.lenth} x {cage.height} m
-                                    <br />
-                                    Accommodates: {cage.max_capacity}
-                                </p>
-                        </div>
-
-                        {/* Price and Button */}
-                        <div className="flex flex-col items-end space-y-4">
-                        <span className="text-lg font-bold text-[#333]">
-                            {cage.price} ฿
-                        </span>
-                        <button
-                            className="bg-[#A08252] text-white text-sm px-6 py-2 rounded-lg hover:bg-[#8a6e45] transition"
-                            onClick={() => console.log('Book Now')}
+                    {favData.map((fav, index) => (
+                        <div
+                            key={index}
+                            className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
                         >
-                            Book now
-                        </button>
+                            {/* Hotel Image and Info */}
+                            <div className="flex space-x-6">
+                                {/* Image */}
+                                <div className="w-40 h-40 rounded-lg overflow-hidden">
+                                    <img
+                                        src={
+                                            fav.cage_room.profile.image_array?.[0] ||
+                                            "/images/default-room.jpg"
+                                        }
+                                        alt="Cage Room"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+
+                                {/* Hotel Info */}
+                                <div>
+                                    <h2 className="text-lg text-[#333] mb-2">
+                                        {fav.cage_room.profile.name || "Unknown Hotel"}
+                                    </h2>
+                                    {Array.from({ length: 5 }, (_, i) => (
+                                        <span key={i} className="text-yellow-500 text-lg">
+                                            {i < Math.floor(fav.cage_room.profile.avg_review) ? (
+                                                <i className="fa-solid fa-star" style={{ color: "#DBA54D" }}></i> // Full star
+                                            ) : i < fav.cage_room.profile.avg_review ? (
+                                                <i
+                                                    className="fa-solid fa-star-half-alt"
+                                                    style={{ color: "#DBA54D" }}
+                                                ></i> // Half star
+                                            ) : (
+                                                <i className="fa-regular fa-star" style={{ color: "#DBA54D" }}></i> // Empty star
+                                            )}
+                                        </span>
+                                    ))}
+                                    <p className="text-gray-500 mb-2">
+                                        {fav.cage_room.profile.address || ""}
+                                    </p>
+                                    <p className="text-gray-500 mb-2">
+                                        {fav.cage_room.profile.Distance || ""}
+                                    </p>
+                                    <p className="text-gray-600 text-sm">
+                                        <span className="font-semibold">Facilities:</span>{" "}
+                                        {fav.cage_room.profile.facility || "No facilities listed"}
+                                    </p>
+                                    <p className="text-gray-600 text-sm">
+                                        <span className="font-semibold">Animal Type:</span>{" "}
+                                        {fav.cage_room.animal_type || "Unknown"}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Capsule Info */}
+                            <div className="flex-1 mx-8 border-l pl-6">
+                                <h3 className="text-[#333] text-xl font-bold mb-2">Capsule</h3>
+                                <div className="flex flex-col space-y-2">
+                                    <p className="text-sm text-gray-600">
+                                        <span className="font-semibold">Size:</span>{" "}
+                                        {fav.cage_room.size || "Unknown"} ({fav.cage_room.width} x{" "}
+                                        {fav.cage_room.lenth} x {fav.cage_room.height} m)
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                        <span className="font-semibold">Max Capacity:</span>{" "}
+                                        {fav.cage_room.max_capacity || "N/A"}
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                        <span className="font-semibold">Facilities:</span>{" "}
+                                        {fav.cage_room.facility || "N/A"}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Price and Action */}
+                            <div className="flex flex-col items-end space-y-4">
+                                <span className="text-lg font-bold text-[#333]">
+                                    {fav.cage_room.price} ฿
+                                </span>
+                                <button className="bg-[#A08252] text-white px-4 py-2 rounded-lg" onClick={() => handleCageSelect(fav.cage_room)}>
+                                    Book Now
+                                </button>
+                            </div>
                         </div>
-                    </div>
                     ))}
+
+
                 </div>
 
             </div>

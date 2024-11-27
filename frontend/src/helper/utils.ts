@@ -13,6 +13,8 @@ export async function RequestApi(endpoint:string, method:string, payload: any, c
         body: JSON.stringify(payload),
       });
       const data = await response.json();
+      console.log("Response in:", response);
+      console.log("Data in:", data);
       if (response.status != checkStatus) {
         return Promise.reject(data);
       }
