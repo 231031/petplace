@@ -5,12 +5,75 @@ import { FilterAnimal, FilterSearchCage } from "../types/payload";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { Cage } from "@/types/response";
 import { useLocation } from "react-router-dom";
+import { RemoveFavCage } from "../helper/user";
+import { Calendar } from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import L from 'leaflet';
+import { formatDateToString } from "../helper/utils";
 
 function Home() {
     const [hotels, setHotels] = useState<any[]>([]);
+    const [selectionStage, setSelectionStage] = useState<'start' | 'range'>('start');
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
+
+    const handleDateClick = (clickedDate: Date) => {
+        if (selectionStage === 'start') {
+            // First click: Set start date
+            setStartDate(clickedDate);
+            setSelectionStage('range');
+        } else {
+            // Subsequent clicks: Handle range selection
+            if (!startDate) {
+                // Fallback if start date is somehow not set
+                setStartDate(clickedDate);
+                setSelectionStage('range');
+                return;
+            }
+
+            // Ensure the new date is after the start date
+            if (clickedDate >= startDate) {
+                setEndDate(clickedDate);
+                setSelectionStage('start'); // Reset to start for next selection
+            } else {
+                // If clicked date is before start date, reset and set as new start date
+                setStartDate(clickedDate);
+                setEndDate(null);
+            }
+        }
+        console.log("Start Date:", startDate);
+        console.log("End Date:", endDate);
+    };
+
+    const tileClassName = ({ date, view }) => {
+        if (view === 'month') {
+            // Highlight start date
+            if (startDate && date.toDateString() === startDate.toDateString()) {
+                return 'highlight-start';
+            }
+
+            // Highlight end date
+            if (endDate && date.toDateString() === endDate.toDateString()) {
+                return 'highlight-end';
+            }
+            // Highlight dates within the range
+            if (
+                startDate && 
+                endDate && 
+                date > startDate && 
+                date < endDate
+            ) {
+                return 'highlight-range';
+            }
+        }
+        return null;
+    };
+
+    const tileDisabled = ({ date, view }) => {
+        // Optional: Add logic to disable past dates or specific date ranges
+        return view === 'month' && date < new Date();
+    };
+
     const [selectedPets, setSelectedPets] = useState<string[]>([]);
     const navigate = useNavigate();
     const petOptions = ["Dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
@@ -64,6 +127,29 @@ function Home() {
         
     };
 
+    const handleRemoveFavorite = async (cage: Cage) => {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            alert("You need to log in to delete favorites.");
+            return;
+        }
+        
+        const favPayload = {
+            cage_id: cage.id,
+            user_id: Number(userId),
+        };
+        console.log("Favorite payload:", favPayload);
+
+        try {
+            const response = await RemoveFavCage(favPayload);
+            console.log("Favorite response:", response);
+            window.location.reload();
+        } catch (error) {
+            console.error("Error delete your favorites:", error);
+            alert("Failed to delete favorites cage. Please try again.");
+        }
+    };
+
     const handleCageSizeChange = (pet: string, size: string) => {
         setSelectedCageSizes((prev) => ({
             ...prev,
@@ -94,6 +180,7 @@ function Home() {
             </Marker>
         );
     };
+        
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -232,8 +319,8 @@ function Home() {
         const filterSearchCage: FilterSearchCage = {
             longitude: searchedPosition ? JSON.stringify(searchedPosition[1]) : "",
             latitude: searchedPosition ? JSON.stringify(searchedPosition[0]) : "",
-            start_time: startDate,
-            end_time: endDate
+            start_time: formatDateToString(startDate),
+            end_time: formatDateToString(endDate),
         };
         
 
@@ -278,7 +365,7 @@ function Home() {
                     <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
                     <a href="/" className="text-lg md:text-2xl text-white">Shop</a>
                 </div>
-                <div className="bg-white rounded-lg absolute -bottom-0 left-1/2 transform -translate-x-1/2 z-10">
+                <div className="bg-white rounded-2xl absolute px-8 py-2 -bottom-2 left-1/2 transform -translate-x-1/2 z-10">
                     <div className="font-semibold text-xl md:text-2xl px-4 md:px-8 py-2" style={{ color: '#A08252' }}>
                         Find your service
                     </div>
@@ -286,7 +373,7 @@ function Home() {
             </div>
 
             {/* Second Section */}
-            <div className="w-full h-full p-4 bg-white flex justify-center items-center relative">
+            <div className="w-full h-full p-4 bg-white flex justify-center items-center relative mb-6">
                 {/* Nav bar */}
                 <div className="w-full md:w-1/2 lg:w-1/4 rounded-lg absolute z-20 mt-4 top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-2 md:space-x-4"
                     style={{ backgroundColor: "#A08252" }}
@@ -297,15 +384,15 @@ function Home() {
                     <a href="/" className="text-sm md:text-xl text-white p-2">Delivery</a>
                 </div>
                 {/* Search box */}
-                <div className="w-full md:w-11/12 lg:w-3/4 absolute z-10 top-16 bg-white p-4 md:p-8 rounded-lg shadow-lg">
+                <div className="h-7/8 md:w-11/12 lg:w-3/4 absolute z-10 top-16 bg-white p-4 md:p-8 rounded-lg shadow-lg">
                     {/* Location section */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
+                    <div className="bg-white grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div className="p-4 h-60 w-full border border-gray-300 rounded-lg shadow-md bg-white mt-8">
                             <label htmlFor="location" className="block text-lg font-semibold mb-2">
                                 Location
                             </label>
                             <div className="flex flex-col w-full gap-y-5 pl-5 ">
-                                <div className="bg-bg rounded-xl flex  h-44 w-full shadow shadow-gray-400 p-1  ">
+                                <div className="bg-bg rounded-xl h-44 w-full shadow shadow-gray-400 p-1  ">
                                     <div className="h-full w-full rounded-lg">
                                         
                                         {geoError && <div>{geoError}</div>}
@@ -322,35 +409,7 @@ function Home() {
                                 <div>
                             </div>
                         </div>
-                    </div>
-                        </div>
-                        <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
-                            <div>
-                                <label htmlFor="start-date" className="block text-lg font-semibold mb-2">
-                                    Start Date
-                                </label>
-                                <input
-                                    type="date"
-                                    id="start-date"
-                                    value={startDate}
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="end-date" className="block text-lg font-semibold mb-2">
-                                    End Date
-                                </label>
-                                <input
-                                    type="date"
-                                    id="end-date"
-                                    value={endDate}
-                                    onChange={(e) => setEndDate(e.target.value)}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                                />
-                            </div>
-                        </div>
-                        <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
+                        <div className="p-4 h-full border border-gray-300 rounded-lg shadow-md bg-white">
                             <label className="block text-[#A08252] text-lg font-semibold mb-4">
                                 Pet
                             </label>
@@ -373,36 +432,60 @@ function Home() {
                                         <select
                                             value={selectedCageSizes[pet] || ""}
                                             onChange={(e) => handleCageSizeChange(pet, e.target.value)}
-                                            className="w-1/2 border border-[#A08252] rounded-lg px-2 py-1 text-[#5E4126] focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                                            className="w-28 bg-navbar border border-[#A08252] rounded-lg px-2 py-1 text-white focus:outline-none focus:ring-2 focus:ring-[#A08252]"
                                         >
                                             <option value="" disabled>
                                                 All size
                                             </option>
-                                            <option value="s">Small (S)</option>
-                                            <option value="m">Medium (M)</option>
-                                            <option value="l">Large (L)</option>
+                                            <option value="s">S</option>
+                                            <option value="m">M</option>
+                                            <option value="l">L</option>
                                         </select>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     </div>
+                </div>
+                        <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
+                            <div className="flex col justify-center">
+                                    <div className="bg-white p-4 rounded-lg shadow-md">
+                                        <Calendar className = "p-4 rounded-lg shadow-md text-navbar"
+                                            onClickDay={handleDateClick}
+                                            value={[startDate, endDate]}
+                                            tileClassName={tileClassName}
+                                            tileDisabled={tileDisabled}
+                                        />
+                                    </div>
+                            </div>
+                                <div className="flex justify-center items-center">
+                                    <div className="mt-6 flex space-x-4">
+                                        <div className ="flex">
+                                            <span className="font-medium">Start :</span>
+                                            <p>{startDate ? startDate.toLocaleDateString() : 'Not selected'}</p>
+                                        </div>
+                                        <div className ="flex">
+                                            <span className="font-medium">End :</span>
+                                            <p>{endDate ? endDate.toLocaleDateString() : 'Not selected'}</p>
+                                        </div>
+                                    </div>
+                                </div> 
+                        </div>
+                         
+                    </div>
                     <div className="flex justify-center">
                         <button
                             onClick={handleSearch}
-                            className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200"
+                            className="mt-16 bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200"
                         >
                             Search
                         </button>
                     </div>
                 </div>
-                <div className="bg-yellow rounded-lg absolute bottom-0 left-1/2 transform -translate-x-1/2 z-10">
+                <div className="bg-yellow rounded-2xl py-2 px-8 absolute -bottom-10 left-1/2 transform -translate-x-1/2 z-10">
                     <div className="font-semibold text-white text-2xl px-8 py-2">
                         Favorite
                     </div>
-                </div>
-                <div>
-                    <h1>Hotels</h1>
                 </div>
             </div>
 
@@ -441,7 +524,7 @@ function Home() {
 
                         {/* Hotel Info */}
                         <div>
-                            <h2 className="text-lg text-[#333] mb-2">
+                            <h2 className="text-xl font-semi text-[#333]">
                             {fav.cage_room.profile.name || "Unknown Hotel"}
                             </h2>
                             {Array.from({ length: 5 }, (_, i) => (
@@ -458,57 +541,79 @@ function Home() {
                                 )}
                                 </span>
                             ))}
-                            <p className="text-gray-500 mb-2">
-                            {fav.cage_room.profile.address || ""}
+                            <div className="text-gray-500 mb-2 flex justify-between">
+                                <span>{fav.cage_room.profile.address || ""}</span>
+                                <span className ="px-2">
+                                    {fav.cage_room.profile.Distance ? (Math.floor(fav.cage_room.profile.Distance * 10) / 10).toFixed(1) : ""} km
+                                </span>
+                            </div>
+                                <p className="text-gray-600 text-sm mb-2">
+                                <span className="font-semibold">Facilities:</span>{" "}
+                                {fav.cage_room.profile.facility || "No facilities listed"}
                             </p>
-                            <p className="text-gray-500 mb-2">
-                            {fav.cage_room.profile.Distance || ""}
-                            </p>
-                            <p className="text-gray-600 text-sm">
-                            <span className="font-semibold">Facilities:</span>{" "}
-                            {fav.cage_room.profile.facility || "No facilities listed"}
-                            </p>
-                            <p className="text-gray-600 text-sm">
-                            <span className="font-semibold">Animal Type:</span>{" "}
-                            {fav.cage_room.animal_type || "Unknown"}
-                            </p>
+                            <div className="flex space-x-2">
+                                <p className="bg-navbar text-white text-sm px-2 py-1 rounded">
+                                {fav.cage_room.animal_type || "Unknown"}
+                                </p>
+                            </div>
                         </div>
                         </div>
 
                         {/* Capsule Info */}
-                        <div className="flex-1 mx-8 border-l pl-6">
-                        <h3 className="text-[#333] text-xl font-bold mb-2">Capsule</h3>
-                        <div className="flex flex-col space-y-2">
-                            <p className="text-sm text-gray-600">
-                            <span className="font-semibold">Size:</span>{" "}
-                            {fav.cage_room.size || "Unknown"} ({fav.cage_room.width} x{" "}
-                            {fav.cage_room.lenth} x {fav.cage_room.height} m)
-                            </p>
-                            <p className="text-sm text-gray-600">
-                            <span className="font-semibold">Max Capacity:</span>{" "}
-                            {fav.cage_room.max_capacity || "N/A"}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                            <span className="font-semibold">Facilities:</span>{" "}
-                            {fav.cage_room.facility || "N/A"}
-                            </p>
-                        </div>
-                        </div>
+                        
+                        <div className="flex-1 mx-8 border-l pl-6 flex items-start space-x-6">
+                            {/* Image Section */}
+                            <div className="w-40 h-40 rounded-lg overflow-hidden flex-shrink-0">
+                                <img
+                                src={
+                                    fav.cage_room.image_array?.[0] || "/images/default-room.jpg"
+                                }
+                                alt="Cage Room"
+                                className="w-full h-full object-cover"
+                                />
+                            </div>
+
+                            {/* Information Section */}
+                            <div className="flex flex-col space-y-2">
+                                <h3 className="text-[#333] text-xl font-semi">Capsule</h3>
+                                <div className="flex items-center space-x-2">
+                                    <p className="bg-navbar text-white text-sm px-2 py-1 rounded">
+                                    {fav.cage_room.size || "Unknown"}
+                                    </p> 
+                                    <p className="text-sm text-gray-600">
+                                    Size: ({fav.cage_room.width} x{" "}
+                                    {fav.cage_room.lenth} x {fav.cage_room.height} m)
+                                    </p>
+                                </div>
+                                <p className="text-sm text-gray-600">
+                                <span className="font-semibold">Accomodates :</span>{" "}
+                                {fav.cage_room.max_capacity || "N/A"}
+                                </p>
+                                <p className="text-gray-600 text-sm mb-2">
+                                    <span className="font-semibold">Facilities:</span>&nbsp;
+                                    {fav.cage_room.facility || "N/A"}
+                                </p>
+                            </div>
+                            </div>
 
                         {/* Price and Action */}
                         <div className="flex flex-col items-end space-y-4">
-                        <span className="text-lg font-bold text-[#333]">
-                            {fav.cage_room.price} ฿
-                        </span>
-                        <button className="bg-[#A08252] text-white px-4 py-2 rounded-lg" onClick={() => handleCageSelect(fav.cage_room)}>
-                            Book Now
-                        </button>
+                            <span className="text-lg font-bold text-[#333]">
+                                {fav.cage_room.price} ฿
+                            </span>
+                            <div className="flex space-x-4">
+                            <button className="bg-white text-sm text-black px-3 py-2 rounded-2xl border border-black focus:outline-none focus:ring-2 focus:ring-black" onClick={() => handleRemoveFavorite(fav.cage_room)}>
+                                Remove
+                            </button>
+                            <button className="bg-[#A08252] text-sm text-white px-3 py-2 rounded-2xl" onClick={() => handleCageSelect(fav.cage_room)}>
+                                Book Now
+                            </button>
+                            </div>
                         </div>
                     </div>
                     ))}
 
                 </div>
-
             </div>
 
         </div>

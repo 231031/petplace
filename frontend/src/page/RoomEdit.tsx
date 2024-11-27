@@ -48,6 +48,7 @@ const RoomDetailPage = () => {
     }, [selectedAnimal, selectedCage]);
 
     const fetchCageRoomById = async (cageRoomId: number) => {
+        if (cageRoomId) {
         try {
             const token = localStorage.getItem("token");
             const response = await fetch(`http://localhost:5000/api/cageroom/${cageRoomId}`, {
@@ -64,6 +65,8 @@ const RoomDetailPage = () => {
         } catch (error) {
             console.error("Error fetching cage room data from pet and type:", error);
         }
+        }
+
     };
 
     const handleSubmit = async () => {
@@ -98,13 +101,6 @@ const RoomDetailPage = () => {
             console.log("Blabla", res);
         } catch (err: any) {
             alert(err);
-            // if (err.response && err.response.data) {
-            //     console.error("Server Response:", err.response.data);
-            //     alert(err.response.data.message);
-            // } else {
-            //     alert(err.message);
-            //     alert("Unexpected error occurred. Please try again.");
-            // }
         }
     };
 
@@ -153,6 +149,51 @@ const RoomDetailPage = () => {
             ...filteredCageData, 
             image_array: updatedImages,
             image: updatedImages[0]?.fileUrl || '' 
+        });
+    };
+
+    const handleCreateRoom = () => { 
+        const token = localStorage.getItem("token");
+        // const userId = localStorage.getItem("userId");
+        const profileId = localStorage.getItem("profile_id");
+        console.log("profileId", profileId);
+
+        const payload = {
+                animal_type: selectedAnimal,
+                cage_type: filteredCageData.cage_type,
+                detail: filteredCageData.detail,
+                facility: filteredCageData.facility,
+                facility_array: filteredCageData.facility_array,
+                height: parseFloat(filteredCageData.height),
+                image: filteredCageData.image,
+                image_array: filteredCageData.image_array,
+                lenth: parseFloat(filteredCageData.lenth),
+                max_capacity: parseInt(filteredCageData.max_capacity),
+                price: parseFloat(filteredCageData.price),
+                profile_id: parseInt(profileId || '0'),
+                quantity: parseInt(filteredCageData.quantity),
+                size: filteredCageData.size,
+                width: parseFloat(filteredCageData.width),
+                // id: parseInt(filteredCageData.id),
+        };
+
+        fetch(`http://localhost:5000/api/cageroom`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            console.log("data", data);
+            setFilteredCageData(data);
+            alert("Room created successfully");
+        })
+        .catch((error) => {
+            console.error("Error creating new room:", error);
         });
     };
 
@@ -212,13 +253,20 @@ const RoomDetailPage = () => {
                                         </option>
                                     ))}
                         </select>
-                        <button className="text-gray-500 p-2 rounded-lg">Create New Room</button>
+                        <button
+                            className={`text-gray-500 p-2 rounded-lg ${!selectedAnimal ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            onClick={handleCreateRoom}
+                            disabled={!selectedAnimal}
+                        >
+                            Create New Room
+                        </button>
                     </div>
                 </div>
-
-                {/* Form */}
+                
+                {selectedAnimal && (
                 <div className="bg-bg p-4 rounded-lg shadow-lg flex flex-col gap-y-6">
                     {/* Room Name and Description */}
+                    {/* {selectedAnimal && ( */}
                     <div className="grid grid-cols-2 gap-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Room Name</label>
@@ -327,8 +375,8 @@ const RoomDetailPage = () => {
                         </div>
                     </div>
                     
-                    {/* Room Pictures */}
                     <div>
+                        {/* Room Pictures */}
                         <label className="block text-sm font-medium text-gray-700">Room Picture (Max. 10)</label>
                         <div className="flex items-center gap-4">
                             {(filteredCageData.image_array || []).map((image: string, index: number) => (  
@@ -360,7 +408,7 @@ const RoomDetailPage = () => {
                         <div className="flex gap-2 mb-4">
                             <input
                                 type="text"
-                                value={ filteredCageData.facility }
+                                value={filteredCageData.facility}
                                 onChange={(e) => setFilteredCageData({ ...filteredCageData, facility: e.target.value })}
                                 placeholder="Add new facility"
                                 className="w-full border border-gray-300 rounded-md p-2"
@@ -391,8 +439,10 @@ const RoomDetailPage = () => {
                     </div>
                     </div>
                 </div>
+                )}
 
                 {/* Save Button */}
+                {selectedAnimal && (
                 <div className="flex justify-center items-center">
                     <div className="flex justify-center w-1/2 pt-4 pb-16">
                         <button
@@ -403,6 +453,7 @@ const RoomDetailPage = () => {
                         </button>
                     </div>
                 </div>
+                )}
             </div>
         </div>
     );

@@ -80,7 +80,9 @@ export function mapCageSize(max_capacity: number): string {
         return "m";
     } else if (max_capacity >= 5 && max_capacity <= 6) {
         return "l";
+    } else if (max_capacity >= 7) {
+        return "xl";
     }
 
-    return "xl";
+    return "";
 }

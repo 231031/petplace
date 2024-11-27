@@ -47,6 +47,7 @@ export default function HotelHome() {
             .then((data) => {
                 console.log("Fetched hotel data:", data.profile);
                 setHotel(data.profile) // ตรวจสอบข้อมูลที่ดึงมาจาก API
+                localStorage.setItem("profile_id", data.profile.id)
                 
             })
             .catch((error) => console.error("Error fetching hotel data:", error));
