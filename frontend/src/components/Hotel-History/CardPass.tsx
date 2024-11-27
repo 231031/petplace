@@ -98,7 +98,7 @@ function CardPass({ hotel }: { hotel: Hotel }) {
                 Check out : {formatDate(hotel.end_time)}
               </h1>
               <h2 className="ml-auto text-right  px-4 font-bold text-2xl ">
-                {hotel.price} ฿
+                {hotel.price} à¸¿
               </h2>
               {hotel.status === "completed" && (
                 <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
@@ -282,7 +282,7 @@ function ReviewForm({
     //             rating >= star ? "text-yellow-500" : "text-gray-400"
     //           }`}
     //         >
-    //           ★
+    //           â˜…
     //         </button>
     //       ))}
     //     </div>
