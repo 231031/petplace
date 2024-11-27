@@ -261,14 +261,14 @@ export default function HotelHome() {
                 </div>
                 {/* section4 */}
                 <div className="flex flex-col w-full ">
-                    <h1 className="text-2xl">Cage</h1>
+                    <h1 className="text-2xl mb-5">Cage</h1>
                     <div className="flex flex-col">
                         {/* selection */}
-                        <div className="flex justify-end gap-x-2 my-2">
+                        {/* <div className="flex justify-end gap-x-2 my-2">
                             <button className="w-16 h-8 bg-navbar rounded-md text-xs">Cat</button>
                             <button className="w-16 h-8 bg-yellow rounded-md text-xs">Rabbit</button>
                             <button className="w-16 h-8 bg-yellow rounded-md text-xs">Hamster</button>
-                        </div>
+                        </div> */}
 
                         <div className="flex bg-bg w-full h-full  flex-col shadow shadow-gray-400 rounded-md pb-5" >
                             {/* room container */}
@@ -286,7 +286,7 @@ export default function HotelHome() {
                                         >
                                             <div
                                                 className="basis-1/3 bg-cover  w-72  pt-5 pl-5">
-                                                <CarouselCage images={hotel.image_array || []} />
+                                                <CarouselCage images={room.image_array || []} />
                                             </div>
                                             <div className="basis-1/3 flex flex-col space-y-5 pl-5 pt-4 cursor-pointer"
                                                 onClick={() => handleRoomClick(index)}
@@ -382,7 +382,7 @@ export default function HotelHome() {
                                                 </div>
                                             </div>
                                             <div className="my-2 mb-10">
-                                                <CarouselCage images={hotel.image_array || []} />
+                                                <CarouselCage images={review[index].review_image_array || []} />
                                             </div>
                                         </div>
                                     </div>

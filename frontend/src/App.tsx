@@ -39,6 +39,7 @@ import RoomEdit from './page/RoomEdit';
 import HotelResUpcom from './page/HotelResUpcom';
 import HotelBookSuccess from './page/HotelBookSuccess';
 import MyProfile from './page/MyProfile';
+import MyprofileHotel from './page/MyProfileHotel';
 
 import HotelResAcc from './page/HotelResAcc';
 import HotelResRej from './page/HotelResRej';
@@ -108,6 +109,9 @@ function App() {
           <Route path="/HotelHome" element={<HotelHome />} />
           <Route path="/hotel/edit" element={<HotelEdit />} />
           <Route path="/room/edit" element={<RoomEdit />} />
+          {/* <Route path="/hotel/reservation" element={<HotelReservation />} /> */}
+          <Route path="/hotel/MyProfileHotel" element={<MyprofileHotel />} />
+          
           <Route path="/hotel/reservation/upcoming" element={<HotelResUpcom />} />
           <Route path="/hotel/reservation/accepted" element={<HotelResAcc />} />
           <Route path="/hotel/reservation/rejected" element={<HotelResRej />} />

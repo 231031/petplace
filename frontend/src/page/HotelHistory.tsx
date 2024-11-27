@@ -13,7 +13,9 @@ function HotelHistory() {
   console.log(selectedCage);
   const token = localStorage.getItem("token");
   const storedUserId = localStorage.getItem('userId')
+  const storedUserName = localStorage.getItem('username')
   console.log('ID', storedUserId)
+  console.log('username', storedUserName)
   const [hotelServiceUsers, setHotelServiceUsers] = useState([]);
   const [error, setError] = useState(null);
   // Fetch data using async function within useEffect

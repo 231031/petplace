@@ -79,7 +79,8 @@ const Nav: React.FC = () => {
                 <div className="overflow-y-auto py-5 px-3 h-full bg-navbar border-r border-gray-200">
                   <ul className="space-y-2">
                     <li><a href="/CreateProfile" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Create Profile</span></a></li>
-                    <li><a href="/SelectProfile" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Profile</span></a></li>
+                    <li><a href="/SelectProfile" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Select Profile</span></a></li>
+                    <li><a href="/MyProfile" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"><span className="ml-3">My Profile</span></a></li>
                     <li><a href="/" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Hotel</span></a></li>
                     <li><a href="/care" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Care & Clinic</span></a></li>
 
