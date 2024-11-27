@@ -54,6 +54,7 @@ function Home() {
                 startDate: startDate, 
                 endDate: endDate } });
         
+                
     };
 
     const handleCageSizeChange = (pet: string, size: string) => {
