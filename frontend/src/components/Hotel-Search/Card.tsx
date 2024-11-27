@@ -42,10 +42,17 @@ function Card({ hotel, startDate, endDate }: { hotel: Profile, startDate: string
     <div className="grid grid-cols-10 gap-4 mb-10 mt-10  *:rounded-2xl shadow-lg shadow-egg border  border-gray-300  p-4" onClick={() => handleHotelClick(hotel)}
       style={{ cursor: 'pointer' }}>
       <div className="col-span-2">
-        <img
-          src={hotel.image_profile}
-          className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
-        />
+        {
+          (hotel.image_profile === "") ? (
+            <div></div>
+          ) : (
+            <img
+              // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+              src={hotel.image_profile}
+              className="w-full h-full object-cover object-center rounded-lg ml-5 "
+            />
+          )
+        }
       </div>
 
       <div className="col-span-8 ml-5 mt-5">
