@@ -248,7 +248,9 @@ function Home() {
                 state: {
                     hotels: results,
                     startDate: startDate,
-                    endDate: endDate
+                    endDate: endDate,
+                    selectedPets: selectedPets,
+                    selectedCageSizes: selectedCageSizes
                 }
             });
         } catch (error) {
@@ -384,6 +386,7 @@ function Home() {
                                             <option value="s">Small (S)</option>
                                             <option value="m">Medium (M)</option>
                                             <option value="l">Large (L)</option>
+                                            <option value="xl">Extra Large (XL)</option>
                                         </select>
                                     </div>
                                 ))}
@@ -421,7 +424,7 @@ function Home() {
                 </div>
 
                 {/* Hotel List */}
-                <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-1/2 px-4">
+                < div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-1/2 px-4">
                     {/* Single Hotel Card */}
                     {favData.map((fav, index) => (
                         <div
@@ -509,6 +512,7 @@ function Home() {
                             </div>
                         </div>
                     ))}
+
 
                 </div>
 

@@ -15,7 +15,7 @@ const InputBox: React.FC<InputBoxProps> = ({ placeholder = "Enter", value, onCha
             name={name}
             value={value}
             onChange={onChange}
-            className="h-12 p-4  text-yellow rounded-lg bg-white 
+            className="h-12 p-4 w-52 text-yellow rounded-lg bg-white 
                        placeholder:text-yellow border border-2 border-bg hover:border-yellow
                        focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow"
             placeholder={placeholder}
