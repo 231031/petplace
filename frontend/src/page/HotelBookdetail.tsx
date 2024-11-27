@@ -13,6 +13,9 @@ function HotelBookdetail() {
     const price = searchParams.get('price')
     const facility = searchParams.get('facility')
     const max_capacity = searchParams.get('max_capacity')
+    const width = searchParams.get('width')
+    const height = searchParams.get('height')
+    const lenth = searchParams.get('lenth')
     const [selectedPets, setSelectedPets] = useState<number[]>([]);
     const [error, setError] = useState<string>('');
 
@@ -33,7 +36,9 @@ function HotelBookdetail() {
     console.log("Selected Hotel:", selectedHotel);
     console.log("Profile from selectedCage:", selectedCage.profile);
     console.log("Profile name:", profile_name);
-
+    console.log("width", width);
+    console.log("height", height);
+    console.log("lenth", lenth);
 
     useEffect(() => {
         const fetchPets = async () => {
@@ -73,6 +78,9 @@ function HotelBookdetail() {
                     cage_type: selectedCage.cage_type,
                     price: selectedCage.price,
                     size: selectedCage.size,
+                    width: selectedCage.width,
+                    height: selectedCage.height,
+                    lenth: selectedCage.lenth,
                     facility: selectedCage.facility || "",
                     max_capacity: selectedCage.max_capacity
                 },
@@ -120,6 +128,9 @@ function HotelBookdetail() {
                     price={price ?? ""}
                     facility={facility ?? ""}
                     max_capacity={max_capacity ?? ""}
+                    width={width ?? ""}
+                    height={height ?? ""}
+                    lenth={lenth ?? ""}
                     startDate={startDate ?? ""}
                     endDate={endDate ?? ""}
                 />
