@@ -61,6 +61,9 @@ function HotelSearch() {
   };
 
   console.log("Currently selected pets:", selectedPets);
+  
+
+
 
   const handleSearch = async (sort: string) => {
     const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
@@ -79,8 +82,10 @@ function HotelSearch() {
       // latitude: "18.3170581",
       // start_time: startDate,
       // end_time: endDate,
-      longitude: searchedPosition ? JSON.stringify(searchedPosition[1]) : "",
-      latitude: searchedPosition ? JSON.stringify(searchedPosition[0]) : "",
+      // longitude: searchedPosition ? JSON.stringify(searchedPosition[1]) : "",
+      // latitude: searchedPosition ? JSON.stringify(searchedPosition[0]) : "",
+      latitude: searchedPosition[0] || 0,
+      longitude: searchedPosition[1] || 0,
       start_time: formatDateToString(startDate),
       end_time: formatDateToString(endDate),
       sort: finalSort || "",
@@ -223,6 +228,8 @@ function HotelSearch() {
         setSearchedPosition([13.736717, 100.523186]);
     }
 }, []);
+
+console.log("position:", searchedPosition);
   // check=====================================================================================================================================================================================
   const handleCageSizeChange = (pet: string, size: string) => {
     setSelectedCageSizes((prev) => ({
