@@ -80,11 +80,8 @@ function Home() {
     const [selectedCageSizes, setSelectedCageSizes] = useState<{ [key: string]: string }>({});
     const [rooms, setRooms] = useState<any[]>([]);
     const location = useLocation();
-    const [cageDetails, setCageDetails] = useState<any[]>([]);
-
     const [error, setError] = useState(''); // Form error
     const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
-    const [successMessage, setSuccessMessage] = useState('');
     const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
     const [position, setPosition] = useState<[number, number] | null>(null);
     const [maplocation, setMapLocation] = useState({
@@ -125,6 +122,7 @@ function Home() {
                 startDate: startDate, 
                 endDate: endDate } });
         
+                
     };
 
     const handleRemoveFavorite = async (cage: Cage) => {
@@ -367,8 +365,8 @@ function Home() {
                     <span className="hidden md:inline text-2xl text-white px-4 md:px-8">|</span>
                     <a href="/" className="text-lg md:text-2xl text-white">Shop</a>
                 </div>
-                <div className="bg-white rounded-2xl absolute px-8 py-2 -bottom-2 left-1/2 transform -translate-x-1/2 z-10">
-                    <div className="font-semibold text-xl md:text-2xl px-4 md:px-8 py-2" style={{ color: '#A08252' }}>
+                <div className="bg-white rounded-3xl absolute px-8 py-2 -bottom-2 left-1/2 transform -translate-x-1/2 z-10">
+                    <div className="font-medium text-xl md:text-2xl px-4 md:px-8 py-2 " style={{ color: '#A08252' }}>
                         Find your service
                     </div>
                 </div>
@@ -378,11 +376,10 @@ function Home() {
             <div className="w-full h-full p-4 bg-white flex justify-center items-center relative mb-6">
                 {/* Nav bar */}
                 <div className="w-full md:w-1/2 lg:w-1/4 rounded-lg absolute z-20 mt-4 top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-2 md:space-x-4"
-                    style={{ backgroundColor: "#A08252" }}
+                    style={{ backgroundColor: "B3802E" }}
                 >
                     <a href="/" className="text-sm md:text-xl text-white p-2">Hotel</a>
-                    <a href="/" className="text-sm md:text-xl text-white p-2">Care</a>
-                    <a href="/" className="text-sm md:text-xl text-white p-2">Clinic</a>
+                    <a href="/" className="text-sm md:text-xl text-white p-2">Care&Clinic</a>
                     <a href="/" className="text-sm md:text-xl text-white p-2">Delivery</a>
                 </div>
                 {/* Search box */}
@@ -390,11 +387,11 @@ function Home() {
                     {/* Location section */}
                     <div className="bg-white grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div className="p-4 h-60 w-full border border-gray-300 rounded-lg shadow-md bg-white mt-8">
-                            <label htmlFor="location" className="block text-lg font-semibold mb-2">
+                            <label htmlFor="location" className="block text-lg font-meduim mb-2 mt-2">
                                 Location
                             </label>
-                            <div className="flex flex-col w-full gap-y-5 pl-5 ">
-                                <div className="bg-bg rounded-xl h-44 w-full shadow shadow-gray-400 p-1  ">
+                            <div className="flex flex-col w-full gap-y-5">
+                                <div className="bg-bg rounded-xl h-44 w-full shadow shadow-gray-400 p-1">
                                     <div className="h-full w-full rounded-lg">
                                         
                                         {geoError && <div>{geoError}</div>}
@@ -412,7 +409,7 @@ function Home() {
                             </div>
                         </div>
                         <div className="p-4 h-full border border-gray-300 rounded-lg shadow-md bg-white">
-                            <label className="block text-[#A08252] text-lg font-semibold mb-4">
+                            <label className="block text-[#A08252] text-lg font-medium mb-4">
                                 Pet
                             </label>
                             <div className="grid grid-cols-2 gap-4">
@@ -434,7 +431,7 @@ function Home() {
                                         <select
                                             value={selectedCageSizes[pet] || ""}
                                             onChange={(e) => handleCageSizeChange(pet, e.target.value)}
-                                            className="w-28 bg-navbar border border-[#A08252] rounded-lg px-2 py-1 text-white focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                                            className="w-28 bg-[#F2C680] border border-[#F2C680] rounded-lg px-2 py-1 text-white focus:outline-none focus:ring-2 focus:ring-[#A08252]"
                                         >
                                             <option value="" disabled>
                                                 All size
@@ -442,6 +439,7 @@ function Home() {
                                             <option value="s">S</option>
                                             <option value="m">M</option>
                                             <option value="l">L</option>
+                                            <option value="xl">XL</option>
                                         </select>
                                     </div>
                                 ))}
@@ -449,9 +447,12 @@ function Home() {
                         </div>
                     </div>
                 </div>
-                        <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
-                            <div className="flex col justify-center">
-                                    <div className="bg-white p-4 rounded-lg shadow-md">
+                        <div className="grid grid-cols-1 gap-4 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
+                            <div className="flex col justify-center h-[28rem]">
+                                    <label htmlFor="date" className="block text-lg font-meduim mb-2 mt-2">
+                                            Date
+                                    </label>
+                                    <div className="p-4 rounded-lg mt-8 mb-1">
                                         <Calendar className = "p-4 rounded-lg shadow-md text-navbar"
                                             onClickDay={handleDateClick}
                                             value={[startDate, endDate]}
@@ -461,14 +462,14 @@ function Home() {
                                     </div>
                             </div>
                                 <div className="flex justify-center items-center">
-                                    <div className="mt-6 flex space-x-4">
+                                    <div className="mb-1 flex flex-col space-y-3">
                                         <div className ="flex">
-                                            <span className="font-medium">Start :</span>
-                                            <p>{startDate ? startDate.toLocaleDateString() : 'Not selected'}</p>
+                                            <span className="text-lg font-medium">Start :</span>
+                                            <p className ="text-lg">{startDate ? startDate.toLocaleDateString() : 'Not selected'}</p>
                                         </div>
                                         <div className ="flex">
-                                            <span className="font-medium">End :</span>
-                                            <p>{endDate ? endDate.toLocaleDateString() : 'Not selected'}</p>
+                                            <span className="text-lg font-medium">End :</span>
+                                            <p className="text-lg">{endDate ? endDate.toLocaleDateString() : 'Not selected'}</p>
                                         </div>
                                     </div>
                                 </div> 
@@ -478,13 +479,13 @@ function Home() {
                     <div className="flex justify-center">
                         <button
                             onClick={handleSearch}
-                            className="mt-16 bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200"
+                            className="mt-2 bg-[#B3802E] text-white text-xl font-medium px-16 py-1 rounded-3xl hover:bg-[#8a6e45] transition duration-200"
                         >
                             Search
                         </button>
                     </div>
                 </div>
-                <div className="bg-yellow rounded-2xl py-2 px-8 absolute -bottom-10 left-1/2 transform -translate-x-1/2 z-10">
+                <div className="bg-[#DCC4A5] rounded-2xl py-2 px-8 absolute -bottom-10 left-1/2 transform -translate-x-1/2 z-10">
                     <div className="font-semibold text-white text-2xl px-8 py-2">
                         Favorite
                     </div>
@@ -493,7 +494,7 @@ function Home() {
 
 
             {/* Third Section */}
-            <div className="w-full h-3/4 p-4 bg-yellow shadow flex justify-center items-center relative overflow-hidden">
+            <div className="w-full h-3/4 p-4 bg-[#DCC4A5] shadow flex justify-center items-center relative overflow-hidden">
                 {/* Top Navigation */}
                 <div className="w-1/4 bg-white rounded-lg absolute z-20 top-8 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-4">
                     <a href="/" className="text-xl text-yellow p-2">Hotel</a>
@@ -503,7 +504,7 @@ function Home() {
                 </div>
 
                 {/* Hotel List */}
-                <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-1/2 px-4">
+                <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-2/3 px-4">
                     {/* Single Hotel Card */}
                     {favData.map((fav, index) => (
                     <div
@@ -588,11 +589,11 @@ function Home() {
                                     </p>
                                 </div>
                                 <p className="text-sm text-gray-600">
-                                <span className="font-semibold">Accomodates :</span>{" "}
+                                <span className="font-meduim">Accomodates :</span>{" "}
                                 {fav.cage_room.max_capacity || "N/A"}
                                 </p>
                                 <p className="text-gray-600 text-sm mb-2">
-                                    <span className="font-semibold">Facilities:</span>&nbsp;
+                                    <span className="font-meduim">Facilities:</span>&nbsp;
                                     {fav.cage_room.facility || "N/A"}
                                 </p>
                             </div>
@@ -607,7 +608,7 @@ function Home() {
                             <button className="bg-white text-sm text-black px-3 py-2 rounded-2xl border border-black focus:outline-none focus:ring-2 focus:ring-black" onClick={() => handleRemoveFavorite(fav.cage_room)}>
                                 Remove
                             </button>
-                            <button className="bg-[#A08252] text-sm text-white px-3 py-2 rounded-2xl" onClick={() => handleCageSelect(fav.cage_room)}>
+                            <button className="bg-[#CBAD87] text-sm text-white px-3 py-2 rounded-2xl" onClick={() => handleCageSelect(fav.cage_room)}>
                                 Book Now
                             </button>
                             </div>

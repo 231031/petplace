@@ -48,12 +48,15 @@ export default function HotelHome() {
                 setHotel(data.profile) // ตรวจสอบข้อมูลที่ดึงมาจาก API
                 localStorage.setItem("profile_id", data.profile.id)
 
+                const profileID = data.profile.id
+                localStorage.setItem("profileID", profileID)
+                localStorage.setItem("name", data.profile.name)
+                localStorage.setItem("data", data.profile)              
             })
             .catch((error) => console.error("Error fetching hotel data:", error));
     }, []);
-
     const [distance, setDistance] = useState(null); // to store the calculated distance
-
+    
     // Get user's current location and calculate distance to hotel
     useEffect(() => {
         if (hotel.latitude && hotel.longitude) {
@@ -181,13 +184,13 @@ export default function HotelHome() {
             <div className="flex w-3/4 items-center flex-col gap-y-2 bg-bg">
                 {/* section1 */}
                 <div className="pt-10 space-x-1 text-white">
-                    <button className="bg-navbar h-10 w-20 rounded-md">view</button>
+                    <button className="bg-nextstep border shadow-lg h-10 w-20 rounded-md">View</button>
                     <button
-                        className="bg-egg h-10 w-20 rounded-md text-navbar"
+                        className="bg-[#FFFBF5] border shadow-lg h-10 w-20 rounded-md text-navbar"
                         onClick={() => navigate('/hotel/edit')}
                     // onClick={() => navigate('hotel/edit', { state: { hotels: results } })}
                     >
-                        edit
+                        Edit
                     </button>
                 </div>
                 <div className="flex flex-col w-full h-[36rem] gap-y-5 ">
@@ -302,10 +305,7 @@ export default function HotelHome() {
                                             <div className="basis-1/3 space-y-5 pl-5 pt-4 flex flex-col items-end pr-5 gap-y-5">
                                                 <h1 className="text-2xl font-semibold">{room.price}$</h1>
                                                 <p>Free cancel before {new Date().toLocaleDateString()}</p>
-                                                <div className="flex space-x-2">
-                                                    <button className="w-fit px-2 h-8 bg-bg rounded-full shadow">Add to chart</button>
-                                                    <button className="w-fit px-2 h-8 rounded-full bg-yellow">Book now</button>
-                                                </div>
+                                               
                                             </div>
 
                                         </div>

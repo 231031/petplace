@@ -63,9 +63,6 @@ export async function GetSearchCageByHotel(
 export async function UpdateCage(cage:CageRoom): Promise<any> {
   try {
       let endpoint = `${baseApi}/cageroom/${cage.id}`;
-      // if (newImages.length > 0) {
-      //   cage.image_array = UpdateImageArray(newImages, cage.image_array, cage.image)
-      // }
       return RequestApi(endpoint, "PUT", cage, 200);
 
     } catch (error) {
@@ -73,28 +70,16 @@ export async function UpdateCage(cage:CageRoom): Promise<any> {
     }
 }
 
-// export async function GetAnimalCageType(): Promise<any> {
-//   try {
-//     let apiPath = `${baseApi}/cageroom/${cage.id}`;
-//     let queryParams = "";
+export async function RemoveCage(cage:CageRoom): Promise<any> {
+  try {
+      let endpoint = `${baseApi}/cageroom/${cage.id}`;
+      return RequestApi(endpoint, "DELETE", cage, 200);
 
-//     queryParams = MapArrayToQuery(filterAnimal, filterSearchCage);
-//     apiPath = apiPath + queryParams;
-//     const token = localStorage.getItem("token");
-//     const response = await fetch(apiPath, {
-//       headers: { authorization: `Bearer ${token}` },
-//     });
-//     // console.log("Response:", response);
-//     const data = await response.json();
-//     if (response.status != 200) {
-//       return Promise.reject(data);
-//     }
+    } catch (error) {
+      return Promise.reject(error);
+    }
+}
 
-//     return Promise.resolve(data);
-//   } catch (error) {
-//     return Promise.reject(error);
-//   }
-// }
 
 export function mapCageSize(max_capacity: number): string {
     if (max_capacity >= 1 && max_capacity <= 2) {
