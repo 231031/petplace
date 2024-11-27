@@ -50,10 +50,12 @@ function HotelResUpcom() {
                     setError("Not found data");
                 }
             })
+            .catch((error) => {
+                if (error) {
+                    return <div className="h-screen text-red-500">Error: {error}</div>;
+                }
+            })
     }, []);
-    if (error) {
-        return <div className="h-screen text-red-500">Error: {error}</div>;
-    }
 
     console.log("hotelServiceUsers", hotels)
     console.log("Hotel data in ResCard:", hotels);
@@ -92,10 +94,10 @@ function HotelResUpcom() {
             }
 
             // ตรวจสอบว่าการชำระเงินสำเร็จหรือไม่
-            const currentHotel = hotels?.find(h => h.id === hotelServiceId);
-            if (!currentHotel?.payment_status || currentHotel.payment_status !== "completed") {
-                throw new Error("Payment not completed");
-            }
+            // const currentHotel = hotels?.find(h => h.id === hotelServiceId);
+            // if (!currentHotel?.payment_status || currentHotel.payment_status !== "completed") {
+            //     throw new Error("Payment not completed");
+            // }
 
             const payload: SelectStatusPayload = {
                 hotel_service_id: hotelServiceId,
@@ -110,12 +112,13 @@ function HotelResUpcom() {
             console.log("API Response:", response);
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to update booking status");
+                // const errorData = await response.json();
+                // throw new Error(errorData.message || "Failed to update booking status");
+                throw new Error(response || "Failed to update booking status");
             }
 
             // รีโหลดหน้าเว็บหลังจาก update สำเร็จ
-            window.location.reload();
+            // window.location.reload();
 
         } catch (error) {
             console.error("Error updating status:", error);
@@ -152,12 +155,21 @@ function HotelResUpcom() {
                                 .filter(hotel => hotel.status === "pending")
                                 .map((hotel: any, index: number) => (
                                     <div key={index} className="grid grid-cols-10 gap-4  mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4 max-w-screen-xl mx-auto">
-                                        <div className="col-span-2">
-                                            <img
-                                                src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-                                                className="w-full h-full object-cover object-center rounded-lg ml-5 "
-                                            />
-                                        </div>
+                                        {
+                                            <div className="col-span-2">
+                                                {
+                                                    (hotel.cage_room.image_array.lenght > 0) ? (
+                                                        <p>no image</p>
+                                                    ) : (
+                                                        <img
+                                                            // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+                                                            src={hotel.cage_room.image_array[0]}
+                                                            className="w-full h-full object-cover object-center rounded-lg ml-5 "
+                                                        />
+                                                    )
+                                                }
+                                            </div>
+                                        }
 
                                         <div className="col-span-3  ml-5 mt-5">
                                             <h2 className="text-2xl font-medium">{hotel.cage_room.cage_type}</h2>
