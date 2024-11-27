@@ -66,7 +66,7 @@ function HotelHistory() {
       {/* {hotelServiceUsers[0].id} */}
 
       <div className="flex justify-center items-center mb-12">
-        <span className="text-2xl font-bold"> Select History Service</span>
+        <span className="text-2xl font-medium"> Select History Service</span>
       </div>
       <div
         // className="w-1/4 rounded-lg absolute mt-4 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-4"
