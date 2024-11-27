@@ -3,14 +3,17 @@ import CounterButton from "../Hotel-Bookdetail/CounterButton";
 interface CageCardType {
     cage_type: string;
     size: string;
+    width: string;
+    height: string;
+    lenth: string;
     price: string;
     facility: string;
     max_capacity: string;
-    startDate: string;  
-    endDate: string;    
+    startDate: string;
+    endDate: string;
 }
 
-function CageCard({ cage_type, size, price, facility, max_capacity,startDate,endDate }: CageCardType) {
+function CageCard({ cage_type, size, width, height, lenth, price, facility, max_capacity, startDate, endDate }: CageCardType) {
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-GB', {
@@ -27,12 +30,12 @@ function CageCard({ cage_type, size, price, facility, max_capacity,startDate,end
                 <div className="basis-1/3  flex flex-col space-y-5 pl-5 pt-4">
                     <h1 className="text-2xl">{cage_type}</h1>
                     <div>
-                        <div className="grid grid-cols-11 gap-1">
-                            <p className="bg-yellow text-center font-bold">{size}</p>
-                            <p>Size</p>
+                        <div className="flex gap-2 ">
+                            <p className="bg-yellow text-center font-bold w-4 h-fullp-1">{size}</p>
+                            <p>Size {width} X {height} X {lenth} m</p>
                         </div>
-                        <p>Accommodates: {max_capacity}</p>
-                        <p>{facility}</p>
+                        <p>Capacity: {max_capacity}</p>
+                        <p>Facility: {facility}</p>
                     </div>
                 </div>
                 <div className="basis-1/3  space-y-5 pl-5 pt-4 flex flex-col items-end pr-5">

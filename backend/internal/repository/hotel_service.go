@@ -107,8 +107,9 @@ func (r *HotelServiceRepository) ReviewHotelService(review types.ReviewPayload, 
 
 func (r *HotelServiceRepository) GetAllHotelServiceByHotel(profile_id uint, status string) ([]model.HotelService, error) {
 	ser := []model.HotelService{}
-	result := r.db.
-		Preload("AnimalHotelServices.AnimalUser").
+	result := r.db.Preload("AnimalHotelServices.AnimalUser.User", func(db *gorm.DB) *gorm.DB {
+		return db.Select("users.id", "FirstName", "Surename", "tel")
+	}).
 		Preload("CageRoom").
 		Where("profiles.id = ? AND hotel_services.status = ?", profile_id, status).
 		Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
@@ -138,8 +139,9 @@ func (r *HotelServiceRepository) GetStatusBookingHotelByUser(user_id uint, statu
 
 func (r *HotelServiceRepository) GetAllHotelServiceByUser(user_id uint) ([]model.HotelService, error) {
 	ser := []model.HotelService{}
-	result := r.db.
-		Preload("AnimalHotelServices.AnimalUser").
+	result := r.db.Preload("AnimalHotelServices.AnimalUser.User", func(db *gorm.DB) *gorm.DB {
+		return db.Select("users.id", "FirstName", "Surename", "tel")
+	}).
 		Preload("CageRoom").
 		Where("animal_users.user_id = ?", user_id).
 		Joins("JOIN animal_hotel_services ON animal_hotel_services.hotel_service_id = hotel_services.id").
@@ -156,7 +158,7 @@ func (r *HotelServiceRepository) GetReviewByHotel(profile_id uint) ([]model.Hote
 	ser := []model.HotelService{}
 
 	result := r.db.Preload("AnimalHotelServices.AnimalUser.User", func(db *gorm.DB) *gorm.DB {
-		return db.Select("users.id", "FirstName", "Surename")
+		return db.Select("users.id", "FirstName", "Surename", "tel")
 	}).
 		Preload("CageRoom").
 		Where("profile_id = ? AND hotel_services.status = ? AND review_rate > ?", profile_id, "completed", 0).

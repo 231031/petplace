@@ -75,6 +75,7 @@ function CardPass({ hotel }: { hotel: Hotel }) {
     }
   };
 
+
   const [isCanceled, setIsCanceled] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const handleCancelClick = () => {
@@ -106,10 +107,17 @@ function CardPass({ hotel }: { hotel: Hotel }) {
           <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
             <div className="grid grid-cols-10 gap-4 mb-10 mt-10 ">
               <div className="col-span-2">
-                <img
-                  src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-                  className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
-                />
+                {
+                  (hotel.cage_room.image_array.lenght > 0) ? (
+                    <p>no image</p>
+                  ) : (
+                    <img
+                      // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+                      src={hotel.cage_room.image_array[0]}
+                      className="w-full h-full object-cover object-center rounded-lg ml-5 "
+                    />
+                  )
+                }
               </div>
 
               <div className="col-span-3 ml-5 mt-5">
@@ -332,7 +340,7 @@ function CardPass({ hotel }: { hotel: Hotel }) {
                     onClick={handleCancelClick}
                     className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg"
                   >
-                    Cancels
+                    Refunded
                   </button>
                 </div>
               )}
