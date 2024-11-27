@@ -1,4 +1,4 @@
-import { useState ,useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
@@ -97,7 +97,7 @@ function Home() {
     // Create sets to collect unique values
     const uniqueAnimalTypes = new Set<string>();
     const uniqueFacilities = new Set<string>();
-    
+
     // Iterate through rooms to populate sets
     rooms.forEach((room) => {
         if (room.animal_type) uniqueAnimalTypes.add(room.animal_type);
@@ -110,21 +110,47 @@ function Home() {
             cage_type: cage.cage_type,
             facility: cage.facility,
             price: cage.price.toString(),
-            max_capacity: cage.max_capacity.toString(), 
+            max_capacity: cage.max_capacity.toString(),
             startDate: startDate,
             endDate: endDate
         }).toString();
 
         // Navigate with query parameters
-        
+
         navigate(`/hotelbookdetail?${queryParams}`,
-            { state: { 
-                selectedCage: cage, 
-                selectedHotel: location.state?.selectedHotel,
-                profile_name: location.state?.profile_name,
-                startDate: startDate, 
-                endDate: endDate } });
+            {
+                state: {
+                    selectedCage: cage,
+                    selectedHotel: location.state?.selectedHotel,
+                    profile_name: location.state?.profile_name,
+                    startDate: startDate,
+                    endDate: endDate
+                }
+            });
+
+    };
+
+    const handleRemoveFavorite = async (cage: Cage) => {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            alert("You need to log in to delete favorites.");
+            return;
+        }
         
+        const favPayload = {
+            cage_id: cage.id,
+            user_id: Number(userId),
+        };
+        console.log("Favorite payload:", favPayload);
+
+        try {
+            const response = await RemoveFavCage(favPayload);
+            console.log("Favorite response:", response);
+            window.location.reload();
+        } catch (error) {
+            console.error("Error delete your favorites:", error);
+            alert("Failed to delete favorites cage. Please try again.");
+        }
     };
 
     const handleRemoveFavorite = async (cage: Cage) => {
@@ -167,7 +193,7 @@ function Home() {
         setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
         setMarkerPosition([lat, lng]); // Update the marker position
     };
-    
+
     const LocationMarker = () => {
         useMapEvents({
             click(e) {
@@ -189,7 +215,7 @@ function Home() {
                     const { latitude, longitude } = position.coords;
                     setPosition([latitude, longitude]);
                     handleLocationChange(latitude, longitude); // Update formData with initial position
-                    
+
                 },
                 (err) => {
                     setError('Unable to retrieve your location.');
@@ -203,24 +229,24 @@ function Home() {
     useEffect(() => {
         const token = localStorage.getItem("token");
         const id = localStorage.getItem("userId");
-        
+
         fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
         })
-          .then((response) => {
-            if (!response.ok) throw new Error("Failed to fetch cage room data");
-            return response.json();
-          })
-          .then((data) => {
-            setRooms(data|| []);
-            console.log("Cage room for search:", rooms);
-          })
-          .catch((error) => console.error("Error fetching cage room data:", error));
-      }, []);
+            .then((response) => {
+                if (!response.ok) throw new Error("Failed to fetch cage room data");
+                return response.json();
+            })
+            .then((data) => {
+                setRooms(data || []);
+                console.log("Cage room for search:", rooms);
+            })
+            .catch((error) => console.error("Error fetching cage room data:", error));
+    }, []);
 
     useEffect(() => {
         // Fetch user's current location
@@ -249,42 +275,42 @@ function Home() {
 
     useEffect(() => {
         const fetchFavorites = async () => {
-          try {
-            // Retrieve user ID from localStorage
-            const userId = localStorage.getItem("userId");
-            const token = localStorage.getItem("token");
-            if (!userId) throw new Error("User ID is not available");
-    
-            const [latitude, longitude] = position || [13.736717, 100.523186];
-    
-            // Construct the API URL
-            const apiUrl = `http://localhost:5000/api/user/fav/${userId}?latitude=${latitude}&longitude=${longitude}`;
-    
-            // Fetch data
-            const response = await fetch(apiUrl, {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-              },
-            });
-            console.log("Response:", response);
-            if (!response.ok) {
-              throw new Error(`Error fetching data: ${response.statusText}`);
+            try {
+                // Retrieve user ID from localStorage
+                const userId = localStorage.getItem("userId");
+                const token = localStorage.getItem("token");
+                if (!userId) throw new Error("User ID is not available");
+
+                const [latitude, longitude] = position || [13.736717, 100.523186];
+
+                // Construct the API URL
+                const apiUrl = `http://localhost:5000/api/user/fav/${userId}?latitude=${latitude}&longitude=${longitude}`;
+
+                // Fetch data
+                const response = await fetch(apiUrl, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                });
+                console.log("Response:", response);
+                if (!response.ok) {
+                    throw new Error(`Error fetching data: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                setFavData(data); // Update state with fetched data
+                console.log("User favorites:", data);
+            } catch (err) {
+                console.error("Error fetching user favorites:", err);
+            } finally {
+                setLoading(false); // Stop the loading spinner
             }
-    
-            const data = await response.json();
-            setFavData(data); // Update state with fetched data
-            console.log("User favorites:", data);
-          } catch (err) {
-            console.error("Error fetching user favorites:", err);
-          } finally {
-            setLoading(false); // Stop the loading spinner
-          }
         };
-    
+
         fetchFavorites();
-      }, [position]);
+    }, [position]);
 
     const MapWithGeocoder = () => {
         const map = useMap();
@@ -322,7 +348,7 @@ function Home() {
             start_time: formatDateToString(startDate),
             end_time: formatDateToString(endDate),
         };
-        
+
 
         try {
             const results = await GetSearchCage(filterAnimal, filterSearchCage);
@@ -332,7 +358,9 @@ function Home() {
                 state: {
                     hotels: results,
                     startDate: startDate,
-                    endDate: endDate
+                    endDate: endDate,
+                    selectedPets: selectedPets,
+                    selectedCageSizes: selectedCageSizes
                 }
             });
         } catch (error) {
@@ -394,7 +422,7 @@ function Home() {
                             <div className="flex flex-col w-full gap-y-5 pl-5 ">
                                 <div className="bg-bg rounded-xl h-44 w-full shadow shadow-gray-400 p-1  ">
                                     <div className="h-full w-full rounded-lg">
-                                        
+
                                         {geoError && <div>{geoError}</div>}
                                         <MapContainer
                                             center={position || [13.736717, 100.523186]}
@@ -403,13 +431,45 @@ function Home() {
                                         >
                                             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                                             <LocationMarker />
-                                            <MapWithGeocoder/>
+                                            <MapWithGeocoder />
                                         </MapContainer>
                                     </div>
                                 <div>
                             </div>
                         </div>
                         <div className="p-4 h-full border border-gray-300 rounded-lg shadow-md bg-white">
+                                    <div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
+                            <div>
+                                <label htmlFor="start-date" className="block text-lg font-semibold mb-2">
+                                    Start Date
+                                </label>
+                                <input
+                                    type="date"
+                                    id="start-date"
+                                    value={startDate}
+                                    onChange={(e) => setStartDate(e.target.value)}
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                                />
+                            </div>
+                            <div>
+                                <label htmlFor="end-date" className="block text-lg font-semibold mb-2">
+                                    End Date
+                                </label>
+                                <input
+                                    type="date"
+                                    id="end-date"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                                />
+                            </div>
+                        </div>
+                        <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
                             <label className="block text-[#A08252] text-lg font-semibold mb-4">
                                 Pet
                             </label>
@@ -500,26 +560,26 @@ function Home() {
                 </div>
 
                 {/* Hotel List */}
-                <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-1/2 px-4">
+                < div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-1/2 px-4">
                     {/* Single Hotel Card */}
                     {favData.map((fav, index) => (
-                    <div
-                        key={index}
-                        className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
-                    >
-                        {/* Hotel Image and Info */}
-                        <div className="flex space-x-6">
-                        {/* Image */}
-                        <div className="w-40 h-40 rounded-lg overflow-hidden">
-                            <img
-                            src={
-                                fav.cage_room.profile.image_array?.[0] ||
-                                "/images/default-room.jpg"
-                            }
-                            alt="Cage Room"
-                            className="w-full h-full object-cover"
-                            />
-                        </div>
+                        <div
+                            key={index}
+                            className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
+                        >
+                            {/* Hotel Image and Info */}
+                            <div className="flex space-x-6">
+                                {/* Image */}
+                                <div className="w-40 h-40 rounded-lg overflow-hidden">
+                                    <img
+                                        src={
+                                            fav.cage_room.profile.image_array?.[0] ||
+                                            "/images/default-room.jpg"
+                                        }
+                                        alt="Cage Room"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
 
                         {/* Hotel Info */}
                         <div>
@@ -611,6 +671,7 @@ function Home() {
                         </div>
                     </div>
                     ))}
+
 
                 </div>
             </div>

@@ -942,6 +942,28 @@ paths:
       tags:
       - Profiles
   /user/{id}:
+    get:
+      description: get user information
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Get user information
+      tags:
+      - Users
     put:
       consumes:
       - application/json

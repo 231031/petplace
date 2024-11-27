@@ -72,11 +72,11 @@ const RoomDetailPage = () => {
     const handleSubmit = async () => {
         try {
             const token = localStorage.getItem("token");
-    
+
             if (!token) {
                 return;
             }
-    
+
             const payload = {
                 animal_type: selectedAnimal,
                 cage_type: filteredCageData.cage_type,
@@ -95,7 +95,7 @@ const RoomDetailPage = () => {
                 width: parseFloat(filteredCageData.width),
                 id: parseInt(filteredCageData.id),
             };
-    
+
             const res = await UpdateCage(payload);
             alert("Cage updated successfully");
             console.log("Blabla", res);
@@ -115,7 +115,7 @@ const RoomDetailPage = () => {
     }
 
 
-    const handleRemoveFacility = ( facility: string ) => {
+    const handleRemoveFacility = (facility: string) => {
         const updatedFacilities = (filteredCageData.facility_array || []).filter((f: string) => f !== facility);
         setFilteredCageData({ ...filteredCageData, facility_array: updatedFacilities });
     }
@@ -128,27 +128,27 @@ const RoomDetailPage = () => {
 
         console.log("newImageArray", newImageArray);
         console.log("currentImages", currentImages);
-        
+
         // Limit to 10 images
         const limitedImageArray = updatedImages.slice(0, 10);
         console.log("limitedImageArray", limitedImageArray);
-        
-        setFilteredCageData({ 
-            ...filteredCageData, 
+
+        setFilteredCageData({
+            ...filteredCageData,
             image_array: limitedImageArray,
-            image : filteredCageData.image
+            image: filteredCageData.image
         });
         console.log("filteredCageDataupload", filteredCageData.image_array);
         console.log("filteredCageDataupload", filteredCageData.image);
 
     };
-    
+
     const handleRemoveImage = (index: number) => {
         const updatedImages = (filteredCageData.image_array || []).filter((_: any, imgIndex: number) => imgIndex !== index);
-        setFilteredCageData({ 
-            ...filteredCageData, 
+        setFilteredCageData({
+            ...filteredCageData,
             image_array: updatedImages,
-            image: updatedImages[0]?.fileUrl || '' 
+            image: updatedImages[0]?.fileUrl || ''
         });
     };
 
@@ -383,7 +383,7 @@ const RoomDetailPage = () => {
                         {/* Room Pictures */}
                         <label className="block text-sm font-medium text-gray-700">Room Picture (Max. 10)</label>
                         <div className="flex items-center gap-4">
-                            {(filteredCageData.image_array || []).map((image: string, index: number) => (  
+                            {(filteredCageData.image_array || []).map((image: string, index: number) => (
                                 <div
                                     key={index}
                                     className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
