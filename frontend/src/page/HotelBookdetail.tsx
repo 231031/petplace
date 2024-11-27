@@ -3,7 +3,7 @@ import PetCard from "@/components/Hotel-Bookdetail/PetCard";
 import { Cage } from "@/types/response";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { GetAllAnimalByUserID } from '@/helper/animal_user';
+import { GetTypeAnimalByUserID } from '@/helper/animal_user';
 
 
 function HotelBookdetail() {
@@ -47,7 +47,7 @@ function HotelBookdetail() {
                 console.log("userId", userId);
                 if (!userId) return;
 
-                const response = await GetAllAnimalByUserID(Number(userId));
+                const response = await GetTypeAnimalByUserID(Number(userId), selectedCage.animal_type);
                 console.log("Pets data:", response);
                 setPets(response);
             } catch (error) {
@@ -67,7 +67,7 @@ function HotelBookdetail() {
             return;
         }
 
-       
+
         const hotelName = location.state?.profile_name || selectedCage.profile?.name || "ไม่ระบุชื่อโรงแรม";
         console.log("hotelNameasdasd", hotelName);
 
@@ -85,9 +85,9 @@ function HotelBookdetail() {
                     max_capacity: selectedCage.max_capacity
                 },
                 hotelName,
-                selectedPets: selectedPets, 
-                startDate: startDate,      
-                endDate: endDate          
+                selectedPets: selectedPets,
+                startDate: startDate,
+                endDate: endDate
             }
         });
     };

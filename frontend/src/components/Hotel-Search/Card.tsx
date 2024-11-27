@@ -43,14 +43,15 @@ function Card({ hotel, startDate, endDate }: { hotel: Profile, startDate: string
       style={{ cursor: 'pointer' }}>
       <div className="col-span-2">
         {
-          (hotel.image_profile === "") ? (
-            <div></div>
-          ) : (
+          (hotel.image_profile && hotel.image_profile != "") ? (
             <img
               // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-              src={hotel.image_profile}
+              src={hotel.image_profile || ""}
               className="w-full h-full object-cover object-center rounded-lg ml-5 "
             />
+
+          ) : (
+            <div></div>
           )
         }
       </div>

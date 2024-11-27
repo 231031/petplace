@@ -129,6 +129,7 @@ func (s *PaymentService) RequestPayment(payload types.BookingPayload, bookDel ty
 		"application_context": appCtx,
 	}
 
+	fmt.Println(paymentInfo)
 	paymentInfoBytes, err := json.Marshal(paymentInfo)
 	if err != nil {
 		return "", err
@@ -149,11 +150,13 @@ func (s *PaymentService) RequestPayment(payload types.BookingPayload, bookDel ty
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Println(err.Error())
 		return "", err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusCreated {
+		fmt.Println(resp)
 		return "", fmt.Errorf("payment failed")
 	}
 
