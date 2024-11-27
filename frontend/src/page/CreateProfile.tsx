@@ -162,14 +162,14 @@ function CreateProfile() {
         navigate('/FullMap');
     };
 
-    if (!parsedLocation[0]) {
-        return <div>Loading...</div>;
-    }
+    // if (!parsedLocation[0]) {
+    //     return <div>Loading...</div>;
+    // }
 
     return (
         <div className="h-screen flex">
             <div className="flex justify-center bg-bgLogin w-full items-baseline">
-                <div className="flex flex-col items-center w-1/4 gap-y-5 pt-36">
+                <div className="flex flex-col items-center w-1/4 gap-y-5 pt-24">
                     <h1 className="text-3xl">Create Profile</h1>
                     <p>Fill the form to Create your Profile</p>
                     <div className="flex justify-center mt-10">
