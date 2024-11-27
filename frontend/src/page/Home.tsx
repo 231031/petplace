@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
@@ -47,24 +47,21 @@ function Home() {
             cage_type: cage.cage_type,
             facility: cage.facility,
             price: cage.price.toString(),
-            max_capacity: cage.max_capacity.toString(),
+            max_capacity: cage.max_capacity.toString(), 
             startDate: startDate,
             endDate: endDate
         }).toString();
 
         // Navigate with query parameters
-
+        
         navigate(`/hotelbookdetail?${queryParams}`,
-            {
-                state: {
-                    selectedCage: cage,
-                    selectedHotel: location.state?.selectedHotel,
-                    profile_name: location.state?.profile_name,
-                    startDate: startDate,
-                    endDate: endDate
-                }
-            });
-
+            { state: { 
+                selectedCage: cage, 
+                selectedHotel: location.state?.selectedHotel,
+                profile_name: location.state?.profile_name,
+                startDate: startDate, 
+                endDate: endDate } });
+        
     };
 
     const handleCageSizeChange = (pet: string, size: string) => {
@@ -84,7 +81,7 @@ function Home() {
         setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
         setMarkerPosition([lat, lng]); // Update the marker position
     };
-
+    
     const LocationMarker = () => {
         useMapEvents({
             click(e) {
@@ -105,7 +102,7 @@ function Home() {
                     const { latitude, longitude } = position.coords;
                     setPosition([latitude, longitude]);
                     handleLocationChange(latitude, longitude); // Update formData with initial position
-
+                    
                 },
                 (err) => {
                     setError('Unable to retrieve your location.');
@@ -121,11 +118,11 @@ function Home() {
         const id = localStorage.getItem("userId");
         
         fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
         })
           .then((response) => {
             if (!response.ok) throw new Error("Failed to fetch cage room data");
@@ -248,9 +245,7 @@ function Home() {
                 state: {
                     hotels: results,
                     startDate: startDate,
-                    endDate: endDate,
-                    selectedPets: selectedPets,
-                    selectedCageSizes: selectedCageSizes
+                    endDate: endDate
                 }
             });
         } catch (error) {
@@ -312,7 +307,7 @@ function Home() {
                             <div className="flex flex-col w-full gap-y-5 pl-5 ">
                                 <div className="bg-bg rounded-xl flex  h-44 w-full shadow shadow-gray-400 p-1  ">
                                     <div className="h-full w-full rounded-lg">
-
+                                        
                                         {geoError && <div>{geoError}</div>}
                                         <MapContainer
                                             center={position || [13.736717, 100.523186]}
@@ -321,13 +316,13 @@ function Home() {
                                         >
                                             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                                             <LocationMarker />
-                                            <MapWithGeocoder />
+                                            <MapWithGeocoder/>
                                         </MapContainer>
                                     </div>
-                                    <div>
-                                    </div>
-                                </div>
+                                <div>
                             </div>
+                        </div>
+                    </div>
                         </div>
                         <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
                             <div>
@@ -423,7 +418,7 @@ function Home() {
                 </div>
 
                 {/* Hotel List */}
-                < div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-1/2 px-4">
+                <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-1/2 px-4">
                     {/* Single Hotel Card */}
                     {favData.map((fav, index) => (
                     <div
@@ -509,9 +504,8 @@ function Home() {
                             Book Now
                         </button>
                         </div>
-                        </div>
+                    </div>
                     ))}
-                    
 
                 </div>
 
