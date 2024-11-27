@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { CarouselDemo } from "../components/HotelHome/CarousalDemo";
-import { CarouselCage} from "../components/HotelHome/CarousalCage";
+import { CarouselCage } from "../components/HotelHome/CarousalCage";
 
 import { useEffect, useRef, useState } from 'react';
 import { Cage } from "@/types/response";
@@ -18,11 +18,11 @@ function HotelDetail() {
     const reviewRef = useRef<HTMLDivElement>(null);
 
 
-    
+
     const location = useLocation();
     const hotel = location.state?.selectedHotel;
 
-    console.log("selectedHotel" ,hotel)
+    console.log("selectedHotel", hotel)
     console.log("hotel.cages", hotel.cages)
     const startDate = location.state?.startDate || '';
     const endDate = location.state?.endDate || '';
@@ -48,7 +48,7 @@ function HotelDetail() {
         }
     };
 
-    
+
     const handleCageSelect = (cage: Cage) => {
         const queryParams = new URLSearchParams({
             size: cage.size,
@@ -61,21 +61,24 @@ function HotelDetail() {
             max_capacity: cage.max_capacity.toString(),     // Replace with dynamic value if needed
             startDate: startDate,
             endDate: endDate,
-    
+
         }).toString();
 
         // Navigate with query parameters
-        
+
         navigate(`/hotelbookdetail?${queryParams}`,
-            { state: { 
-                selectedCage: cage, 
-                selectedHotel: location.state?.selectedHotel,
-                profile_name: location.state?.profile_name,
-                startDate: startDate, 
-                endDate: endDate } });
-        
+            {
+                state: {
+                    selectedCage: cage,
+                    selectedHotel: location.state?.selectedHotel,
+                    profile_name: location.state?.profile_name,
+                    startDate: startDate,
+                    endDate: endDate
+                }
+            });
+
     };
-    const id = localStorage.getItem("userId");  
+    const id = localStorage.getItem("userId");
     console.log("id ", id)
     const [review, setReview] = useState({});
     const profile_id = hotel.id
@@ -83,24 +86,26 @@ function HotelDetail() {
     useEffect(() => {
         const token = localStorage.getItem("token");
         fetch(`http://localhost:5000/api/hotel/review/${profile_id}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
         })
-          .then((response) => {
-            if (!response.ok) throw new Error("Failed to fetch cage room data");
-            return response.json();
-          })
-          .then((data) => {
-            console.log("Fetched hotel review data:", data);
-            // console.log("Fetched cage room data:", data.address);
-            setReview(data|| []); // เก็บข้อมูลห้องใน state
-          })
-          .catch((error) => console.error("Error fetching cage room data:", error));
-      }, []);
-      
+            .then((response) => {
+                if (!response.ok) throw new Error("Failed to fetch cage room data");
+                return response.json();
+            })
+            .then((data) => {
+                console.log("Fetched hotel review data:", data);
+                // console.log("Fetched cage room data:", data.address);
+                setReview(data || []); // เก็บข้อมูลห้องใน state
+            })
+            .catch((error) => console.error("Error fetching cage room data:", error));
+
+
+    }, []);
+
     //   console.log("cages", rooms)
 
     // const [hotel, setHotel] = useState({
@@ -138,8 +143,8 @@ function HotelDetail() {
                     const dLon = lon2 - lon1;
 
                     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                              Math.cos(lat1) * Math.cos(lat2) *
-                              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                        Math.cos(lat1) * Math.cos(lat2) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
                     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
                     const R = 6371; // Earth radius in kilometers
                     const distance = R * c; // Distance in kilometers
@@ -152,7 +157,7 @@ function HotelDetail() {
         }
     }, [hotel.latitude, hotel.longitude]);
 
-   
+
     const scrollToSection = (ref: React.RefObject<HTMLDivElement>) => {
         if (ref.current) {
             ref.current.scrollIntoView({ behavior: 'smooth' });
@@ -166,7 +171,7 @@ function HotelDetail() {
         // Toggle the selected room index
         setSelectedRoomIndex(prevIndex => prevIndex === index ? null : index);
         setExpandedRoomId((prev) => (prev === index ? null : index));
-        
+
     };
 
     return (
@@ -186,9 +191,9 @@ function HotelDetail() {
                 <div className="flex flex-col w-full h-[36rem]  gap-y-5 ">
                     <h1 ref={hotelRef} id="hotel" className="text-4xl">{hotel.name}</h1>
                     <div className="flex justify-center">
-                        <CarouselDemo images={hotel.image_array || []}/>
+                        <CarouselDemo images={hotel.image_array || []} />
                     </div>
-                    
+
 
                 </div>
                 {/* section2 */}
@@ -225,8 +230,8 @@ function HotelDetail() {
                                 <p className="text-center mt-10">Location data not available.</p>
                             )}
                             <div>
-                            <p>{hotel.address}</p>
-                                <p>Distance: {distance ? distance.toFixed(2) : "Loading..."}</p> 
+                                <p>{hotel.address}</p>
+                                <p>Distance: {distance ? distance.toFixed(2) : "Loading..."}</p>
                             </div>
                         </div>
                     </div>
@@ -236,9 +241,9 @@ function HotelDetail() {
                     <h1 ref={facilityRef} id="facility" className="text-2xl"> Facility</h1>
                     <div className="flex gap-x-2">
                         {hotel.facility_array && hotel.facility_array.length > 0 ? (
-                            hotel.facility_array.map((facility:string, index:number) => (
-                                <button 
-                                    key={index} 
+                            hotel.facility_array.map((facility: string, index: number) => (
+                                <button
+                                    key={index}
                                     className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400"
                                 >
                                     {facility}
@@ -261,75 +266,74 @@ function HotelDetail() {
                         </div> */}
                         <div className="flex w-full h-full flex-col shadow shadow-gray-400 rounded-md pb-5">
                             {/* room container */}
-                            
-                            {hotel.cages ? (
-                                    <div>
-                                        {hotel.cages.map((cage: Cage, index: number) => (
-                                            <div className="flex flex-col">
 
-                                            
-                                                <div  key={index}
-                                                        className={`flex h-60 mx-5 mt-5 p-3 shadow shadow-gray-400 h-80 ${
-                                                            selectedRoomIndex === index 
-                                                                ? 'rounded-t-md  shadow-tl shadow-tr shadow-bl shadow-br shadow-gray-400'  // มุมโค้งเฉพาะด้านบนและเงารอบๆ ยกเว้นด้านล่าง
-                                                                : 'rounded-md shadow shadow-gray-400 '  // มุมโค้งรอบๆ ทุกด้านตอนแรก
-                                                        }`}  
-                                                        // onClick={() => handleRoomClick(index)}
-                                                        // onClick={() => handleRoomClick(index)}
-                                                    >
-                                               
-                                                    <div className="basis-1/3 bg-cover h-full w-72 pt-5 pl-5 "  >
+                            {hotel.cages ? (
+                                <div>
+                                    {hotel.cages.map((cage: Cage, index: number) => (
+                                        <div className="flex flex-col">
+
+
+                                            <div key={index}
+                                                className={`flex h-60 mx-5 mt-5 p-3 shadow shadow-gray-400 h-80 ${selectedRoomIndex === index
+                                                        ? 'rounded-t-md  shadow-tl shadow-tr shadow-bl shadow-br shadow-gray-400'  // มุมโค้งเฉพาะด้านบนและเงารอบๆ ยกเว้นด้านล่าง
+                                                        : 'rounded-md shadow shadow-gray-400 '  // มุมโค้งรอบๆ ทุกด้านตอนแรก
+                                                    }`}
+                                            // onClick={() => handleRoomClick(index)}
+                                            // onClick={() => handleRoomClick(index)}
+                                            >
+
+                                                <div className="basis-1/3 bg-cover h-full w-72 pt-5 pl-5 "  >
                                                     <CarouselCage images={Array.isArray(cage.image) ? cage.image : cage.image ? [cage.image] : []} />
 
-                                                        {/* <CarouselCage images={cage.image || []}/> */}
-                                                    </div>
-                                                    <div className="basis-1/3  flex flex-col space-y-5 pl-5 pt-4 cursor-pointer "
-                                                        onClick={() => handleRoomClick(index)}
-                                                    >
-                                                        <h1 className="text-2xl font-semibold">{cage.cage_type}</h1>
-                                                        <div>
-                                                            <div className="flex flex-col gap-y-5">
-                                                                <div className="flex gap-2 ">
-                                                                    <p className="bg-yellow text-center font-bold w-10 p-1">{cage.size}</p>
-                                                                    <p className="flex items-center">Size {cage.height} X {cage.width} X {cage.lenth} </p>
-                                                                </div>
-                                                                <p>Accommodates: {cage.max_capacity}</p>
-                                                                <p>Facility: {cage.facility}</p>
-                                                            </div>
-                                                            
-                                                        </div>
-                                                    </div>
-                                                    <div className="basis-1/3  space-y-5 pl-5 pt-4 flex flex-col items-end pr-5 gap-y-5">
-                                                        <h1 className="text-2xl font-semibold">{cage.price}$</h1>
-                                                        <p>free cancel before 1 week</p>
-                                                        <div className="flex space-x-2">
-                                                            <button className="w-fit px-2 h-8 bg-bg rounded-full shadow" onClick={() => handleAddFavorite(cage)}>Add Favorite</button>
-                                                            <button className="w-fit px-2 h-8  rounded-full bg-yellow hover:bg-navbar" onClick={() => handleCageSelect(cage)}>Book now</button>
-                                                        </div>
-                                                    </div>
-                                                    
+                                                    {/* <CarouselCage images={cage.image || []}/> */}
                                                 </div>
-                                                {expandedRoomId === index && (
-                                                    <div  className=" bg-bg flex h-fit w-full  ">
-                                                        <div className="flex w-full mx-5 bg-bg shadow shadow-gray-400  rounded-b-lg ">
-                                                            <div className="w-4/12 bg-bg mr-4"></div>
-                                                            <div>
-                                                                <p className=" p-2 text-xl"> Detail</p>
-                                                                <div className="flex p-2 "> {cage.detail}</div>
+                                                <div className="basis-1/3  flex flex-col space-y-5 pl-5 pt-4 cursor-pointer "
+                                                    onClick={() => handleRoomClick(index)}
+                                                >
+                                                    <h1 className="text-2xl font-semibold">{cage.cage_type}</h1>
+                                                    <div>
+                                                        <div className="flex flex-col gap-y-5">
+                                                            <div className="flex gap-2 ">
+                                                                <p className="bg-yellow text-center font-bold w-10 p-1">{cage.size}</p>
+                                                                <p className="flex items-center">Size {cage.height} X {cage.width} X {cage.lenth} </p>
                                                             </div>
-                                                            
+                                                            <p>Accommodates: {cage.max_capacity}</p>
+                                                            <p>Facility: {cage.facility}</p>
                                                         </div>
-                                                    
+
+                                                    </div>
+                                                </div>
+                                                <div className="basis-1/3  space-y-5 pl-5 pt-4 flex flex-col items-end pr-5 gap-y-5">
+                                                    <h1 className="text-2xl font-semibold">{cage.price}$</h1>
+                                                    <p>free cancel before 1 week</p>
+                                                    <div className="flex space-x-2">
+                                                        <button className="w-fit px-2 h-8 bg-bg rounded-full shadow" onClick={() => handleAddFavorite(cage)}>Add Favorite</button>
+                                                        <button className="w-fit px-2 h-8  rounded-full bg-yellow hover:bg-navbar" onClick={() => handleCageSelect(cage)}>Book now</button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            {expandedRoomId === index && (
+                                                <div className=" bg-bg flex h-fit w-full  ">
+                                                    <div className="flex w-full mx-5 bg-bg shadow shadow-gray-400  rounded-b-lg ">
+                                                        <div className="w-4/12 bg-bg mr-4"></div>
+                                                        <div>
+                                                            <p className=" p-2 text-xl"> Detail</p>
+                                                            <div className="flex p-2 "> {cage.detail}</div>
+                                                        </div>
+
+                                                    </div>
+
                                                 </div>
                                             )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p>No cages available</p>
-                                )}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p>No cages available</p>
+                            )}
 
-                            
+
                             {/* room */}
                             {/* review */}
 
@@ -342,45 +346,45 @@ function HotelDetail() {
                         <h1 ref={reviewRef} id="review" className="text-2xl">Review</h1>
                         {Array.from({ length: 5 }, (_, i) => (
                             <span key={i} className={` text-2xl`}>
-                                    {i < Math.floor(hotel.avg_review) ? (
-                                        <i className="fa-sharp fa-solid fa-star "style={{ color: "#DBA54D" }} ></i> // ดาวเต็ม
-                                        ) : i < hotel.avg_review ? (
-                                        <i className="fa-solid fa-star-half-alt 0" style={{ color: "#DBA54D" }}></i> // ครึ่งดาว
-                                        ) : (
-                                        <i className="fa-regular fa-star" style={{ color: "#DBA54D" }}  ></i> // ดาวว่าง
-                                        )}
+                                {i < Math.floor(hotel.avg_review) ? (
+                                    <i className="fa-sharp fa-solid fa-star " style={{ color: "#DBA54D" }} ></i> // ดาวเต็ม
+                                ) : i < hotel.avg_review ? (
+                                    <i className="fa-solid fa-star-half-alt 0" style={{ color: "#DBA54D" }}></i> // ครึ่งดาว
+                                ) : (
+                                    <i className="fa-regular fa-star" style={{ color: "#DBA54D" }}  ></i> // ดาวว่าง
+                                )}
                             </span>
                         ))}
                     </div>
                     <div className="shadow shadow-gray-400 rounded-md mt-5 ">
                         {review && Array.isArray(review) && review.length > 0 ? (
                             review.map((item, index) => (
-                                <div 
-                                    key={index} 
+                                <div
+                                    key={index}
                                     className="flex flex-col h-auto m-5 p-3 bg-bg rounded-md shadow shadow-gray-400 gap-y-5 "
                                 >
                                     <div className="flex">
                                         <div className="flex  gap-x-2 flex-col w-8/12 ">
-                                            <h1 className="text-xl font-bold">Name: {review[index].animal_hotel_services[0].animal_user.user.first_name}</h1>   
-                                                <div className="flex gap-x-2">
-                                                    {Array.from({ length: 5 }, (_, i) => (
-                                                        <span key={i} className={`text-yellow-500 text-lg`}>
-                                                            {i < Math.floor(item.review_rate) ? (
-                                                                <i className="fa-solid fa-star "style={{ color: "#DBA54D" }} ></i> // ดาวเต็ม
-                                                            ) : i < item.review_rate ? (
-                                                                <i className="fas fa-star-half-alt 0" style={{ color: "#DBA54D" }}></i> // ครึ่งดาว
-                                                            ) : (
-                                                                <i className="fa-regular fa-star" style={{ color: "#DBA54D" }}  ></i> // ดาวว่าง
-                                                            )}
-                                                        </span>
-                                                    ))}
-                                                </div> 
-                                                <p className="mr-4 ">{item.review_detail ||" At {hotel.name}, we believe your pets deserve a vacation too Our pet hotel offers a safe, comfortable, and enriching environment for your furry family members, with amenities designed specifically for both cats and dogs."}</p>
+                                            <h1 className="text-xl font-bold">Name: {review[index].animal_hotel_services[0].animal_user.user.first_name}</h1>
+                                            <div className="flex gap-x-2">
+                                                {Array.from({ length: 5 }, (_, i) => (
+                                                    <span key={i} className={`text-yellow-500 text-lg`}>
+                                                        {i < Math.floor(item.review_rate) ? (
+                                                            <i className="fa-solid fa-star " style={{ color: "#DBA54D" }} ></i> // ดาวเต็ม
+                                                        ) : i < item.review_rate ? (
+                                                            <i className="fas fa-star-half-alt 0" style={{ color: "#DBA54D" }}></i> // ครึ่งดาว
+                                                        ) : (
+                                                            <i className="fa-regular fa-star" style={{ color: "#DBA54D" }}  ></i> // ดาวว่าง
+                                                        )}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                            <p className="mr-4 ">{item.review_detail || " At {hotel.name}, we believe your pets deserve a vacation too Our pet hotel offers a safe, comfortable, and enriching environment for your furry family members, with amenities designed specifically for both cats and dogs."}</p>
                                         </div>
                                         <div className="flex flex-col  w-4/12 justify-end h-full">
                                             <div className="flex ">
                                                 <div className="m-1 text-white text-sm p-2 bg-onstep rounded-lg flex justify-center w-fit h-fit ">
-                                                    {review[index].cage_room.animal_type}    
+                                                    {review[index].cage_room.animal_type}
                                                 </div>
                                                 <div className=" m-1 text-onstep text-sm p-2 bg-egg rounded-lg flex justify-center  w-fit h-fit">
                                                     {review[index].cage_room.cage_type}
@@ -388,9 +392,9 @@ function HotelDetail() {
                                             </div>
                                             <div className="mt-2 mb-10">
                                                 {/* <CarouselCage images={review[index].cage_room.image_array || []}/> */}
-                                                <CarouselCage images={review[index].review_image_array|| []}/>
+                                                <CarouselCage images={review[index].review_image_array || []} />
                                             </div>
-                                        </div>   
+                                        </div>
                                     </div>
                                 </div>
                             ))

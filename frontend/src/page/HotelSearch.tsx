@@ -156,7 +156,7 @@ function HotelSearch() {
 
   // const [isClicked, setIsClicked] = useState(false);
   const [activeButton, setActiveButton] = useState<number | null>(null);
-  const buttons = ["Sort By", "Distance", "Price", "review", "Hot Deal"]; // Button labels
+  const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
   // const uniqueAnimalTypes = [
   //   ...new Set(
   //     hotel.flatMap((hotelItem) =>
