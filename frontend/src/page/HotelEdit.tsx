@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { useLocation } from "react-router-dom";
 import L from 'leaflet';
+import "leaflet-control-geocoder";
 
 const HotelDetailPage = () => {
     const navigate = useNavigate();
@@ -73,7 +74,7 @@ const HotelDetailPage = () => {
 
         return null;
     };
-    
+
     const [position, setPosition] = useState<[number, number] | null>(null);
     const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
     const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
