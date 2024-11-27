@@ -157,7 +157,7 @@ const HotelDetailPage = () => {
 
             const res = await UpdateProfile(payload);
             toast.success("Profile updated successfully");
-            // window.location.reload();
+            window.location.reload();
             console.log("log", res);
         } catch (err: any) {
             if (err.response && err.response.data) {

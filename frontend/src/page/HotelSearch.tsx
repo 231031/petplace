@@ -134,11 +134,17 @@ function HotelSearch() {
     [number, number] | null
   >(null); // Position from search or click
   const LocationMarker = () => {
+    const map = useMap();
     useMapEvents({
       click(e) {
         setSearchedPosition([e.latlng.lat, e.latlng.lng]); // Store clicked position
       },
     });
+    useEffect(() => {
+      if (searchedPosition) {
+          map.setView(searchedPosition, 13); // Set the map view to the marker's position
+      }
+  }, [searchedPosition, map]);
     return (
       <Marker position={searchedPosition || [13.736717, 100.523186]}>
         <Popup>Selected Location</Popup>
