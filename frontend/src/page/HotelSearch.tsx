@@ -75,12 +75,12 @@ function HotelSearch() {
     }
 
     const filterSearchCage = {
-      longitude: "99.3986862",
-      latitude: "18.3170581",
+      // longitude: "99.3986862",
+      // latitude: "18.3170581",
       // start_time: startDate,
       // end_time: endDate,
-      // longitude: searchedPosition ? JSON.stringify(searchedPosition[1]) : "",
-      // latitude: searchedPosition ? JSON.stringify(searchedPosition[0]) : "",
+      longitude: searchedPosition ? JSON.stringify(searchedPosition[1]) : "",
+      latitude: searchedPosition ? JSON.stringify(searchedPosition[0]) : "",
       start_time: formatDateToString(startDate),
       end_time: formatDateToString(endDate),
       sort: finalSort || "",
@@ -125,14 +125,47 @@ function HotelSearch() {
     return null;
   };
 
-  const [position, setPosition] = useState<[number, number] | null>(null);
+  // const [position, setPosition] = useState<[number, number] | null>(null);
+  // const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(
+  //   null
+  // ); // Track marker position
+  // const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
+  // const [searchedPosition, setSearchedPosition] = useState<
+  //   [number, number] | null
+  // >(null); // Position from search or click
+  // const LocationMarker = () => {
+  //   useMapEvents({
+  //     click(e) {
+  //       setSearchedPosition([e.latlng.lat, e.latlng.lng]); // Store clicked position
+  //     },
+  //   });
+  //   console.log('location: ', longitude)
+  //   return (
+  //     <Marker position={searchedPosition || [13.736717, 100.523186]}>
+  //       <Popup>Selected Location</Popup>
+  //     </Marker>
+  //   );
+
+  // };
+  const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
   const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(
     null
   ); // Track marker position
-  const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
+  const [position, setPosition] = useState<[number, number] | null>(null);
   const [searchedPosition, setSearchedPosition] = useState<
     [number, number] | null
   >(null); // Position from search or click
+  const [error, setError] = useState(""); // Form error
+
+  const [maplocation, setMapLocation] = useState({
+    long: "",
+    lat: "",
+  });
+  const handleLocationChange = (lat: number, lng: number) => {
+    setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
+    setMarkerPosition([lat, lng]); // Update the marker position
+  };
+
   const LocationMarker = () => {
     useMapEvents({
       click(e) {
@@ -146,6 +179,45 @@ function HotelSearch() {
     );
   };
 
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setPosition([latitude, longitude]);
+          handleLocationChange(latitude, longitude); // Update formData with initial position
+        },
+        (err) => {
+          setError("Unable to retrieve your location.");
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by this browser.");
+    }
+  }, []);
+
+  useEffect(() => {
+    // Fetch user's current location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                setPosition([latitude, longitude]);
+                setSearchedPosition([latitude, longitude]); // Default search position
+            },
+            () => {
+                setError('Unable to retrieve your location.');
+                setPosition([13.736717, 100.523186]); // Default to Bangkok
+                setSearchedPosition([13.736717, 100.523186]); // Default search position
+            }
+        );
+    } else {
+        setError('Geolocation is not supported by this browser.');
+        setPosition([13.736717, 100.523186]);
+        setSearchedPosition([13.736717, 100.523186]);
+    }
+}, []);
+  // check=====================================================================================================================================================================================
   const handleCageSizeChange = (pet: string, size: string) => {
     setSelectedCageSizes((prev) => ({
       ...prev,
@@ -272,7 +344,7 @@ function HotelSearch() {
               <div className="grid grid-cols-2 gap-4 mb-6 ">
                 {/* Location Section */}
                 <div className="flex flex-col  p-2 border border-gray-300 mt-8 rounded-lg ">
-                  <label className="text-xl text-semibold">Location</label>
+                  <label className="text-xl text-semibold">Select on map</label>
                   {geoError && <div>{geoError}</div>}
                   <MapContainer
                     center={position || [13.736717, 100.523186]}
