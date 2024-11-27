@@ -5,6 +5,7 @@ import Button from '../components/LoginSignup/Button';
 import UploadImage from "@/components/CreateProfile/UploadImage";
 import { UploadRes } from '@/types/response';
 import MapView from '@/components/CreateProfile/Map'; // Assuming you have a map component
+import toast, { Toaster } from 'react-hot-toast';
 
 function CreateProfile() {
     const [formData, setFormData] = useState({
@@ -81,7 +82,7 @@ function CreateProfile() {
     };
 
     var selectedPosition = localStorage.getItem('selectedLocation');
-    var parsedLocation = JSON.parse(selectedPosition) ;
+    var parsedLocation = JSON.parse(selectedPosition) || [];
 
     console.log("parsed location", parsedLocation)
 
@@ -151,7 +152,8 @@ function CreateProfile() {
                 }, 2000);
             } else {
                 const errorData = await response.json();
-                setError(errorData.message || 'Signup failed');
+                setError(errorData || 'Signup failed');
+                toast.error(errorData)
             }
         } catch (error) {
             setError('An error occurred. Please try again.');
@@ -162,12 +164,13 @@ function CreateProfile() {
         navigate('/FullMap');
     };
 
-    if (!parsedLocation[0]) {
-        return <div>Loading...</div>;
-    }
+    // if (!parsedLocation[0]) {
+    //     return <div>Loading...</div>;
+    // }
 
     return (
         <div className="h-screen flex">
+            <Toaster position='top-center' reverseOrder={false}></Toaster>
             <div className="flex justify-center bg-bgLogin w-full items-baseline">
                 <div className="flex flex-col items-center w-1/4 gap-y-5 pt-36">
                     <h1 className="text-3xl">Create Profile</h1>
@@ -259,14 +262,14 @@ function CreateProfile() {
                                     style={{ resize: 'none', overflowY: 'auto' }}
                                 />
                             </div>
-                            
-                                <MapView
-                                    latitude={parsedLocation[0]}
-                                    longitude={parsedLocation[1]}
-                                />
-                            
+
+                            <MapView
+                                latitude={parsedLocation[0]}
+                                longitude={parsedLocation[1]}
+                            />
+
                             <div className="h-12 w-full mb-5 rounded-lg bg-onstep hover:bg-nextstep cursor-pointer text-white flex justify-center items-center" onClick={handleClickFullMap}>
-                                    Select Position
+                                Select Position
                             </div>
                         </div>
                     </div>

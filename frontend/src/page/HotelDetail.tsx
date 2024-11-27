@@ -41,13 +41,13 @@ function HotelDetail() {
 
         try {
             const response = await AddFavCage(favPayload);
-            alert("Cage added to favorites successfully!");
             console.log("Favorite response:", response);
         } catch (error) {
             console.error("Error adding to favorites:", error);
             alert("Failed to add cage to favorites. Please try again.");
         }
     };
+
     
     const handleCageSelect = (cage: Cage) => {
         const queryParams = new URLSearchParams({

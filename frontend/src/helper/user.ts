@@ -30,3 +30,14 @@ export async function AddFavCage(fav: FavPayload): Promise<any> {
         return Promise.reject(error);
       }
 }
+
+export async function RemoveFavCage(fav: FavPayload): Promise<any> {
+    try {
+        let user_id = fav.user_id;
+        let cage_id = fav.cage_id;
+        let endpoint = `${baseApi}/user/fav/${user_id}/${cage_id}`
+        return RequestApi(endpoint, "DELETE", fav, 200);
+      } catch (error) {
+        return Promise.reject(error);
+      }
+}

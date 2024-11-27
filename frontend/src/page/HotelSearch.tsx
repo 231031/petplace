@@ -10,6 +10,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "re
 import { useLocation } from "react-router-dom";
 import L from 'leaflet';
 import "leaflet-control-geocoder";
+import toast, { Toaster } from 'react-hot-toast';
 
 function HotelSearch() {
   const location = useLocation();
@@ -83,49 +84,50 @@ function HotelSearch() {
       //     endDate: endDate
       //   }
       // });
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error || "Please fill all information")
       console.error("Error fetching hotels:", error);
     }
   };
 
-  
+
   const MapWithGeocoder = () => {
     const map = useMap();
 
     useEffect(() => {
-        const geocoder = L.Control.geocoder({
-            defaultMarkGeocode: false, // Do not mark automatically
-        }).addTo(map);
+      const geocoder = L.Control.geocoder({
+        defaultMarkGeocode: false, // Do not mark automatically
+      }).addTo(map);
 
-        geocoder.on('markgeocode', (e) => {
-            const latlng = e.geocode.center;
-            setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
-            map.setView(latlng, 13); // Center the map on the searched location
-        });
+      geocoder.on('markgeocode', (e) => {
+        const latlng = e.geocode.center;
+        setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
+        map.setView(latlng, 13); // Center the map on the searched location
+      });
 
-        return () => {
-            map.removeControl(geocoder);
-        };
+      return () => {
+        map.removeControl(geocoder);
+      };
     }, [map]);
 
     return null;
-};
+  };
 
   const [position, setPosition] = useState<[number, number] | null>(null);
   const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
   const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
   const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
   const LocationMarker = () => {
-      useMapEvents({
-          click(e) {
-              setSearchedPosition([e.latlng.lat, e.latlng.lng]); // Store clicked position
-          },
-      });
-      return (
-          <Marker position={searchedPosition || [13.736717, 100.523186]}>
-              <Popup>Selected Location</Popup>
-          </Marker>
-      );
+    useMapEvents({
+      click(e) {
+        setSearchedPosition([e.latlng.lat, e.latlng.lng]); // Store clicked position
+      },
+    });
+    return (
+      <Marker position={searchedPosition || [13.736717, 100.523186]}>
+        <Popup>Selected Location</Popup>
+      </Marker>
+    );
   };
 
   const handleCageSizeChange = (pet: string, size: string) => {
@@ -165,6 +167,7 @@ function HotelSearch() {
   return (
     <div className="">
       <div className="w-full h-1/2 p-4 bg-white flex justify-center items-center relative">
+        <Toaster position='top-center' reverseOrder={false}></Toaster>
         <div
           className="w-1/4 rounded-lg absolute mt-4 top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-4"
           style={{ backgroundColor: "#A08252" }}
@@ -200,15 +203,15 @@ function HotelSearch() {
                 <div className="flex flex-col  p-2 border border-gray-300 mt-8 h-52 rounded-lg ">
                   <label className="text-xl text-semibold">Location</label>
                   {geoError && <div>{geoError}</div>}
-                                        <MapContainer
-                                            center={position || [13.736717, 100.523186]}
-                                            zoom={13}
-                                            style={{ height: '100%', width: '100%' }}
-                                        >
-                                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                                            <LocationMarker />
-                                            <MapWithGeocoder/>
-                            </MapContainer>
+                  <MapContainer
+                    center={position || [13.736717, 100.523186]}
+                    zoom={13}
+                    style={{ height: '100%', width: '100%' }}
+                  >
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    <LocationMarker />
+                    <MapWithGeocoder />
+                  </MapContainer>
                 </div>
 
                 {/* Date Section */}
@@ -390,15 +393,15 @@ function HotelSearch() {
                     <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-2 bg-white w-80 h-full">
                       <label>Location</label>
                       {geoError && <div>{geoError}</div>}
-                                        <MapContainer
-                                            center={position || [13.736717, 100.523186]}
-                                            zoom={13}
-                                            style={{ height: '100%', width: '100%' }}
-                                        >
-                                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                                            <LocationMarker />
-                                            <MapWithGeocoder/>
-                            </MapContainer>
+                      <MapContainer
+                        center={position || [13.736717, 100.523186]}
+                        zoom={13}
+                        style={{ height: '100%', width: '100%' }}
+                      >
+                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                        <LocationMarker />
+                        <MapWithGeocoder />
+                      </MapContainer>
                     </div>
                   </div>
 
