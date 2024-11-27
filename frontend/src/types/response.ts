@@ -80,3 +80,13 @@ export interface Profile {
     image_array:         string[] | null;
     facility_array:      any[] | null;
 }
+
+export interface AnimalCageTyepRes {
+    animal_type: string;
+    cage:        Cage[];
+}
+
+export interface Cage {
+    cage_id:   number;
+    cage_type: string;
+}

@@ -73,6 +73,29 @@ export async function UpdateCage(cage:CageRoom): Promise<any> {
     }
 }
 
+// export async function GetAnimalCageType(): Promise<any> {
+//   try {
+//     let apiPath = `${baseApi}/cageroom/${cage.id}`;
+//     let queryParams = "";
+
+//     queryParams = MapArrayToQuery(filterAnimal, filterSearchCage);
+//     apiPath = apiPath + queryParams;
+//     const token = localStorage.getItem("token");
+//     const response = await fetch(apiPath, {
+//       headers: { authorization: `Bearer ${token}` },
+//     });
+//     // console.log("Response:", response);
+//     const data = await response.json();
+//     if (response.status != 200) {
+//       return Promise.reject(data);
+//     }
+
+//     return Promise.resolve(data);
+//   } catch (error) {
+//     return Promise.reject(error);
+//   }
+// }
+
 export function mapCageSize(max_capacity: number): string {
     if (max_capacity >= 1 && max_capacity <= 2) {
         return "s";
@@ -80,7 +103,9 @@ export function mapCageSize(max_capacity: number): string {
         return "m";
     } else if (max_capacity >= 5 && max_capacity <= 6) {
         return "l";
+    } else if (max_capacity >= 7) {
+        return "xl";
     }
 
-    return "xl";
+    return "";
 }
