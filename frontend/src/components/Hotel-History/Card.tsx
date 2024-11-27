@@ -309,7 +309,7 @@ function Card({ hotel }: { hotel: Hotel }) {
               <h1 className="ml-auto text-lg px-4 text-right">
                 Check out : {formatDate(hotel.end_time)}
               </h1>
-              <h2 className="ml-auto text-right px-4 font-bold text-2xl ">
+              <h2 className="ml-auto text-right px-4 font-medium text-2xl ">
                 {hotel.price} ฿
               </h2>
 

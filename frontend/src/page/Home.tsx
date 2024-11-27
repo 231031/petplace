@@ -329,7 +329,9 @@ function Home() {
                 state: {
                     hotels: results,
                     startDate: startDate,
-                    endDate: endDate
+                    endDate: endDate,
+                    selectedPets: selectedPets,
+                    selectedCageSizes: selectedCageSizes
                 }
             });
         } catch (error) {

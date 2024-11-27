@@ -9,14 +9,9 @@ export default function MyProfile() {
 
     const [currentTab, setCurrentTab] = useState<string>("MyProfile");
     
-    const [formData, setFormData] = useState<any>({
-        name: "",
-        surname: "",
-        email: "",
-        dob: "",
-        citizenId: "",
-        phone: "",
-    });
+    const [formData, setFormData] = useState<any>(null);
+
+    
 
     const token = localStorage.getItem('token');
     const id = localStorage.getItem('userId');
@@ -25,24 +20,25 @@ export default function MyProfile() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/profile/${id}`, {
+                const response = await axios.get(`http://localhost:5000/api/user/${id}`, {
                     headers: {
                         "accept": "application/json",
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`,
                     },
                 });
-                const data = response.data[0];
+                const data = response.data;
+                console.log("user data", data);
                 setProfileData(data);
                 setFormData({
-                    name: data.name,
-                    surname: data.surname,
+                    first_name: data.first_name,
+                    surename: data.surename,
                     email: data.email,
-                    dob: data.dob,
-                    citizenId: data.citizenId,
-                    phone: data.phone,
+                    age: data.age,
+                    citizen_d: data.citizen_id,
+                    number: data.number,
                 });
-                console.log(response.data);
+                
             } catch (error) {
                 console.error("Error fetching profile:", error);
             } finally {
@@ -53,16 +49,98 @@ export default function MyProfile() {
         fetchProfile();
     }, []);
 
-    // จัดการการอัปโหลดรูปภาพใหม่
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+   
+     // Handle input changes
+     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
+    const handleInputChangePet = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setPetData({ ...pet, [name]: value });
+    };
+
+
+    // Toggle edit mode
+    const toggleEditMode = () => setIsEditing(!isEditing);
+
+    // Save updated profile
+    
+
+    const [pet, setPetData] = useState<any>(null);
+
+    // Save updated pet profile
+    const savePetProfile = async () => {
+        try {
+            const response = await axios.put(`http://localhost:5000/api/user/animal/${id}`, pet, {
+                headers: {
+                    "accept": "application/json",
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            console.log("Pet profile updated:", response.data);
+            setPetData(response.data);
+            console.log("petData", pet)
+            setIsEditing(false); // Exit edit mode after saving
+            window.location.reload();
+
+        } catch (error) {
+            console.error("Error updating pet profile:", error);
+        }
+    };
+
+    useEffect(() => {
+        const fetchPetData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/user/animal/${id}`, {
+                    headers: {
+                        "accept": "application/json",
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                const data = response.data;
+                setPetData({
+                    name: data.name,
+                    animal_type: data.animal_type,
+                    age: data.age,
+                    weight: data.weight,
+                    breed: data.breed,
+                });
+                console.log("pet", data);
+            } catch (error) {
+                console.error("Error fetching pet data:", error);
+            }
+        };
+
+        fetchPetData();
+    }, []);
+
+    
+
+    // Save updated user profile
+    const saveProfile = async () => {
+        try {
+            const response = await axios.put(`http://localhost:5000/api/user/${id}`, formData, {
+                headers: {
+                    "accept": "application/json",
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            console.log("User profile updated:", response.data);
+            setFormData(response.data);
+            setIsEditing(false); // Exit edit mode after saving
+            // window.location.reload();
+        } catch (error) {
+            console.error("Error updating profile:", error);
+        }
+    };
     
 
     // สลับโหมดแก้ไข
-    const toggleEditMode = () => setIsEditing(!isEditing);
 
     const renderContent = () => {
         switch (currentTab) {
@@ -74,7 +152,7 @@ export default function MyProfile() {
                     <div>
                        <div className=" mt-5 pr-10 flex justify-end ">
                     <div className="rounded-full bg-bg shadow shadow-gray-400 w-20 h-7 items-center flex justify-center gap-x-2 text-gray-500 cursor-pointer"
-                        onClick={toggleEditMode}
+                        onClick={isEditing ? saveProfile : toggleEditMode}
                     >
                         <p>{isEditing ? "Save" : "Edit"}</p>
                         <i className="fa-regular fa-pen-to-square"></i>
@@ -84,7 +162,7 @@ export default function MyProfile() {
                     <div className="flex mt-10   gap-x-20 pl-20 items-center">
                         <div className="overflow-hidden rounded-full h-full ">
                                     <img
-                                        src={profile.image_profile}
+                                        src={formData.image_profile}
                                         // alt="Uploaded"
                                         className="size-44 object-cover"
                                     />
@@ -95,13 +173,13 @@ export default function MyProfile() {
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
+                                    name="first_name"
+                                    value={formData.first_name}
                                     onChange={handleInputChange}
                                     className="text-gray-500 rounded-lg border-gray-400 w-48 h-14 mt-5"
                                 />
                             ) : (
-                                <p className="text-gray-500 mt-5">{formData.name}</p>
+                                <p className="text-gray-500 mt-5">{formData.first_name}</p>
                             )}
                         </div>
 
@@ -110,13 +188,13 @@ export default function MyProfile() {
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
+                                    name="surename"
+                                    value={formData.surename}
                                     onChange={handleInputChange}
                                     className="text-gray-500 rounded-lg border-gray-400 w-48 mt-5 h-14"
                                 />
                             ) : (
-                                <p className="text-gray-500 mt-5">{formData.name}</p>
+                                <p className="text-gray-500 mt-5">{formData.surename}</p>
                             )}
                         </div>
                     </div>
@@ -129,28 +207,28 @@ export default function MyProfile() {
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
+                                    name="email"
+                                    value={formData.email}
                                     onChange={handleInputChange}
                                     className="text-gray-500 rounded-lg border-gray-400 w-48 mt-5 h-14"
                                 />
                             ) : (
-                                <p className="text-gray-500 mt-5">{formData.name}</p>
+                                <p className="text-gray-500 mt-5">{formData.email}</p>
                             )}
                     </div>
                     <div className="flex flex-col  text-xl w-1/2 pl-10">
-                            <p>Date of birth</p>
+                            <p>Age</p>
                             
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
+                                    name="age"
+                                    value={parseInt(formData.age)}
                                     onChange={handleInputChange}
                                     className="text-gray-500 rounded-lg border-gray-400 w-48 mt-5 h-14"
                                 />
                             ) : (
-                                <p className="text-gray-500 mt-5">{formData.name}</p>
+                                <p className="text-gray-500 mt-5">{formData.age}</p>
                             )}
                     </div>
                 
@@ -162,13 +240,13 @@ export default function MyProfile() {
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
+                                    name="citizen_id"
+                                    value={parseInt(formData.citizen_id)}
                                     onChange={handleInputChange}
                                     className="text-gray-500 rounded-lg border-gray-400 w-48 mt-5 h-14"
                                 />
                             ) : (
-                                <p className="text-gray-500 mt-5">{formData.name}</p>
+                                <p className="text-gray-500 mt-5">{formData.citizen_id}</p>
                             )}
                         </div>
                         <div className="flex flex-col text-xl w-1/2 pl-10">
@@ -177,13 +255,13 @@ export default function MyProfile() {
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="name"
-                                    value={formData.name}
+                                    name="number"
+                                    value={parseInt(formData.number)}
                                     onChange={handleInputChange}
                                     className="text-gray-500 rounded-lg border-gray-400 w-48 mt-5 h-14"
                                 />
                             ) : (
-                                <p className="text-gray-500 mt-5">{formData.name}</p>
+                                <p className="text-gray-500 mt-5">{formData.number}</p>
                             )}
                     </div>
                 </div>
@@ -192,10 +270,10 @@ export default function MyProfile() {
             case "MyPet":
                 return <div >
                             <div className="bg-bg flex flex-col items-center p-10 ">
-                                <div className="w-full flex gap-x-5 rounded-lg shadow shadow-gray-400">
+                                <div className="w-full flex gap-x-5 rounded-lg shadow shadow-gray-400 h-48">
                                     
                                     <div className="w-1/4 h-1/4 p-3"> 
-                                        <img src={profile.image_profile} alt="" />
+                                        {/* <img src={profile.image_profile} alt="" /> */}
                                     </div>
                                     
                                     <div className="flex flex-col text-xl  w-3/4 gap-y-5 mt-5 ">
@@ -206,12 +284,12 @@ export default function MyProfile() {
                                                 <input
                                                     type="text"
                                                     name="name"
-                                                    value={formData.name}
-                                                    onChange={handleInputChange}
+                                                    value={pet.name}
+                                                    onChange={handleInputChangePet}
                                                     className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
                                                 />
                                             ) : (
-                                                <p className="ml-2"> mario</p>
+                                                <p className="ml-2"> {pet.name}</p>
                                             )}
                                         </div>
                                         
@@ -226,13 +304,13 @@ export default function MyProfile() {
                                                                 
                                                                 <input
                                                                     type="text"
-                                                                    name="name"
-                                                                    value={formData.name}
-                                                                    onChange={handleInputChange}
+                                                                    name="animal_type"
+                                                                    value={pet.animal_type}
+                                                                    onChange={handleInputChangePet}
                                                                     className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
                                                                 />
                                                             ) : (
-                                                                <p className="ml-2"> mario</p>
+                                                                <p className="ml-2"> {pet.animal_type}</p>
                                                             )}
                                                         </div>
                                                         <div className="flex w-1/2">
@@ -241,13 +319,13 @@ export default function MyProfile() {
                                                                 
                                                                 <input
                                                                     type="text"
-                                                                    name="name"
-                                                                    value={formData.name}
-                                                                    onChange={handleInputChange}
+                                                                    name="breed"
+                                                                    value={pet.breed}
+                                                                    onChange={handleInputChangePet}
                                                                     className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
                                                                 />
                                                             ) : (
-                                                                <p className=""> mario</p>
+                                                                <p className=""> {pet.breed}</p>
                                                             )}
                                                         </div>
                                                     </div>
@@ -259,13 +337,13 @@ export default function MyProfile() {
                                                                 
                                                                 <input
                                                                     type="text"
-                                                                    name="name"
-                                                                    value={formData.name}
-                                                                    onChange={handleInputChange}
+                                                                    name="age"
+                                                                    value={pet.age}
+                                                                    onChange={handleInputChangePet}
                                                                     className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
                                                                 />
                                                             ) : (
-                                                                <p className="ml-2"> mario</p>
+                                                                <p className="ml-2"> {pet.age}</p>
                                                             )}
                                                         </div>
                                                         <div className="flex w-1/2  ">
@@ -274,13 +352,13 @@ export default function MyProfile() {
                                                                 
                                                                 <input
                                                                     type="text"
-                                                                    name="name"
-                                                                    value={formData.name}
-                                                                    onChange={handleInputChange}
+                                                                    name="weight"
+                                                                    value={pet.weight}
+                                                                    onChange={handleInputChangePet}
                                                                     className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
                                                                 />
                                                             ) : (
-                                                                <p className="ml-2"> mario</p>
+                                                                <p className="ml-2"> {pet.weight}</p>
                                                             )}
                                                         </div>
                                                     </div>
@@ -292,7 +370,7 @@ export default function MyProfile() {
                                     </div>
                                     <div className="flex justify-end  w-1/4">
                                         <div className="rounded-full bg-bg shadow shadow-gray-400 w-20 h-7 items-center flex justify-center gap-x-2 text-gray-500 cursor-pointer m-2"
-                                            onClick={toggleEditMode}
+                                            onClick={isEditing ? savePetProfile : toggleEditMode}
                                         >
                                             <p>{isEditing ? "Save" : "Edit"}</p>
                                             <i className="fa-regular fa-pen-to-square"></i>
@@ -345,6 +423,7 @@ export default function MyProfile() {
     if (isLoading) {
         return <div>Loading...</div>;
     }
+
 
     return (
         <div className="h-screen flex flex-col items-center justify-center bg-bg">
