@@ -38,6 +38,7 @@ import HotelEdit from './page/HotelEdit';
 import RoomEdit from './page/RoomEdit';
 import HotelReservation from './page/HotelReservation';
 import HotelBookSuccess from './page/HotelBookSuccess';
+import MyProfile from './page/MyProfile';
 
 // import TestLogin from './page/TestLogin';
 
@@ -85,6 +86,7 @@ function App() {
           <Route path="/hotelbookdetail" element={<HotelBookdetail />} />
           <Route path="/hotelbooksuccess" element={<HotelBookSuccess />} />
           <Route path="/CreateProfile" element={<CreateProfile />} />
+          <Route path="/MyProfile" element={<MyProfile />} />
 
           {/* test api */}
           <Route path="/test/search" element={<TestSearch />} />
@@ -104,6 +106,7 @@ function App() {
           <Route path="/hotel/edit" element={<HotelEdit />} />
           <Route path="/room/edit" element={<RoomEdit />} />
           <Route path="/hotel/reservation" element={<HotelReservation />} />
+          
         </Route>
       </Routes>
     </div>

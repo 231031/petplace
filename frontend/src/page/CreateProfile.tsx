@@ -195,8 +195,8 @@ function CreateProfile() {
                             />
                         </div>
                     </div>
-                    <div className="flex w-full">
-                        <div className="flex flex-wrap flex-col gap-y-5 gap-x-5 pl-5 mb-5  w-1/2">
+                    <div className="flex w-full bg-red-500">
+                        <div className="flex flex-wrap flex-col gap-y-5 gap-x-5 pl-5 mb-5  w-1/2 ">
                             <div className="flex flex-col gap-y-2">
                                 <p>Email</p>
                                 <InputBox
