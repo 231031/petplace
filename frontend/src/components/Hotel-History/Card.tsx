@@ -84,12 +84,21 @@ function Card({ hotel }: { hotel: Hotel }) {
         ? (hotel.status === "pending" || hotel.status === "accepted") && (
           <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
             <div className="grid grid-cols-10 gap-4 mb-10 mt-10 ">
-              <div className="col-span-2">
-                <img
-                  src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-                  className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
-                />
-              </div>
+              {
+                <div className="col-span-2">
+                  {
+                    (hotel.cage_room.image_array.lenght > 0) ? (
+                      <p>no image</p>
+                    ) : (
+                      <img
+                        // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+                        src={hotel.cage_room.image_array[0]}
+                        className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
+                      />
+                    )
+                  }
+                </div>
+              }
 
               <div className="col-span-3 ml-5 mt-5">
                 <h2 className="text-xl font-medium">
@@ -195,9 +204,9 @@ function Card({ hotel }: { hotel: Hotel }) {
                       )}
                     </div>
                   </h1>
-                   {error && (
-                  <p className="text-red-500 text-sm mt-2">{error}</p>
-                )}
+                  {error && (
+                    <p className="text-red-500 text-sm mt-2">{error}</p>
+                  )}
                 </div>
               </div>
             )}
@@ -246,12 +255,21 @@ function Card({ hotel }: { hotel: Hotel }) {
         )
         : (hotel.status === "pending" || hotel.status === "accepted") && (
           <div className="grid grid-cols-10 gap-4 mb-10 mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
-            <div className="col-span-2">
-              <img
-                src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-                className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
-              />
-            </div>
+            {
+              <div className="col-span-2">
+                {
+                  (hotel.cage_room.image_array.lenght > 0) ? (
+                    <p>no image</p>
+                  ) : (
+                    <img
+                      // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+                      src={hotel.cage_room.image_array[0]}
+                      className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
+                    />
+                  )
+                }
+              </div>
+            }
 
             <div className="col-span-3 ml-5 mt-5">
               <h2 className="text-xl font-medium">

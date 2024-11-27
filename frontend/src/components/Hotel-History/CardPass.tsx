@@ -104,12 +104,21 @@ function CardPass({ hotel }: { hotel: Hotel }) {
           hotel.status === "completed") && (
           <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
             <div className="grid grid-cols-10 gap-4 mb-10 mt-10 ">
-              <div className="col-span-2">
-                <img
-                  src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-                  className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
-                />
-              </div>
+              {
+                <div className="col-span-2">
+                  {
+                    (hotel.cage_room.image_array.lenght > 0) ? (
+                      <p>no image</p>
+                    ) : (
+                      <img
+                        // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+                        src={hotel.cage_room.image_array[0]}
+                        className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
+                      />
+                    )
+                  }
+                </div>
+              }
 
               <div className="col-span-3 ml-5 mt-5">
                 <h2 className="text-xl font-medium">
@@ -190,52 +199,52 @@ function CardPass({ hotel }: { hotel: Hotel }) {
               {/* <div className="flex flex-row gap-4 ml-5 mt-5 w-full bg-red-600"></div> */}
             </div>
             {hotel.status === "rejected" && (
-            <div className="grid grid-cols-10 ">
-              <div className="col-span-2"></div>
-              <div className="col-span-8 ml-5 border-t border-gray-500 pt-2">
-                <h1 className="text-medium text-lg">Cancelation</h1>
-                <h1 className="text-medium text-lg">
-                  Refund status: Acceptable
-                </h1>
-                <h1 className="text-medium text-lg flex items-center justify-between ">
-                  <div className="flex items-center">
-                    <span>Paypal email:</span>
-                    <input
-                      type="email"
-                      value={paypalEmail}
-                      onChange={(e) => setPaypalEmail(e.target.value)}
-                      className="ml-2 px-3 py-1 border rounded focus:outline-none focus:ring focus:border-blue-300"
-                      placeholder="Enter PayPal email"
-                    />
-                  </div>
-                  <div className="space-x-2">
-                    {hotel.status === "rejected" && (
-                      <button
-                        onClick={handleBackClick}
-                        className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
-                        disabled={isLoading}
-                      >
-                        Cancel
-                      </button>
-                    )}
-                    {hotel.status === "rejected" && (
-                      <button
-                        onClick={handleConfirmRefund}
-                        className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
-                        disabled={isLoading}
-                      >
-                        {isLoading ? "Processing..." : "Confirm"}
-                      </button>
-                    )}
-                  </div>
-                </h1>
-                {error && (
-                  <p className="text-red-500 text-sm mt-2">{error}</p>
-                )}
-                
+              <div className="grid grid-cols-10 ">
+                <div className="col-span-2"></div>
+                <div className="col-span-8 ml-5 border-t border-gray-500 pt-2">
+                  <h1 className="text-medium text-lg">Cancelation</h1>
+                  <h1 className="text-medium text-lg">
+                    Refund status: Acceptable
+                  </h1>
+                  <h1 className="text-medium text-lg flex items-center justify-between ">
+                    <div className="flex items-center">
+                      <span>Paypal email:</span>
+                      <input
+                        type="email"
+                        value={paypalEmail}
+                        onChange={(e) => setPaypalEmail(e.target.value)}
+                        className="ml-2 px-3 py-1 border rounded focus:outline-none focus:ring focus:border-blue-300"
+                        placeholder="Enter PayPal email"
+                      />
+                    </div>
+                    <div className="space-x-2">
+                      {hotel.status === "rejected" && (
+                        <button
+                          onClick={handleBackClick}
+                          className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
+                          disabled={isLoading}
+                        >
+                          Cancel
+                        </button>
+                      )}
+                      {hotel.status === "rejected" && (
+                        <button
+                          onClick={handleConfirmRefund}
+                          className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? "Processing..." : "Confirm"}
+                        </button>
+                      )}
+                    </div>
+                  </h1>
+                  {error && (
+                    <p className="text-red-500 text-sm mt-2">{error}</p>
+                  )}
+
+                </div>
               </div>
-            </div>
-          )}
+            )}
           </div>
 
 
@@ -246,12 +255,21 @@ function CardPass({ hotel }: { hotel: Hotel }) {
           hotel.status === "rejected" ||
           hotel.status === "completed") && (
           <div className="grid grid-cols-10 gap-4 mb-10 mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
-            <div className="col-span-2">
-              <img
-                src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-                className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
-              />
-            </div>
+            {
+              <div className="col-span-2">
+                {
+                  (hotel.cage_room.image_array.lenght > 0) ? (
+                    <p>no image</p>
+                  ) : (
+                    <img
+                      // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+                      src={hotel.cage_room.image_array[0]}
+                      className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
+                    />
+                  )
+                }
+              </div>
+            }
 
             <div className="col-span-3 ml-5 mt-5">
               <h2 className="text-xl font-medium">
@@ -322,13 +340,13 @@ function CardPass({ hotel }: { hotel: Hotel }) {
                   </button>
                 </div>
               )}
-              {hotel.status === "rejected" && (
+              {(hotel.status === "rejected" && hotel.payment_status === "hold") && (
                 <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
                   <button
                     onClick={handleCancelClick}
                     className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg"
                   >
-                    Cancels
+                    Refunded
                   </button>
                 </div>
               )}
@@ -393,12 +411,21 @@ function ReviewForm({
 
   return (
     <div className="grid grid-cols-10 gap-4 mb-10 mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
-      <div className="col-span-2">
-        <img
-          src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-          className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
-        />
-      </div>
+      {
+        <div className="col-span-2">
+          {
+            (hotel.cage_room.image_array.lenght > 0) ? (
+              <p>no image</p>
+            ) : (
+              <img
+                // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+                src={hotel.cage_room.image_array[0]}
+                className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
+              />
+            )
+          }
+        </div>
+      }
 
       <div className="col-span-4 ml-5 mt-5">
         <h2 className="text-xl font-bold">Review </h2>
