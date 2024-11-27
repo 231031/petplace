@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { ReviewPayload } from "@/types/payload";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { UploadRes } from "@/types/response";
+import UploadImage from "./UploadImg";
 
 function CardPass({ hotel }: { hotel: Hotel }) {
   const [reviewPayload, setReviewPayload] = useState<ReviewPayload>({
@@ -190,55 +192,52 @@ function CardPass({ hotel }: { hotel: Hotel }) {
               {/* <div className="flex flex-row gap-4 ml-5 mt-5 w-full bg-red-600"></div> */}
             </div>
             {hotel.status === "rejected" && (
-            <div className="grid grid-cols-10 ">
-              <div className="col-span-2"></div>
-              <div className="col-span-8 ml-5 border-t border-gray-500 pt-2">
-                <h1 className="text-medium text-lg">Cancelation</h1>
-                <h1 className="text-medium text-lg">
-                  Refund status: Acceptable
-                </h1>
-                <h1 className="text-medium text-lg flex items-center justify-between ">
-                  <div className="flex items-center">
-                    <span>Paypal email:</span>
-                    <input
-                      type="email"
-                      value={paypalEmail}
-                      onChange={(e) => setPaypalEmail(e.target.value)}
-                      className="ml-2 px-3 py-1 border rounded focus:outline-none focus:ring focus:border-blue-300"
-                      placeholder="Enter PayPal email"
-                    />
-                  </div>
-                  <div className="space-x-2">
-                    {hotel.status === "rejected" && (
-                      <button
-                        onClick={handleBackClick}
-                        className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
-                        disabled={isLoading}
-                      >
-                        Cancel
-                      </button>
-                    )}
-                    {hotel.status === "rejected" && (
-                      <button
-                        onClick={handleConfirmRefund}
-                        className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
-                        disabled={isLoading}
-                      >
-                        {isLoading ? "Processing..." : "Confirm"}
-                      </button>
-                    )}
-                  </div>
-                </h1>
-                {error && (
-                  <p className="text-red-500 text-sm mt-2">{error}</p>
-                )}
-                
+              <div className="grid grid-cols-10 ">
+                <div className="col-span-2"></div>
+                <div className="col-span-8 ml-5 border-t border-gray-500 pt-2">
+                  <h1 className="text-medium text-lg">Cancelation</h1>
+                  <h1 className="text-medium text-lg">
+                    Refund status: Acceptable
+                  </h1>
+                  <h1 className="text-medium text-lg flex items-center justify-between ">
+                    <div className="flex items-center">
+                      <span>Paypal email:</span>
+                      <input
+                        type="email"
+                        value={paypalEmail}
+                        onChange={(e) => setPaypalEmail(e.target.value)}
+                        className="ml-2 px-3 py-1 border rounded focus:outline-none focus:ring focus:border-blue-300"
+                        placeholder="Enter PayPal email"
+                      />
+                    </div>
+                    <div className="space-x-2">
+                      {hotel.status === "rejected" && (
+                        <button
+                          onClick={handleBackClick}
+                          className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
+                          disabled={isLoading}
+                        >
+                          Cancel
+                        </button>
+                      )}
+                      {hotel.status === "rejected" && (
+                        <button
+                          onClick={handleConfirmRefund}
+                          className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? "Processing..." : "Confirm"}
+                        </button>
+                      )}
+                    </div>
+                  </h1>
+                  {error && (
+                    <p className="text-red-500 text-sm mt-2">{error}</p>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
           </div>
-
-
         )
       ) : (
         // Show Card component if not reviewing
@@ -366,7 +365,16 @@ function ReviewForm({
   const [hotelServiceId, setHotelServiceId] = useState(0); // Single review image
   const [profileId, setProfileId] = useState(0); // Single review image
   const [reviewImageArray, setReviewImageArray] = useState<string[]>([]); // Multiple images
+  const [images, setImages] = useState<UploadRes[]>([]);
+  const storedUserName = localStorage.getItem('username')
+  const handleImageUpload = (uploadedFiles: UploadRes[]) => {
+    setImages((prev) => [...prev, ...uploadedFiles].slice(0, 10));
+  };
 
+  const handleRemoveImage = (index: number) => {
+    const updatedImages = images.filter((_, imgIndex) => imgIndex !== index);
+    setImages(updatedImages);
+  };
   useEffect(() => {
     setHotelServiceId(hotel.animal_hotel_services[0].hotel_service_id || 0); // Dynamically set service ID
     setProfileId(hotel.cage_room?.profile_id || 0); // Dynamically set profile ID
@@ -380,7 +388,7 @@ function ReviewForm({
         profile_id: profileId, // Prop passed to component
         review_detail: reviewText, // Use state value
         review_image: reviewImage, // Use state value
-        review_image_array: reviewImageArray, // Use state value
+        review_image_array: images.map((image) => image.fileUrl), // Use state value
         review_rate: rating, // Use state value
       };
       console.log("Review submitted for:", hotel, reviewPayload);
@@ -394,14 +402,33 @@ function ReviewForm({
   return (
     <div className="grid grid-cols-10 gap-4 mb-10 mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
       <div className="col-span-2">
-        <img
-          src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-          className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
-        />
+          {images.map((image, index) => (
+            <div
+              key={index}
+              className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
+            >
+              <img
+                src={image.fileUrl}
+                alt={`Uploaded ${index}`}
+                className="w-full h-full object-cover"
+              />
+              <button
+                onClick={() => handleRemoveImage(index)}
+                className="absolute top-1 right-1 bg-navbar text-white text-xs rounded-lg px-1"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+          <UploadImage
+            limit={10 - images.length}
+            onComplete={handleImageUpload}
+          />
+        {/* </div> */}
       </div>
 
       <div className="col-span-4 ml-5 mt-5">
-        <h2 className="text-xl font-bold">Review </h2>
+        <h2 className="text-xl font-medium">Review </h2>
         <h1>
           {/* Star Ratings */}
           <div className="flex items-center space-x-2">
@@ -423,8 +450,8 @@ function ReviewForm({
         <h1 className="flex items-center space-x-4 text-lg">
           {/* Name and Visibility Toggle */}
           <div className="flex items-center space-x-2">
-            <p className="font-semibold">Your name:</p>
-            <span>Somkiat</span>
+            <p className="font-mediom">Your name:</p>
+            <span>{storedUserName}</span>
           </div>
           <label className="flex items-center space-x-1">
             <input
@@ -440,7 +467,7 @@ function ReviewForm({
         {/* Discussion Input */}
         <h1 className="flex space-x-4 text-lg">
           {/* Name and Visibility Toggle */}
-          <p className="font-semibold">Discussion:</p>
+          <p className="font-medium">Discussion:</p>
           <textarea
             placeholder="Explain us your journey"
             value={reviewText}
