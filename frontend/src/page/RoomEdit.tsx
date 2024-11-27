@@ -32,7 +32,6 @@ const RoomDetailPage = () => {
                 if (!response.ok) throw new Error("Failed to fetch cage room data");
                 const data = await response.json();
                 setCageRoomData(data);
-                console.log("data", data);
             } catch (error) {
                 console.error("Error fetching cage room data:", error);
             }
@@ -63,7 +62,7 @@ const RoomDetailPage = () => {
             const data = await response.json();
             setFilteredCageData(data);
         } catch (error) {
-            console.error("Error fetching cage room data from pet and type:", error);
+            // console.error("Error fetching cage room data from pet and type:", error);
         }
         }
 
@@ -97,10 +96,10 @@ const RoomDetailPage = () => {
             };
 
             const res = await UpdateCage(payload);
-            alert("Cage updated successfully");
-            console.log("Blabla", res);
+            window.location.reload();
         } catch (err: any) {
-            alert(err);
+            // alert(err);
+            window.location.reload();
         }
     };
 
@@ -108,9 +107,6 @@ const RoomDetailPage = () => {
         const currentFacilities = filteredCageData.facility_array || [];
         const newFacility = filteredCageData.facility;
         const updatedFacilities = [...currentFacilities, newFacility];
-        console.log("newFacility", newFacility);
-        console.log("currentFacilities", currentFacilities);
-        console.log("updatedFacilities", updatedFacilities);
         setFilteredCageData({ ...filteredCageData, facility_array: updatedFacilities, facility: '' });
     }
 
@@ -126,21 +122,14 @@ const RoomDetailPage = () => {
         const newImageArray = files.map((file) => (file.fileUrl));
         const updatedImages = [...currentImages, ...newImageArray];
 
-        console.log("newImageArray", newImageArray);
-        console.log("currentImages", currentImages);
-
         // Limit to 10 images
         const limitedImageArray = updatedImages.slice(0, 10);
-        console.log("limitedImageArray", limitedImageArray);
 
         setFilteredCageData({
             ...filteredCageData,
             image_array: limitedImageArray,
             image: filteredCageData.image
         });
-        console.log("filteredCageDataupload", filteredCageData.image_array);
-        console.log("filteredCageDataupload", filteredCageData.image);
-
     };
 
     const handleRemoveImage = (index: number) => {
@@ -154,7 +143,6 @@ const RoomDetailPage = () => {
 
     const handleCreateRoom = () => { 
         const token = localStorage.getItem("token");
-        // const userId = localStorage.getItem("userId");
         const profileId = localStorage.getItem("profile_id");
         console.log("profileId", profileId);
 
@@ -174,7 +162,6 @@ const RoomDetailPage = () => {
                 quantity: parseInt(filteredCageData.quantity),
                 size: filteredCageData.size,
                 width: parseFloat(filteredCageData.width),
-                // id: parseInt(filteredCageData.id),
         };
 
         fetch(`http://localhost:5000/api/cageroom`, {
@@ -190,43 +177,43 @@ const RoomDetailPage = () => {
         .then((data) => {
             console.log("data", data);
             setFilteredCageData(data);
-            alert("Room created successfully");
+            window.location.reload();
         })
         .catch((error) => {
-            console.error("Error creating new room:", error);
+            // console.error("Error creating new room:", error);
         });
     };
 
     return (
-        <div className="bg-bg">
+        <div className="bg-bg h-[65rem]">
             <div className="flex justify-center pb-10">
                 <div className="flex w-3/4 items-center flex-col gap-y-2">
                     {/* section1 */}
                     <div className="pt-10 space-x-1">
                         <button
-                            className="bg-egg h-10 w-20 rounded-md text-navbar"
+                            className="bg-[#FFFBF5] border shadow-lg h-10 w-20 rounded-md text-navbar"
                             onClick={() => navigate('/hotelhome')}
                         >
                             View
                         </button>
-                        <button className="bg-navbar h-10 w-20 rounded-md text-white">Edit</button>
+                        <button className="bg-nextstep border shadow-lg h-10 w-20 rounded-md text-white">Edit</button>
                     </div>
                 </div>
             </div>
             <div className="flex flex-col gap-y-6 p-6 w-full max-w-4xl mx-auto">
                 <div className="relative mb-10">
                     <div className="absolute top-0 left-0 flex justify-center gap-x-4">
-                        <button className="text-gray-500 bg-egg py-1 px-2 rounded-lg" onClick={() => navigate('/hotel/edit')}>
+                        <button className="text-gray-500 bg-egg border shadow-lg py-1 px-2 rounded-lg" onClick={() => navigate('/hotel/edit')}>
                             Hotel Detail
                         </button>
-                        <button className="text-white text-xl bg-navbar p-3 rounded-lg">Room Detail</button>
+                        <button className="text-white text-xl bg-nextstep border shadow-lg p-3 rounded-lg">Room Detail</button>
                     </div>
                 </div>
                 {/* Sub-tabs */}
                 <div className="bg-bg p-4 rounded-lg shadow-lg flex flex-col gap-y-6">
                     <div className="flex gap-x-4">
                         <select
-                            className="text-gray-500 p-2 rounded-lg"
+                            className="text-gray-500 bg-[#FFFBF5] border border-gray-400 p-2 rounded-lg"
                             value={selectedAnimal}
                             onChange={(e) => setSelectedAnimal(e.target.value)}
                         >
@@ -238,7 +225,7 @@ const RoomDetailPage = () => {
                             ))}
                         </select>
                         <select
-                            className="text-gray-500 p-2 rounded-lg"
+                            className="text-gray-500 bg-[#FFFBF5] border border-gray-400 p-2 rounded-lg"
                             value={selectedCage}
                             onChange={(e) => setSelectedCage(e.target.value)}
                             disabled={!selectedAnimal}
@@ -266,7 +253,6 @@ const RoomDetailPage = () => {
                 {selectedAnimal && (
                 <div className="bg-bg p-4 rounded-lg shadow-lg flex flex-col gap-y-6">
                     {/* Room Name and Description */}
-                    {/* {selectedAnimal && ( */}
                     <div className="grid grid-cols-2 gap-6">
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Room Name</label>
@@ -275,7 +261,7 @@ const RoomDetailPage = () => {
                                 value={filteredCageData.cage_type}
                                 onChange={(e) => setFilteredCageData({ ...filteredCageData, cage_type: e.target.value })}
                                 placeholder="Room Name"
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
                             />
                         </div>
                         <div>
@@ -284,7 +270,7 @@ const RoomDetailPage = () => {
                                 value={filteredCageData.detail}
                                 onChange={(e) => setFilteredCageData({ ...filteredCageData, detail: e.target.value })}
                                 placeholder="Briefly explain"
-                                className="w-full border border-gray-300 rounded-md p-2 h-20"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2 h-20"
                             />
                         </div>
                     </div>
@@ -298,7 +284,7 @@ const RoomDetailPage = () => {
                                 value={filteredCageData.max_capacity}
                                 onChange={(e) => setFilteredCageData({ ...filteredCageData, max_capacity: e.target.value })}
                                 placeholder="How many pets can fit in this room?"
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
                             />
                         </div>
                         <div className="col-span-1">
@@ -316,7 +302,7 @@ const RoomDetailPage = () => {
                                 value={filteredCageData.lenth}
                                 onChange={(e) => setFilteredCageData({ ...filteredCageData, lenth: e.target.value })}
                                 placeholder="cm"
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
                             />
                         </div>
                         <div>
@@ -326,7 +312,7 @@ const RoomDetailPage = () => {
                                 value={filteredCageData.width}
                                 onChange={(e) => setFilteredCageData({ ...filteredCageData, width: e.target.value })}
                                 placeholder="cm"
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
                             />
                         </div>
                         <div>
@@ -336,7 +322,7 @@ const RoomDetailPage = () => {
                                 value={filteredCageData.height}
                                 onChange={(e) => setFilteredCageData({ ...filteredCageData, height: e.target.value })}
                                 placeholder="cm"
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
                             />
                         </div>
                     </div>
@@ -350,7 +336,7 @@ const RoomDetailPage = () => {
                                 value={filteredCageData.quantity}
                                 onChange={(e) => setFilteredCageData({ ...filteredCageData, quantity: e.target.value })}
                                 placeholder="How many rooms you got?"
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
                             />
                         </div>
                         <div>
@@ -358,12 +344,12 @@ const RoomDetailPage = () => {
                             <select
                                 value={filteredCageData.animal_type}
                                 onChange={(e) => setFilteredCageData({ ...filteredCageData, animal_type: e.target.value })}
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
                             >
                                 <option value="" disabled>Select pet type</option>
-                                <option value="dog">Dog</option>
-                                <option value="cat">Cat</option>
-                                <option value="bird">Bird</option>
+                                <option value="dog">dog</option>
+                                <option value="cat">cat</option>
+                                <option value="bird">bird</option>
                                 {/* Add more options as needed */}
                             </select>
                         </div>
@@ -374,7 +360,7 @@ const RoomDetailPage = () => {
                                 value={filteredCageData.price}
                                 onChange={(e) => setFilteredCageData({ ...filteredCageData, price: e.target.value })}
                                 placeholder="Price per night"
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
                             />
                         </div>
                     </div>
@@ -408,18 +394,18 @@ const RoomDetailPage = () => {
                         </div>
                     {/* Facilities */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Facility</label>
+                        <label className="mt-4 block text-sm font-medium text-gray-700">Facility</label>
                         <div className="flex gap-2 mb-4">
                             <input
                                 type="text"
                                 value={filteredCageData.facility}
                                 onChange={(e) => setFilteredCageData({ ...filteredCageData, facility: e.target.value })}
                                 placeholder="Add new facility"
-                                className="w-full border border-gray-300 rounded-md p-2"
+                                className="w-full bg-[#FFFBF5] border border-gray-400 rounded-md p-2"
                             />
                             <button
                                 onClick={handleAddFacility}
-                                className="bg-navbar text-white px-4 py-2 rounded-md"
+                                className="bg-nextstep text-white px-4 py-2 rounded-md"
                             >
                                 Add
                             </button>
@@ -428,12 +414,12 @@ const RoomDetailPage = () => {
                             {(filteredCageData.facility_array || []).map((facility : string, index : number) => (
                                 <div
                                     key={index}
-                                    className="flex items-center gap-2 bg-gray-200 px-4 py-2 rounded-md"
+                                    className="flex items-center gap-2 bg-[#FFFBF5] border border-gray-400 px-4 py-2 rounded-md"
                                 >
                                     <span>{facility}</span>
                                     <button
                                         onClick={() => handleRemoveFacility(facility)}
-                                        className="text-red-500"
+                                        className="text-gray-500"
                                     >
                                         ×
                                     </button>
@@ -446,12 +432,12 @@ const RoomDetailPage = () => {
                 )}
 
                 {/* Save Button */}
-                {selectedAnimal && (
+                {selectedCage && (
                 <div className="flex justify-center items-center">
-                    <div className="flex justify-center w-1/2 pt-4 pb-16">
+                    <div className="flex justify-center w-1/2 pb-16">
                         <button
                             onClick={handleSubmit}
-                            className="bg-navbar text-white w-1/2 py-2 rounded-md mt-4"
+                            className="bg-nextstep text-white w-1/2 py-2 rounded-md mt-4"
                         >
                             Save
                         </button>
