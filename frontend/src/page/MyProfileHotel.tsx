@@ -20,7 +20,6 @@ export default function MyProfile() {
     const token = localStorage.getItem('token');
     const id = localStorage.getItem('userId');
     const [image, setImage] = useState<any>(null);
-    const [petImage, setPetImage] = useState<any>(null);
 
     // ดึงข้อมูลโปรไฟล์จาก API
     useEffect(() => {
@@ -43,7 +42,7 @@ export default function MyProfile() {
                     age: data.age,
                     citizen_id: data.citizen_id,
                     tel: data.tel,
-                    image_profile: data.image_profile
+                    
 
                 });
                 setImage(data.image_profile)
@@ -58,6 +57,59 @@ export default function MyProfile() {
 
         fetchProfile();
     }, []);
+
+   
+     // Handle input changes
+     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    const handleInputChangePet = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setPetData({ ...pet, [name]: value });
+    };
+
+
+    // Toggle edit mode
+    const toggleEditMode = () => setIsEditing(!isEditing);
+
+    // Save updated profile
+    // const [image, setImage] = useState(formData.image_profile); // เก็บข้อมูลรูปภาพปัจจุบัน
+   
+
+    const handleImageUpload = (uploadedFiles: UploadRes[]) => {
+        if (uploadedFiles.length > 0) {
+            const uploadedUrl = uploadedFiles[0].fileUrl;  // Get the first image's URL
+            setImage(uploadedUrl);  // Store the URL
+        }
+    };
+    const handleRemoveImage = () => {
+        setImage(null); // ลบรูปภาพ
+    };
+
+    const [pet, setPetData] = useState<any>(null);
+
+    // Save updated pet profile
+    const savePetProfile = async () => {
+        try {
+            const response = await axios.put(`http://localhost:5000/api/user/animal/${id}`, pet, {
+                headers: {
+                    "accept": "application/json",
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            console.log("Pet profile updated:", response.data);
+            // setPetData(response.data);
+            console.log("petData", pet)
+            setIsEditing(false); // Exit edit mode after saving
+            window.location.reload();
+
+        } catch (error) {
+            console.error("Error updating pet profile:", error);
+        }
+    };
 
     useEffect(() => {
         const fetchPetData = async () => {
@@ -76,10 +128,8 @@ export default function MyProfile() {
                     age: data.age,
                     weight: data.weight,
                     breed: data.breed,
-                    image_array: data.image_array[0]
                 });
                 console.log("pet", data);
-                setPetImage(data.image)
             } catch (error) {
                 console.error("Error fetching pet data:", error);
             }
@@ -88,93 +138,6 @@ export default function MyProfile() {
         fetchPetData();
     }, []);
 
-   
-     // Handle input changes
-     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleRemovePetImage = () => {
-        setPetImage(null); // Clear the pet image from the state
-    };
-
-    
-
-    // Toggle edit mode
-    const toggleEditMode = () => setIsEditing(!isEditing);
-
-    // Save updated profile
-    // const [image, setImage] = useState(formData.image_profile); // เก็บข้อมูลรูปภาพปัจจุบัน
-    const handlePetImageUpload = (uploadedFiles: UploadRes[]) => {
-        if (uploadedFiles.length > 0) {
-            const uploadedUrl = uploadedFiles[0].fileUrl;  // Get the URL of the uploaded image
-            
-            // Ensure the uploaded image is added as the first item in the image array
-            setPetImage(uploadedUrl);  // Temporarily store the first uploaded image URL
-            
-            // Add the new image URL to the pet image array at the first index
-            setPetData((prevPet: any) => ({
-                ...prevPet,
-                image_array: [uploadedUrl, ...(prevPet.image_array || [])],  // Add to the first index
-            }));
-        }
-    };
-
-    const handleImageUpload = (uploadedFiles: UploadRes[]) => {
-        if (uploadedFiles.length > 0) {
-            const uploadedUrl = uploadedFiles[0].fileUrl;  // Get the first image's URL
-            setImage(uploadedUrl);  // Store the URL
-        }
-    };
-    const handleRemoveImage = () => {
-        setImage(null); // ลบรูปภาพ
-        
-    };
-
-    const [pet, setPetData] = useState<any>(null);
-    const [animalType, setAnimalType] = useState<string>(""); // ใช้ string เป็นค่าเริ่มต้น
-
-    const handleInputChangePet = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        if (name === "animal_type") {
-            setAnimalType(value); // อัปเดตค่า animal_type เมื่อมีการเลือกจาก select
-        }
-        setPetData((prevPet: any) => ({
-            ...prevPet,
-            [name]: value,
-        }));
-    };
-    
-    // const petImage_array: string[] = [petImage];
-
-    // Save updated pet profile
-    const savePetProfile = async () => {
-        try {
-            const petDataToSend = { 
-                ...pet, 
-                animal_type: animalType || "other", 
-                image_array: petImage ? [petImage, ...(pet.image_array || [])] : []  // Add the new image at the first index
-            };
-    
-            const response = await axios.put(`http://localhost:5000/api/user/animal/${id}`, petDataToSend, {
-                headers: {
-                    accept: "application/json",
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-    
-            console.log("Pet profile updated:", response.data);
-            setPetData(response.data);
-            setIsEditing(false);
-        } catch (error) {
-            console.error("Error updating pet profile:", error);
-        }
-    };
-    
-
-   
     
 
     // Save updated user profile
@@ -182,7 +145,6 @@ export default function MyProfile() {
         
         try {
             formData.age = parseInt(formData.age)
-            formData.image_profile = image
             const response = await axios.put(`http://localhost:5000/api/user/${id}`, formData, {
                 headers: {
                     "accept": "application/json",
@@ -214,7 +176,7 @@ export default function MyProfile() {
                     <div className="rounded-full bg-bg shadow shadow-gray-400 w-20 h-7 items-center flex justify-center gap-x-2 text-gray-500 cursor-pointer"
                         onClick={isEditing ? saveProfile : toggleEditMode}
                     >
-                        <p >{isEditing ? "Save" : "Edit"}</p>
+                        <p>{isEditing ? "Save" : "Edit"}</p>
                         <i className="fa-regular fa-pen-to-square"></i>
                     </div>
                 </div>
@@ -233,7 +195,7 @@ export default function MyProfile() {
                                     </div>
                                     <button
                                         onClick={handleRemoveImage}
-                                        className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full text-2xl w-5 h-5  "
+                                        className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full text-2xl"
                                     >
                                         x
                                     </button>
@@ -248,7 +210,7 @@ export default function MyProfile() {
                             // โหมดแสดงผล: แสดงรูปโปรไฟล์
                             <div className="flex overflow-hidden rounded-full ">
                                 <img
-                                    src={formData.image_profile || image} // ใช้รูปภาพใหม่หรือรูปภาพปัจจุบัน
+                                    src={image || formData.image_profile} // ใช้รูปภาพใหม่หรือรูปภาพปัจจุบัน
                                     alt="Profile Image"
                                     className="size-44 object-cover rounded-full"
                                 />
@@ -360,40 +322,7 @@ export default function MyProfile() {
                                 <div className="w-full flex gap-x-5 rounded-lg shadow shadow-gray-400 h-48">
                                     
                                     <div className="w-1/4 h-1/4 p-3"> 
-                                    {isEditing ? (
-            // โหมดแก้ไข: อัปโหลดหรือลบรูปภาพ
-                                        petImage ? (
-                                            <div className="relative w-full h-44  ">
-                                                <div className="overflow-hidden  w-full h-full">
-                                                    <img
-                                                        src={pet.image_array || petImage}
-                                                        alt="Uploaded Image"
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                </div>
-                                                <button
-                                                    onClick={handleRemovePetImage}
-                                                    className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full text-2xl w-5 h-5  "
-                                                >
-                                                    x
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            // อัปโหลดรูปใหม่
-                                            <div className="relative w-full top-16  h-full rounded-full flex justify-center items-center cursor-pointer">
-                                                <UploadImage limit={1} onComplete={handlePetImageUpload} />
-                                            </div>
-                                        )
-                                    ) : (
-                                        // โหมดแสดงผล: แสดงรูปโปรไฟล์
-                                        <div className="flex ">
-                                            <img
-                                                src={pet.image_array || petImage} // ใช้รูปภาพใหม่หรือรูปภาพปัจจุบัน
-                                                alt="Profile Image"
-                                                className="size-44 "
-                                            />
-                                        </div>
-                                    )}
+                                        {/* <img src={profile.image_profile} alt="" /> */}
                                     </div>
                                     {pet ? (
                                     <div className="flex flex-col text-xl  w-3/4 gap-y-5 mt-5 ">
@@ -409,10 +338,11 @@ export default function MyProfile() {
                                                     className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
                                                 />
                                             ) : (
-                                                <p className="ml-2 text-gray-500"> {pet.name} </p>
+                                                <p className="ml-2"> {pet.name} </p>
                                             )}
                                         </div>
-
+                                        
+                                        
                                         <div className="flex gap-x-5 flex-col space-x-48  w-full h-full">
                                             <div className="flex flex-col items-center gap-y-5 ">
                                                 
@@ -420,23 +350,16 @@ export default function MyProfile() {
                                                         <div className="flex w-1/2 ">
                                                             <p>Pet Type: </p>
                                                             {isEditing ? (
-                                                                <select
+                                                                
+                                                                <input
+                                                                    type="text"
                                                                     name="animal_type"
                                                                     value={pet.animal_type}
                                                                     onChange={handleInputChangePet}
-                                                                    className="flex text-xs text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-8"
-                                                                >
-                                                                    <option value="" disabled>
-                                                                        Select Pet Type
-                                                                    </option>
-                                                                    <option value="dog">Dog</option>
-                                                                    <option value="cat">Cat</option>
-                                                                    <option value="bird">Bird</option>
-                                                                    <option value="fish">Fish</option>
-                                                                    <option value="other">Other</option>
-                                                                </select>
+                                                                    className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
+                                                                />
                                                             ) : (
-                                                                <p className="ml-2 text-gray-500">{pet.animal_type}</p>
+                                                                <p className="ml-2"> {pet.animal_type}</p>
                                                             )}
                                                         </div>
                                                         <div className="flex w-1/2">
@@ -451,7 +374,7 @@ export default function MyProfile() {
                                                                     className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
                                                                 />
                                                             ) : (
-                                                                <p className=" ml-2 text-gray-500"> {pet.breed}</p>
+                                                                <p className=""> {pet.breed}</p>
                                                             )}
                                                         </div>
                                                     </div>
@@ -469,7 +392,7 @@ export default function MyProfile() {
                                                                     className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
                                                                 />
                                                             ) : (
-                                                                <p className="ml-2  text-gray-500"> {pet.age}</p>
+                                                                <p className="ml-2"> {pet.age}</p>
                                                             )}
                                                         </div>
                                                         <div className="flex w-1/2  ">
@@ -484,7 +407,7 @@ export default function MyProfile() {
                                                                     className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
                                                                 />
                                                             ) : (
-                                                                <p className="ml-2 text-gray-500"> {pet.weight}</p>
+                                                                <p className="ml-2"> {pet.weight}</p>
                                                             )}
                                                         </div>
                                                     </div>
@@ -514,6 +437,41 @@ export default function MyProfile() {
                                 </div>
                             </div>
                        </div>; // Empty content for now
+            case "Security":
+                return <div className="bg-bg w-full h-full">
+                            <div className="flex flex-col p-20 w-full h-full text-xl ">
+                                
+                                <div className="flex flex-col w-full h-full pl-10 pt-20 " >
+                                    <p className="text-2xl text-semibold">Change password</p>
+                                    <div className="flex w-full h-full items-center ">
+                                        <div className="flex flex-col w-1/2 gap-y-5">
+                                            <p>Old Password</p>
+                                            <input
+                                                    type="text"
+                                                    name="name"
+                                                    value={formData.name}
+                                                    onChange={handleInputChange}
+                                                    className="text-gray-500 rounded-lg border-gray-400 w-5/6  h-16"
+                                            />                     
+                                        </div>
+                                        <div className="flex flex-col w-1/2 gap-y-5">
+                                            <p>New Password</p>
+                                            <input
+                                                    type="text"
+                                                    name="name"
+                                                    value={formData.name}
+                                                    onChange={handleInputChange}
+                                                    className="text-gray-500 rounded-lg border-gray-400 w-5/6  h-16 "
+                                            />                     
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                </div>
+                            </div>
+                            
+                
+                        </div>;
             default:
                 return null;
         }
@@ -536,16 +494,6 @@ export default function MyProfile() {
                     }`}
                 >
                     My Profile
-                </button>
-                <button
-                    onClick={() => setCurrentTab("MyPet")}
-                    className={`h-16 px-5 text-xl ${
-                        currentTab === "MyPet"
-                            ? "text-[#B3802E] border-b-2 border-[#B3802E]"
-                            : "text-gray-500 hover:text-[#B3802E] hover:border-b-2 hover:border-[#B3802E]"
-                    }`}
-                >
-                    My Pet
                 </button>
                 
             </div>

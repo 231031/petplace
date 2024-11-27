@@ -15,6 +15,7 @@ function Signup() {
         password: '',
         confirmPassword: '',
         citizenId: '',
+        tel: ''
     });
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
@@ -56,6 +57,7 @@ function Signup() {
             security_code: '', // Example value
             surename: formData.surname,
             image_profile: image,  // Send the image URL (if available)
+            tel: formData.tel
         };
 
         try {
@@ -92,7 +94,7 @@ function Signup() {
                 style={{ backgroundImage: "url('/images/loginbg.png')" }}
             >
                 <div className="flex flex-col items-center w-4/5 pt-64 gap-y-5 text-white">
-                    <h1 className="text-3xl">Already have an account?</h1>
+                    <h1 className="text-2xl">Already have an account?</h1>
                     <p>Log in and explore Pet Place</p>
                     <Button label="Log in" onClick={LoginClick} />
                 </div>
@@ -138,15 +140,16 @@ function Signup() {
                             <InputBox2 placeholder="Surname" name="surname" value={formData.surname} onChange={handleChange} />
                         </div>
                         <div className="flex flex-col gap-y-2">
-                            <p>Date of Birth</p>
+                            <p>Tel.</p>
                             <input
-                                type="date"
-                                name="dateOfBirth"
-                                value={formData.dateOfBirth}
+                                type="text"
+                                name="tel"
+                                value={formData.tell}
                                 onChange={handleChange}
                                 className="w-52 h-12 p-4 text-sm text-yellow rounded-lg bg-white 
                                            placeholder:text-yellow border border-2 border-bg hover:border-yellow
-                                           focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow"
+                                           focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow "
+                                placeholder='Tel.'
                             />
                         </div>
                     </div>

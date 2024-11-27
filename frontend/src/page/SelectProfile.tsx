@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -21,6 +22,7 @@ export default function SelectProfile() {
 
   const id = localStorage.getItem('userId');
   const username = localStorage.getItem('username')
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     // If image is provided in location.state, update and persist it
@@ -51,6 +53,37 @@ export default function SelectProfile() {
         setFetchFailed(true); // Mark fetch as failed
       });
   }, [id, location.state]);
+  
+  const [formData, setFormData] = useState<any>(null);
+  // const [image, setImage] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/user/${id}`, {
+                headers: {
+                    "accept": "application/json",
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const data = response.data;
+            console.log("user data", data);
+            // setProfileData(data);
+            setFormData({
+                first_name: data.first_name,
+                image_profile: data.image_profile
+
+            });
+            setImage(data.image_profile)
+            
+        } catch (error) {
+            console.error("Error fetching profile:", error);
+        }
+    };
+
+    fetchProfile();
+}, []);
 
   const handleClick = () => {
     navigate('/HotelHome');

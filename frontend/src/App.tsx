@@ -39,6 +39,7 @@ import RoomEdit from './page/RoomEdit';
 import HotelReservation from './page/HotelReservation';
 import HotelBookSuccess from './page/HotelBookSuccess';
 import MyProfile from './page/MyProfile';
+import MyprofileHotel from './page/MyProfileHotel';
 
 // import TestLogin from './page/TestLogin';
 
@@ -106,6 +107,7 @@ function App() {
           <Route path="/hotel/edit" element={<HotelEdit />} />
           <Route path="/room/edit" element={<RoomEdit />} />
           <Route path="/hotel/reservation" element={<HotelReservation />} />
+          <Route path="/hotel/MyProfileHotel" element={<MyprofileHotel />} />
           
         </Route>
       </Routes>
