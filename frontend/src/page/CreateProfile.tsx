@@ -29,7 +29,7 @@ function CreateProfile() {
         return;
     }
 
-    const MapWithGeocoder = () => {
+     const MapWithGeocoder = () => {
         const map = useMap();
 
         useEffect(() => {

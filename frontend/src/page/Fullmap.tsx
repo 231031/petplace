@@ -4,51 +4,53 @@ import { useState, useEffect } from 'react';
 import L from 'leaflet';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.js';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.css';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const FullMap = () => {
-    const [position, setPosition] = useState<[number, number] | null>(null); // Current position
-    const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
+    const [position, setPosition] = useState<[number, number] | null>(null); // User's current location
+    const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Location from user actions
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     
 
-
+    // Fetch user's current location on load
     useEffect(() => {
-        // Fetch user's current location
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    setPosition([latitude, longitude]);
-                    setSearchedPosition([latitude, longitude]); // Default search position
+                ({ coords: { latitude, longitude } }) => {
+                    const userPosition = [latitude, longitude];
+                    setPosition(userPosition);
+                    setSearchedPosition(userPosition);
                 },
                 () => {
-                    setError('Unable to retrieve your location.');
-                    setPosition([13.736717, 100.523186]); // Default to Bangkok
-                    setSearchedPosition([13.736717, 100.523186]); // Default search position
+                    setError('Unable to retrieve your location. Using default.');
+                    const defaultPosition: [number, number] = [13.736717, 100.523186]; // Default to Bangkok
+                    setPosition(defaultPosition);
+                    setSearchedPosition(defaultPosition);
                 }
             );
         } else {
-            setError('Geolocation is not supported by this browser.');
-            setPosition([13.736717, 100.523186]);
-            setSearchedPosition([13.736717, 100.523186]);
+            setError('Geolocation is not supported by your browser.');
+            const defaultPosition: [number, number] = [13.736717, 100.523186];
+            setPosition(defaultPosition);
+            setSearchedPosition(defaultPosition);
         }
     }, []);
 
-    // Add Geocoder with search functionality
+    // Geocoder functionality
     const MapWithGeocoder = () => {
         const map = useMap();
 
         useEffect(() => {
             const geocoder = L.Control.geocoder({
-                defaultMarkGeocode: false, // Do not mark automatically
+                defaultMarkGeocode: false,
             }).addTo(map);
 
             geocoder.on('markgeocode', (e) => {
                 const latlng = e.geocode.center;
-                setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
-                map.setView(latlng, 13); // Center the map on the searched location
+                setSearchedPosition([latlng.lat, latlng.lng]);
+                map.setView(latlng, 13);
             });
 
             return () => {
@@ -59,20 +61,22 @@ const FullMap = () => {
         return null;
     };
 
-    // Add marker on user click
+    // Marker that updates on map click
     const LocationMarker = () => {
         useMapEvents({
-            click(e) {
-                setSearchedPosition([e.latlng.lat, e.latlng.lng]); // Store clicked position
+            click: (e) => {
+                setSearchedPosition([e.latlng.lat, e.latlng.lng]);
             },
         });
-        return (
-            <Marker position={searchedPosition || [13.736717, 100.523186]}>
+
+        return searchedPosition ? (
+            <Marker position={searchedPosition}>
                 <Popup>Selected Location</Popup>
             </Marker>
-        );
+        ) : null;
     };
 
+    // Button for navigating to the current location
     const CurrentLocationButton = () => {
         const map = useMap();
 
@@ -84,36 +88,29 @@ const FullMap = () => {
                 div.innerHTML = '📍 Current Location';
                 div.style.padding = '8px';
                 div.style.background = '#fff';
-                // div.style.border = '1px solid #ccc';
+                div.style.borderRadius = '5px';
                 div.style.cursor = 'pointer';
-                div.style.borderRadius = '0.5rem'
-
-                
-
-                
 
                 div.onclick = () => {
                     if (navigator.geolocation) {
                         navigator.geolocation.getCurrentPosition(
-                            (position) => {
-                                const { latitude, longitude } = position.coords;
-                                setPosition([latitude, longitude]);
-                                setSearchedPosition([latitude, longitude]);
-                                map.setView([latitude, longitude], 13);
+                            ({ coords: { latitude, longitude } }) => {
+                                const currentPosition: [number, number] = [latitude, longitude];
+                                setPosition(currentPosition);
+                                setSearchedPosition(currentPosition);
+                                map.setView(currentPosition, 13);
                             },
                             () => {
                                 alert('Unable to retrieve your location.');
                             }
                         );
                     } else {
-                        alert('Geolocation is not supported by this browser.');
+                        alert('Geolocation is not supported by your browser.');
                     }
                 };
 
                 return div;
             };
-
-            
 
             button.addTo(map);
 
@@ -125,21 +122,15 @@ const FullMap = () => {
         return null;
     };
 
-    
-    // Selected Location Button
+    // Confirm button to save selected location and navigate back
     const SelectLocationButton = () => {
-        const navigate = useNavigate();
         const handleConfirmLocation = () => {
             if (searchedPosition) {
-                console.log('Confirmed Location:', searchedPosition);
-                alert(`Location Confirmed: selected location`);
-                localStorage.setItem("selectedLocation", JSON.stringify(searchedPosition))
-
+                localStorage.setItem('selectedLocation', JSON.stringify(searchedPosition));
+                alert('Location confirmed successfully!');
                 navigate('/createprofile');
-                
-                // You can send this data to a backend or use it for further processing
             } else {
-                alert('No location selected!');
+                alert('Please select a location first.');
             }
         };
 
@@ -153,14 +144,9 @@ const FullMap = () => {
                 </button>
             </div>
         );
-
-        
-        
     };
 
-    if (!position) {
-        return <div>Loading...</div>;
-    }
+    if (!position) return <div>Loading map...</div>;
 
     return (
         <div className="h-screen relative">
@@ -171,6 +157,7 @@ const FullMap = () => {
                 <CurrentLocationButton />
             </MapContainer>
             <SelectLocationButton />
+            {error && <div className="absolute top-4 left-4 bg-red-500 text-white p-2 rounded-lg">{error}</div>}
         </div>
     );
 };
