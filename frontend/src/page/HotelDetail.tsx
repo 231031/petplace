@@ -52,6 +52,9 @@ function HotelDetail() {
     const handleCageSelect = (cage: Cage) => {
         const queryParams = new URLSearchParams({
             size: cage.size,
+            width: cage.width.toString(),
+            height: cage.height.toString(),
+            lenth: cage.lenth.toString(),
             cage_type: cage.cage_type,  // Replace with dynamic value if needed
             facility: cage.facility,
             price: cage.price.toString(),
