@@ -122,6 +122,7 @@ function Home() {
                 startDate: startDate, 
                 endDate: endDate } });
         
+                
     };
 
     const handleRemoveFavorite = async (cage: Cage) => {

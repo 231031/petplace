@@ -48,12 +48,15 @@ export default function HotelHome() {
                 setHotel(data.profile) // ตรวจสอบข้อมูลที่ดึงมาจาก API
                 localStorage.setItem("profile_id", data.profile.id)
 
+                const profileID = data.profile.id
+                localStorage.setItem("profileID", profileID)
+                localStorage.setItem("name", data.profile.name)
+                localStorage.setItem("data", data.profile)              
             })
             .catch((error) => console.error("Error fetching hotel data:", error));
     }, []);
-
     const [distance, setDistance] = useState(null); // to store the calculated distance
-
+    
     // Get user's current location and calculate distance to hotel
     useEffect(() => {
         if (hotel.latitude && hotel.longitude) {
@@ -302,10 +305,7 @@ export default function HotelHome() {
                                             <div className="basis-1/3 space-y-5 pl-5 pt-4 flex flex-col items-end pr-5 gap-y-5">
                                                 <h1 className="text-2xl font-semibold">{room.price}$</h1>
                                                 <p>Free cancel before {new Date().toLocaleDateString()}</p>
-                                                <div className="flex space-x-2">
-                                                    <button className="w-fit px-2 h-8 bg-bg rounded-full shadow">Add to chart</button>
-                                                    <button className="w-fit px-2 h-8 rounded-full bg-yellow">Book now</button>
-                                                </div>
+                                               
                                             </div>
 
                                         </div>

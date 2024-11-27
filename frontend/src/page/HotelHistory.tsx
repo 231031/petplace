@@ -18,7 +18,7 @@ function HotelHistory() {
   const [error, setError] = useState(null);
   // Fetch data using async function within useEffect
   useEffect(() => {
-    const fetchHotelServiceUsers = async (userId) => {
+    const fetchHotelServiceUsers = async (userId: string) => {
       try {
         if (!userId || !token) {
           throw new Error("Missing userId or token.");
@@ -26,7 +26,7 @@ function HotelHistory() {
 
         // Define the API URL, replacing the static client ID with the dynamic userId
         const apiUrl = `http://localhost:5000/api/hotel/client/${userId}`;
-  
+
         // Sending the fetch request
         const response = await fetch(apiUrl, {
           method: "GET",
@@ -35,18 +35,20 @@ function HotelHistory() {
             "Content-Type": "application/json",  // Ensure content type is set to JSON
           },
         });
-  
+
         if (!response.ok) {
           const errorDetails = await response.text();
           throw new Error(`HTTP error! status: ${response.status}, ${errorDetails}`);
         }
-  
+
         // Parse the response data
         const data = await response.json();
         console.log('first', data)
         setHotelServiceUsers(data);  // Set the data to state
-      } catch (error) {
-        setError(error.message);  // Set error state
+      } catch (err) {
+        if (err) {
+          setError(err);  // Set error state
+        }
       }
     };
 
@@ -58,7 +60,7 @@ function HotelHistory() {
   }
 
 
-  
+
 
 
   return (
@@ -89,7 +91,8 @@ function HotelHistory() {
 
       <div className="ml-20">
         <span className="text-2xl font-medium">Upcoming</span>
-        <HotelData hotelList={hotelServiceUsers}></HotelData>   </div>
+        <HotelData hotelList={hotelServiceUsers}></HotelData>
+      </div>
       <hr className="border-black mx-40" />
       <div className="ml-20 mt-10">
         <span className="text-2xl font-midium">Passed By</span>

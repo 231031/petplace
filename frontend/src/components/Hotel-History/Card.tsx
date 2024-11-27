@@ -93,7 +93,7 @@ function Card({ hotel }: { hotel: Hotel }) {
                       <img
                         // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
                         src={hotel.cage_room.image_array[0]}
-                        className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
+                        className="w-full h-full object-cover object-center rounded-lg ml-5 "
                       />
                     )
                   }
@@ -220,7 +220,7 @@ function Card({ hotel }: { hotel: Hotel }) {
                   </h1>
                   {/* <h1 className="text-medium text-lg flex items-center justify-between "> */}
                   <h1 className="text-medium text-lg flex">
-                    <div className="flex items-center ">
+                    {/* <div className="flex items-center ">
                       <label>
                         Lorem ipsum dolor sit amet consectetur, adipisicing
                         elit. Pariatur aliquid hic doloremque aut nam fuga
@@ -228,12 +228,12 @@ function Card({ hotel }: { hotel: Hotel }) {
                         vero nulla consequuntur voluptate dolorem blanditiis
                         provident non?
                       </label>
-                    </div>
+                    </div> */}
                     <div className="space-x-2 ml-auto mr-0 flex">
                       {hotel.status === "accepted" && (
                         <button
                           onClick={handleBackClick}
-                          className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-1/2 w-1/2"
+                          className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-full w-1/2"
                         >
                           Cancel
                         </button>
@@ -241,7 +241,7 @@ function Card({ hotel }: { hotel: Hotel }) {
                       {hotel.status === "accepted" && (
                         <button
                           // onClick={handleBackClick}
-                          className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-1/2 w-1/2"
+                          className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-full w-1/2"
                         >
                           Confirm
                         </button>
@@ -264,13 +264,12 @@ function Card({ hotel }: { hotel: Hotel }) {
                     <img
                       // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
                       src={hotel.cage_room.image_array[0]}
-                      className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
+                      className="w-full h-full object-cover object-center rounded-lg ml-5 "
                     />
                   )
                 }
               </div>
             }
-
             <div className="col-span-3 ml-5 mt-5">
               <h2 className="text-xl font-medium">
                 {hotel.cage_room.cage_type}
