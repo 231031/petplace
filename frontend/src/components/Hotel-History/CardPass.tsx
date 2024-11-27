@@ -27,12 +27,9 @@ function CardPass({ hotel }: { hotel: Hotel }) {
       .replace(/\//g, "-");
   };
 
-<<<<<<< HEAD
   const [paypalEmail, setPaypalEmail] = useState("");
-=======
   const navigate = useNavigate();
   const [isReviewing, setIsReviewing] = useState(false); // State to toggle between components
->>>>>>> AddReservationPage
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,11 +73,9 @@ function CardPass({ hotel }: { hotel: Hotel }) {
     }
   };
 
-  const navigate = useNavigate();
+ 
   const [isCanceled, setIsCanceled] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const [isReviewing, setIsReviewing] = useState(false); // State to toggle between components
   const handleCancelClick = () => {
     setIsCanceled(true); // Switch to canceled view
     setError(null); // reset error
