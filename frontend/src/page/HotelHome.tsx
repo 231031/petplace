@@ -184,13 +184,13 @@ export default function HotelHome() {
             <div className="flex w-3/4 items-center flex-col gap-y-2 bg-bg">
                 {/* section1 */}
                 <div className="pt-10 space-x-1 text-white">
-                    <button className="bg-navbar h-10 w-20 rounded-md">view</button>
+                    <button className="bg-nextstep border shadow-lg h-10 w-20 rounded-md">View</button>
                     <button
-                        className="bg-egg h-10 w-20 rounded-md text-navbar"
+                        className="bg-[#FFFBF5] border shadow-lg h-10 w-20 rounded-md text-navbar"
                         onClick={() => navigate('/hotel/edit')}
                     // onClick={() => navigate('hotel/edit', { state: { hotels: results } })}
                     >
-                        edit
+                        Edit
                     </button>
                 </div>
                 <div className="flex flex-col w-full h-[36rem] gap-y-5 ">
