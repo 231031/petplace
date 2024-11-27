@@ -2,9 +2,14 @@ import React, { useEffect, useState } from "react";
 import HotelData from "../components/Hotel-Search/HotelData";
 import { GetSearchCage, GetSearchCageByHotel } from "@/helper/cage";
 import { FilterAnimal, FilterSearchCage } from "@/types/payload";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Profile } from "@/types/model";
 import { Cage } from "@/types/response";
+
+import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { useLocation } from "react-router-dom";
+import L from 'leaflet';
+import "leaflet-control-geocoder";
 
 function HotelSearch() {
   const location = useLocation();
@@ -83,6 +88,46 @@ function HotelSearch() {
     }
   };
 
+  
+  const MapWithGeocoder = () => {
+    const map = useMap();
+
+    useEffect(() => {
+        const geocoder = L.Control.geocoder({
+            defaultMarkGeocode: false, // Do not mark automatically
+        }).addTo(map);
+
+        geocoder.on('markgeocode', (e) => {
+            const latlng = e.geocode.center;
+            setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
+            map.setView(latlng, 13); // Center the map on the searched location
+        });
+
+        return () => {
+            map.removeControl(geocoder);
+        };
+    }, [map]);
+
+    return null;
+};
+
+  const [position, setPosition] = useState<[number, number] | null>(null);
+  const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
+  const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
+  const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
+  const LocationMarker = () => {
+      useMapEvents({
+          click(e) {
+              setSearchedPosition([e.latlng.lat, e.latlng.lng]); // Store clicked position
+          },
+      });
+      return (
+          <Marker position={searchedPosition || [13.736717, 100.523186]}>
+              <Popup>Selected Location</Popup>
+          </Marker>
+      );
+  };
+
   const handleCageSizeChange = (pet: string, size: string) => {
     setSelectedCageSizes((prev) => ({
       ...prev,
@@ -150,22 +195,20 @@ function HotelSearch() {
           {isEditing ? (
             // Original Search Section
             <div className="w-3/4 border top-12 h-200 bg-white p-8 rounded-lg shadow-lg flex flex-col justify-between">
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-2 gap-4 mb-6 ">
                 {/* Location Section */}
-                <div className="p-4 border border-gray-300 bg-white mt-8">
-                  <label
-                    htmlFor="location"
-                    className="block text-lg font-semibold mb-2"
-                  >
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    id="location"
-                    value={longitude}
-                    onChange={(e) => setLongtitude(e.target.value)}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                  />
+                <div className="flex flex-col  p-2 border border-gray-300 mt-8 h-52 rounded-lg ">
+                  <label className="text-xl text-semibold">Location</label>
+                  {geoError && <div>{geoError}</div>}
+                                        <MapContainer
+                                            center={position || [13.736717, 100.523186]}
+                                            zoom={13}
+                                            style={{ height: '100%', width: '100%' }}
+                                        >
+                                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                            <LocationMarker />
+                                            <MapWithGeocoder/>
+                            </MapContainer>
                 </div>
 
                 {/* Date Section */}
@@ -203,7 +246,7 @@ function HotelSearch() {
                 </div>
 
                 {/* Pet Section */}
-                <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0">
+                <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0 ">
                   <label className="block text-red-900 text-lg font-semibold mb-4"></label>
                   <div className="grid grid-cols-2 gap-4">
                     {petOptions.map((pet) => (
@@ -294,7 +337,7 @@ function HotelSearch() {
               <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 px-20">
                 <div className="grid grid-cols-3 gap-20 justify-center">
                   <div className="text-xl p-2 mt-10">
-                    <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-4">
+                    <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-4 w-80">
                       <label>Pet</label>
                       <div className="space-y-4">
                         {selectedPets?.map((animal) => (
@@ -344,15 +387,18 @@ function HotelSearch() {
                   </div>
 
                   <div className="text-xl p-2 mt-10">
-                    <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-4">
+                    <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-2 bg-white w-80 h-full">
                       <label>Location</label>
-                      <input
-                        type="text"
-                        id="longitude"
-                        value={longitude}
-                        onChange={(e) => setLongtitude(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                      />
+                      {geoError && <div>{geoError}</div>}
+                                        <MapContainer
+                                            center={position || [13.736717, 100.523186]}
+                                            zoom={13}
+                                            style={{ height: '100%', width: '100%' }}
+                                        >
+                                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                            <LocationMarker />
+                                            <MapWithGeocoder/>
+                            </MapContainer>
                     </div>
                   </div>
 
@@ -387,7 +433,7 @@ function HotelSearch() {
                 <div className="flex justify-center mt-auto">
                   <button
                     onClick={() => setIsEditing(!isEditing)}
-                    className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 rounded-lg hover:bg-[#8a6e45] transition duration-200 mb-6"
+                    className="bg-[#A08252] text-white text-lg font-semibold px-6 py-3 ml-14 rounded-lg hover:bg-[#8a6e45] transition duration-200 mb-6 "
                   >
                     {isEditing ? "Cancel Edit" : "Edit Search"}
                   </button>
