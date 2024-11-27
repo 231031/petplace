@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { ReviewPayload } from "@/types/payload";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { UploadRes } from "@/types/response";
+import UploadImage from "./UploadImg";
 
 function CardPass({ hotel }: { hotel: Hotel }) {
   const [reviewPayload, setReviewPayload] = useState<ReviewPayload>({
@@ -104,21 +106,19 @@ function CardPass({ hotel }: { hotel: Hotel }) {
           hotel.status === "completed") && (
           <div className="rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
             <div className="grid grid-cols-10 gap-4 mb-10 mt-10 ">
-              {
-                <div className="col-span-2">
-                  {
-                    (hotel.cage_room.image_array.lenght > 0) ? (
-                      <p>no image</p>
-                    ) : (
-                      <img
-                        // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-                        src={hotel.cage_room.image_array[0]}
-                        className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
-                      />
-                    )
-                  }
-                </div>
-              }
+              <div className="col-span-2">
+                {
+                  (hotel.cage_room.image_array.lenght > 0) ? (
+                    <p>no image</p>
+                  ) : (
+                    <img
+                      // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+                      src={hotel.cage_room.image_array[0]}
+                      className="w-full h-full object-cover object-center rounded-lg ml-5 "
+                    />
+                  )
+                }
+              </div>
 
               <div className="col-span-3 ml-5 mt-5">
                 <h2 className="text-xl font-medium">
@@ -241,13 +241,10 @@ function CardPass({ hotel }: { hotel: Hotel }) {
                   {error && (
                     <p className="text-red-500 text-sm mt-2">{error}</p>
                   )}
-
                 </div>
               </div>
             )}
           </div>
-
-
         )
       ) : (
         // Show Card component if not reviewing
@@ -339,7 +336,7 @@ function CardPass({ hotel }: { hotel: Hotel }) {
                   </button>
                 </div>
               )}
-              {(hotel.status === "rejected" && hotel.payment_status === "hold") && (
+              {hotel.status === "rejected" && (
                 <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
                   <button
                     onClick={handleCancelClick}
@@ -383,7 +380,16 @@ function ReviewForm({
   const [hotelServiceId, setHotelServiceId] = useState(0); // Single review image
   const [profileId, setProfileId] = useState(0); // Single review image
   const [reviewImageArray, setReviewImageArray] = useState<string[]>([]); // Multiple images
+  const [images, setImages] = useState<UploadRes[]>([]);
+  const storedUserName = localStorage.getItem('username')
+  const handleImageUpload = (uploadedFiles: UploadRes[]) => {
+    setImages((prev) => [...prev, ...uploadedFiles].slice(0, 10));
+  };
 
+  const handleRemoveImage = (index: number) => {
+    const updatedImages = images.filter((_, imgIndex) => imgIndex !== index);
+    setImages(updatedImages);
+  };
   useEffect(() => {
     setHotelServiceId(hotel.animal_hotel_services[0].hotel_service_id || 0); // Dynamically set service ID
     setProfileId(hotel.cage_room?.profile_id || 0); // Dynamically set profile ID
@@ -397,7 +403,7 @@ function ReviewForm({
         profile_id: profileId, // Prop passed to component
         review_detail: reviewText, // Use state value
         review_image: reviewImage, // Use state value
-        review_image_array: reviewImageArray, // Use state value
+        review_image_array: images.map((image) => image.fileUrl), // Use state value
         review_rate: rating, // Use state value
       };
       console.log("Review submitted for:", hotel, reviewPayload);
@@ -410,24 +416,34 @@ function ReviewForm({
 
   return (
     <div className="grid grid-cols-10 gap-4 mb-10 mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
-      {
-        <div className="col-span-2">
-          {
-            (hotel.cage_room.image_array.lenght > 0) ? (
-              <p>no image</p>
-            ) : (
-              <img
-                // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-                src={hotel.cage_room.image_array[0]}
-                className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
-              />
-            )
-          }
-        </div>
-      }
+      <div className="col-span-2">
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
+          >
+            <img
+              src={image.fileUrl}
+              alt={`Uploaded ${index}`}
+              className="w-full h-full object-cover"
+            />
+            <button
+              onClick={() => handleRemoveImage(index)}
+              className="absolute top-1 right-1 bg-navbar text-white text-xs rounded-lg px-1"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+        <UploadImage
+          limit={10 - images.length}
+          onComplete={handleImageUpload}
+        />
+        {/* </div> */}
+      </div>
 
       <div className="col-span-4 ml-5 mt-5">
-        <h2 className="text-xl font-bold">Review </h2>
+        <h2 className="text-xl font-medium">Review </h2>
         <h1>
           {/* Star Ratings */}
           <div className="flex items-center space-x-2">
@@ -449,8 +465,8 @@ function ReviewForm({
         <h1 className="flex items-center space-x-4 text-lg">
           {/* Name and Visibility Toggle */}
           <div className="flex items-center space-x-2">
-            <p className="font-semibold">Your name:</p>
-            <span>Somkiat</span>
+            <p className="font-mediom">Your name:</p>
+            <span>{storedUserName}</span>
           </div>
           <label className="flex items-center space-x-1">
             <input
@@ -466,7 +482,7 @@ function ReviewForm({
         {/* Discussion Input */}
         <h1 className="flex space-x-4 text-lg">
           {/* Name and Visibility Toggle */}
-          <p className="font-semibold">Discussion:</p>
+          <p className="font-medium">Discussion:</p>
           <textarea
             placeholder="Explain us your journey"
             value={reviewText}
