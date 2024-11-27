@@ -355,13 +355,17 @@ const RoomDetailPage = () => {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Pet Type</label>
-                            <input
-                                type="text"
+                            <select
                                 value={filteredCageData.animal_type}
                                 onChange={(e) => setFilteredCageData({ ...filteredCageData, animal_type: e.target.value })}
-                                placeholder="Select pet type"
                                 className="w-full border border-gray-300 rounded-md p-2"
-                            />
+                            >
+                                <option value="" disabled>Select pet type</option>
+                                <option value="dog">Dog</option>
+                                <option value="cat">Cat</option>
+                                <option value="bird">Bird</option>
+                                {/* Add more options as needed */}
+                            </select>
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Price</label>

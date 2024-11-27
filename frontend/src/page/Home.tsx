@@ -447,8 +447,8 @@ function Home() {
                         </div>
                     </div>
                 </div>
-                        <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
-                            <div className="flex col justify-center">
+                    <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
+                        <div className="flex col justify-center">
                                     <div className="bg-white p-4 rounded-lg shadow-md">
                                         <Calendar className = "p-4 rounded-lg shadow-md text-navbar"
                                             onClickDay={handleDateClick}
@@ -458,20 +458,19 @@ function Home() {
                                         />
                                     </div>
                             </div>
-                                <div className="flex justify-center items-center">
-                                    <div className="mt-6 flex space-x-4">
-                                        <div className ="flex">
-                                            <span className="font-medium">Start :</span>
-                                            <p>{startDate ? startDate.toLocaleDateString() : 'Not selected'}</p>
-                                        </div>
-                                        <div className ="flex">
-                                            <span className="font-medium">End :</span>
-                                            <p>{endDate ? endDate.toLocaleDateString() : 'Not selected'}</p>
-                                        </div>
+                            <div className="flex justify-center items-center">
+                                <div className="mt-6 flex space-x-4">
+                                    <div className ="flex">
+                                        <span className="font-medium">Start :</span>
+                                        <p>{startDate ? startDate.toLocaleDateString() : 'Not selected'}</p>
                                     </div>
-                                </div> 
+                                    <div className ="flex">
+                                        <span className="font-medium">End :</span>
+                                        <p>{endDate ? endDate.toLocaleDateString() : 'Not selected'}</p>
+                                    </div>
+                                </div>
+                            </div> 
                         </div>
-                         
                     </div>
                     <div className="flex justify-center">
                         <button
