@@ -222,6 +222,7 @@ function HotelDetail() {
                                 <p className="text-center mt-10">Location data not available.</p>
                             )}
                             <div>
+                            <p>{hotel.address}</p>
                                 <p>Distance: {distance ? distance.toFixed(2) : "Loading..."}</p> 
                             </div>
                         </div>
@@ -247,7 +248,7 @@ function HotelDetail() {
                 </div>
                 {/* section4 */}
                 <div className="flex flex-col w-full ">
-                    <h1 ref={roomRef} id="room" className="text-2xl">Cage</h1>
+                    <h1 ref={roomRef} id="room" className="text-2xl mb-5">Cage</h1>
                     <div className="flex flex-col">
                         {/* selection */}
                         {/* <div className="flex justify-end gap-x-2 my-2">
