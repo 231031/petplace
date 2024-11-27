@@ -243,7 +243,7 @@ const RoomDetailPage = () => {
                         <button className="text-gray-500 bg-egg border shadow-lg py-1 px-2 rounded-lg" onClick={() => navigate('/hotel/edit')}>
                             Hotel Detail
                         </button>
-                        <button className="text-white text-xl bg-nextstep border shadow-lg p-3 rounded-lg">Room Detail</button>
+                        <button className="text-white text-xl bg-nextstep border shadow-lg p-3 rounded-lg">Cage Detail</button>
                     </div>
                 </div>
                 {/* Sub-tabs */}
@@ -276,7 +276,7 @@ const RoomDetailPage = () => {
                             onChange={(e) => setSelectedCage(e.target.value)}
                             disabled={!selectedAnimal}
                         >
-                            <option value="" disabled>Select Room</option>
+                            <option value="" disabled>Select Cage</option>
                             {selectedAnimal &&
                                 cageRoomData
                                     .find((animal: { animal_type: string }) => animal.animal_type === selectedAnimal)
@@ -287,11 +287,11 @@ const RoomDetailPage = () => {
                                     ))}
                         </select>
                         <button
-                            className={`text-gray-500 p-2 rounded-lg ${!selectedAnimal ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`text-gray-500 p-2 rounded-lg ${!selectedAnimal || selectedCage ? 'opacity-50 cursor-not-allowed' : ''}`}
                             onClick={handleCreateRoom}
-                            disabled={!selectedAnimal}
+                            disabled={!selectedAnimal || selectedCage}
                         >
-                            Create New Room
+                            Create New Cage
                         </button>
                     </div>
                 </div>
@@ -396,7 +396,13 @@ const RoomDetailPage = () => {
                                     <option value="dog">dog</option>
                                     <option value="cat">cat</option>
                                     <option value="bird">bird</option>
-                                    {/* Add more options as needed */}
+                                    <option value="ferret">ferret</option>
+                                    <option value="rabbit">rabbit</option>
+                                    <option value="hamster">hamster</option>
+                                    <option value="fish">fish</option>
+                                    <option value="chinchilla">chinchilla</option>
+                                    <option value="hedgehog">hedgehog</option>
+                                    <option value="sugarglider">sugar glider</option>
                                 </select>
                             </div>
                             <div>
