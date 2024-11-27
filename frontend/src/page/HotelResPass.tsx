@@ -92,10 +92,17 @@ function HotelResPass() {
                                 .map((hotel: any, index: number) => (
                                     <div key={index} className="grid grid-cols-10 gap-4  mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4 max-w-screen-xl mx-auto">
                                         <div className="col-span-2">
-                                            <img
-                                                src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-                                                className="w-full h-full object-cover object-center rounded-lg ml-5 "
-                                            />
+                                            {
+                                                (hotel.cage_room.image_array.lenght > 0) ? (
+                                                    <p>no image</p>
+                                                ) : (
+                                                    <img
+                                                        // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+                                                        src={hotel.cage_room.image_array[0]}
+                                                        className="w-full h-full object-cover object-center rounded-lg ml-5 "
+                                                    />
+                                                )
+                                            }
                                         </div>
 
                                         <div className="col-span-3  ml-5 mt-5">
@@ -152,7 +159,7 @@ function HotelResPass() {
                                                 <button
                                                     className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg"
                                                 >
-                                                    Cancels
+                                                    View Review
                                                 </button>
                                             </div>
                                         </div>
