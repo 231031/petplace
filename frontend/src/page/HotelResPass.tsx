@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"; // Import star icons
 
 function HotelResPass() {
     const [hotels, setHotels] = useState<any[] | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [view, setView] = useState<boolean>(false);
+    const [viewId, setViewId] = useState<number>(-1);
     const navigate = useNavigate();
-
+    const [fullStars, setFullStars] = useState<number>(0);
+    const [halfStar, sethalfStar] = useState<boolean>(false);
 
 
     useEffect(() => {
@@ -69,7 +72,18 @@ function HotelResPass() {
         }).replace(/\//g, '-');
     };
 
+    function handleViewReview(id: number, review_rate: number) {
+        setFullStars(Math.floor(review_rate))
+        sethalfStar(review_rate % 1 >= 0.5);
 
+        if (viewId === id) {
+            setView(!view)
+        } else {
+            setView(true)
+        }
+        setViewId(id)
+
+    }
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -156,13 +170,54 @@ function HotelResPass() {
                                                 {hotel.price} ฿
                                             </h2>
                                             <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
-                                                <button
-                                                    className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg"
-                                                >
-                                                    View Review
-                                                </button>
+                                                {
+                                                    (hotel.status === "completed" && parseFloat(hotel.review_rate) > 0) ? (
+                                                        <button onClick={() => handleViewReview(hotel.id, hotel.review_rate)}
+                                                            className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg"
+                                                        >
+                                                            View Review
+                                                        </button>
+                                                    ) : (
+
+                                                        (hotel.status === "rejected") ? (
+                                                            <div className="pr-2" >
+                                                                <p className="font-medium">Rejected</p>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="pr-2" >
+                                                                <p className="font-medium">Not Have Review</p>
+                                                            </div>
+                                                        )
+
+                                                    )
+                                                }
                                             </div>
+
                                         </div>
+                                        {
+                                            (view && viewId === hotel.id) ? (
+                                                <div className="col-span-10 ml-5 border-t border-gray-500 pt-2 justify-items-end">
+                                                    <h1 className="text-medium text-lg font-medium">Review Rate</h1>
+                                                    <div className="flex items-center">
+                                                        {Array(fullStars)
+                                                            .fill(0)
+                                                            .map((_, i) => (
+                                                                <FaStar key={`full-${i}`} className="text-[#A08252]" />
+                                                            ))}
+
+                                                        {halfStar && <FaStarHalfAlt className="text-[#A08252]" />}
+                                                    </div>
+                                                    <h1 className="text-medium text-lg font-medium">Review Detail</h1>
+                                                    <h1 className="text-medium text-lg flex">
+                                                        {hotel.review_detail}
+                                                    </h1>
+                                                </div>
+                                            ) : (
+                                                <div className="review">
+                                                </div>
+                                            )
+                                        }
+
                                     </div>
                                 ))
                             }
@@ -171,8 +226,8 @@ function HotelResPass() {
                         <div className="text-center py-4">No passed by hotel reservation information found.</div>
                     )}
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
 
