@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 // import toast from "react-toastify";
-import { UpdateCage } from "../helper/cage";
+import { UpdateCage , RemoveCage} from "../helper/cage";
 import { UploadRes } from "@/types/response";
 import UploadImage from "../components/UploadImage";
 import { mapCageSize } from "../helper/cage";
@@ -102,6 +102,42 @@ const RoomDetailPage = () => {
             window.location.reload();
         }
     };
+    
+    const [showModal, setShowModal] = useState(false);
+
+    const handleDeleteCage = async () => {
+        try {
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                return;
+            }
+            const payload = {
+                animal_type: selectedAnimal,
+                cage_type: filteredCageData.cage_type,
+                detail: filteredCageData.detail,
+                facility: filteredCageData.facility,
+                facility_array: filteredCageData.facility_array,
+                height: parseFloat(filteredCageData.height),
+                image: filteredCageData.image,
+                image_array: filteredCageData.image_array,
+                lenth: parseFloat(filteredCageData.lenth),
+                max_capacity: parseInt(filteredCageData.max_capacity),
+                price: parseFloat(filteredCageData.price),
+                profile_id: parseInt(filteredCageData.profile_id),
+                quantity: parseInt(filteredCageData.quantity),
+                size: filteredCageData.size,
+                width: parseFloat(filteredCageData.width),
+                id: parseInt(filteredCageData.id),
+            };
+
+            const res = await RemoveCage(payload);
+            window.location.reload();
+        } catch (err: any) {
+            // alert(err);
+            window.location.reload();
+        }
+    }
 
     const handleAddFacility = () => {
         const currentFacilities = filteredCageData.facility_array || [];
@@ -434,7 +470,41 @@ const RoomDetailPage = () => {
                 {/* Save Button */}
                 {selectedCage && (
                 <div className="flex justify-center items-center">
-                    <div className="flex justify-center w-1/2 pb-16">
+                    <div className="flex justify-center w-1/2 pb-16 gap-x-2">
+                    <button
+                        onClick={() => setShowModal(true)}
+                        className="bg-[#FFFBF5] border shadow-lg text-navbar w-1/2 py-2 rounded-md mt-4"
+                    >
+                        Delete
+                    </button>
+
+                    {showModal && (
+                        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
+                            <div className="bg-[#FFFBF5] rounded-lg p-6 shadow-lg max-w-sm w-full">
+                                <p className="text-[#5E4126] text-center font-medium mb-4">
+                                    Confirm Delete this room<br />
+                                    <span className="text-sm text-gray-600">Notice that you can’t recover it.</span>
+                                </p>
+                                <div className="flex justify-center space-x-4">
+                                    <button
+                                        onClick={() => setShowModal(false)}
+                                        className="bg-white text-[#5E4126] border border-[#5E4126] px-4 py-2 rounded-lg shadow-sm hover:bg-gray-100"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            handleDeleteCage();
+                                            setShowModal(false);
+                                        }}
+                                        className="bg-[#5E4126] text-white px-4 py-2 rounded-lg shadow-sm hover:bg-[#4a3620]"
+                                    >
+                                        Confirm
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                         <button
                             onClick={handleSubmit}
                             className="bg-nextstep text-white w-1/2 py-2 rounded-md mt-4"
