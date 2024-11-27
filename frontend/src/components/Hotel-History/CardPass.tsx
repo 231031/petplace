@@ -27,7 +27,12 @@ function CardPass({ hotel }: { hotel: Hotel }) {
       .replace(/\//g, "-");
   };
 
+<<<<<<< HEAD
   const [paypalEmail, setPaypalEmail] = useState("");
+=======
+  const navigate = useNavigate();
+  const [isReviewing, setIsReviewing] = useState(false); // State to toggle between components
+>>>>>>> AddReservationPage
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -246,13 +251,21 @@ function CardPass({ hotel }: { hotel: Hotel }) {
           hotel.status === "rejected" ||
           hotel.status === "completed") && (
           <div className="grid grid-cols-10 gap-4 mb-10 mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
-            <div className="col-span-2">
-              <img
-                src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-                className="w-full h-full object-cover object-center rounded-lg ml-5 mt-5"
-              />
-            </div>
-
+            {
+              <div className="col-span-2">
+                {
+                  (hotel.cage_room.image_array.lenght > 0) ? (
+                    <p>no image</p>
+                  ) : (
+                    <img
+                      // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+                      src={hotel.cage_room.image_array[0]}
+                      className="w-full h-full object-cover object-center rounded-lg ml-5 "
+                    />
+                  )
+                }
+              </div>
+            }
             <div className="col-span-3 ml-5 mt-5">
               <h2 className="text-xl font-medium">
                 {hotel.cage_room.cage_type}

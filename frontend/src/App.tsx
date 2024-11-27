@@ -36,10 +36,13 @@ import NavHotel from '../src/components/NavHotel';
 import HotelHome from './page/HotelHome';
 import HotelEdit from './page/HotelEdit';
 import RoomEdit from './page/RoomEdit';
-import HotelReservation from './page/HotelReservation';
+import HotelResUpcom from './page/HotelResUpcom';
 import HotelBookSuccess from './page/HotelBookSuccess';
 import MyProfile from './page/MyProfile';
 
+import HotelResAcc from './page/HotelResAcc';
+import HotelResRej from './page/HotelResRej';
+import HotelResPass from './page/HotelResPass';
 // import TestLogin from './page/TestLogin';
 
 
@@ -105,8 +108,10 @@ function App() {
           <Route path="/HotelHome" element={<HotelHome />} />
           <Route path="/hotel/edit" element={<HotelEdit />} />
           <Route path="/room/edit" element={<RoomEdit />} />
-          <Route path="/hotel/reservation" element={<HotelReservation />} />
-          
+          <Route path="/hotel/reservation/upcoming" element={<HotelResUpcom />} />
+          <Route path="/hotel/reservation/accepted" element={<HotelResAcc />} />
+          <Route path="/hotel/reservation/rejected" element={<HotelResRej />} />
+          <Route path="/hotel/reservation/passedby" element={<HotelResPass />} />
         </Route>
       </Routes>
     </div>

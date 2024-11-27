@@ -52,7 +52,7 @@ const NavHotel: React.FC = () => {
             <ul className="flex space-x-3 gap-x-20 text-lg">
               <li><a href="/HotelHome" className="text-white">Home</a></li>
               <li><a href="/HotelRating" className="text-white">Rating</a></li>
-              <li><a href="/hotel/reservation" className="text-white">Reservation</a></li>
+              <li><a href="/hotel/reservation/upcoming" className="text-white">Reservation</a></li>
               
             </ul>
           </div>
