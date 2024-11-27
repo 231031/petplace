@@ -153,29 +153,6 @@ function Home() {
         }
     };
 
-    const handleRemoveFavorite = async (cage: Cage) => {
-        const userId = localStorage.getItem("userId");
-        if (!userId) {
-            alert("You need to log in to delete favorites.");
-            return;
-        }
-        
-        const favPayload = {
-            cage_id: cage.id,
-            user_id: Number(userId),
-        };
-        console.log("Favorite payload:", favPayload);
-
-        try {
-            const response = await RemoveFavCage(favPayload);
-            console.log("Favorite response:", response);
-            window.location.reload();
-        } catch (error) {
-            console.error("Error delete your favorites:", error);
-            alert("Failed to delete favorites cage. Please try again.");
-        }
-    };
-
     const handleCageSizeChange = (pet: string, size: string) => {
         setSelectedCageSizes((prev) => ({
             ...prev,
@@ -369,8 +346,8 @@ function Home() {
     };
 
     return (
+        <div>
         <div className="h-screen relative">
-
             {/* First Section */}
             <div className="w-full h-1/2 bg-gray-100 relative">
                 <img
@@ -422,7 +399,6 @@ function Home() {
                             <div className="flex flex-col w-full gap-y-5 pl-5 ">
                                 <div className="bg-bg rounded-xl h-44 w-full shadow shadow-gray-400 p-1  ">
                                     <div className="h-full w-full rounded-lg">
-
                                         {geoError && <div>{geoError}</div>}
                                         <MapContainer
                                             center={position || [13.736717, 100.523186]}
@@ -440,8 +416,6 @@ function Home() {
                         <div className="p-4 h-full border border-gray-300 rounded-lg shadow-md bg-white">
                                     <div>
                                     </div>
-                                </div>
-                            </div>
                         </div>
                         <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
                             <div>
@@ -677,7 +651,7 @@ function Home() {
             </div>
 
         </div>
-
+        </div>
     )
 }
 
