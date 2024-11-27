@@ -187,7 +187,7 @@ function Card({ hotel }: { hotel: Hotel }) {
                       {hotel.status === "pending" && (
                         <button
                           onClick={handleBackClick}
-                          className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
+                          className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg"
                           disabled={isLoading}
                         >
                           Cancel
@@ -196,7 +196,7 @@ function Card({ hotel }: { hotel: Hotel }) {
                       {hotel.status === "pending" && (
                         <button
                           onClick={handleConfirmRefund}
-                          className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg hover:bg-blue-600"
+                          className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg"
                           disabled={isLoading}
                         >
                           {isLoading ? 'Processing...' : 'Confirm'}
@@ -215,25 +215,22 @@ function Card({ hotel }: { hotel: Hotel }) {
                 <div className="col-span-2"></div>
                 <div className="col-span-8 ml-5 border-t border-gray-500 pt-2">
                   <h1 className="text-medium text-lg">Cancelation</h1>
-                  <h1 className="text-medium text-lg">
+                  <h1 className="text-medium pl-7">
                     Refund status: Rejected
                   </h1>
                   {/* <h1 className="text-medium text-lg flex items-center justify-between "> */}
-                  <h1 className="text-medium text-lg flex">
-                    {/* <div className="flex items-center ">
+                  <h1 className="text-medium pl-7 flex">
+                    <div className="flex items-center ">
                       <label>
-                        Lorem ipsum dolor sit amet consectetur, adipisicing
-                        elit. Pariatur aliquid hic doloremque aut nam fuga
-                        magni ducimus consectetur cum fugiat, fugit, eaque
-                        vero nulla consequuntur voluptate dolorem blanditiis
-                        provident non?
+                        Please note that you may cancel your booking at this time without any issues, however, the payment is non-refundable. We appreciate your understanding.
                       </label>
-                    </div> */}
+                    </div>
                     <div className="space-x-2 ml-auto mr-0 flex">
                       {hotel.status === "accepted" && (
                         <button
                           onClick={handleBackClick}
-                          className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-full w-1/2"
+                          className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-3/4"
+                          
                         >
                           Cancel
                         </button>
@@ -241,7 +238,7 @@ function Card({ hotel }: { hotel: Hotel }) {
                       {hotel.status === "accepted" && (
                         <button
                           // onClick={handleBackClick}
-                          className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-full w-1/2"
+                          className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-3/4"
                         >
                           Confirm
                         </button>

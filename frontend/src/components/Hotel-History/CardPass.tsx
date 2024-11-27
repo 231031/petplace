@@ -75,7 +75,6 @@ function CardPass({ hotel }: { hotel: Hotel }) {
     }
   };
 
- 
   const [isCanceled, setIsCanceled] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const handleCancelClick = () => {
@@ -247,17 +246,15 @@ function CardPass({ hotel }: { hotel: Hotel }) {
           <div className="grid grid-cols-10 gap-4 mb-10 mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
             {
               <div className="col-span-2">
-                {
-                  (hotel.cage_room.image_array.lenght > 0) ? (
-                    <p>no image</p>
-                  ) : (
-                    <img
-                      // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-                      src={hotel.cage_room.image_array[0]}
-                      className="w-full h-full object-cover object-center rounded-lg ml-5 "
-                    />
-                  )
-                }
+                {hotel.cage_room.image_array.lenght > 0 ? (
+                  <p>no image</p>
+                ) : (
+                  <img
+                    // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
+                    src={hotel.cage_room.image_array[0]}
+                    className="w-full h-full object-cover object-center rounded-lg ml-5 "
+                  />
+                )}
               </div>
             }
             <div className="col-span-3 ml-5 mt-5">
@@ -374,7 +371,7 @@ function ReviewForm({
   const [profileId, setProfileId] = useState(0); // Single review image
   const [reviewImageArray, setReviewImageArray] = useState<string[]>([]); // Multiple images
   const [images, setImages] = useState<UploadRes[]>([]);
-  const storedUserName = localStorage.getItem('username')
+  const storedUserName = localStorage.getItem("username");
   const handleImageUpload = (uploadedFiles: UploadRes[]) => {
     setImages((prev) => [...prev, ...uploadedFiles].slice(0, 10));
   };
@@ -410,28 +407,28 @@ function ReviewForm({
   return (
     <div className="grid grid-cols-10 gap-4 mb-10 mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4">
       <div className="col-span-2">
-          {images.map((image, index) => (
-            <div
-              key={index}
-              className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className="relative w-20 h-20 bg-gray-200 rounded-md overflow-hidden flex justify-center items-center"
+          >
+            <img
+              src={image.fileUrl}
+              alt={`Uploaded ${index}`}
+              className="w-full h-full object-cover"
+            />
+            <button
+              onClick={() => handleRemoveImage(index)}
+              className="absolute top-1 right-1 bg-navbar text-white text-xs rounded-lg px-1"
             >
-              <img
-                src={image.fileUrl}
-                alt={`Uploaded ${index}`}
-                className="w-full h-full object-cover"
-              />
-              <button
-                onClick={() => handleRemoveImage(index)}
-                className="absolute top-1 right-1 bg-navbar text-white text-xs rounded-lg px-1"
-              >
-                ×
-              </button>
-            </div>
-          ))}
-          <UploadImage
-            limit={10 - images.length}
-            onComplete={handleImageUpload}
-          />
+              ×
+            </button>
+          </div>
+        ))}
+        <UploadImage
+          limit={10 - images.length}
+          onComplete={handleImageUpload}
+        />
         {/* </div> */}
       </div>
 
@@ -459,14 +456,14 @@ function ReviewForm({
           {/* Name and Visibility Toggle */}
           <div className="flex items-center space-x-2">
             <p className="font-mediom">Your name:</p>
-            <span>{storedUserName}</span>
+            <span>{hideName ? "xxxxx" : storedUserName}</span>
           </div>
           <label className="flex items-center space-x-1">
             <input
               type="checkbox"
               checked={hideName}
               onChange={(e) => setHideName(e.target.checked)}
-              className="w-4 h-4"
+              className="w-5 h-5 rounded-full border-2 border-black bg-white checked:bg-nextstep checked:border-nextstep"
             />
             <span>Hide your name</span>
           </label>
@@ -490,8 +487,13 @@ function ReviewForm({
 
       <div className="flex flex-col col-span-4 ml-5 mt-5 justify-end">
         {/* Action Buttons */}
-        <div className="mt-0 mb-auto ml-auto mr-0">
-          <label htmlFor="">dasdas</label>
+        <div className="mt-0 mb-auto ml-auto mr-0 space-x-4">
+          <label className="bg-nextstep border rounded-2xl shadow-lg shadow-egg px-2 text-white">
+            {hotel.animal_hotel_services[0].animal_user.animal_type}
+          </label>
+          <label className="bg-bg border shadow-lg shadow-egg rounded-2xl px-2">
+            {hotel.cage_room.cage_type}
+          </label>
         </div>
         <div className="flex space-x-4 mt-auto mb-0 ml-auto mr-0">
           <button
