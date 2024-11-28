@@ -394,7 +394,7 @@ function Home() {
                                 <div className="bg-bg rounded-xl h-44 w-full shadow shadow-gray-400 p-1">
                                     <div className="h-full w-full rounded-lg">
                                         
-                                        {geoError && <div>{geoError}</div>}
+                                    {geoError && <div>{geoError}</div>}
                                         <MapContainer
                                             center={position || [13.736717, 100.523186]}
                                             zoom={13}

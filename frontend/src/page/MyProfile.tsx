@@ -168,6 +168,7 @@ export default function MyProfile() {
             console.log("Pet profile updated:", response.data);
             setPetData(response.data);
             setIsEditing(false);
+            // window.location.reload();     
         } catch (error) {
             console.error("Error updating pet profile:", error);
         }
@@ -433,7 +434,12 @@ export default function MyProfile() {
                                                                     <option value="cat">Cat</option>
                                                                     <option value="bird">Bird</option>
                                                                     <option value="fish">Fish</option>
-                                                                    <option value="other">Other</option>
+                                                                    <option value="other">Chinchilla</option>
+                                                                    <option value="other">Ferret</option>
+                                                                    <option value="other">Rabbit</option>
+                                                                    <option value="other">Hamster</option>
+                                                                    <option value="other">Hedgehog</option>
+                                                                    <option value="other">Sugar Glider</option>
                                                                 </select>
                                                             ) : (
                                                                 <p className="ml-2 text-gray-500">{pet.animal_type}</p>

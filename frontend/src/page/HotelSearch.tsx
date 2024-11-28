@@ -90,6 +90,11 @@ function HotelSearch() {
     }
   };
 
+  const [position, setPosition] = useState<[number, number] | null>(null);
+  const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
+  const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
+  const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
+
 
   const MapWithGeocoder = () => {
     const map = useMap();
@@ -102,6 +107,7 @@ function HotelSearch() {
       geocoder.on('markgeocode', (e) => {
         const latlng = e.geocode.center;
         setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
+        console.log("seaerchposi", searchedPosition)
         map.setView(latlng, 13); // Center the map on the searched location
       });
 
@@ -113,10 +119,7 @@ function HotelSearch() {
     return null;
   };
 
-  const [position, setPosition] = useState<[number, number] | null>(null);
-  const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
-  const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
-  const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
+  
   const LocationMarker = () => {
     useMapEvents({
       click(e) {
@@ -152,7 +155,7 @@ function HotelSearch() {
     }
   }, []);
 
-  const [searchClicked, setSearchClicked] = useState(false);
+  // const [searchClicked, setSearchClicked] = useState(false);/
 
   // const [isClicked, setIsClicked] = useState(false);
   const [activeButton, setActiveButton] = useState<number | null>(null);

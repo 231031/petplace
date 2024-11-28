@@ -71,16 +71,16 @@ export default function Login() {
                         <InputBox placeholder="Password" value={password} type="password" onChange={e => setPassword(e.target.value)} />
                     </div>
                     {error && <p className="text-red-500">{error}</p>}
-                    <div className="flex flex-row gap-x-3">
+                    {/* <div className="flex flex-row gap-x-3">
                         <p>Are you forget Password ? </p>
                         <a href="#" className="underline decoration-1"> Reset password </a>
-                    </div>
+                    </div> */}
                     <Button label="Log in" onClick={handleLogin} />
                 </div>
             </div>
             {/* container right */}
             <div className=" flex justify-center w-1/4 items-baseline bg-cover bg-center " style={{ backgroundImage: "url('/images/loginbg.png')" }}>
-                <div className="flex flex-col items-center w-1/2 pt-80 gap-y-5 text-white">
+                <div className="flex flex-col items-center w-full pt-80 gap-y-5 text-white">
                     <h1 className="text-3xl"> New Here ? </h1>
                     <p>Sign up and explore a petplace </p>
                     <Button label='Sign up' onClick={SignupClick} />
