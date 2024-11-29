@@ -21,6 +21,7 @@ export default function HotelHome() {
     );
     const id = localStorage.getItem("userId");
     const profileId = localStorage.getItem("profile_id");
+
     const [rooms, setRooms] = useState({
         quantity: "",
         width: "",
@@ -96,48 +97,52 @@ export default function HotelHome() {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        fetch(`http://localhost:5000/api/cageroom/all/${profileId}`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        })
-            .then((response) => {
-                if (!response.ok) throw new Error("Failed to fetch cage room data");
-                return response.json();
+        if (profileId) {
+            fetch(`http://localhost:5000/api/cageroom/all/${profileId}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
             })
-            .then((data) => {
-                console.log("Fetched cage room data:", data);
-                // console.log("Fetched cage room data:", data.address);
-                setRooms(data || []); // เก็บข้อมูลห้องใน state
-            })
-            .catch((error) => console.error("Error fetching cage room data:", error));
-    }, []);
+                .then((response) => {
+                    if (!response.ok) throw new Error("Failed to fetch cage room data");
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log("Fetched cage room data:", data);
+                    // console.log("Fetched cage room data:", data.address);
+                    setRooms(data || []); // เก็บข้อมูลห้องใน state
+                })
+                .catch((error) => console.error("Error fetching cage room data:", error));
+        }
+    }, [hotel]);
 
     const [review, setReview] = useState()
 
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        fetch(`http://localhost:5000/api/hotel/review/${id}`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        })
-            .then((response) => {
-                if (!response.ok) throw new Error("Failed to fetch cage room data");
-                return response.json();
+        if (profileId) {
+            fetch(`http://localhost:5000/api/hotel/review/${profileId}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
             })
-            .then((data) => {
-                console.log("Fetched hotel review data:", data);
-                // console.log("Fetched cage room data:", data.address);
-                setReview(data || []); // เก็บข้อมูลห้องใน state
-            })
-            .catch((error) => console.error("Error fetching cage room data:", error));
-    }, []);
+                .then((response) => {
+                    if (!response.ok) throw new Error("Failed to fetch cage room data");
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log("Fetched hotel review data:", data);
+                    // console.log("Fetched cage room data:", data.address);
+                    setReview(data || []); // เก็บข้อมูลห้องใน state
+                })
+                .catch((error) => console.error("Error fetching cage room data:", error));
+        }
+    }, [hotel]);
 
     console.log("cages", rooms)
 
