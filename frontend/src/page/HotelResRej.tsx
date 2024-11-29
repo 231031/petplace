@@ -155,13 +155,13 @@ function HotelResRej() {
                                             <h2 className="ml-auto text-right px-4 font-bold text-2xl">
                                                 {hotel.price} ฿
                                             </h2>
-                                            <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
+                                            {/* <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
                                                 <button
                                                     className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg"
                                                 >
                                                     Cancels
                                                 </button>
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
                                 ))
