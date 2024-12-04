@@ -81,6 +81,12 @@ export interface ReviewPayload {
   review_rate:        number;
 }
 
+export interface BookAgainPayload {
+  start_time: string;
+  end_time: string;
+  cage_id:         number;
+}
+
 
 
 

@@ -62,6 +62,10 @@ export default function SelectProfile() {
   // const [image, setImage] = useState<any>(null);
 
   useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+    }
+
     const fetchProfile = async () => {
       try {
         const response = await axios.get(`http://localhost:5000/api/user/${id}`, {

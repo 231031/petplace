@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import UploadImage from "@/components/CreateProfile/UploadImage";
 import { UploadRes } from '@/types/response';
+import { useNavigate } from "react-router-dom";
 
 export default function MyProfile() {
     const [profile, setProfileData] = useState<any>(null); // เก็บข้อมูลโปรไฟล์
@@ -16,6 +17,7 @@ export default function MyProfile() {
 
 
 
+    const navigate = useNavigate();
 
     const token = localStorage.getItem('token');
     const id = localStorage.getItem('userId');
@@ -24,6 +26,9 @@ export default function MyProfile() {
 
     // ดึงข้อมูลโปรไฟล์จาก API
     useEffect(() => {
+        if (!localStorage.getItem("token")) {
+            navigate("/login");
+        }
         const fetchProfile = async () => {
             try {
                 const response = await axios.get(`http://localhost:5000/api/user/${id}`, {
@@ -530,8 +535,8 @@ export default function MyProfile() {
                 <button
                     onClick={() => setCurrentTab("MyProfile")}
                     className={`h-16 px-5 text-xl ${currentTab === "MyProfile"
-                            ? "text-[#B3802E] border-b-2 border-[#B3802E]"
-                            : "text-gray-500 hover:text-[#B3802E] hover:border-b-2 hover:border-[#B3802E]"
+                        ? "text-[#B3802E] border-b-2 border-[#B3802E]"
+                        : "text-gray-500 hover:text-[#B3802E] hover:border-b-2 hover:border-[#B3802E]"
                         }`}
                 >
                     My Profile

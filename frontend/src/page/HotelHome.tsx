@@ -6,6 +6,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 export default function HotelHome() {
+    const navigate = useNavigate();
     const [hotel, setHotel] = useState({
         name: "",
         email: "",
@@ -33,7 +34,11 @@ export default function HotelHome() {
     });
 
     useEffect(() => {
+        if (!localStorage.getItem("token")) {
+            navigate("/login");
+        }
         const token = localStorage.getItem("token");
+
         fetch(`http://localhost:5000/api/profile/${id}/hotel`, {
             method: "GET",
             headers: {
@@ -50,6 +55,7 @@ export default function HotelHome() {
                 setHotel(data.profile) // ตรวจสอบข้อมูลที่ดึงมาจาก API
                 localStorage.setItem("profile_id", data.profile.id)
                 localStorage.setItem("token", data.token)
+                localStorage.setItem("role", data.profile.role)
 
                 const profileID = data.profile.id
                 localStorage.setItem("profileID", profileID)
@@ -149,7 +155,6 @@ export default function HotelHome() {
 
 
     // console.log("hotel data", hotel.facility[])
-    const navigate = useNavigate();
 
     const [expandedRoomId, setExpandedRoomId] = useState<number | null>(null);
 
