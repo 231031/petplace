@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepositoryIn interface {
-	SignUp(data model.User) error
+	CreateUser(data model.User) error
 	GetUserByID(id uint) (model.User, error)
 	GetUserByEmail(email string) (model.User, error)
 	UpdateUser(user model.User) error
@@ -52,6 +52,7 @@ type AnimalHotelServiceRepositoryIn interface {
 }
 
 type HotelServiceRepositoryIn interface {
+	CheckNotAvailableBooking(cage_id uint, startTime, endTime time.Time) (model.HotelService, error)
 	BookHotelService(ser model.HotelService, animals []model.AnimalHotelService) (uint, error)
 	UpdateHotelService(ser model.HotelService) error
 	DeleteHotelService(id uint) error

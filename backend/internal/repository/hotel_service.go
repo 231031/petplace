@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"petplace/internal/model"
 	"petplace/internal/types"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -11,22 +12,6 @@ import (
 // interact with the database
 type HotelServiceRepository struct {
 	db *gorm.DB
-}
-
-func (r *HotelServiceRepository) UpdateHotel(hotel model.Hotel) error {
-	db := r.db.Model(&model.Hotel{}).Where("id = ?", hotel.ID)
-	if err := db.Updates(hotel).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (r *HotelServiceRepository) GetHotelByID(id uint) (model.Hotel, error) {
-	var hotel model.Hotel
-	if err := r.db.First(&hotel, id).Error; err != nil {
-		return hotel, err
-	}
-	return hotel, nil
 }
 
 func NewHotelServiceRepository(db *gorm.DB) *HotelServiceRepository {
@@ -212,10 +197,38 @@ func (r *HotelServiceRepository) DeleteHotelService(id uint) error {
 	return nil
 }
 
-func (r *HotelServiceRepository) UpdateHotelProfile(profile model.Profile) error {
-	result := r.db.Save(&profile)
+// func (r *HotelServiceRepository) UpdateHotelProfile(profile model.Profile) error {
+// 	result := r.db.Save(&profile)
+// 	if result.Error != nil {
+// 		return result.Error
+// 	}
+// 	return nil
+// }
+
+func (r *HotelServiceRepository) CheckNotAvailableBooking(cage_id uint, startTime, endTime time.Time) (model.HotelService, error) {
+	service := model.HotelService{}
+
+	query_service := r.db.Model(&service)
+	result := query_service.
+		Select("hotel_services.cage_id, cage_rooms.quantity").
+		Joins("JOIN cage_rooms ON cage_rooms.id = hotel_services.cage_id").
+		Where("cage_rooms.id = ?", cage_id).
+		Where("((start_time <= ? AND end_time > ?) OR (start_time < ? AND end_time >= ?)) AND status IN (?, ?)", startTime, startTime, endTime, endTime, "accepted", "pending").
+		Group("hotel_services.cage_id").
+		Having("COUNT(start_time) >= cage_rooms.quantity").
+		First(&service)
+
 	if result.Error != nil {
-		return result.Error
+		return service, result.Error
 	}
-	return nil
+
+	return service, nil
 }
+
+// func (r *HotelServiceRepository) UpdateHotel(hotel model.Hotel) error {
+// 	db := r.db.Model(&model.Hotel{}).Where("id = ?", hotel.ID)
+// 	if err := db.Updates(hotel).Error; err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }

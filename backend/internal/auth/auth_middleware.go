@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"petplace/internal/utils"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
@@ -51,9 +52,25 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func AuthurizationMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+func AuthurizationMiddleware(expectedClaims []string, next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		// userRole := c.Get("role")
-		return next(c)
+		userRole := c.Get("role")
+		permit := HasPermissions(userRole.(string), expectedClaims)
+		if !permit {
+			return echo.NewHTTPError(http.StatusUnauthorized, "this role is not allowed to be granted")
+		} else {
+			return next(c)
+		}
 	}
+}
+
+func HasPermissions(userRole string, expectedClaims []string) bool {
+	if len(expectedClaims) == 0 {
+		return false
+	}
+
+	if !utils.Contains(expectedClaims, userRole) {
+		return false
+	}
+	return true
 }

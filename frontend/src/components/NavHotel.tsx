@@ -31,6 +31,9 @@ const NavHotel: React.FC = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
+    localStorage.removeItem('profile_id');
+    localStorage.removeItem('profileID');
+    localStorage.removeItem('name');
     setUsername("")
     setUserId(null)
     navigate('/login');
@@ -53,7 +56,7 @@ const NavHotel: React.FC = () => {
               <li><a href="/HotelHome" className="text-white">Home</a></li>
               <li><a href="/HotelRating" className="text-white">Rating</a></li>
               <li><a href="/hotel/reservation/upcoming" className="text-white">Reservation</a></li>
-              
+
             </ul>
           </div>
 

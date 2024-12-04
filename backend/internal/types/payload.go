@@ -120,3 +120,9 @@ type CageSpecific struct {
 	CageID   uint   `json:"cage_id"`
 	CageType string `json:"cage_type"`
 }
+
+type BookAgainPayload struct {
+	CageID    uint   `json:"cage_id" param:"cage_id" query:"cage_id" validate:"required"`
+	StartTime string `json:"start_time" param:"start_time" query:"start_time" validate:"required"`
+	EndTime   string `json:"end_time" param:"end_time" query:"end_time" validate:"required"`
+}

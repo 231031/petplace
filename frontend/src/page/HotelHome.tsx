@@ -49,6 +49,7 @@ export default function HotelHome() {
                 console.log("Fetched hotel data:", data.profile);
                 setHotel(data.profile) // ตรวจสอบข้อมูลที่ดึงมาจาก API
                 localStorage.setItem("profile_id", data.profile.id)
+                localStorage.setItem("token", data.token)
 
                 const profileID = data.profile.id
                 localStorage.setItem("profileID", profileID)

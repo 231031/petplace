@@ -34,7 +34,7 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 
 	// Authentication
 	authentication := baseRouter.Group("/auth")
-	authService := service.NewAuthService(userRepository, validate)
+	authService := service.NewAuthService(userService, validate)
 	authHandler := api.NewAuthHandler(authService)
 	authHandler.RegisterRoutes(authentication)
 

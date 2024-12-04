@@ -25,6 +25,10 @@ export default function SelectProfile() {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
+    if (!localStorage.getItem('token')) {
+      navigate('/login');
+    }
+
     // If image is provided in location.state, update and persist it
     if (location.state && location.state.image_profile) {
       setImage(location.state.image_profile);
@@ -53,37 +57,37 @@ export default function SelectProfile() {
         setFetchFailed(true); // Mark fetch as failed
       });
   }, [id, location.state]);
-  
+
   const [formData, setFormData] = useState<any>(null);
   // const [image, setImage] = useState<any>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
-        try {
-            const response = await axios.get(`http://localhost:5000/api/user/${id}`, {
-                headers: {
-                    "accept": "application/json",
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-            const data = response.data;
-            console.log("user data", data);
-            // setProfileData(data);
-            setFormData({
-                first_name: data.first_name,
-                image_profile: data.image_profile
+      try {
+        const response = await axios.get(`http://localhost:5000/api/user/${id}`, {
+          headers: {
+            "accept": "application/json",
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        const data = response.data;
+        console.log("user data", data);
+        // setProfileData(data);
+        setFormData({
+          first_name: data.first_name,
+          image_profile: data.image_profile
 
-            });
-            setImage(data.image_profile)
-            
-        } catch (error) {
-            console.error("Error fetching profile:", error);
-        }
+        });
+        setImage(data.image_profile)
+
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
     };
 
     fetchProfile();
-}, []);
+  }, []);
 
   const handleClick = () => {
     navigate('/HotelHome');
@@ -117,9 +121,9 @@ export default function SelectProfile() {
                 />
               </div>
               <div className="flex justify-center mt-5 gap-x-3">
-                <p> Client Profile </p> 
-                <p className='text-white font-black'> | </p> 
-                <p> {username} </p>  
+                <p> Client Profile </p>
+                <p className='text-white font-black'> | </p>
+                <p> {username} </p>
               </div>
             </div>
 
@@ -137,9 +141,9 @@ export default function SelectProfile() {
                   />
                 </div>
                 <div className="flex justify-center mt-5 gap-x-3">
-                  <p> Hotel Owner</p> 
-                  <p className='text-white font-black'> | </p> 
-                  <p> {hotel.name} </p>  
+                  <p> Hotel Owner</p>
+                  <p className='text-white font-black'> | </p>
+                  <p> {hotel.name} </p>
                 </div>
               </div>
             )}
