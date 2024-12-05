@@ -1,26 +1,31 @@
+import CardBookAgain from "@/components/Hotel-BookAgain/CardBookAgain";
 import PetCard from "@/components/Hotel-Bookdetail/PetCard";
 import { GetTypeAnimalByUserID } from "@/helper/animal_user";
-import { GetHotelServiceByID } from "@/helper/hotel";
+import { CheckAvailableCage, GetHotelServiceByID } from "@/helper/hotel";
+import { formatDateToStringNew } from "@/helper/utils";
 import { useEffect, useState } from "react";
+import Calendar from "react-calendar";
 import { useLocation, useNavigate } from "react-router-dom";
 
 function HotelBookAgain() {
     const location = useLocation();
     const navigate = useNavigate();
-    
+
     const [hotelService, setHotelService] = useState<any>(null); // สถานะสำหรับเก็บข้อมูลโรงแรม
     const [hotelServiceID, sethotelServiceID] = useState<any>(null);
     const [selectedPets, setSelectedPets] = useState<number[]>([]);
     const [pets, setPets] = useState<any[]>([]);
     const [showPetForm, setShowPetForm] = useState<boolean>(true);
+    const [cage, serCage] = useState<any>(null);
 
 
     const [error, setError] = useState<string | null>(null);
-    console.log("aaa", hotelServiceID)
+
 
     useEffect(() => {
-        const { hotelServiceID } = location.state || {};
-        sethotelServiceID(hotelServiceID);
+        if (location.state) {
+            sethotelServiceID(location.state.hotelServiceID);
+        }
     }, [])
 
     useEffect(() => {
@@ -31,18 +36,145 @@ function HotelBookAgain() {
             } catch (err) {
                 setError("ไม่สามารถดึงข้อมูลบริการโรงแรมได้");
                 console.error(err);
-            } 
+            }
             console.log("Test", hotelService);
         };
-        fetchHotelService();
+        if (hotelServiceID) fetchHotelService();
     }, [hotelServiceID]);
 
+    useEffect(() => {
+        if (hotelService) {
+            serCage(hotelService.cage_room);
+        }
+    }, [hotelService]);
+    console.log("Cage:", cage);
+    const cage_type = hotelService?.cage_room?.cage_type; // ใช้ optional chaining
+    const size = hotelService?.cage_room?.size; // ใช้ optional chaining
+    const price = hotelService?.cage_room?.price; // ใช้ optional chaining
+    const facility = hotelService?.cage_room?.facility; // ใช้ optional chaining
+    const max_capacity = hotelService?.cage_room?.max_capacity; // ใช้ optional chaining
+    const width = hotelService?.cage_room?.width; // ใช้ optional chaining
+    const height = hotelService?.cage_room?.height; // ใช้ optional chaining
+    const lenth = hotelService?.cage_room?.lenth; // ใช้ optional chaining
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const cageID = hotelService?.cage_room?.id;
 
+    const handleHotelClick = () => {
+        if (!selectedPets || selectedPets.length === 0) {
+            setError("Please select at least 1 pet");
+            return;
+        }
 
+        navigate('/hotelcpayment', {
+            state: {
+                selectedPets: selectedPets,
+                startDate: startDate,
+                endDate: endDate,
+                cageID: cageID
+            }
+        });
+    }
+    useEffect(() => {
+        const fetchPets = async () => {
+            try {
+                const userId = localStorage.getItem('userId');
+                console.log("userId", userId);
+                if (!userId) return;
+
+                const response = await GetTypeAnimalByUserID(Number(userId), hotelService.cage_room.animal_type);
+                console.log("Pets data:", response);
+                setPets(response);
+            } catch (error) {
+                console.error('Error fetching pets:', error);
+            }
+        };
+
+        fetchPets();
+    }, []);
 
     const handleAddPetClick = () => {
         setShowPetForm(!showPetForm);
     };
+
+    const [selectionStage, setSelectionStage] = useState<'start' | 'range'>('start');
+    const handleDateClick = async (clickedDate: Date) => {
+        if (selectionStage === 'start') {
+            setStartDate(clickedDate);
+            setSelectionStage('range');
+        } else {
+            if (!startDate) {
+                setStartDate(clickedDate);
+                setSelectionStage('range');
+                return;
+            }
+            if (clickedDate >= startDate) {
+                setEndDate(clickedDate);
+                setSelectionStage('start');
+
+                const payload = {
+                    cage_id: cageID,
+                    start_time: formatDateToStringNew(startDate),
+                    end_time: formatDateToStringNew(clickedDate)
+                };
+
+                try {
+                    const availableCage = await CheckAvailableCage(payload);
+                    console.log("Available Cage Data:", availableCage);
+                } catch (error) {
+                    console.error("Error checking available cage:", error);
+                }
+            } else {
+                setStartDate(clickedDate);
+                setEndDate(null);
+            }
+        }
+        console.log("Start Date:", startDate);
+        console.log("End Date:", clickedDate);
+    };
+    const tileClassName = ({ date, view }) => {
+        if (view === 'month') {
+            if (startDate && date.toDateString() === startDate.toDateString()) {
+                return 'highlight-start';
+            }
+            if (endDate && date.toDateString() === endDate.toDateString()) {
+                return 'highlight-end';
+            }
+            if (
+                startDate &&
+                endDate &&
+                date > startDate &&
+                date < endDate
+            ) {
+                return 'highlight-range';
+            }
+        }
+        return null;
+    };
+
+    const tileDisabled = ({ date, view }) => {
+        return view === 'month' && date < new Date();
+    };
+
+    const [showCalendar, setShowCalendar] = useState(false);
+    const handleShowCalendar = () => {
+        setShowCalendar(true); // เปลี่ยนค่าเป็น true เพื่อแสดงปฏิทิน
+    };
+    const handleDone = () => {
+        setShowCalendar(false);
+    }
+    const handleBack = () => {
+        setShowCalendar(false);
+    }
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).replace(/\//g, '-');
+    };
+
 
     return (
         <div className="grid grid-row-3 gap-16">
@@ -69,10 +201,49 @@ function HotelBookAgain() {
                 </ol>
             </div>
 
+            {showCalendar && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+
+                    <div className="bg-white p-4 rounded-lg shadow-md">
+                        <p className="font-semibold text-xl">Date</p>
+                        <Calendar className="p-4 rounded-lg shadow-md text-navbar mt-3"
+                            onClickDay={handleDateClick}
+                            value={[startDate, endDate]}
+                            tileClassName={tileClassName}
+                            tileDisabled={tileDisabled} />
+                        <div className="flex flex-col items-center mt-5">
+                            <p>
+                                Check in: <span className="text-gray-400 ml-1">{startDate ? formatDate(startDate.toString()) : "Not Selected"}</span>
+                            </p>
+                            <p>
+                                Check out: <span className="text-gray-400 ml-1">{endDate ? formatDate(endDate.toString()) : "Not Selected"}</span>
+                            </p>
+                        </div>
+                        <div className="flex justify-center space-x-5 mt-10 ">
+                            <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400 " onClick={() => handleBack()}>Back</button>
+                            <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400" onClick={() => handleDone()}>Done</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
 
 
             <div className="max-w-5xl w-full mx-auto">
-
+                <p className="text-2xl ">Room</p>
+                <CardBookAgain
+                    cage_type={cage_type ?? ""}
+                    size={size ?? ""}
+                    price={price ?? ""}
+                    facility={facility ?? ""}
+                    max_capacity={max_capacity ?? ""}
+                    width={width ?? ""}
+                    height={height ?? ""}
+                    lenth={lenth ?? ""}
+                    startDate={startDate ? startDate.toString() : ""}
+                    endDate={endDate ? endDate.toString() : ""}
+                    onCheckInClick={handleShowCalendar}
+                />
                 <div className="flex justify-between">
                     <p className="text-2xl ">Pet</p>
                     {selectedPets.length === 0 && (
@@ -97,7 +268,12 @@ function HotelBookAgain() {
                     showPetForm={showPetForm}
                 />
             </div>
-
+            <div className="max-w-sm w-full mx-auto mb-10">
+                <div className="flex justify-between space-x-6">
+                    <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400 " onClick={() => navigate(-1)}>Back</button>
+                    <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400" onClick={() => handleHotelClick()}>Next</button>
+                </div>
+            </div>
         </div>
     )
 }

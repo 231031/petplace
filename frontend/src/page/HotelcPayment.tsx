@@ -9,6 +9,7 @@ export default function HotelcPayment() {
     const navigate = useNavigate();
     const location = useLocation();
     const selectedCage = location.state?.selectedCage || [];
+    const Cage = location.state?.cage || {};
     console.log("HotelcPayment location state:", location.state);
     const handleSelect = (choice: number) => {
         setSelect(choice);

@@ -107,20 +107,6 @@ function HotelDetail() {
 
     }, []);
 
-    //   console.log("cages", rooms)
-
-    // const [hotel, setHotel] = useState({
-    //     name: "",
-    //     email: "",
-    //     check_in:"",
-    //     check_out:"",
-    //     facility_array: "",
-    //     avg_review:"",
-    //     image_array:[],
-    //     latitude: null,
-    //     longitude:  null
-    // }
-    // );
 
     const [distance, setDistance] = useState(null); // to store the calculated distance
 

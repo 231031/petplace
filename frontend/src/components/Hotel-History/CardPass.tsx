@@ -188,7 +188,7 @@ function CardPass({ hotel }: { hotel: Hotel }) {
                       Review
                     </button>
                     <button
-                      onClick={() => navigate("/hotelbookagain")}
+                      onClick={() => navigate("/hotelbookagain", { state: { hotelServiceID: hotel.id} })}
                       className="bg-button  px-4 py-2 border rounded-2xl shadow-lg shadow-egg"
                     >
                       Book Again
