@@ -1,36 +1,44 @@
 import PetCard from "@/components/Hotel-Bookdetail/PetCard";
 import { GetTypeAnimalByUserID } from "@/helper/animal_user";
+import { GetHotelServiceByID } from "@/helper/hotel";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 function HotelBookAgain() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { cageRoomId } = location.state || {};
-    const {animalId} = location.state || {};
+    
+    const [hotelService, setHotelService] = useState<any>(null); // สถานะสำหรับเก็บข้อมูลโรงแรม
+    const [hotelServiceID, sethotelServiceID] = useState<any>(null);
     const [selectedPets, setSelectedPets] = useState<number[]>([]);
     const [pets, setPets] = useState<any[]>([]);
     const [showPetForm, setShowPetForm] = useState<boolean>(true);
-    console.log("aaa", cageRoomId)
-    console.log("aaaaaaa", animalId)
 
-    // useEffect(() => {
-    //     const fetchPets = async () => {
-    //         try {
-    //             const userId = localStorage.getItem('userId');
-    //             console.log("userId", userId);
-    //             if (!userId) return;
 
-    //             const response = await GetTypeAnimalByUserID(Number(userId), selectedCage.animal_type);
-    //             console.log("Pets data:", response);
-    //             setPets(response);
-    //         } catch (error) {
-    //             console.error('Error fetching pets:', error);
-    //         }
-    //     };
+    const [error, setError] = useState<string | null>(null);
+    console.log("aaa", hotelServiceID)
 
-    //     fetchPets();
-    // }, []);
+    useEffect(() => {
+        const { hotelServiceID } = location.state || {};
+        sethotelServiceID(hotelServiceID);
+    }, [])
+
+    useEffect(() => {
+        const fetchHotelService = async () => {
+            try {
+                const serviceData = await GetHotelServiceByID(hotelServiceID);
+                setHotelService(serviceData);
+            } catch (err) {
+                setError("ไม่สามารถดึงข้อมูลบริการโรงแรมได้");
+                console.error(err);
+            } 
+            console.log("Test", hotelService);
+        };
+        fetchHotelService();
+    }, [hotelServiceID]);
+
+
+
 
     const handleAddPetClick = () => {
         setShowPetForm(!showPetForm);
@@ -64,7 +72,7 @@ function HotelBookAgain() {
 
 
             <div className="max-w-5xl w-full mx-auto">
-            
+
                 <div className="flex justify-between">
                     <p className="text-2xl ">Pet</p>
                     {selectedPets.length === 0 && (
@@ -79,7 +87,7 @@ function HotelBookAgain() {
                 <PetCard
                     pets={pets}
                     onPetSelect={(petId: number) => {
-                        setSelectedPets(prev => 
+                        setSelectedPets(prev =>
                             prev.includes(petId)
                                 ? prev.filter(id => id !== petId)
                                 : [...prev, petId]
