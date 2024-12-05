@@ -6,7 +6,6 @@ type Profile struct {
 	ID           uint    `gorm:"primaryKey; autoIncrement" json:"id" param:"id" query:"id"`
 	UserID       uint    `gorm:"not null" json:"user_id" query:"user_id" validate:"required"`
 	Role         string  `gorm:"type:varchar(191); not null" json:"role" query:"role" validate:"required"`
-	Payment      string  `gorm:"type:varchar(191); not null" json:"payment" query:"payment"`
 	PaypalEmail  string  `gorm:"type:varchar(191);" json:"paypal_email" query:"paypal_email"`
 	Email        string  `gorm:"type:varchar(191);" json:"email" query:"email"`
 	Tel          string  `gorm:"type:varchar(191);" json:"tel" query:"tel"`

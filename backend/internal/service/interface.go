@@ -12,6 +12,8 @@ type AuthServiceIn interface {
 }
 
 type UsersServiceIn interface {
+	CreateUser(data model.User) error
+	GetUserByEmail(email string) (model.User, error)
 	GetUserByID(id uint) (model.User, error)
 	UpdateUser(id uint, user model.User) error
 	GetCreditCard(id uint) (types.CardPayload, error)
@@ -49,6 +51,7 @@ type ReservationTimeServiceIn interface {
 }
 
 type BookingServiceIn interface {
+	CheckAvailableBooking(payload types.BookAgainPayload) (bool, error, error)
 	BookHotelService(payload types.BookingPayload) (int, error, error)
 	AcceptRejectBookHotel(payload types.SelectStatusPayload) error
 	ManageRefundBookHotel(payload types.RefundPayload) error

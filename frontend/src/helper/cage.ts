@@ -1,8 +1,6 @@
 import { FilterAnimal, FilterSearchCage } from "@/types/payload";
-import { MapArrayToQuery, RequestApi, UpdateImageArray } from "./utils";
+import { MapArrayToQuery, RequestApi } from "./utils";
 import { CageRoom } from "@/types/model";
-import { UploadRes } from "@/types/response";
-import { Cage } from "@/types/response";
 
 const baseApi = import.meta.env.VITE_BASEAPI;
 

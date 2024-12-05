@@ -23,13 +23,37 @@ func NewCageRoomHandler(cageRoomServiceIn service.CageRoomServiceIn) *CageRoomHa
 }
 
 func (h *CageRoomHandler) RegisterRoutes(g *echo.Group) {
-	g.POST("", h.handleCreateCageRoom, auth.AuthMiddleware)
-	g.PUT("/:id", h.handleUpdateCageRoom, auth.AuthMiddleware)
-	g.DELETE("/:id", h.handleDeleteCageRoom, auth.AuthMiddleware)
-	g.GET("/all/:profile_id", h.handleGetAllCageRoomByHotel, auth.AuthMiddleware)
-	g.GET("/:id", h.handleGetCageRoom, auth.AuthMiddleware)
-	g.GET("/type/:id", h.handleGetTypeCageRoom, auth.AuthMiddleware)
+	// hotel
+	g.POST("", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleHotel)}, h.handleCreateCageRoom,
+		),
+	))
+	g.PUT("/:id", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleHotel)}, h.handleUpdateCageRoom,
+		),
+	))
+	g.DELETE("/:id", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleHotel)}, h.handleDeleteCageRoom,
+		),
+	))
 
+	// hotel get
+	g.GET("/all/:profile_id", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleHotel)}, h.handleGetAllCageRoomByHotel,
+		),
+	))
+	g.GET("/type/:id", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleHotel)}, h.handleGetTypeCageRoom,
+		),
+	))
+	g.GET("/:id", h.handleGetCageRoom, auth.AuthMiddleware)
+
+	// user
 	g.GET("/search", h.handleSearchCage)
 	g.GET("/search/:user_id/:profile_id", h.handleSearchCageByHotel)
 }

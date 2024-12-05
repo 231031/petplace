@@ -3,7 +3,6 @@ package service
 import (
 	"petplace/internal/auth"
 	"petplace/internal/model"
-	"petplace/internal/repository"
 	"petplace/internal/types"
 
 	"github.com/go-playground/validator/v10"
@@ -11,17 +10,17 @@ import (
 
 // implement bussiness logic
 type AuthService struct {
-	UserRepositoryIn repository.UserRepositoryIn
-	Validate         *validator.Validate
+	UsersServiceIn UsersServiceIn
+	Validate       *validator.Validate
 }
 
 func NewAuthService(
-	userRepositoryIn repository.UserRepositoryIn,
+	usersServiceIn UsersServiceIn,
 	validate *validator.Validate,
 ) *AuthService {
 	return &AuthService{
-		UserRepositoryIn: userRepositoryIn,
-		Validate:         validate,
+		UsersServiceIn: usersServiceIn,
+		Validate:       validate,
 	}
 }
 
@@ -32,7 +31,7 @@ func (s *AuthService) SignUp(user model.User) error {
 	}
 
 	user.Password = hashed
-	res := s.UserRepositoryIn.SignUp(user)
+	res := s.UsersServiceIn.CreateUser(user)
 	if res != nil {
 		return res
 	}
@@ -40,7 +39,7 @@ func (s *AuthService) SignUp(user model.User) error {
 }
 
 func (s *AuthService) LogIn(payload types.LoginPayload) (any, string, error) {
-	user, err := s.UserRepositoryIn.GetUserByEmail(payload.Email)
+	user, err := s.UsersServiceIn.GetUserByEmail(payload.Email)
 	if err != nil {
 		return model.User{}, "", err
 	}

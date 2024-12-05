@@ -164,7 +164,7 @@ function HotelResUpcom() {
                                                         <img
                                                             // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
                                                             src={hotel.cage_room.image_array[0]}
-                                                            className="w-full h-full object-cover object-center rounded-lg ml-5 "
+                                                            className="w-full h-full max-h-56 object-cover object-center rounded-lg ml-5 "
                                                         />
                                                     )
                                                 }

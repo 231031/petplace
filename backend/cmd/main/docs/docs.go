@@ -463,6 +463,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/client/again/{cage_id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Check Book Hotel Service Again",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "HotelServices"
+                ],
+                "summary": "Check Book Hotel Service Again",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Cage ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by start_time",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by end_time",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/hotel/cleint/{id}": {
             "put": {
                 "security": [
@@ -1683,9 +1732,6 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
-                },
-                "payment": {
-                    "type": "string"
                 },
                 "paypal_email": {
                     "type": "string"

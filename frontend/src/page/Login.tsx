@@ -30,6 +30,7 @@ export default function Login() {
                 // Handle successful login (e.g., save token, navigate to another page)
 
                 localStorage.setItem("token", data.token);
+                localStorage.setItem("role", "client");
                 localStorage.setItem("userId", data.user.id)
                 localStorage.setItem("username", data.user.firstname);
                 setImage(data.user.image_profile)
