@@ -27,6 +27,12 @@ const HotelDetailPage = () => {
 
     useEffect(() => {
         const fetchProfile = async () => {
+            if (!localStorage.getItem("token")) {
+                navigate("/login");
+            } else if (localStorage.getItem("role") && localStorage.getItem("role") !== "hotel") {
+                navigate("/")
+            }
+
             try {
                 const userId = localStorage.getItem('userId') || '';
                 const res = await GetProfileByID(parseInt(userId), "hotel");
@@ -84,10 +90,10 @@ const HotelDetailPage = () => {
     const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
     const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
     const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
-    
+
     const LocationMarker = () => {
         const map = useMap();
-        
+
         useMapEvents({
             click(e) {
                 setSearchedPosition([e.latlng.lat, e.latlng.lng]); // Store clicked position
@@ -125,14 +131,14 @@ const HotelDetailPage = () => {
         }
 
         try {
-                // const userId = localStorage.getItem("userId") || "";
-                const token = localStorage.getItem("token");
+            // const userId = localStorage.getItem("userId") || "";
+            const token = localStorage.getItem("token");
 
-                if (!token) {
-                    toast.error("You are not authorized. Please log in.");
-                    // navigate("/login");
-                    return;
-                }
+            if (!token) {
+                toast.error("You are not authorized. Please log in.");
+                // navigate("/login");
+                return;
+            }
 
             console.log("search", searchedPosition);
             const payload = {
@@ -153,7 +159,7 @@ const HotelDetailPage = () => {
                 image_array: images.map((image) => image.fileUrl),
             };
 
-            
+
 
             const res = await UpdateProfile(payload);
             toast.success("Profile updated successfully");
@@ -234,14 +240,14 @@ const HotelDetailPage = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Select on map</label>
                             {geoError && <div>{geoError}</div>}
-                                        <MapContainer
-                                            center={position || [13.736717, 100.523186]}
-                                            zoom={13}
-                                            style={{ height: '100%', width: '100%' }}
-                                        >
-                                            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                                            <LocationMarker />
-                                            <MapWithGeocoder/>
+                            <MapContainer
+                                center={position || [13.736717, 100.523186]}
+                                zoom={13}
+                                style={{ height: '100%', width: '100%' }}
+                            >
+                                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                                <LocationMarker />
+                                <MapWithGeocoder />
                             </MapContainer>
                         </div>
                         <div>
@@ -258,7 +264,7 @@ const HotelDetailPage = () => {
 
                     {/* Email and Paypal Email */}
                     <div className="grid grid-cols-2 gap-6">
-                        <div className ="flex col-span-1 gap-6">
+                        <div className="flex col-span-1 gap-6">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Check-in</label>
                                 <input
