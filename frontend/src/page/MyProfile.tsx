@@ -23,6 +23,8 @@ export default function MyProfile() {
     const id = localStorage.getItem('userId');
     const [image, setImage] = useState<any>(null);
     const [petImage, setPetImage] = useState<any>(null);
+    const [pet, setPetData] = useState<any>(null);
+    const [allPet, setAllPet] = useState<any>(null);
 
     // ดึงข้อมูลโปรไฟล์จาก API
     useEffect(() => {
@@ -81,7 +83,7 @@ export default function MyProfile() {
                     age: data.age,
                     weight: data.weight,
                     breed: data.breed,
-                    image_array: data.image_array[0]
+                    image_array: data.image_array
                 });
                 console.log("pet", data);
                 setPetImage(data.image)
@@ -92,6 +94,25 @@ export default function MyProfile() {
 
         fetchPetData();
     }, []);
+
+    //     const fetchPetData = async () => {
+    //         try {
+    //             const response = await axios.get(`http://localhost:5000/api/user/animals/${id}`, {
+    //                 headers: {
+    //                     "accept": "application/json",
+    //                     'Content-Type': 'application/json',
+    //                     'Authorization': `Bearer ${token}`,
+    //                 },
+    //             });
+    //             const data = response.data;
+    //             setAllPet(data);
+    //         } catch (error) {
+    //             console.error("Error fetching pet data:", error);
+    //         }
+    //     };
+
+    //     fetchPetData();
+    // }, []);
 
 
     // Handle input changes
@@ -137,7 +158,6 @@ export default function MyProfile() {
 
     };
 
-    const [pet, setPetData] = useState<any>(null);
     const [animalType, setAnimalType] = useState<string>(""); // ใช้ string เป็นค่าเริ่มต้น
 
     const handleInputChangePet = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -155,14 +175,22 @@ export default function MyProfile() {
 
     // Save updated pet profile
     const savePetProfile = async () => {
+
+
         try {
-            const petDataToSend = {
+            // const petDataToSend = {
+            //     ...pet,
+            //     animal_type: animalType || "other",
+            //     // image_array: petImage || []  // Add the new image at the first index
+            // };
+
+            const updatedPet = {
                 ...pet,
-                animal_type: animalType || "other",
-                image_array: petImage ? [petImage, ...(pet.image_array || [])] : []  // Add the new image at the first index
+                age: parseInt(pet.age),
+                weight: parseFloat(pet.weight),
             };
 
-            const response = await axios.put(`http://localhost:5000/api/user/animal/${id}`, petDataToSend, {
+            const response = await axios.put(`http://localhost:5000/api/user/animal/${id}`, updatedPet, {
                 headers: {
                     accept: "application/json",
                     "Content-Type": "application/json",
@@ -171,7 +199,7 @@ export default function MyProfile() {
             });
 
             console.log("Pet profile updated:", response.data);
-            setPetData(response.data);
+            // setPetData(response.data);
             setIsEditing(false);
         } catch (error) {
             console.error("Error updating pet profile:", error);
@@ -367,11 +395,11 @@ export default function MyProfile() {
                             <div className="w-1/4 h-1/4 p-3">
                                 {isEditing ? (
                                     // โหมดแก้ไข: อัปโหลดหรือลบรูปภาพ
-                                    petImage ? (
+                                    (pet.image_array.length > 0) ? (
                                         <div className="relative w-full h-44  ">
                                             <div className="overflow-hidden  w-full h-full">
                                                 <img
-                                                    src={pet.image_array || petImage}
+                                                    src={pet.image_array[0]}
                                                     alt="Uploaded Image"
                                                     className="w-full h-full object-cover"
                                                 />
@@ -518,7 +546,7 @@ export default function MyProfile() {
 
                         </div>
                     </div>
-                </div>; // Empty content for now
+                </div >; // Empty content for now
             default:
                 return null;
         }
@@ -541,16 +569,15 @@ export default function MyProfile() {
                 >
                     My Profile
                 </button>
-                {/* <button
+                <button
                     onClick={() => setCurrentTab("MyPet")}
-                    className={`h-16 px-5 text-xl ${
-                        currentTab === "MyPet"
-                            ? "text-[#B3802E] border-b-2 border-[#B3802E]"
-                            : "text-gray-500 hover:text-[#B3802E] hover:border-b-2 hover:border-[#B3802E]"
-                    }`}
+                    className={`h-16 px-5 text-xl ${currentTab === "MyPet"
+                        ? "text-[#B3802E] border-b-2 border-[#B3802E]"
+                        : "text-gray-500 hover:text-[#B3802E] hover:border-b-2 hover:border-[#B3802E]"
+                        }`}
                 >
                     My Pet
-                </button> */}
+                </button>
 
             </div>
             <div className="w-3/5 h-3/5 bg-bg rounded-lg shadow shadow-gray-400 mt-5 p-5">

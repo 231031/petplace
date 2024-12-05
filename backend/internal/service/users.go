@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"petplace/internal/auth"
 	"petplace/internal/model"
 	"petplace/internal/repository"
 	"petplace/internal/types"
@@ -61,6 +62,20 @@ func (s *UserService) GetUserByID(id uint) (model.User, error) {
 	user.Number = ""
 	user.Expiry = ""
 	return user, nil
+}
+
+func (s *UserService) ChangeRoleToClient(id uint) (string, error) {
+	user, err := s.GetUserByID(id)
+	if err != nil {
+		return "", err
+	}
+
+	tokenUser, err := auth.GenerateJwt(user.ID, user.Email, "client")
+	if err != nil {
+		return "", err
+	}
+
+	return tokenUser, nil
 }
 
 func (s *UserService) UpdateUser(id uint, user model.User) error {

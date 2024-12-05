@@ -17,6 +17,7 @@ type UsersServiceIn interface {
 	GetUserByID(id uint) (model.User, error)
 	UpdateUser(id uint, user model.User) error
 	GetCreditCard(id uint) (types.CardPayload, error)
+	ChangeRoleToClient(id uint) (string, error)
 
 	CreateAnimalUser(animals []model.AnimalUser) error
 	UpdateAnimalUser(id uint, animal model.AnimalUser) error

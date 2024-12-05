@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import HotelData from "../components/Hotel-History/HotelData";
 import HotelDataPass from "../components/Hotel-History/HotelDataPass";
 import clsx from "clsx";
@@ -9,6 +9,7 @@ import { ReviewPayload } from "@/types/payload";
 
 function HotelHistory() {
   const location = useLocation();
+  const navigate = useNavigate();
   const selectedCage = location.state?.selectedCage;
   console.log(selectedCage);
   const token = localStorage.getItem("token");
@@ -20,6 +21,9 @@ function HotelHistory() {
   const [error, setError] = useState(null);
   // Fetch data using async function within useEffect
   useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+    }
     const fetchHotelServiceUsers = async (userId: string) => {
       try {
         if (!userId || !token) {

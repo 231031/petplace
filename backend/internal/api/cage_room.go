@@ -117,7 +117,7 @@ func (h *CageRoomHandler) handleUpdateCageRoom(c echo.Context) error {
 		return utils.HandleError(c, http.StatusInternalServerError, "failed to update cage room", err)
 	}
 
-	return nil
+	return c.JSON(http.StatusOK, "updated successfully")
 }
 
 // @Summary		Delete Cage
