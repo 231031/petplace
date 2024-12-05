@@ -338,7 +338,9 @@ function Home() {
                     startDate: startDate,
                     endDate: endDate,
                     selectedPets: selectedPets,
-                    selectedCageSizes: selectedCageSizes
+                    selectedCageSizes: selectedCageSizes,
+                    longitude: searchedPosition ? JSON.stringify(searchedPosition[1]) : "",
+                    latitude: searchedPosition ? JSON.stringify(searchedPosition[0]) : "",
                 }
             });
         } catch (error) {
