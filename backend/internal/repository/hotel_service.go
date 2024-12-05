@@ -159,7 +159,7 @@ func (r *HotelServiceRepository) GetReviewByHotel(profile_id uint) ([]model.Hote
 
 func (r *HotelServiceRepository) GetHotelService(id uint) (model.HotelService, error) {
 	ser := model.HotelService{}
-	result := r.db.First(&ser, id)
+	result := r.db.Preload("AnimalHotelServices.AnimalUser").Preload("CageRoom").First(&ser, id)
 	if result.Error != nil {
 		return ser, result.Error
 	}
