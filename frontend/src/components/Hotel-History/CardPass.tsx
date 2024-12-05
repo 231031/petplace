@@ -188,7 +188,7 @@ function CardPass({ hotel }: { hotel: Hotel }) {
                       Review
                     </button>
                     <button
-                      onClick={() => navigate("/hotelsearch")}
+                      onClick={() => navigate("/hotelbookagain", { state: { cageRoomId: hotel.cage_room.id } })}
                       className="bg-button  px-4 py-2 border rounded-2xl shadow-lg shadow-egg"
                     >
                       Book Again
@@ -327,7 +327,7 @@ function CardPass({ hotel }: { hotel: Hotel }) {
                     Review
                   </button>
                   <button
-                    onClick={() => navigate("/hotelsearch")}
+                    onClick={() => navigate("/hotelbookagain", { state: { cageRoomId: hotel.cage_room.id, animalId:hotel.animal_user.id} })}
                     className="bg-button  px-4 py-2 border rounded-2xl shadow-lg shadow-egg"
                   >
                     Book Again
