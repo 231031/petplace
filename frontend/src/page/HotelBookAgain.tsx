@@ -3,8 +3,10 @@ import PetCard from "@/components/Hotel-Bookdetail/PetCard";
 import { GetTypeAnimalByUserID } from "@/helper/animal_user";
 import { CheckAvailableCage, GetHotelServiceByID } from "@/helper/hotel";
 import { formatDateToStringNew } from "@/helper/utils";
+import { Cage } from "@/types/response";
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
+import toast, { Toaster } from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 
 function HotelBookAgain() {
@@ -14,6 +16,7 @@ function HotelBookAgain() {
     const [hotelService, setHotelService] = useState<any>(null); // สถานะสำหรับเก็บข้อมูลโรงแรม
     const [hotelServiceID, sethotelServiceID] = useState<any>(null);
     const [selectedPets, setSelectedPets] = useState<number[]>([]);
+    const [selectedCage, setselectedCage] = useState<any>();
     const [pets, setPets] = useState<any[]>([]);
     const [showPetForm, setShowPetForm] = useState<boolean>(true);
     const [cage, serCage] = useState<any>(null);
@@ -25,7 +28,7 @@ function HotelBookAgain() {
     useEffect(() => {
         if (location.state) {
             sethotelServiceID(location.state.hotelServiceID);
-        }
+        };
     }, [])
 
     useEffect(() => {
@@ -39,42 +42,11 @@ function HotelBookAgain() {
             }
             console.log("Test", hotelService);
         };
+
         if (hotelServiceID) fetchHotelService();
+
     }, [hotelServiceID]);
 
-    useEffect(() => {
-        if (hotelService) {
-            serCage(hotelService.cage_room);
-        }
-    }, [hotelService]);
-    console.log("Cage:", cage);
-    const cage_type = hotelService?.cage_room?.cage_type; // ใช้ optional chaining
-    const size = hotelService?.cage_room?.size; // ใช้ optional chaining
-    const price = hotelService?.cage_room?.price; // ใช้ optional chaining
-    const facility = hotelService?.cage_room?.facility; // ใช้ optional chaining
-    const max_capacity = hotelService?.cage_room?.max_capacity; // ใช้ optional chaining
-    const width = hotelService?.cage_room?.width; // ใช้ optional chaining
-    const height = hotelService?.cage_room?.height; // ใช้ optional chaining
-    const lenth = hotelService?.cage_room?.lenth; // ใช้ optional chaining
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [endDate, setEndDate] = useState<Date | null>(null);
-    const cageID = hotelService?.cage_room?.id;
-
-    const handleHotelClick = () => {
-        if (!selectedPets || selectedPets.length === 0) {
-            setError("Please select at least 1 pet");
-            return;
-        }
-
-        navigate('/hotelcpayment', {
-            state: {
-                selectedPets: selectedPets,
-                startDate: startDate,
-                endDate: endDate,
-                cageID: cageID
-            }
-        });
-    }
     useEffect(() => {
         const fetchPets = async () => {
             try {
@@ -90,8 +62,62 @@ function HotelBookAgain() {
             }
         };
 
-        fetchPets();
-    }, []);
+        if (hotelService) {
+            fetchPets();
+
+            serCage(hotelService.cage_room);
+            const selected = {
+                id: hotelService.cage_room.id,
+                profile_id: hotelService.cage_room.profile_id,
+                cage_type: hotelService.cage_room.cage_type,
+                price: hotelService.cage_room.price,
+                size: hotelService.cage_room.size,
+                width: hotelService.cage_room.width,
+                height: hotelService.cage_room.height,
+                lenth: hotelService.cage_room.lenth,
+                facility: hotelService.cage_room.facility || "",
+                max_capacity: hotelService.cage_room.max_capacity
+            }
+            setselectedCage(selected);
+        }
+    }, [hotelService]);
+
+    console.log("Cage:", cage);
+    const cage_type = hotelService?.cage_room?.cage_type; // ใช้ optional chaining
+    const size = hotelService?.cage_room?.size; // ใช้ optional chaining
+    const price = hotelService?.cage_room?.price; // ใช้ optional chaining
+    const facility = hotelService?.cage_room?.facility; // ใช้ optional chaining
+    const max_capacity = hotelService?.cage_room?.max_capacity; // ใช้ optional chaining
+    const width = hotelService?.cage_room?.width; // ใช้ optional chaining
+    const height = hotelService?.cage_room?.height; // ใช้ optional chaining
+    const lenth = hotelService?.cage_room?.lenth; // ใช้ optional chaining
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+    const cageID = hotelService?.cage_room?.id;
+
+    const handleHotelClick = () => {
+        if (!selectedPets || selectedPets.length === 0) {
+            toast.error("Please select at least 1 pet");
+            setError("Please select at least 1 pet");
+            return;
+        }
+
+        if (!startDate || !endDate) {
+            toast.error("Please select date first");
+            console.log("test")
+        } else {
+            navigate('/hotelcpayment', {
+                state: {
+                    selectedPets: selectedPets,
+                    selectedCage: selectedCage,
+                    hotelName: hotelService.cage_room.profile.name,
+                    startDate: startDate,
+                    endDate: endDate,
+                    cageID: cageID
+                }
+            });
+        }
+    }
 
     const handleAddPetClick = () => {
         setShowPetForm(!showPetForm);
@@ -178,6 +204,8 @@ function HotelBookAgain() {
 
     return (
         <div className="grid grid-row-3 gap-16">
+
+            <Toaster position="top-center" reverseOrder={false} />
             <div className="max-w-2xl w-full mx-auto mt-10">
                 <ol className="flex items-center w-full text-xs text-gray-900 font-medium sm:text-base">
                     <li className="flex w-full relative text-black after:content-[''] after:w-full after:h-2 after:bg-gray-200 after:inline-block after:absolute lg:after:top-5 after:top-5 after:left-6">
@@ -256,6 +284,7 @@ function HotelBookAgain() {
                     )}
                 </div>
                 <PetCard
+                    selectedPet={hotelService?.animal_hotel_services[0]}
                     pets={pets}
                     onPetSelect={(petId: number) => {
                         setSelectedPets(prev =>

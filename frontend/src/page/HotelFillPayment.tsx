@@ -33,7 +33,6 @@ export default function PaymentSelect() {
 
     console.log("Location State:", location.state);
     console.log("Selected Pets:", selectedPets);
-    console.log("Cage:",Cage);
     console.log("Selected Cage:", selectedCage);
     console.log("Profile name:", profile_name);
     console.log("Start Date:", location.state?.startDate);

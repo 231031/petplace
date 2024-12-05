@@ -18,12 +18,12 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		authHeader := c.Request().Header.Get("Authorization")
 		if authHeader == "" {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing Authorization header") //dont have Authorization header
+			return c.JSON(http.StatusUnauthorized, "Missing Authorization header")
 		}
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		if tokenString == authHeader {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid Authorization header format")
+			return c.JSON(http.StatusUnauthorized, "Invalid Authorization header format")
 		}
 
 		secretKey := []byte(os.Getenv("SECRET_KEY"))
@@ -39,7 +39,8 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		if err != nil || !token.Valid {
 			fmt.Println(err.Error())
-			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired token")
+			return c.JSON(http.StatusUnauthorized, "Invalid or expired token")
+
 		}
 
 		claims, ok := token.Claims.(jwt.MapClaims)
@@ -48,7 +49,8 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			return next(c)
 		}
 
-		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired token")
+		return c.JSON(http.StatusUnauthorized, "Invalid or expired token")
+
 	}
 }
 

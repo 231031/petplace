@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import HotelData from "../components/Hotel-History/HotelData";
 import HotelDataPass from "../components/Hotel-History/HotelDataPass";
 import clsx from "clsx";
@@ -9,6 +9,7 @@ import { ReviewPayload } from "@/types/payload";
 
 function HotelHistory() {
   const location = useLocation();
+  const navigate = useNavigate();
   const selectedCage = location.state?.selectedCage;
   console.log(selectedCage);
   const token = localStorage.getItem("token");
@@ -39,14 +40,15 @@ function HotelHistory() {
         });
 
         if (!response.ok) {
-          const errorDetails = await response.text();
-          throw new Error(`HTTP error! status: ${response.status}, ${errorDetails}`);
+          if (response.status === 401) {
+            navigate("/login")
+          }
         }
 
-        // Parse the response data
         const data = await response.json();
         console.log('first', data)
         setHotelServiceUsers(data);  // Set the data to state
+
       } catch (err) {
         if (err) {
           setError(err);  // Set error state
@@ -91,15 +93,23 @@ function HotelHistory() {
         </a>
       </div>
 
-      <div className="ml-20">
-        <span className="text-2xl font-medium">Upcoming</span>
-        <HotelData hotelList={hotelServiceUsers}></HotelData>
-      </div>
-      <hr className="border-black mx-40" />
-      <div className="ml-20 mt-10">
-        <span className="text-2xl font-midium">Passed By</span>
-        <HotelDataPass hotelList={hotelServiceUsers}></HotelDataPass>
-      </div>
+      {
+        (hotelServiceUsers.length > 0) ? (
+          <div>
+            <div className="ml-20">
+              <span className="text-2xl font-medium">Upcoming</span>
+              <HotelData hotelList={hotelServiceUsers || []}></HotelData>
+            </div>
+            <hr className="border-black mx-40" />
+            <div className="ml-20 mt-10">
+              <span className="text-2xl font-midium">Passed By</span>
+              <HotelDataPass hotelList={hotelServiceUsers || []}></HotelDataPass>
+            </div>
+          </div>
+        ) : (
+          <div></div>
+        )
+      }
     </div>
   );
 }

@@ -3,8 +3,8 @@
 import Card from "./Card"
 
 
-const HotelList = ({hotelList}:any) => {
-    return(
+const HotelList = ({ hotelList }: any) => {
+    return (
         <div>
             {hotelList.map((hotel, index) => (
                 <Card key={index} hotel={hotel} />

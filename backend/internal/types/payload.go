@@ -55,7 +55,7 @@ type ReviewPayload struct {
 	ReviewDetail     string   `json:"review_detail" query:"review_detail"`
 	ReviewImageArray []string `json:"review_image_array" query:"review_image_array"`
 	ReviewImage      string   `json:"review_image" query:"review_image"`
-	HideName         bool     `json:"hide_name" query:"hide_name" validate:"required"`
+	HideName         bool     `json:"hide_name" query:"hide_name"`
 }
 
 type BookingDetail struct {
