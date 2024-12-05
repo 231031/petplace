@@ -30,7 +30,8 @@ function HotelSearch() {
   // console.log("test ", hotel[0].cages[0].size);
 
   const [hotels, setHotels] = useState<any[]>([]);
-  const [longitude, setLongtitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  const [latitude, setLatitude] = useState("");
   // const [startDate, setStartDate] = useState(startDateFromState);
   // const [endDate, setEndDate] = useState(endDateFromState);
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
@@ -592,6 +593,7 @@ console.log("position:", searchedPosition);
                       {geoError && <div>{geoError}</div>}
                       <MapContainer
                         center={position || [13.736717, 100.523186]}
+                        // center={position || [latitude, longitude]}
                         zoom={13}
                         style={{ height: "100%", width: "100%" }}
                       >
