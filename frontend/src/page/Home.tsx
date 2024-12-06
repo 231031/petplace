@@ -223,7 +223,7 @@ function Home() {
             setError('Geolocation is not supported by this browser.');
         }
 
-        if (location.state.role) {
+        if (location.state && location.state.role) {
             getTokenChangeRole();
 
         }
