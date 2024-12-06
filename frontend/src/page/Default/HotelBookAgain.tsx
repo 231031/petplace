@@ -106,7 +106,7 @@ function HotelBookAgain() {
             toast.error("Please select date first");
             console.log("test")
         } else {
-            navigate('/hotelcpayment', {
+            navigate('/hotelselectpayment', {
                 state: {
                     selectedPets: selectedPets,
                     selectedCage: selectedCage,

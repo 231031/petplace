@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import HotelData from "@/components/Hotel-History/HotelData";
+import HotelData from "@/components/Hotel-Search/HotelData";
 import { GetSearchCage } from "@/helper/cage";
 import { FilterAnimal } from "@/types/payload";
 import {
@@ -391,7 +391,7 @@ function HotelSearch() {
                   </div>
                 </div>
 
-                
+
                 <div className="grid grid-cols-1 gap-4 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
                   <div className="flex col justify-center h-[28rem]">
                     <label
@@ -461,11 +461,10 @@ function HotelSearch() {
                         activeButton === index ? "#A08252" : "white",
                       color: activeButton === index ? "white" : "#A08252",
                     }}
-                    className={`${
-                      activeButton === index
-                        ? "hover:bg-egg focus:ring-red-300"
-                        : "hover:bg-gray-100 focus:ring-red-300"
-                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                    className={`${activeButton === index
+                      ? "hover:bg-egg focus:ring-red-300"
+                      : "hover:bg-gray-100 focus:ring-red-300"
+                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
                   </button>
@@ -595,11 +594,10 @@ function HotelSearch() {
                         activeButton === index ? "#A08252" : "white",
                       color: activeButton === index ? "white" : "#A08252",
                     }}
-                    className={`${
-                      activeButton === index
-                        ? "hover:bg-egg focus:ring-red-300"
-                        : "hover:bg-gray-100 focus:ring-red-300"
-                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                    className={`${activeButton === index
+                      ? "hover:bg-egg focus:ring-red-300"
+                      : "hover:bg-gray-100 focus:ring-red-300"
+                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
                   </button>

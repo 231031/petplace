@@ -23,7 +23,7 @@ import SelectProfile from './page/Default/SelectProfile';
 import FullMap from './page/Default/Fullmap';
 import HotelBookSuccess from './page/Default/HotelBookSuccess';
 import MyProfile from './page/Default/MyProfile';
-import BookAgain from './page/HotelBookAgain'
+import BookAgain from './page/Default/HotelBookAgain'
 
 // Test
 import TestSearch from './page/Test/TestSearch';
@@ -50,7 +50,7 @@ const DefaultLayout = () => {
   return (
     <>
       <Nav />
-      <Outlet />  
+      <Outlet />
       <Footer />
     </>
   );
@@ -88,7 +88,7 @@ function App() {
           <Route path="/hotelbooksuccess" element={<HotelBookSuccess />} />
           <Route path="/CreateProfile" element={<CreateProfile />} />
           <Route path="/MyProfile" element={<MyProfile />} />
-          <Route path="/hotelbookagain" element={<BookAgain/>}/>
+          <Route path="/hotelbookagain" element={<BookAgain />} />
 
           {/* test api */}
           <Route path="/test/search" element={<TestSearch />} />
