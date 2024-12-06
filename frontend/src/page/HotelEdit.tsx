@@ -38,6 +38,7 @@ const HotelDetailPage = () => {
                 setCheckin(res.profile.check_in || "");
                 setCheckout(res.profile.check_out || "");
                 setPaypalEmail(res.profile.paypal_email || "");
+                setSearchedPosition([res.profile.latitude || 13.736717, res.profile.longitude || 100.523186]);
                 setFacilities(Array.isArray(res.profile.facility_array) ? res.profile.facility_array : []);
                 setImages(res.profile.image_array ? res.profile.image_array.map((url) => ({ fileUrl: url, filePath: '', accountId: '0' })) : []);
                 setDetail(res.profile.detail || "");
@@ -83,12 +84,20 @@ const HotelDetailPage = () => {
     const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
     const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
     const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
+    
     const LocationMarker = () => {
+        const map = useMap();
+        
         useMapEvents({
             click(e) {
                 setSearchedPosition([e.latlng.lat, e.latlng.lng]); // Store clicked position
             },
         });
+        useEffect(() => {
+            if (searchedPosition) {
+                map.setView(searchedPosition, 13); // Set the map view to the marker's position
+            }
+        }, [searchedPosition, map]);
         return (
             <Marker position={searchedPosition || [13.736717, 100.523186]}>
                 <Popup>Selected Location</Popup>
@@ -125,6 +134,7 @@ const HotelDetailPage = () => {
                     return;
                 }
 
+            console.log("search", searchedPosition);
             const payload = {
                 id: profile.profile.id,
                 user_id: profile.profile.user_id,
@@ -134,8 +144,8 @@ const HotelDetailPage = () => {
                 paypal_email: paypalEmail,
                 check_in: checkin,
                 check_out: checkout,
-                latitude: profile.profile.latitude || 0,
-                longitude: profile.profile.longitude || 0,
+                latitude: searchedPosition[0] || 0,
+                longitude: searchedPosition[1] || 0,
                 role: "hotel",
                 tel: profile.profile.tel || "",
                 facility_array: facilities,

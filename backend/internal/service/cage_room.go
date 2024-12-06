@@ -190,6 +190,12 @@ func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.Fi
 			// map text to array
 			profilesBe[i].ImageArray = utils.MapTextToStringArray(profilesBe[i].Image)
 			profilesBe[i].FacilityArray = utils.MapTextToStringArray(profilesBe[i].Facility)
+			if len(profilesBe[i].Cages) > 0 {
+				for j := range profilesBe[i].Cages {
+					profilesBe[i].Cages[j].ImageArray = utils.MapTextToStringArray(profilesBe[i].Cages[j].Image)
+					profilesBe[i].Cages[j].FacilityArray = utils.MapTextToStringArray(profilesBe[i].Cages[j].Facility)
+				}
+			}
 
 			profiles = append(profiles, profilesBe[i])
 		}

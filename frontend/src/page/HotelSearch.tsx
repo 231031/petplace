@@ -6,11 +6,20 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { Profile } from "@/types/model";
 import { Cage } from "@/types/response";
 
-import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
 import { useLocation } from "react-router-dom";
-import L from 'leaflet';
+import L from "leaflet";
 import "leaflet-control-geocoder";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
+import Calendar from "react-calendar";
+import { formatDateToString } from "../helper/utils";
 
 function HotelSearch() {
   const location = useLocation();
@@ -22,8 +31,8 @@ function HotelSearch() {
 
   const [hotels, setHotels] = useState<any[]>([]);
   const [longitude, setLongtitude] = useState("");
-  const [startDate, setStartDate] = useState(startDateFromState);
-  const [endDate, setEndDate] = useState(endDateFromState);
+  // const [startDate, setStartDate] = useState(startDateFromState);
+  // const [endDate, setEndDate] = useState(endDateFromState);
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(true);
   const [currentSort, setSort] = useState("");
@@ -52,6 +61,9 @@ function HotelSearch() {
   };
 
   console.log("Currently selected pets:", selectedPets);
+  
+
+
 
   const handleSearch = async (sort: string) => {
     const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
@@ -66,10 +78,16 @@ function HotelSearch() {
     }
 
     const filterSearchCage = {
-      longitude: "99.3986862",
-      latitude: "18.3170581",
-      start_time: startDate,
-      end_time: endDate,
+      // longitude: "99.3986862",
+      // latitude: "18.3170581",
+      // start_time: startDate,
+      // end_time: endDate,
+      // longitude: searchedPosition ? JSON.stringify(searchedPosition[1]) : "",
+      // latitude: searchedPosition ? JSON.stringify(searchedPosition[0]) : "",
+      latitude: searchedPosition[0] || 0,
+      longitude: searchedPosition[1] || 0,
+      start_time: formatDateToString(startDate),
+      end_time: formatDateToString(endDate),
       sort: finalSort || "",
     };
 
@@ -85,16 +103,10 @@ function HotelSearch() {
       //   }
       // });
     } catch (error: any) {
-      toast.error(error || "Please fill all information")
+      toast.error(error || "Please fill all information");
       console.error("Error fetching hotels:", error);
     }
   };
-
-  const [position, setPosition] = useState<[number, number] | null>(null);
-  const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
-  const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
-  const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
-
 
   const MapWithGeocoder = () => {
     const map = useMap();
@@ -104,7 +116,7 @@ function HotelSearch() {
         defaultMarkGeocode: false, // Do not mark automatically
       }).addTo(map);
 
-      geocoder.on('markgeocode', (e) => {
+      geocoder.on("markgeocode", (e) => {
         const latlng = e.geocode.center;
         setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
         console.log("seaerchposi", searchedPosition)
@@ -119,13 +131,59 @@ function HotelSearch() {
     return null;
   };
 
-  
+  // const [position, setPosition] = useState<[number, number] | null>(null);
+  // const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(
+  //   null
+  // ); // Track marker position
+  // const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
+  // const [searchedPosition, setSearchedPosition] = useState<
+  //   [number, number] | null
+  // >(null); // Position from search or click
+  // const LocationMarker = () => {
+  //   useMapEvents({
+  //     click(e) {
+  //       setSearchedPosition([e.latlng.lat, e.latlng.lng]); // Store clicked position
+  //     },
+  //   });
+  //   console.log('location: ', longitude)
+  //   return (
+  //     <Marker position={searchedPosition || [13.736717, 100.523186]}>
+  //       <Popup>Selected Location</Popup>
+  //     </Marker>
+  //   );
+
+  // };
+  const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
+  const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(
+    null
+  ); // Track marker position
+  const [position, setPosition] = useState<[number, number] | null>(null);
+  const [searchedPosition, setSearchedPosition] = useState<
+    [number, number] | null
+  >(null); // Position from search or click
+  const [error, setError] = useState(""); // Form error
+
+  const [maplocation, setMapLocation] = useState({
+    long: "",
+    lat: "",
+  });
+  const handleLocationChange = (lat: number, lng: number) => {
+    setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
+    setMarkerPosition([lat, lng]); // Update the marker position
+  };
+
   const LocationMarker = () => {
+    const map = useMap();
     useMapEvents({
       click(e) {
         setSearchedPosition([e.latlng.lat, e.latlng.lng]); // Store clicked position
       },
     });
+    useEffect(() => {
+      if (searchedPosition) {
+          map.setView(searchedPosition, 13); // Set the map view to the marker's position
+      }
+  }, [searchedPosition, map]);
     return (
       <Marker position={searchedPosition || [13.736717, 100.523186]}>
         <Popup>Selected Location</Popup>
@@ -133,6 +191,47 @@ function HotelSearch() {
     );
   };
 
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setPosition([latitude, longitude]);
+          handleLocationChange(latitude, longitude); // Update formData with initial position
+        },
+        (err) => {
+          setError("Unable to retrieve your location.");
+        }
+      );
+    } else {
+      setError("Geolocation is not supported by this browser.");
+    }
+  }, []);
+
+  useEffect(() => {
+    // Fetch user's current location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                setPosition([latitude, longitude]);
+                setSearchedPosition([latitude, longitude]); // Default search position
+            },
+            () => {
+                setError('Unable to retrieve your location.');
+                setPosition([13.736717, 100.523186]); // Default to Bangkok
+                setSearchedPosition([13.736717, 100.523186]); // Default search position
+            }
+        );
+    } else {
+        setError('Geolocation is not supported by this browser.');
+        setPosition([13.736717, 100.523186]);
+        setSearchedPosition([13.736717, 100.523186]);
+    }
+}, []);
+
+console.log("position:", searchedPosition);
+  // check=====================================================================================================================================================================================
   const handleCageSizeChange = (pet: string, size: string) => {
     setSelectedCageSizes((prev) => ({
       ...prev,
@@ -140,7 +239,62 @@ function HotelSearch() {
     }));
   };
 
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [selectionStage, setSelectionStage] = useState<"start" | "range">(
+    "start"
+  );
+  const handleDateClick = (clickedDate: Date) => {
+    if (selectionStage === "start") {
+      // First click: Set start date
+      setStartDate(clickedDate);
+      setSelectionStage("range");
+    } else {
+      // Subsequent clicks: Handle range selection
+      if (!startDate) {
+        // Fallback if start date is somehow not set
+        setStartDate(clickedDate);
+        setSelectionStage("range");
+        return;
+      }
 
+      // Ensure the new date is after the start date
+      if (clickedDate >= startDate) {
+        setEndDate(clickedDate);
+        setSelectionStage("start"); // Reset to start for next selection
+      } else {
+        // If clicked date is before start date, reset and set as new start date
+        setStartDate(clickedDate);
+        setEndDate(null);
+      }
+    }
+    console.log("Start Date:", startDate);
+    console.log("End Date:", endDate);
+  };
+
+  const tileClassName = ({ date, view }) => {
+    if (view === "month") {
+      // Highlight start date
+      if (startDate && date.toDateString() === startDate.toDateString()) {
+        return "highlight-start";
+      }
+
+      // Highlight end date
+      if (endDate && date.toDateString() === endDate.toDateString()) {
+        return "highlight-end";
+      }
+      // Highlight dates within the range
+      if (startDate && endDate && date > startDate && date < endDate) {
+        return "highlight-range";
+      }
+    }
+    return null;
+  };
+
+  const tileDisabled = ({ date, view }) => {
+    // Optional: Add logic to disable past dates or specific date ranges
+    return view === "month" && date < new Date();
+  };
 
   useEffect(() => {
     if (location.state) {
@@ -150,8 +304,8 @@ function HotelSearch() {
       setEndDate(location.state.endDate || "");
       setSelectedPets(location.state.selectedPets || []);
       setSelectedCageSizes(location.state.selectedCageSizes || []);
-      console.log(location.state.selectedPets)
-      console.log(location.state.selectedCageSizes)
+      console.log(location.state.selectedPets);
+      console.log(location.state.selectedCageSizes);
     }
   }, []);
 
@@ -159,7 +313,7 @@ function HotelSearch() {
 
   // const [isClicked, setIsClicked] = useState(false);
   const [activeButton, setActiveButton] = useState<number | null>(null);
-  const buttons = ["Sort By", "Distance", "Price", "review", "Hot Deal"]; // Button labels
+  const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
   // const uniqueAnimalTypes = [
   //   ...new Set(
   //     hotel.flatMap((hotelItem) =>
@@ -170,7 +324,7 @@ function HotelSearch() {
   return (
     <div className="">
       <div className="w-full h-1/2 p-4 bg-white flex justify-center items-center relative">
-        <Toaster position='top-center' reverseOrder={false}></Toaster>
+        <Toaster position="top-center" reverseOrder={false}></Toaster>
         <div
           className="w-1/4 rounded-lg absolute mt-4 top-0 left-1/2 transform -translate-x-1/2 flex justify-center items-center space-x-4"
           style={{ backgroundColor: "#A08252" }}
@@ -203,22 +357,64 @@ function HotelSearch() {
             <div className="w-3/4 border top-12 h-200 bg-white p-8 rounded-lg shadow-lg flex flex-col justify-between">
               <div className="grid grid-cols-2 gap-4 mb-6 ">
                 {/* Location Section */}
-                <div className="flex flex-col  p-2 border border-gray-300 mt-8 h-52 rounded-lg ">
-                  <label className="text-xl text-semibold">Location</label>
+                <div className="flex flex-col  p-2 border border-gray-300 mt-8 rounded-lg ">
+                  <label className="text-xl text-semibold">Select on map</label>
                   {geoError && <div>{geoError}</div>}
                   <MapContainer
                     center={position || [13.736717, 100.523186]}
                     zoom={13}
-                    style={{ height: '100%', width: '100%' }}
+                    style={{ height: "100%", width: "100%" }}
                   >
                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     <LocationMarker />
                     <MapWithGeocoder />
                   </MapContainer>
+                  <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0 ">
+                    <label className="block text-red-900 text-lg font-semibold mb-4"></label>
+                    <div className="grid grid-cols-2 gap-4">
+                      {petOptions.map((pet) => (
+                        <div
+                          key={pet}
+                          className="flex items-center justify-between space-x-2"
+                        >
+                          {/* Checkbox and Label */}
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              value={pet}
+                              checked={selectedPets?.includes(pet)}
+                              onChange={() => handlePetChange(pet)}
+                              className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
+                            />
+                            <span className="text-[#5E4126] font-medium">
+                              {pet}
+                            </span>
+                          </label>
+
+                          {/* Dropdown for Cage Size */}
+                          <select
+                            value={selectedCageSizes[pet] || ""}
+                            onChange={(e) =>
+                              handleCageSizeChange(pet, e.target.value)
+                            }
+                            className="w-1/2 border border-[#A08252] rounded-lg px-2 py-1 text-[#5E4126] focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                          >
+                            <option value="" disabled>
+                              All size
+                            </option>
+                            <option value="s">Small (S)</option>
+                            <option value="m">Medium (M)</option>
+                            <option value="l">Large (L)</option>
+                            <option value="xl">Extra Large (XL)</option>
+                          </select>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Date Section */}
-                <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
+                {/* <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
                   <div>
                     <label
                       htmlFor="start-date"
@@ -249,51 +445,49 @@ function HotelSearch() {
                       className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
                     />
                   </div>
+                </div> */}
+                <div className="grid grid-cols-1 gap-4 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
+                  <div className="flex col justify-center h-[28rem]">
+                    <label
+                      htmlFor="date"
+                      className="block text-lg font-meduim mb-2 mt-2"
+                    >
+                      Date
+                    </label>
+                    <div className="p-4 rounded-lg mt-8 mb-1">
+                      <Calendar
+                        className="p-4 rounded-lg shadow-md text-navbar"
+                        onClickDay={handleDateClick}
+                        value={[startDate, endDate]}
+                        tileClassName={tileClassName}
+                        tileDisabled={tileDisabled}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-center items-center">
+                    <div className="mb-1 flex flex-col space-y-3">
+                      <div className="flex">
+                        <span className="text-lg font-medium">Start :</span>
+                        <p className="text-lg">
+                          {startDate
+                            ? startDate.toLocaleDateString()
+                            : "Not selected"}
+                        </p>
+                      </div>
+                      <div className="flex">
+                        <span className="text-lg font-medium">End :</span>
+                        <p className="text-lg">
+                          {endDate
+                            ? endDate.toLocaleDateString()
+                            : "Not selected"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Pet Section */}
-                <div className="p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-0 ">
-                  <label className="block text-red-900 text-lg font-semibold mb-4"></label>
-                  <div className="grid grid-cols-2 gap-4">
-                    {petOptions.map((pet) => (
-                      <div
-                        key={pet}
-                        className="flex items-center justify-between space-x-2"
-                      >
-                        {/* Checkbox and Label */}
-                        <label className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            value={pet}
-                            checked={selectedPets?.includes(pet)}
-                            onChange={() => handlePetChange(pet)}
-                            className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
-                          />
-                          <span className="text-[#5E4126] font-medium">
-                            {pet}
-                          </span>
-                        </label>
 
-                        {/* Dropdown for Cage Size */}
-                        <select
-                          value={selectedCageSizes[pet] || ""}
-                          onChange={(e) =>
-                            handleCageSizeChange(pet, e.target.value)
-                          }
-                          className="w-1/2 border border-[#A08252] rounded-lg px-2 py-1 text-[#5E4126] focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                        >
-                          <option value="" disabled>
-                            All size
-                          </option>
-                          <option value="s">Small (S)</option>
-                          <option value="m">Medium (M)</option>
-                          <option value="l">Large (L)</option>
-                          <option value="xl">Extra Large (XL)</option>
-                        </select>
-                      </div>
-                    ))}
-                  </div>
-                </div>
                 {/* Search Button */}
               </div>
               <div className="flex justify-center mt-auto">
@@ -321,10 +515,11 @@ function HotelSearch() {
                         activeButton === index ? "#A08252" : "white",
                       color: activeButton === index ? "white" : "#A08252",
                     }}
-                    className={`${activeButton === index
-                      ? "hover:bg-egg focus:ring-red-300"
-                      : "hover:bg-gray-100 focus:ring-red-300"
-                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                    className={`${
+                      activeButton === index
+                        ? "hover:bg-egg focus:ring-red-300"
+                        : "hover:bg-gray-100 focus:ring-red-300"
+                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
                   </button>
@@ -399,7 +594,7 @@ function HotelSearch() {
                       <MapContainer
                         center={position || [13.736717, 100.523186]}
                         zoom={13}
-                        style={{ height: '100%', width: '100%' }}
+                        style={{ height: "100%", width: "100%" }}
                       >
                         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                         <LocationMarker />
@@ -459,10 +654,11 @@ function HotelSearch() {
                         activeButton === index ? "#A08252" : "white",
                       color: activeButton === index ? "white" : "#A08252",
                     }}
-                    className={`${activeButton === index
-                      ? "hover:bg-egg focus:ring-red-300"
-                      : "hover:bg-gray-100 focus:ring-red-300"
-                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                    className={`${
+                      activeButton === index
+                        ? "hover:bg-egg focus:ring-red-300"
+                        : "hover:bg-gray-100 focus:ring-red-300"
+                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
                   </button>

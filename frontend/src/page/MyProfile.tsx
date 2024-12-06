@@ -367,7 +367,7 @@ export default function MyProfile() {
                                             <div className="relative w-full h-44  ">
                                                 <div className="overflow-hidden  w-full h-full">
                                                     <img
-                                                        src={pet.image_array || petImage}
+                                                        src={pet.image || petImage}
                                                         alt="Uploaded Image"
                                                         className="w-full h-full object-cover"
                                                     />
@@ -389,7 +389,7 @@ export default function MyProfile() {
                                         // โหมดแสดงผล: แสดงรูปโปรไฟล์
                                         <div className="flex ">
                                             <img
-                                                src={pet.image_array || petImage} // ใช้รูปภาพใหม่หรือรูปภาพปัจจุบัน
+                                                src={pet.image || petImage} // ใช้รูปภาพใหม่หรือรูปภาพปัจจุบัน
                                                 alt="Profile Image"
                                                 className="size-44 "
                                             />
