@@ -232,7 +232,7 @@ function Card({ hotel }: { hotel: Hotel }) {
                           className="bg-bgLogin px-10 py-2 border rounded-2xl shadow-lg shadow-egg h-3/4"
 
                         >
-                          Cancel
+                          Back
                         </button>
                       )}
                       {hotel.status === "accepted" && (

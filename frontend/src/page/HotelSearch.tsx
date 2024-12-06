@@ -121,7 +121,7 @@ function HotelSearch() {
       console.error("Error fetching hotels:", error);
     }
     console.log("Filter Search Cage:", filterSearchCage);
-    
+
     const dateObjectStart = new Date(startDate); // Parse the original start date string
     const formattedStartDate = formatDateForInput(dateObjectStart); // Format it for input display
     setFormattedStartDate(formattedStartDate); // Set the formatted start date for the input field
@@ -362,7 +362,7 @@ function HotelSearch() {
 
   // const [isClicked, setIsClicked] = useState(false);
   const [activeButton, setActiveButton] = useState<number | null>(null);
-  const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
+  const buttons = ["Distance", "Price", "Rating", "Hot Deal"]; // Button labels
   // const uniqueAnimalTypes = [
   //   ...new Set(
   //     hotel.flatMap((hotelItem) =>
@@ -551,6 +551,7 @@ function HotelSearch() {
                 </button>
               </div>
               <div className="flex flex-cols-10 gap-4 justify-center">
+                <p className="mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4">Sort By</p>
                 {buttons.map((label, index) => (
                   <button
                     key={index}
@@ -564,11 +565,10 @@ function HotelSearch() {
                         activeButton === index ? "#A08252" : "white",
                       color: activeButton === index ? "white" : "#A08252",
                     }}
-                    className={`${
-                      activeButton === index
-                        ? "hover:bg-egg focus:ring-red-300"
-                        : "hover:bg-gray-100 focus:ring-red-300"
-                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                    className={`${activeButton === index
+                      ? "hover:bg-egg focus:ring-red-300"
+                      : "hover:bg-gray-100 focus:ring-red-300"
+                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
                   </button>
@@ -691,6 +691,7 @@ function HotelSearch() {
                 </div>
               </div>
               <div className="flex flex-cols-10 gap-4 justify-center">
+                <p className="mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4">Sort By</p>
                 {buttons.map((label, index) => (
                   <button
                     key={index}
@@ -704,11 +705,10 @@ function HotelSearch() {
                         activeButton === index ? "#A08252" : "white",
                       color: activeButton === index ? "white" : "#A08252",
                     }}
-                    className={`${
-                      activeButton === index
-                        ? "hover:bg-egg focus:ring-red-300"
-                        : "hover:bg-gray-100 focus:ring-red-300"
-                    } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
+                    className={`${activeButton === index
+                      ? "hover:bg-egg focus:ring-red-300"
+                      : "hover:bg-gray-100 focus:ring-red-300"
+                      } mt-2 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-4`}
                   >
                     {label}
                   </button>
