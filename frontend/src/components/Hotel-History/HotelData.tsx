@@ -1,10 +1,8 @@
-// import { Card } from "flowbite-react";
-
 import Card from "./Card"
 
 
-const HotelList = ({ hotelList }: any) => {
-    return (
+const HotelData = ({hotelList}:any) => {
+    return(
         <div>
             {hotelList.map((hotel, index) => (
                 <Card key={index} hotel={hotel} />
@@ -15,4 +13,4 @@ const HotelList = ({ hotelList }: any) => {
 
     )
 }
-export default HotelList
+export default HotelData;

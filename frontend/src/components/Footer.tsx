@@ -19,7 +19,6 @@ export default function Footer() {
             <div className="w-1/3 h-1 bg-white mt-2"></div>
             <div className="flex  mt-2 gap-x-5 text-white">
                 <p>Copy Right 2024</p>
-
                 <p> Privacy Policy</p>
             </div>
         </div>
