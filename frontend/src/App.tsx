@@ -1,5 +1,5 @@
 
-import Home from './page/HomePage';
+import Home from './page/Default/HomePage';
 import Nav from '../src/components/Nav';
 import { Outlet } from 'react-router-dom';
 import Footer from '../src/components/Footer';

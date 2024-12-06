@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { GetSearchCage } from "../helper/cage";
-import { FilterAnimal, FilterSearchCage } from "../types/payload";
+import { GetSearchCage } from "../../helper/cage";
+import { FilterAnimal, FilterSearchCage } from "../../types/payload";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { Cage } from "@/types/response";
 import { useLocation } from "react-router-dom";
-import { GetTokenChangeRoleToClient, RemoveFavCage } from "../helper/user";
+import { GetTokenChangeRoleToClient, RemoveFavCage } from "../../helper/user";
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import L from 'leaflet';
-import { formatDateToString } from "../helper/utils";
+import { formatDateToString } from "../../helper/utils";
 
 function Home() {
     // State to manage hotels data
@@ -577,45 +577,45 @@ function Home() {
                                 </div>
                             </div>
 
-                                {/* Capsule Info */}
-                                <div className="flex-1 mx-8 border-l pl-6 flex items-start space-x-6">
-                                    {/* Image Section */}
-                                    <div className="w-40 h-40 rounded-lg overflow-hidden flex-shrink-0">
-                                        {
-                                            (fav.cage_room.image_array && fav.cage_room.image_array.length > 0) ? (
-                                                <img
-                                                    src={
-                                                        fav.cage_room.image_array[0]}
-                                                    alt="Cage Room"
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            ) : (
-                                                <img></img>
-                                            )
-                                        }
-                                    </div>
-                                    {/* Information Section */}
-                                    <div className="flex flex-col space-y-2">
-                                        <h3 className="text-[#333] text-xl font-semi">Capsule</h3>
-                                        <div className="flex items-center space-x-2">
-                                            <p className="bg-navbar text-white text-sm px-2 py-1 rounded">
-                                                {fav.cage_room.size || "Unknown"}
-                                            </p>
-                                            <p className="text-sm text-gray-600">
-                                                Size: ({fav.cage_room.width} x{" "}
-                                                {fav.cage_room.lenth} x {fav.cage_room.height} m)
-                                            </p>
-                                        </div>
-                                        <p className="text-sm text-gray-600">
-                                            <span className="font-meduim">Accomodates :</span>{" "}
-                                            {fav.cage_room.max_capacity || "N/A"}
-                                        </p>
-                                        <p className="text-gray-600 text-sm mb-2">
-                                            <span className="font-meduim">Facilities:</span>&nbsp;
-                                            {fav.cage_room.facility || "N/A"}
-                                        </p>
-                                    </div>
+                            {/* Capsule Info */}
+                            <div className="flex-1 mx-8 border-l pl-6 flex items-start space-x-6">
+                                {/* Image Section */}
+                                <div className="w-40 h-40 rounded-lg overflow-hidden flex-shrink-0">
+                                    {
+                                        (fav.cage_room.image_array && fav.cage_room.image_array.length > 0) ? (
+                                            <img
+                                                src={
+                                                    fav.cage_room.image_array[0]}
+                                                alt="Cage Room"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <img></img>
+                                        )
+                                    }
                                 </div>
+                                {/* Information Section */}
+                                <div className="flex flex-col space-y-2">
+                                    <h3 className="text-[#333] text-xl font-semi">Capsule</h3>
+                                    <div className="flex items-center space-x-2">
+                                        <p className="bg-navbar text-white text-sm px-2 py-1 rounded">
+                                            {fav.cage_room.size || "Unknown"}
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                            Size: ({fav.cage_room.width} x{" "}
+                                            {fav.cage_room.lenth} x {fav.cage_room.height} m)
+                                        </p>
+                                    </div>
+                                    <p className="text-sm text-gray-600">
+                                        <span className="font-meduim">Accomodates :</span>{" "}
+                                        {fav.cage_room.max_capacity || "N/A"}
+                                    </p>
+                                    <p className="text-gray-600 text-sm mb-2">
+                                        <span className="font-meduim">Facilities:</span>&nbsp;
+                                        {fav.cage_room.facility || "N/A"}
+                                    </p>
+                                </div>
+                            </div>
 
                             {/* Price and Action */}
                             <div className="flex flex-col items-end space-y-4">
