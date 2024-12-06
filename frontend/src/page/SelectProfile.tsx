@@ -98,7 +98,7 @@ export default function SelectProfile() {
   };
 
   const handleClickHome = () => {
-    navigate('/');
+    navigate('/', { state: { role: "client" } });
   };
 
   const handleCreateProfile = () => {

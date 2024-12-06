@@ -5,11 +5,10 @@ import { UploadRes } from "@/types/response";
 import { ProfileRes } from "@/types/response";
 import { useEffect } from "react";
 import { GetProfileByID, UpdateProfile } from "@/helper/profile";
-import { toast } from "react-toastify";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
-import { useLocation } from "react-router-dom";
 import L from 'leaflet';
 import "leaflet-control-geocoder";
+import toast, { Toaster } from "react-hot-toast";
 
 const HotelDetailPage = () => {
     const navigate = useNavigate();
@@ -26,12 +25,13 @@ const HotelDetailPage = () => {
     const [images, setImages] = useState<UploadRes[]>([]);
 
     useEffect(() => {
+        if (!localStorage.getItem("token")) {
+            navigate("/login");
+        } else if (localStorage.getItem("role") && localStorage.getItem("role") !== "hotel") {
+            navigate("/")
+        }
         const fetchProfile = async () => {
-            if (!localStorage.getItem("token")) {
-                navigate("/login");
-            } else if (localStorage.getItem("role") && localStorage.getItem("role") !== "hotel") {
-                navigate("/")
-            }
+
 
             try {
                 const userId = localStorage.getItem('userId') || '';
@@ -133,13 +133,6 @@ const HotelDetailPage = () => {
         try {
             // const userId = localStorage.getItem("userId") || "";
             const token = localStorage.getItem("token");
-
-            if (!token) {
-                toast.error("You are not authorized. Please log in.");
-                // navigate("/login");
-                return;
-            }
-
             console.log("search", searchedPosition);
             const payload = {
                 id: profile.profile.id,
@@ -162,24 +155,18 @@ const HotelDetailPage = () => {
 
 
             const res = await UpdateProfile(payload);
-            toast.success("Profile updated successfully");
-            window.location.reload();
-            console.log("log", res);
+            console.log(res);
+            toast.success(res);
         } catch (err: any) {
-            if (err.response && err.response.data) {
-                // Handle server response if it's JSON
-                console.error("Server Response:", err.response.data);
-                toast.error(`Error: ${err.response.data.message || "Failed to update profile"}`);
-            } else {
-                // Handle non-JSON response or other errors
-                // console.error("Unexpected Error:", err.message || err);
-                toast.error("Unexpected error occurred. Please try again.");
+            if (err) {
+                toast.error(err)
             }
         }
     };
 
     return (
         <div className="bg-bg">
+            <Toaster position="top-center" reverseOrder={false} />
             <div className="flex justify-center pb-10">
                 <div className="flex w-3/4 items-center flex-col gap-y-2">
                     <div className="pt-10 space-x-1">

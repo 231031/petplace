@@ -25,11 +25,6 @@ function CreateProfile() {
     const UserId = localStorage.getItem('userId') ?? '';
     const token = localStorage.getItem('token');
 
-    if (!token) {
-        setError('Authorization token is missing');
-        return;
-    }
-
     const MapWithGeocoder = () => {
         const map = useMap();
 
@@ -62,6 +57,10 @@ function CreateProfile() {
 
     // Load form data from localStorage when component mounts
     useEffect(() => {
+        if (!localStorage.getItem("token")) {
+            navigate("/login");
+        }
+
         const savedFormData = localStorage.getItem('formData');
         if (savedFormData) {
             setFormData(JSON.parse(savedFormData)); // Load saved data on page load

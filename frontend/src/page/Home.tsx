@@ -5,7 +5,7 @@ import { FilterAnimal, FilterSearchCage } from "../types/payload";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { Cage } from "@/types/response";
 import { useLocation } from "react-router-dom";
-import { RemoveFavCage } from "../helper/user";
+import { GetTokenChangeRoleToClient, RemoveFavCage } from "../helper/user";
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import L from 'leaflet';
@@ -188,6 +188,23 @@ function Home() {
         );
     };
 
+    const getTokenChangeRole = async () => {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            return;
+        }
+
+        try {
+            const response = await GetTokenChangeRoleToClient(parseInt(userId));
+            if (response) {
+                localStorage.setItem("token", response.token);
+                localStorage.setItem("role", "client");
+            }
+        } catch (error) {
+            console.error("failed to get token", error);
+        }
+    };
+
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -205,29 +222,35 @@ function Home() {
         } else {
             setError('Geolocation is not supported by this browser.');
         }
+
+        if (location.state && location.state.role) {
+            getTokenChangeRole();
+
+        }
+
     }, []);
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        const id = localStorage.getItem("userId");
+    // useEffect(() => {
+    //     const token = localStorage.getItem("token");
+    //     const id = localStorage.getItem("userId");
 
-        fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        })
-            .then((response) => {
-                if (!response.ok) throw new Error("Failed to fetch cage room data");
-                return response.json();
-            })
-            .then((data) => {
-                setRooms(data || []);
-                console.log("Cage room for search:", rooms);
-            })
-            .catch((error) => console.error("Error fetching cage room data:", error));
-    }, []);
+    //     fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
+    //         method: "GET",
+    //         headers: {
+    //             Authorization: `Bearer ${token}`,
+    //             Accept: "application/json",
+    //         },
+    //     })
+    //         .then((response) => {
+    //             if (!response.ok) throw new Error("Failed to fetch cage room data");
+    //             return response.json();
+    //         })
+    //         .then((data) => {
+    //             setRooms(data || []);
+    //             console.log("Cage room for search:", rooms);
+    //         })
+    //         .catch((error) => console.error("Error fetching cage room data:", error));
+    // }, []);
 
     useEffect(() => {
         // Fetch user's current location
@@ -341,7 +364,9 @@ function Home() {
                     startDate: startDate,
                     endDate: endDate,
                     selectedPets: selectedPets,
-                    selectedCageSizes: selectedCageSizes
+                    selectedCageSizes: selectedCageSizes,
+                    longitude: searchedPosition ? JSON.stringify(searchedPosition[1]) : "",
+                    latitude: searchedPosition ? JSON.stringify(searchedPosition[0]) : "",
                 }
             });
         } catch (error) {

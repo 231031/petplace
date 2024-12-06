@@ -21,6 +21,9 @@ function HotelHistory() {
   const [error, setError] = useState(null);
   // Fetch data using async function within useEffect
   useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
+    }
     const fetchHotelServiceUsers = async (userId: string) => {
       try {
         if (!userId || !token) {

@@ -31,6 +31,7 @@ func NewUsersHandler(usersServiceIn service.UsersServiceIn) *UsersHandler {
 func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
 	// all
 	g.GET("/:id", h.handleGetUserByID)
+	g.GET("/change/:id", h.handleChangeRoleClient)
 
 	// client
 	g.PUT("/:id", auth.AuthurizationMiddleware(
@@ -265,6 +266,35 @@ func (h *UsersHandler) handleGetUserByID(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, card)
+}
+
+// @Summary Get Info User After Change Role to CLient
+// @Description Get Info User After Change Role to CLient
+// @tags Users
+// @Produce application/json
+// @Param id path string true "User ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /user/change/{id} [get]
+// @Security BearerAuth
+func (h *UsersHandler) handleChangeRoleClient(c echo.Context) error {
+	param_id := c.Param("id")
+	id, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
+	}
+
+	token, err := h.usersServiceIn.ChangeRoleToClient(id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "user information card not available", err)
+	}
+
+	response := map[string]interface{}{
+		"token": token,
+	}
+
+	return c.JSON(http.StatusOK, response)
 }
 
 // @Summary Get Animal User By Animal Type
