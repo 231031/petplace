@@ -21,19 +21,62 @@ func NewHotelHandler(bookingServiceIn service.BookingServiceIn) *HotelHandler {
 
 func (h *HotelHandler) RegisterRoutes(g *echo.Group) {
 	// hotel
-	g.GET("/:id/:status", h.handleGetAllHotelServiceByHotel, auth.AuthMiddleware)
-	g.GET("/:id", h.handleGetHotelService, auth.AuthMiddleware)
-	g.GET("/review/:profile_id", h.handleGetReviewByHotel)
-	g.PUT("/:id", h.handleAcceptRejectBookHotel, auth.AuthMiddleware)
+	g.PUT("/:id", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleHotel)}, h.handleAcceptRejectBookHotel,
+		),
+	))
+
+	// hotel get
+	g.GET("/:id/:status", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleHotel)}, h.handleGetAllHotelServiceByHotel,
+		),
+	))
 
 	// client
-	g.POST("/client/booking", h.handleBookHotelService, auth.AuthMiddleware)
-	g.PUT("/client/:id", h.handleManageRefundBookHotel, auth.AuthMiddleware)
-	g.PUT("/client/review/:id", h.handleReviewHotelService, auth.AuthMiddleware)
-	g.GET("/client/:id/:status", h.handleGetStatusHotelServiceByUser, auth.AuthMiddleware)
-	g.GET("/client/:id", h.handleGetAllHotelServiceByUser, auth.AuthMiddleware)
+	g.POST("/client/booking", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleClient)}, h.handleBookHotelService,
+		),
+	))
+	g.PUT("/client/:id", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleClient)}, h.handleManageRefundBookHotel,
+		),
+	))
+	g.PUT("/client/review/:id", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleClient)}, h.handleReviewHotelService,
+		),
+	))
+
+	// client get
+	g.GET("/client/:id/:status", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleClient)}, h.handleGetStatusHotelServiceByUser,
+		),
+	))
+	g.GET("/client/:id", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleClient)}, h.handleGetAllHotelServiceByUser,
+		),
+	))
+	g.GET("/client/again/:cage_id", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleClient)}, h.handleCheckBookAgain,
+		),
+	))
 
 	// both
+	g.GET("/:id", auth.AuthMiddleware(
+		auth.AuthurizationMiddleware(
+			[]string{string(RoleClient), string(RoleHotel)}, h.handleGetHotelService,
+		),
+	))
+
+	// user
+	g.GET("/review/:profile_id", h.handleGetReviewByHotel)
 }
 
 // @Summary		Book Hotel Service
@@ -164,6 +207,47 @@ func (h *HotelHandler) handleGetHotelService(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, ser_info)
+}
+
+// @Summary		Check Book Hotel Service Again
+// @Description	Check Book Hotel Service Again
+// @Produce application/json
+// @tags HotelServices
+// @Param id path string true "Cage ID"
+// @Param start_time query string false "Filter by start_time"
+// @Param end_time query string false "Filter by end_time"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /client/again/{cage_id} [get]
+// @Security BearerAuth
+func (h *HotelHandler) handleCheckBookAgain(c echo.Context) error {
+	str := c.Param("cage_id")
+	cage_id, err := utils.ConvertTypeToUint(str)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "hotel information is not correct", err)
+	}
+
+	payload := types.BookAgainPayload{}
+	err = (&echo.DefaultBinder{}).BindQueryParams(c, &payload)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "time information is not correct", err)
+	}
+	payload.CageID = cage_id
+
+	checked, strErr, err := h.bookingServiceIn.CheckAvailableBooking(payload)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, strErr.Error(), err)
+	}
+	if strErr != nil {
+		return utils.HandleError(c, http.StatusBadRequest, strErr.Error(), err)
+	}
+
+	if !checked {
+		return utils.HandleError(c, http.StatusBadRequest, "selected date is not available", err)
+	}
+
+	return c.JSON(http.StatusOK, "selected date is available")
 }
 
 // @Summary		Get Review Hotel Service by Hotel

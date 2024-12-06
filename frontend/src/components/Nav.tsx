@@ -31,6 +31,9 @@ const Nav: React.FC = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
+    localStorage.removeItem('profile_id');
+    localStorage.removeItem('profileID');
+    localStorage.removeItem('name');
     setUsername("")
     setUserId(null)
     navigate('/login');
@@ -47,7 +50,7 @@ const Nav: React.FC = () => {
             <img src="/images/logo.png" alt="Pet Place Logo" className="w-20 h-auto p-2" />
           </div>
 
-          {/* Navigation Links */}  
+          {/* Navigation Links */}
           <div className="hidden md:flex justify-center flex-grow space-x-4">
             <ul className="flex space-x-4 gap-x-20 text-lg">
               <li><a href="/" className="text-white ">Home</a></li>

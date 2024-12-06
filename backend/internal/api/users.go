@@ -2,12 +2,21 @@ package api
 
 import (
 	"net/http"
+	"petplace/internal/auth"
 	"petplace/internal/model"
 	"petplace/internal/service"
 	"petplace/internal/types"
 	"petplace/internal/utils"
 
 	"github.com/labstack/echo/v4"
+)
+
+type Role string
+
+const (
+	RoleClient Role = "client"
+	RoleHotel  Role = "hotel"
+	RoleClinic Role = "clinic"
 )
 
 // handle requests and response requests
@@ -20,22 +29,51 @@ func NewUsersHandler(usersServiceIn service.UsersServiceIn) *UsersHandler {
 }
 
 func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
-	// role : client
-	g.GET("/card/:id", h.handleGetCreaditCard)
+	// all
 	g.GET("/:id", h.handleGetUserByID)
-	g.PUT("/:id", h.handleUpdateUser)
+	g.GET("/change/:id", h.handleChangeRoleClient)
 
-	// animal
-	g.GET("/animal/:user_id/:animal_type", h.handleGetAnimalUserByType)
-	g.GET("/animal/:id", h.handleGetAnimalUser)
-	g.GET("/animals/:user_id", h.handleGetAllAnimalUserByUser)
-	g.POST("/animals", h.handleCreateAnimalUser)
-	g.PUT("/animal/:id", h.handleUpdateAnimalUser)
+	// client
+	g.PUT("/:id", auth.AuthurizationMiddleware(
+		[]string{string(RoleClient)}, h.handleUpdateUser,
+	))
 
-	// Favorites
-	g.POST("/fav", h.handleAddFavoriteCage)
-	g.GET("/fav/:user_id", h.handleGetFavoriteCageByUser)
-	g.DELETE("/fav/:user_id/:cage_id", h.handleDeleteFavoriteCage)
+	// client get
+	g.GET("/card/:id", auth.AuthurizationMiddleware(
+		[]string{string(RoleClient)}, h.handleGetCreaditCard,
+	))
+
+	// animal's client
+	g.POST("/animals", auth.AuthurizationMiddleware(
+		[]string{string(RoleClient)}, h.handleCreateAnimalUser,
+	))
+	g.PUT("/animal/:id", auth.AuthurizationMiddleware(
+		[]string{string(RoleClient)}, h.handleUpdateAnimalUser,
+	))
+
+	// animal's client get
+	g.GET("/animal/:user_id/:animal_type", auth.AuthurizationMiddleware(
+		[]string{string(RoleClient)}, h.handleGetAnimalUserByType,
+	))
+	g.GET("/animal/:id", auth.AuthurizationMiddleware(
+		[]string{string(RoleClient)}, h.handleGetAnimalUser,
+	))
+	g.GET("/animals/:user_id", auth.AuthurizationMiddleware(
+		[]string{string(RoleClient)}, h.handleGetAllAnimalUserByUser,
+	))
+
+	// Favorites' client
+	g.POST("/fav", auth.AuthurizationMiddleware(
+		[]string{string(RoleClient)}, h.handleAddFavoriteCage,
+	))
+	g.DELETE("/fav/:user_id/:cage_id", auth.AuthurizationMiddleware(
+		[]string{string(RoleClient)}, h.handleDeleteFavoriteCage,
+	))
+
+	// Favorites' client get
+	g.GET("/fav/:user_id", auth.AuthurizationMiddleware(
+		[]string{string(RoleClient)}, h.handleGetFavoriteCageByUser,
+	))
 }
 
 // @Summary Create Animals
@@ -228,6 +266,35 @@ func (h *UsersHandler) handleGetUserByID(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, card)
+}
+
+// @Summary Get Info User After Change Role to CLient
+// @Description Get Info User After Change Role to CLient
+// @tags Users
+// @Produce application/json
+// @Param id path string true "User ID"
+// @Success 200
+// @Failure 400
+// @Failure 500
+// @Router /user/change/{id} [get]
+// @Security BearerAuth
+func (h *UsersHandler) handleChangeRoleClient(c echo.Context) error {
+	param_id := c.Param("id")
+	id, err := utils.ConvertTypeToUint(param_id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
+	}
+
+	token, err := h.usersServiceIn.ChangeRoleToClient(id)
+	if err != nil {
+		return utils.HandleError(c, http.StatusInternalServerError, "user information card not available", err)
+	}
+
+	response := map[string]interface{}{
+		"token": token,
+	}
+
+	return c.JSON(http.StatusOK, response)
 }
 
 // @Summary Get Animal User By Animal Type

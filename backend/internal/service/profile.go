@@ -9,6 +9,7 @@ import (
 	"petplace/internal/repository"
 	"petplace/internal/utils"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -41,6 +42,7 @@ func (s *ProfileService) CreateProfile(profile model.Profile) (int, string, erro
 
 	_, err = s.ProfileRepositoryIn.GetProfileByUserID(profile.UserID, profile.Role)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
+		profile.Role = strings.ToLower(profile.Role)
 		profile.Image = utils.MapStringArrayToText(profile.ImageArray)
 		profile.Facility = utils.MapStringArrayToText(profile.FacilityArray)
 		status, msg, err := s.ProfileRepositoryIn.CreateProfile(profile)

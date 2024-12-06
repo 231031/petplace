@@ -110,7 +110,7 @@ func BinaryConvertor(number int, bits int) []int {
 func CheckOpenDay(openDay []string, date time.Time) string {
 	weekDay := strings.ToLower(date.Weekday().String())
 
-	fmt.Println(weekDay)
+	// fmt.Println(weekDay)
 	// if weekDay == "monday" || weekDay == "tuesday" || weekDay == "friday" {
 
 	// }
@@ -141,7 +141,40 @@ func CalculateDistance(userLoc types.LocationParams, profileLa float64, profileL
 	userHa := haversine.Coord{Lat: userLa, Lon: userLong}
 	profileHa := haversine.Coord{Lat: profileLa, Lon: profileLong}
 	_, km := haversine.Distance(profileHa, userHa)
-	fmt.Println(km)
 
 	return km, nil
+}
+
+func Contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
+func CheckInputDate(startTime, endTime time.Time) (error, error) {
+	location, err := time.LoadLocation("Asia/Bangkok")
+	if err != nil {
+		return fmt.Errorf("failed to get current time in location"), err
+	}
+
+	currentTime := time.Now().In(location)
+	nextDay := time.Date(
+		currentTime.Year(),
+		currentTime.Month(),
+		currentTime.Day()+1,
+		0, 0, 0, 0, location,
+	)
+
+	if (startTime.In(location)).Before(nextDay) {
+		return fmt.Errorf("failed to reserve past day and current day"), nil
+	}
+
+	if (endTime).Before(startTime) {
+		return fmt.Errorf("end time must be after start time"), nil
+	}
+
+	return nil, nil
 }

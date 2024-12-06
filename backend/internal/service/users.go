@@ -2,10 +2,12 @@ package service
 
 import (
 	"fmt"
+	"petplace/internal/auth"
 	"petplace/internal/model"
 	"petplace/internal/repository"
 	"petplace/internal/types"
 	"petplace/internal/utils"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -32,6 +34,22 @@ func NewUserService(
 	}
 }
 
+func (s *UserService) CreateUser(data model.User) error {
+	err := s.UserRepositoryIn.CreateUser(data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *UserService) GetUserByEmail(email string) (model.User, error) {
+	user, err := s.UserRepositoryIn.GetUserByEmail(email)
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
 func (s *UserService) GetUserByID(id uint) (model.User, error) {
 	user, err := s.UserRepositoryIn.GetUserByID(id)
 	if err != nil {
@@ -44,6 +62,20 @@ func (s *UserService) GetUserByID(id uint) (model.User, error) {
 	user.Number = ""
 	user.Expiry = ""
 	return user, nil
+}
+
+func (s *UserService) ChangeRoleToClient(id uint) (string, error) {
+	user, err := s.GetUserByID(id)
+	if err != nil {
+		return "", err
+	}
+
+	tokenUser, err := auth.GenerateJwt(user.ID, user.Email, "client")
+	if err != nil {
+		return "", err
+	}
+
+	return tokenUser, nil
 }
 
 func (s *UserService) UpdateUser(id uint, user model.User) error {
@@ -81,6 +113,7 @@ func (s *UserService) CreateAnimalUser(animals []model.AnimalUser) error {
 	if len(animals) > 0 {
 		for i := range animals {
 			animals[i].Image = utils.MapStringArrayToText(animals[i].ImageArray)
+			animals[i].AnimalType = strings.ToLower(animals[i].AnimalType)
 		}
 	}
 
@@ -98,6 +131,7 @@ func (s *UserService) UpdateAnimalUser(id uint, animal model.AnimalUser) error {
 	}
 
 	animal.Image = utils.MapStringArrayToText(animal.ImageArray)
+	animal.AnimalType = strings.ToLower(animal.AnimalType)
 
 	updateAn := utils.CopyNonZeroFields(&animal, &animal_db).(*model.AnimalUser)
 	err = s.AnimalUserRepositoryIn.UpdateAnimalUser(*updateAn)
@@ -132,6 +166,7 @@ func (s *UserService) GetAnimalUser(id uint) (model.AnimalUser, error) {
 }
 
 func (s *UserService) GetAnimalUserByType(user_id uint, animal_type string) ([]model.AnimalUser, error) {
+	animal_type = strings.ToLower(animal_type)
 	animals, err := s.AnimalUserRepositoryIn.GetAllAnimalUserByType(user_id, animal_type)
 	if err != nil {
 		return animals, err

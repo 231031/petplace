@@ -6,6 +6,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 export default function HotelHome() {
+    const navigate = useNavigate();
     const [hotel, setHotel] = useState({
         name: "",
         email: "",
@@ -20,6 +21,8 @@ export default function HotelHome() {
     }
     );
     const id = localStorage.getItem("userId");
+    const profileId = localStorage.getItem("profile_id");
+
     const [rooms, setRooms] = useState({
         quantity: "",
         width: "",
@@ -31,7 +34,11 @@ export default function HotelHome() {
     });
 
     useEffect(() => {
+        if (!localStorage.getItem("token")) {
+            navigate("/login");
+        }
         const token = localStorage.getItem("token");
+
         fetch(`http://localhost:5000/api/profile/${id}/hotel`, {
             method: "GET",
             headers: {
@@ -47,16 +54,18 @@ export default function HotelHome() {
                 console.log("Fetched hotel data:", data.profile);
                 setHotel(data.profile) // ตรวจสอบข้อมูลที่ดึงมาจาก API
                 localStorage.setItem("profile_id", data.profile.id)
+                localStorage.setItem("token", data.token)
+                localStorage.setItem("role", data.profile.role)
 
                 const profileID = data.profile.id
                 localStorage.setItem("profileID", profileID)
                 localStorage.setItem("name", data.profile.name)
-                localStorage.setItem("data", data.profile)              
+                localStorage.setItem("data", data.profile)
             })
             .catch((error) => console.error("Error fetching hotel data:", error));
     }, []);
     const [distance, setDistance] = useState(null); // to store the calculated distance
-    
+
     // Get user's current location and calculate distance to hotel
     useEffect(() => {
         if (hotel.latitude && hotel.longitude) {
@@ -95,54 +104,57 @@ export default function HotelHome() {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        })
-            .then((response) => {
-                if (!response.ok) throw new Error("Failed to fetch cage room data");
-                return response.json();
+        if (profileId) {
+            fetch(`http://localhost:5000/api/cageroom/all/${profileId}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
             })
-            .then((data) => {
-                console.log("Fetched cage room data:", data);
-                // console.log("Fetched cage room data:", data.address);
-                setRooms(data || []); // เก็บข้อมูลห้องใน state
-            })
-            .catch((error) => console.error("Error fetching cage room data:", error));
-    }, []);
+                .then((response) => {
+                    if (!response.ok) throw new Error("Failed to fetch cage room data");
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log("Fetched cage room data:", data);
+                    // console.log("Fetched cage room data:", data.address);
+                    setRooms(data || []); // เก็บข้อมูลห้องใน state
+                })
+                .catch((error) => console.error("Error fetching cage room data:", error));
+        }
+    }, [hotel]);
 
     const [review, setReview] = useState()
 
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        fetch(`http://localhost:5000/api/hotel/review/${id}`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-            },
-        })
-            .then((response) => {
-                if (!response.ok) throw new Error("Failed to fetch cage room data");
-                return response.json();
+        if (profileId) {
+            fetch(`http://localhost:5000/api/hotel/review/${profileId}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
             })
-            .then((data) => {
-                console.log("Fetched hotel review data:", data);
-                // console.log("Fetched cage room data:", data.address);
-                setReview(data || []); // เก็บข้อมูลห้องใน state
-            })
-            .catch((error) => console.error("Error fetching cage room data:", error));
-    }, []);
+                .then((response) => {
+                    if (!response.ok) throw new Error("Failed to fetch cage room data");
+                    return response.json();
+                })
+                .then((data) => {
+                    console.log("Fetched hotel review data:", data);
+                    // console.log("Fetched cage room data:", data.address);
+                    setReview(data || []); // เก็บข้อมูลห้องใน state
+                })
+                .catch((error) => console.error("Error fetching cage room data:", error));
+        }
+    }, [hotel]);
 
     console.log("cages", rooms)
 
 
     // console.log("hotel data", hotel.facility[])
-    const navigate = useNavigate();
 
     const [expandedRoomId, setExpandedRoomId] = useState<number | null>(null);
 
@@ -278,8 +290,8 @@ export default function HotelHome() {
                                         <div
                                             key={index}
                                             className={`flex h-60 mx-5 mt-5 p-3 shadow shadow-gray-400 h-80 ${selectedRoomIndex === index
-                                                    ? 'rounded-t-md  shadow-tl shadow-tr shadow-bl shadow-br shadow-gray-400'  // มุมโค้งเฉพาะด้านบนและเงารอบๆ ยกเว้นด้านล่าง
-                                                    : 'rounded-md shadow shadow-gray-400 '  // มุมโค้งรอบๆ ทุกด้านตอนแรก
+                                                ? 'rounded-t-md  shadow-tl shadow-tr shadow-bl shadow-br shadow-gray-400'  // มุมโค้งเฉพาะด้านบนและเงารอบๆ ยกเว้นด้านล่าง
+                                                : 'rounded-md shadow shadow-gray-400 '  // มุมโค้งรอบๆ ทุกด้านตอนแรก
                                                 }`}
                                         // onClick={() => handleRoomClick(index)}
                                         // onClick={() => handleRoomClick(index)}
@@ -305,7 +317,7 @@ export default function HotelHome() {
                                             <div className="basis-1/3 space-y-5 pl-5 pt-4 flex flex-col items-end pr-5 gap-y-5">
                                                 <h1 className="text-2xl font-semibold">{room.price}$</h1>
                                                 <p>Free cancel before {new Date().toLocaleDateString()}</p>
-                                               
+
                                             </div>
 
                                         </div>

@@ -1,11 +1,11 @@
-import { useState ,useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { GetSearchCage } from "../helper/cage";
 import { FilterAnimal, FilterSearchCage } from "../types/payload";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import { Cage } from "@/types/response";
 import { useLocation } from "react-router-dom";
-import { RemoveFavCage } from "../helper/user";
+import { GetTokenChangeRoleToClient, RemoveFavCage } from "../helper/user";
 import { Calendar } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import L from 'leaflet';
@@ -58,9 +58,9 @@ function Home() {
             }
             // Highlight dates within the range
             if (
-                startDate && 
-                endDate && 
-                date > startDate && 
+                startDate &&
+                endDate &&
+                date > startDate &&
                 date < endDate
             ) {
                 return 'highlight-range';
@@ -94,7 +94,7 @@ function Home() {
     // Create sets to collect unique values
     const uniqueAnimalTypes = new Set<string>();
     const uniqueFacilities = new Set<string>();
-    
+
     // Iterate through rooms to populate sets
     rooms.forEach((room) => {
         if (room.animal_type) uniqueAnimalTypes.add(room.animal_type);
@@ -107,22 +107,25 @@ function Home() {
             cage_type: cage.cage_type,
             facility: cage.facility,
             price: cage.price.toString(),
-            max_capacity: cage.max_capacity.toString(), 
+            max_capacity: cage.max_capacity.toString(),
             startDate: startDate,
             endDate: endDate
         }).toString();
 
         // Navigate with query parameters
-        
+
         navigate(`/hotelbookdetail?${queryParams}`,
-            { state: { 
-                selectedCage: cage, 
-                selectedHotel: location.state?.selectedHotel,
-                profile_name: location.state?.profile_name,
-                startDate: startDate, 
-                endDate: endDate } });
-        
-                
+            {
+                state: {
+                    selectedCage: cage,
+                    selectedHotel: location.state?.selectedHotel,
+                    profile_name: location.state?.profile_name,
+                    startDate: startDate,
+                    endDate: endDate
+                }
+            });
+
+
     };
 
     const handleRemoveFavorite = async (cage: Cage) => {
@@ -131,7 +134,7 @@ function Home() {
             alert("You need to log in to delete favorites.");
             return;
         }
-        
+
         const favPayload = {
             cage_id: cage.id,
             user_id: Number(userId),
@@ -165,7 +168,7 @@ function Home() {
         setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
         setMarkerPosition([lat, lng]); // Update the marker position
     };
-    
+
     const LocationMarker = () => {
         const map = useMap();
         useMapEvents({
@@ -184,7 +187,24 @@ function Home() {
             </Marker>
         );
     };
-        
+
+    const getTokenChangeRole = async () => {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            return;
+        }
+
+        try {
+            const response = await GetTokenChangeRoleToClient(parseInt(userId));
+            if (response) {
+                localStorage.setItem("token", response.token);
+                localStorage.setItem("role", "client");
+            }
+        } catch (error) {
+            console.error("failed to get token", error);
+        }
+    };
+
 
     useEffect(() => {
         if (navigator.geolocation) {
@@ -193,7 +213,7 @@ function Home() {
                     const { latitude, longitude } = position.coords;
                     setPosition([latitude, longitude]);
                     handleLocationChange(latitude, longitude); // Update formData with initial position
-                    
+
                 },
                 (err) => {
                     setError('Unable to retrieve your location.');
@@ -202,29 +222,35 @@ function Home() {
         } else {
             setError('Geolocation is not supported by this browser.');
         }
+
+        if (location.state.role) {
+            getTokenChangeRole();
+
+        }
+
     }, []);
 
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        const id = localStorage.getItem("userId");
-        
-        fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        })
-          .then((response) => {
-            if (!response.ok) throw new Error("Failed to fetch cage room data");
-            return response.json();
-          })
-          .then((data) => {
-            setRooms(data|| []);
-            console.log("Cage room for search:", rooms);
-          })
-          .catch((error) => console.error("Error fetching cage room data:", error));
-      }, []);
+    // useEffect(() => {
+    //     const token = localStorage.getItem("token");
+    //     const id = localStorage.getItem("userId");
+
+    //     fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
+    //         method: "GET",
+    //         headers: {
+    //             Authorization: `Bearer ${token}`,
+    //             Accept: "application/json",
+    //         },
+    //     })
+    //         .then((response) => {
+    //             if (!response.ok) throw new Error("Failed to fetch cage room data");
+    //             return response.json();
+    //         })
+    //         .then((data) => {
+    //             setRooms(data || []);
+    //             console.log("Cage room for search:", rooms);
+    //         })
+    //         .catch((error) => console.error("Error fetching cage room data:", error));
+    // }, []);
 
     useEffect(() => {
         // Fetch user's current location
@@ -253,42 +279,42 @@ function Home() {
 
     useEffect(() => {
         const fetchFavorites = async () => {
-          try {
-            // Retrieve user ID from localStorage
-            const userId = localStorage.getItem("userId");
-            const token = localStorage.getItem("token");
-            if (!userId) throw new Error("User ID is not available");
-    
-            const [latitude, longitude] = position || [13.736717, 100.523186];
-    
-            // Construct the API URL
-            const apiUrl = `http://localhost:5000/api/user/fav/${userId}?latitude=${latitude}&longitude=${longitude}`;
-    
-            // Fetch data
-            const response = await fetch(apiUrl, {
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/json",
-              },
-            });
-            console.log("Response:", response);
-            if (!response.ok) {
-              throw new Error(`Error fetching data: ${response.statusText}`);
+            try {
+                // Retrieve user ID from localStorage
+                const userId = localStorage.getItem("userId");
+                const token = localStorage.getItem("token");
+                if (!userId) throw new Error("User ID is not available");
+
+                const [latitude, longitude] = position || [13.736717, 100.523186];
+
+                // Construct the API URL
+                const apiUrl = `http://localhost:5000/api/user/fav/${userId}?latitude=${latitude}&longitude=${longitude}`;
+
+                // Fetch data
+                const response = await fetch(apiUrl, {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: "application/json",
+                    },
+                });
+                console.log("Response:", response);
+                if (!response.ok) {
+                    throw new Error(`Error fetching data: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                setFavData(data); // Update state with fetched data
+                console.log("User favorites:", data);
+            } catch (err) {
+                console.error("Error fetching user favorites:", err);
+            } finally {
+                setLoading(false); // Stop the loading spinner
             }
-    
-            const data = await response.json();
-            setFavData(data); // Update state with fetched data
-            console.log("User favorites:", data);
-          } catch (err) {
-            console.error("Error fetching user favorites:", err);
-          } finally {
-            setLoading(false); // Stop the loading spinner
-          }
         };
-    
+
         fetchFavorites();
-      }, [position]);
+    }, [position]);
 
     const MapWithGeocoder = () => {
         const map = useMap();
@@ -326,7 +352,7 @@ function Home() {
             start_time: formatDateToString(startDate),
             end_time: formatDateToString(endDate),
         };
-        
+
 
         try {
             const results = await GetSearchCage(filterAnimal, filterSearchCage);
@@ -338,7 +364,9 @@ function Home() {
                     startDate: startDate,
                     endDate: endDate,
                     selectedPets: selectedPets,
-                    selectedCageSizes: selectedCageSizes
+                    selectedCageSizes: selectedCageSizes,
+                    longitude: searchedPosition ? JSON.stringify(searchedPosition[1]) : "",
+                    latitude: searchedPosition ? JSON.stringify(searchedPosition[0]) : "",
                 }
             });
         } catch (error) {
@@ -399,8 +427,13 @@ function Home() {
                             <div className="flex flex-col w-full gap-y-5">
                                 <div className="bg-bg rounded-xl h-44 w-full shadow shadow-gray-400 p-1">
                                     <div className="h-full w-full rounded-lg">
+<<<<<<< HEAD
                                         
                                     {geoError && <div>{geoError}</div>}
+=======
+
+                                        {geoError && <div>{geoError}</div>}
+>>>>>>> 175917cd2f0f69c16a2690cadd8cd1e6b024f5d3
                                         <MapContainer
                                             center={position || [13.736717, 100.523186]}
                                             zoom={13}
@@ -408,79 +441,79 @@ function Home() {
                                         >
                                             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                                             <LocationMarker />
-                                            <MapWithGeocoder/>
+                                            <MapWithGeocoder />
                                         </MapContainer>
                                     </div>
-                                <div>
-                            </div>
-                        </div>
-                        <div className="p-4 h-full border border-gray-300 rounded-lg shadow-md bg-white">
-                            <label className="block text-[#A08252] text-lg font-medium mb-4">
-                                Pet
-                            </label>
-                            <div className="grid grid-cols-2 gap-4">
-                                {petOptions.map((pet) => (
-                                    <div key={pet} className="flex items-center justify-between space-x-2">
-                                        {/* Checkbox and Label */}
-                                        <label className="flex items-center space-x-2 cursor-pointer">
-                                            <input
-                                                type="checkbox"
-                                                value={pet}
-                                                checked={selectedPets.includes(pet)}
-                                                onChange={() => handlePetChange(pet)}
-                                                className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
-                                            />
-                                            <span className="text-[#5E4126] font-medium">{pet}</span>
-                                        </label>
-
-                                        {/* Dropdown for Cage Size */}
-                                        <select
-                                            value={selectedCageSizes[pet] || ""}
-                                            onChange={(e) => handleCageSizeChange(pet, e.target.value)}
-                                            className="w-28 bg-[#F2C680] border border-[#F2C680] rounded-lg px-2 py-1 text-white focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                                        >
-                                            <option value="" disabled>
-                                                All size
-                                            </option>
-                                            <option value="s">S</option>
-                                            <option value="m">M</option>
-                                            <option value="l">L</option>
-                                            <option value="xl">XL</option>
-                                        </select>
+                                    <div>
                                     </div>
-                                ))}
+                                </div>
+                                <div className="p-4 h-full border border-gray-300 rounded-lg shadow-md bg-white">
+                                    <label className="block text-[#A08252] text-lg font-medium mb-4">
+                                        Pet
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {petOptions.map((pet) => (
+                                            <div key={pet} className="flex items-center justify-between space-x-2">
+                                                {/* Checkbox and Label */}
+                                                <label className="flex items-center space-x-2 cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        value={pet}
+                                                        checked={selectedPets.includes(pet)}
+                                                        onChange={() => handlePetChange(pet)}
+                                                        className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
+                                                    />
+                                                    <span className="text-[#5E4126] font-medium">{pet}</span>
+                                                </label>
+
+                                                {/* Dropdown for Cage Size */}
+                                                <select
+                                                    value={selectedCageSizes[pet] || ""}
+                                                    onChange={(e) => handleCageSizeChange(pet, e.target.value)}
+                                                    className="w-28 bg-[#F2C680] border border-[#F2C680] rounded-lg px-2 py-1 text-white focus:outline-none focus:ring-2 focus:ring-[#A08252]"
+                                                >
+                                                    <option value="" disabled>
+                                                        All size
+                                                    </option>
+                                                    <option value="s">S</option>
+                                                    <option value="m">M</option>
+                                                    <option value="l">L</option>
+                                                    <option value="xl">XL</option>
+                                                </select>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
                         <div className="grid grid-cols-1 gap-4 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
                             <div className="flex col justify-center h-[28rem]">
-                                    <label htmlFor="date" className="block text-lg font-meduim mb-2 mt-2">
-                                            Date
-                                    </label>
-                                    <div className="p-4 rounded-lg mt-8 mb-1">
-                                        <Calendar className = "p-4 rounded-lg shadow-md text-navbar"
-                                            onClickDay={handleDateClick}
-                                            value={[startDate, endDate]}
-                                            tileClassName={tileClassName}
-                                            tileDisabled={tileDisabled}
-                                        />
-                                    </div>
+                                <label htmlFor="date" className="block text-lg font-meduim mb-2 mt-2">
+                                    Date
+                                </label>
+                                <div className="p-4 rounded-lg mt-8 mb-1">
+                                    <Calendar className="p-4 rounded-lg shadow-md text-navbar"
+                                        onClickDay={handleDateClick}
+                                        value={[startDate, endDate]}
+                                        tileClassName={tileClassName}
+                                        tileDisabled={tileDisabled}
+                                    />
+                                </div>
                             </div>
-                                <div className="flex justify-center items-center">
-                                    <div className="mb-1 flex flex-col space-y-3">
-                                        <div className ="flex">
-                                            <span className="text-lg font-medium">Start :</span>
-                                            <p className ="text-lg">{startDate ? startDate.toLocaleDateString() : 'Not selected'}</p>
-                                        </div>
-                                        <div className ="flex">
-                                            <span className="text-lg font-medium">End :</span>
-                                            <p className="text-lg">{endDate ? endDate.toLocaleDateString() : 'Not selected'}</p>
-                                        </div>
+                            <div className="flex justify-center items-center">
+                                <div className="mb-1 flex flex-col space-y-3">
+                                    <div className="flex">
+                                        <span className="text-lg font-medium">Start :</span>
+                                        <p className="text-lg">{startDate ? startDate.toLocaleDateString() : 'Not selected'}</p>
                                     </div>
-                                </div> 
+                                    <div className="flex">
+                                        <span className="text-lg font-medium">End :</span>
+                                        <p className="text-lg">{endDate ? endDate.toLocaleDateString() : 'Not selected'}</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                         
+
                     </div>
                     <div className="flex justify-center">
                         <button
@@ -513,113 +546,137 @@ function Home() {
                 <div className="w-3/4 max-w-6xl space-y-6 absolute z-10 top-10 mt-16 overflow-y-auto h-2/3 px-4">
                     {/* Single Hotel Card */}
                     {favData.map((fav, index) => (
-                    <div
-                        key={index}
-                        className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
-                    >
-                        {/* Hotel Image and Info */}
-                        <div className="flex space-x-6">
-                        {/* Image */}
-                        <div className="w-40 h-40 rounded-lg overflow-hidden">
-                            <img
-                            src={
-                                fav.cage_room.profile.image_array?.[0] ||
-                                "/images/default-room.jpg"
-                            }
-                            alt="Cage Room"
-                            className="w-full h-full object-cover"
-                            />
-                        </div>
+                        <div
+                            key={index}
+                            className="bg-white rounded-lg shadow-md flex justify-between items-center p-6"
+                        >
+                            {/* Hotel Image and Info */}
+                            <div className="flex space-x-6">
+                                {/* Image */}
+                                <div className="w-40 h-40 rounded-lg overflow-hidden">
+                                    {
+                                        (fav.cage_room.profile.image_array && fav.cage_room.profile.image_array.length > 0) ? (
+                                            <img
+                                                src={
+                                                    fav.cage_room.profile.image_array[0]}
+                                                alt="Cage Room"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <img></img>
+                                        )
+                                    }
+                                    {/* <img
+                                        src={
+                                            fav.cage_room.profile.image_array?.[0] ||
+                                            "/images/default-room.jpg"
+                                        }
+                                        alt="Cage Room"
+                                        className="w-full h-full object-cover"
+                                    /> */}
+                                </div>
 
-                        {/* Hotel Info */}
-                        <div>
-                            <h2 className="text-xl font-semi text-[#333]">
-                            {fav.cage_room.profile.name || "Unknown Hotel"}
-                            </h2>
-                            {Array.from({ length: 5 }, (_, i) => (
-                                <span key={i} className="text-yellow-500 text-lg">
-                                {i < Math.floor(fav.cage_room.profile.avg_review) ? (
-                                    <i className="fa-solid fa-star" style={{ color: "#DBA54D" }}></i> // Full star
-                                ) : i < fav.cage_room.profile.avg_review ? (
-                                    <i
-                                    className="fa-solid fa-star-half-alt"
-                                    style={{ color: "#DBA54D" }}
-                                    ></i> // Half star
-                                ) : (
-                                    <i className="fa-regular fa-star" style={{ color: "#DBA54D" }}></i> // Empty star
-                                )}
-                                </span>
-                            ))}
-                            <div className="text-gray-500 mb-2 flex justify-between">
-                                <span>{fav.cage_room.profile.address || ""}</span>
-                                <span className ="px-2">
-                                    {fav.cage_room.profile.Distance ? (Math.floor(fav.cage_room.profile.Distance * 10) / 10).toFixed(1) : ""} km
-                                </span>
-                            </div>
-                                <p className="text-gray-600 text-sm mb-2">
-                                <span className="font-semibold">Facilities:</span>{" "}
-                                {fav.cage_room.profile.facility || "No facilities listed"}
-                            </p>
-                            <div className="flex space-x-2">
-                                <p className="bg-navbar text-white text-sm px-2 py-1 rounded">
-                                {fav.cage_room.animal_type || "Unknown"}
-                                </p>
-                            </div>
-                        </div>
-                        </div>
-
-                        {/* Capsule Info */}
-                        
-                        <div className="flex-1 mx-8 border-l pl-6 flex items-start space-x-6">
-                            {/* Image Section */}
-                            <div className="w-40 h-40 rounded-lg overflow-hidden flex-shrink-0">
-                                <img
-                                src={
-                                    fav.cage_room.image_array?.[0] || "/images/default-room.jpg"
-                                }
-                                alt="Cage Room"
-                                className="w-full h-full object-cover"
-                                />
+                                {/* Hotel Info */}
+                                <div>
+                                    <h2 className="text-xl font-semi text-[#333]">
+                                        {fav.cage_room.profile.name || "Unknown Hotel"}
+                                    </h2>
+                                    {Array.from({ length: 5 }, (_, i) => (
+                                        <span key={i} className="text-yellow-500 text-lg">
+                                            {i < Math.floor(fav.cage_room.profile.avg_review) ? (
+                                                <i className="fa-solid fa-star" style={{ color: "#DBA54D" }}></i> // Full star
+                                            ) : i < fav.cage_room.profile.avg_review ? (
+                                                <i
+                                                    className="fa-solid fa-star-half-alt"
+                                                    style={{ color: "#DBA54D" }}
+                                                ></i> // Half star
+                                            ) : (
+                                                <i className="fa-regular fa-star" style={{ color: "#DBA54D" }}></i> // Empty star
+                                            )}
+                                        </span>
+                                    ))}
+                                    <div className="text-gray-500 mb-2 flex justify-between">
+                                        <span>{fav.cage_room.profile.address || ""}</span>
+                                        <span className="px-2">
+                                            {fav.cage_room.profile.Distance ? (Math.floor(fav.cage_room.profile.Distance * 10) / 10).toFixed(1) : ""} km
+                                        </span>
+                                    </div>
+                                    <p className="text-gray-600 text-sm mb-2">
+                                        <span className="font-semibold">Facilities:</span>{" "}
+                                        {fav.cage_room.profile.facility || "No facilities listed"}
+                                    </p>
+                                    <div className="flex space-x-2">
+                                        <p className="bg-navbar text-white text-sm px-2 py-1 rounded">
+                                            {fav.cage_room.animal_type || "Unknown"}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
 
-                            {/* Information Section */}
-                            <div className="flex flex-col space-y-2">
-                                <h3 className="text-[#333] text-xl font-semi">Capsule</h3>
-                                <div className="flex items-center space-x-2">
-                                    <p className="bg-navbar text-white text-sm px-2 py-1 rounded">
-                                    {fav.cage_room.size || "Unknown"}
-                                    </p> 
+                            {/* Capsule Info */}
+
+                            <div className="flex-1 mx-8 border-l pl-6 flex items-start space-x-6">
+                                {/* Image Section */}
+                                <div className="w-40 h-40 rounded-lg overflow-hidden flex-shrink-0">
+                                    {
+                                        (fav.cage_room.image_array && fav.cage_room.image_array.length > 0) ? (
+                                            <img
+                                                src={
+                                                    fav.cage_room.image_array[0]}
+                                                alt="Cage Room"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <img></img>
+                                        )
+                                    }
+                                    {/* <img
+                                        src={
+                                            fav.cage_room.image_array?.[0] || "/images/default-room.jpg"
+                                        }
+                                        alt="Cage Room"
+                                        className="w-full h-full object-cover"
+                                    /> */}
+                                </div>
+
+                                {/* Information Section */}
+                                <div className="flex flex-col space-y-2">
+                                    <h3 className="text-[#333] text-xl font-semi">Capsule</h3>
+                                    <div className="flex items-center space-x-2">
+                                        <p className="bg-navbar text-white text-sm px-2 py-1 rounded">
+                                            {fav.cage_room.size || "Unknown"}
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                            Size: ({fav.cage_room.width} x{" "}
+                                            {fav.cage_room.lenth} x {fav.cage_room.height} m)
+                                        </p>
+                                    </div>
                                     <p className="text-sm text-gray-600">
-                                    Size: ({fav.cage_room.width} x{" "}
-                                    {fav.cage_room.lenth} x {fav.cage_room.height} m)
+                                        <span className="font-meduim">Accomodates :</span>{" "}
+                                        {fav.cage_room.max_capacity || "N/A"}
+                                    </p>
+                                    <p className="text-gray-600 text-sm mb-2">
+                                        <span className="font-meduim">Facilities:</span>&nbsp;
+                                        {fav.cage_room.facility || "N/A"}
                                     </p>
                                 </div>
-                                <p className="text-sm text-gray-600">
-                                <span className="font-meduim">Accomodates :</span>{" "}
-                                {fav.cage_room.max_capacity || "N/A"}
-                                </p>
-                                <p className="text-gray-600 text-sm mb-2">
-                                    <span className="font-meduim">Facilities:</span>&nbsp;
-                                    {fav.cage_room.facility || "N/A"}
-                                </p>
-                            </div>
                             </div>
 
-                        {/* Price and Action */}
-                        <div className="flex flex-col items-end space-y-4">
-                            <span className="text-lg font-bold text-[#333]">
-                                {fav.cage_room.price} ฿
-                            </span>
-                            <div className="flex space-x-4">
-                            <button className="bg-white text-sm text-black px-3 py-2 rounded-2xl border border-black focus:outline-none focus:ring-2 focus:ring-black" onClick={() => handleRemoveFavorite(fav.cage_room)}>
-                                Remove
-                            </button>
-                            <button className="bg-[#CBAD87] text-sm text-white px-3 py-2 rounded-2xl" onClick={() => handleCageSelect(fav.cage_room)}>
-                                Book Now
-                            </button>
+                            {/* Price and Action */}
+                            <div className="flex flex-col items-end space-y-4">
+                                <span className="text-lg font-bold text-[#333]">
+                                    {fav.cage_room.price} ฿
+                                </span>
+                                <div className="flex space-x-4">
+                                    <button className="bg-white text-sm text-black px-3 py-2 rounded-2xl border border-black focus:outline-none focus:ring-2 focus:ring-black" onClick={() => handleRemoveFavorite(fav.cage_room)}>
+                                        Remove
+                                    </button>
+                                    <button className="bg-[#CBAD87] text-sm text-white px-3 py-2 rounded-2xl" onClick={() => handleCageSelect(fav.cage_room)}>
+                                        Book Now
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     ))}
 
                 </div>

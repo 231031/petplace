@@ -80,7 +80,7 @@ func (r *CageRoomRepository) FilterCages(animals []types.FilterInfo, startTime, 
 
 	animalPairs := utils.MapSearchAnimalPairs(animals)
 
-	id, err := r.GetNotAvaliableCageRoom(animalPairs, startTime, endTime)
+	id, err := r.getNotAvaliableCageRoom(animalPairs, startTime, endTime)
 	if err != nil {
 		return profiles, err
 	}
@@ -112,7 +112,7 @@ func (r *CageRoomRepository) FilterCagesByHotel(animals []types.FilterInfo, star
 	}
 	animalPairs := utils.MapSearchAnimalPairs(animals)
 
-	id, err := r.GetNotAvaliableCageRoom(animalPairs, startTime, endTime)
+	id, err := r.getNotAvaliableCageRoom(animalPairs, startTime, endTime)
 	if err != nil {
 		return profile, err
 	}
@@ -142,7 +142,7 @@ func (r *CageRoomRepository) FilterCagesByHotel(animals []types.FilterInfo, star
 	return profile, nil
 }
 
-func (r *CageRoomRepository) GetNotAvaliableCageRoom(animals [][]interface{}, startTime, endTime time.Time) ([]uint, error) {
+func (r *CageRoomRepository) getNotAvaliableCageRoom(animals [][]interface{}, startTime, endTime time.Time) ([]uint, error) {
 	id := []uint{}
 	services := []model.HotelService{}
 

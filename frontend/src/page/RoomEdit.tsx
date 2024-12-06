@@ -5,6 +5,7 @@ import { UpdateCage, RemoveCage } from "../helper/cage";
 import { UploadRes } from "@/types/response";
 import UploadImage from "../components/UploadImage";
 import { mapCageSize } from "../helper/cage";
+import toast, { Toaster } from "react-hot-toast";
 // import { Toast } from "node_modules/react-toastify/dist/components";
 
 
@@ -16,8 +17,14 @@ const RoomDetailPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (!localStorage.getItem("token")) {
+            navigate("/login");
+        }
+        if (localStorage.getItem("role") && localStorage.getItem("role") !== "hotel") {
+            navigate("/");
+        }
+
         const token = localStorage.getItem("token");
-        // const userId = localStorage.getItem("userId");
         const profileId = localStorage.getItem("profile_id");
 
         const fetchCageRoomType = async () => {
@@ -33,8 +40,9 @@ const RoomDetailPage = () => {
                 if (!response.ok) throw new Error("Failed to fetch cage room data");
                 const data = await response.json();
                 setCageRoomData(data);
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Error fetching cage room data:", error);
+                toast.error(error);
             }
         };
 
@@ -62,8 +70,8 @@ const RoomDetailPage = () => {
                 if (!response.ok) throw new Error("Failed to fetch cage room data");
                 const data = await response.json();
                 setFilteredCageData(data);
-            } catch (error) {
-                // console.error("Error fetching cage room data from pet and type:", error);
+            } catch (error: any) {
+                console.log(error);
             }
         }
 
@@ -97,10 +105,12 @@ const RoomDetailPage = () => {
             };
 
             const res = await UpdateCage(payload);
-            window.location.reload();
+            toast.success(res);
         } catch (err: any) {
-            // alert(err);
-            window.location.reload();
+            console.log(err);
+            if (err) {
+                toast.error(err);
+            }
         }
     };
 
@@ -133,10 +143,12 @@ const RoomDetailPage = () => {
             };
 
             const res = await RemoveCage(payload);
-            window.location.reload();
+            toast.success(res);
         } catch (err: any) {
-            // alert(err);
-            window.location.reload();
+            console.log(err);
+            if (err) {
+                toast.error(err);
+            }
         }
     }
 
@@ -214,15 +226,16 @@ const RoomDetailPage = () => {
             .then((data) => {
                 console.log("data", data);
                 setFilteredCageData(data);
-                window.location.reload();
+                toast.success(data);
             })
             .catch((error) => {
-                // console.error("Error creating new room:", error);
+                toast.error(error)
             });
     };
 
     return (
         <div className="bg-bg h-[65rem]">
+            <Toaster position="top-center" reverseOrder={false} />
             <div className="flex justify-center pb-10">
                 <div className="flex w-3/4 items-center flex-col gap-y-2">
                     {/* section1 */}

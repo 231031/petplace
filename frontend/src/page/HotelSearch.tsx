@@ -28,9 +28,21 @@ function HotelSearch() {
   const endDateFromState = location.state?.endDate || "";
   // console.log("test ",hotel[0].cages.animal_type);
   // console.log("test ", hotel[0].cages[0].size);
-
+  const [formattedStartDate, setFormattedStartDate] = useState(""); // Store formatted date only
+  const [formattedEndDate, setFormattedEndDate] = useState(""); // Store formatted date only
   const [hotels, setHotels] = useState<any[]>([]);
-  const [longitude, setLongtitude] = useState("");
+  // const [longitude, setLongitude] = useState("");
+  // const [latitude, setLatitude] = useState("");
+  // const [longitude, setLongitude] = useState<string>("");
+  // const [latitude, setLatitude] = useState<string>("");
+  // const [longitude, setLongitude] = useState<string[]>([]); // Initialize as number
+  // const [latitude, setLatitude] = useState<string[]>([]); // Initialize as number
+  // const latitudeFromState = location.state?.latitude || "0";
+  // const longitudeFromState = location.state?.longitude || "0";
+  const latitudeFromState = parseFloat(location.state?.latitude) || 0;
+  const longitudeFromState = parseFloat(location.state?.longitude) || 0;
+  const [latitude, setLatitude] = useState<number>(latitudeFromState);
+  const [longitude, setLongitude] = useState<number>(longitudeFromState);
   // const [startDate, setStartDate] = useState(startDateFromState);
   // const [endDate, setEndDate] = useState(endDateFromState);
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
@@ -40,7 +52,18 @@ function HotelSearch() {
   const [selectedCageSizes, setSelectedCageSizes] = useState<{
     [key: string]: string;
   }>({});
-
+  console.log("Pet kub", selectedPets);
+  console.log("Start Date kub1", startDateFromState);
+  console.log("Currently latitude kub:", latitude);
+  console.log("Currently longitude kub:", longitude);
+  // Function to convert the Date object into 'YYYY-MM-DD' format for input
+  const formatDateForInput = (date: Date) => {
+    if (!date) return "";
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based, so add 1
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
   const petOptions = [
     "Dog",
     "Cat",
@@ -61,9 +84,6 @@ function HotelSearch() {
   };
 
   console.log("Currently selected pets:", selectedPets);
-  
-
-
 
   const handleSearch = async (sort: string) => {
     const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
@@ -78,12 +98,6 @@ function HotelSearch() {
     }
 
     const filterSearchCage = {
-      // longitude: "99.3986862",
-      // latitude: "18.3170581",
-      // start_time: startDate,
-      // end_time: endDate,
-      // longitude: searchedPosition ? JSON.stringify(searchedPosition[1]) : "",
-      // latitude: searchedPosition ? JSON.stringify(searchedPosition[0]) : "",
       latitude: searchedPosition[0] || 0,
       longitude: searchedPosition[1] || 0,
       start_time: formatDateToString(startDate),
@@ -106,6 +120,16 @@ function HotelSearch() {
       toast.error(error || "Please fill all information");
       console.error("Error fetching hotels:", error);
     }
+    console.log("Filter Search Cage:", filterSearchCage);
+    
+    const dateObjectStart = new Date(startDate); // Parse the original start date string
+    const formattedStartDate = formatDateForInput(dateObjectStart); // Format it for input display
+    setFormattedStartDate(formattedStartDate); // Set the formatted start date for the input field
+    const dateObjectEnd = new Date(endDate); // Parse the original start date string
+    const formattedEndDate = formatDateForInput(dateObjectEnd); // Format it for input display
+    setFormattedEndDate(formattedEndDate); // Set the formatted start date for the input field
+    console.log("check value sd", startDate);
+    console.log("check value formatsd", formattedStartDate);
   };
 
   const MapWithGeocoder = () => {
@@ -181,11 +205,12 @@ function HotelSearch() {
     });
     useEffect(() => {
       if (searchedPosition) {
-          map.setView(searchedPosition, 13); // Set the map view to the marker's position
+        map.setView(searchedPosition, 13); // Set the map view to the marker's position
       }
-  }, [searchedPosition, map]);
+    }, [searchedPosition, map]);
     return (
       <Marker position={searchedPosition || [13.736717, 100.523186]}>
+        {/* <Marker position={searchedPosition || [latitude, longitude]}> */}
         <Popup>Selected Location</Popup>
       </Marker>
     );
@@ -195,6 +220,7 @@ function HotelSearch() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          // const { latitude, longitude } = position.coords;
           const { latitude, longitude } = position.coords;
           setPosition([latitude, longitude]);
           handleLocationChange(latitude, longitude); // Update formData with initial position
@@ -211,26 +237,29 @@ function HotelSearch() {
   useEffect(() => {
     // Fetch user's current location
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                setPosition([latitude, longitude]);
-                setSearchedPosition([latitude, longitude]); // Default search position
-            },
-            () => {
-                setError('Unable to retrieve your location.');
-                setPosition([13.736717, 100.523186]); // Default to Bangkok
-                setSearchedPosition([13.736717, 100.523186]); // Default search position
-            }
-        );
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setPosition([latitude, longitude]);
+          setSearchedPosition([latitude, longitude]); // Default search position
+        },
+        () => {
+          setError("Unable to retrieve your location.");
+          // setPosition([13.736717, 100.523186]); // Default to Bangkok
+          // setSearchedPosition([13.736717, 100.523186]); // Default search position
+          setPosition([latitude, longitude]); // Default to Bangkok
+          setSearchedPosition([latitude, longitude]); // Default search position
+        }
+      );
     } else {
-        setError('Geolocation is not supported by this browser.');
-        setPosition([13.736717, 100.523186]);
-        setSearchedPosition([13.736717, 100.523186]);
+      setError("Geolocation is not supported by this browser.");
+      setPosition([13.736717, 100.523186]);
+      setSearchedPosition([13.736717, 100.523186]);
     }
-}, []);
+  }, []);
 
-console.log("position:", searchedPosition);
+  console.log("position:", searchedPosition);
+
   // check=====================================================================================================================================================================================
   const handleCageSizeChange = (pet: string, size: string) => {
     setSelectedCageSizes((prev) => ({
@@ -240,10 +269,31 @@ console.log("position:", searchedPosition);
   };
 
   const [startDate, setStartDate] = useState("");
+  console.log("date select edit2", startDate);
   const [endDate, setEndDate] = useState("");
   const [selectionStage, setSelectionStage] = useState<"start" | "range">(
     "start"
   );
+
+  // Auto-rendering on state change (initially based on startDateFromState and endDateFromState)
+  useEffect(() => {
+    if (startDate) {
+      const dateObject = new Date(startDate); // Parse the original start date string
+      const formattedDate = formatDateForInput(dateObject); // Format it for input display
+      setFormattedStartDate(formattedDate); // Set the formatted start date for the input field
+    }
+  }, [startDate]); // Only re-run this effect when startDateFromState changes
+
+  useEffect(() => {
+    if (endDate) {
+      const dateObject = new Date(endDate); // Parse the original end date string
+      const formattedDate = formatDateForInput(dateObject); // Format it for input display
+      setFormattedEndDate(formattedDate); // Set the formatted end date for the input field
+    }
+  }, [endDate]); // Only re-run this effect when endDateFromState changes
+  // console.log("formattedStartDate", formattedStartDate);
+  // console.log("formattedStartDate", formattedEndDate);
+
   const handleDateClick = (clickedDate: Date) => {
     if (selectionStage === "start") {
       // First click: Set start date
@@ -551,7 +601,7 @@ console.log("position:", searchedPosition);
                                 type="checkbox"
                                 value={animal}
                                 checked={selectedPets.includes(animal)}
-                                onChange={() => handlePetChange(animal)}
+                                // onChange={() => handlePetChange(animal)}
                                 className="h-5 w-5 text-[#A08252] focus:ring-[#A08252] rounded-full"
                               />
                               <span>{animal}</span>
@@ -571,9 +621,9 @@ console.log("position:", searchedPosition);
                                   )?.size ||
                                 "" // Default to an empty string if no matching animal is found
                               }
-                              onChange={(e) =>
-                                handleCageSizeChange(animal, e.target.value)
-                              }
+                              // onChange={(e) =>
+                              //   handleCageSizeChange(animal, e.target.value)
+                              // }
                               className="border border-[#A08252] rounded-lg px-2 py-1 text-[#5E4126] focus:outline-none focus:ring-2 focus:ring-[#A08252] ml-2"
                             >
                               <option value="s">Small (S)</option>
@@ -611,8 +661,9 @@ console.log("position:", searchedPosition);
                         <input
                           type="date"
                           id="start-date"
-                          value={startDate}
-                          onChange={(e) => setStartDate(e.target.value)}
+                          value={formattedStartDate}
+                          // value={startDate}
+                          // onChange={(e) => setStartDate(e.target.value)}
                           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
                         />
                       </div>
@@ -621,8 +672,8 @@ console.log("position:", searchedPosition);
                         <input
                           type="date"
                           id="end-date"
-                          value={endDate}
-                          onChange={(e) => setEndDate(e.target.value)}
+                          value={formattedEndDate}
+                          // onChange={(e) => setEndDate(e.target.value)}
                           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
                         />
                       </div>

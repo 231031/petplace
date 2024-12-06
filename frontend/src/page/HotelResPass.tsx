@@ -102,7 +102,7 @@ function HotelResPass() {
                     {Array.isArray(hotels) && hotels.length > 0 ? (
                         <div>
                             {hotels
-                                .filter(hotel => hotel.status === "completed" || hotel.status === "cancel")
+                                .filter(hotel => hotel.status === "completed")
                                 .map((hotel: any, index: number) => (
                                     <div key={index} className="grid grid-cols-10 gap-4  mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4 max-w-screen-xl mx-auto">
                                         <div className="col-span-2">

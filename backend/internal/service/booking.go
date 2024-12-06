@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"petplace/internal/model"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/copier"
+	"gorm.io/gorm"
 )
 
 // implement bussiness logic
@@ -76,33 +78,14 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 	ser.StartTime = startDate
 	ser.EndTime = endDate
 
-	location, err := time.LoadLocation("Asia/Bangkok")
+	strErr, err := utils.CheckInputDate(ser.StartTime, ser.EndTime)
 	if err != nil {
-		return http.StatusInternalServerError, fmt.Errorf("failed to get current time in location"), err
+		return http.StatusInternalServerError, strErr, err
+	}
+	if strErr != nil {
+		return http.StatusBadRequest, strErr, nil
 	}
 
-	currentTime := time.Now().In(location)
-	// currentDay := time.Date(
-	// 	currentTime.Year(),
-	// 	currentTime.Month(),
-	// 	currentTime.Day()+1,
-	// 	0, 0, 0, 0, location,
-	// )
-	nextDay := time.Date(
-		currentTime.Year(),
-		currentTime.Month(),
-		currentTime.Day()+1,
-		0, 0, 0, 0, location,
-	)
-	// fmt.Println("reserve : ", ser.StartTime.In(location))
-	// fmt.Println("next : ", nextDay)
-	if (ser.StartTime.In(location)).Before(nextDay) {
-		return http.StatusBadRequest, fmt.Errorf("failed to reserve past day and current day"), err
-	}
-
-	if (ser.EndTime).Before(ser.StartTime) {
-		return http.StatusBadRequest, fmt.Errorf("end time must be after start time"), err
-	}
 	animals := make([]model.AnimalHotelService, len(payload.Animals))
 	for i, animalID := range payload.Animals {
 		animals[i] = model.AnimalHotelService{
@@ -158,31 +141,6 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 
 	return http.StatusCreated, nil, nil
 }
-
-// func (s *BookingService) UpdateHotelInfo(payload types.UpdateHotelPayload) (int, error) {
-//     // ตรวจสอบความถูกต้องของข้อมูลที่ส่งมา
-//     err := s.Validate.Struct(payload)
-//     if err != nil {
-//         return http.StatusBadRequest, fmt.Errorf("invalid input: %v", err)
-//     }
-
-//     // ดึงข้อมูลโรงแรมเดิมจากฐานข้อมูล
-//     existingHotel, err := s.HotelServiceRepositoryIn.GetHotelByID(payload.HotelID)
-//     if err != nil {
-//         return http.StatusNotFound, fmt.Errorf("hotel not found")
-//     }
-
-//     // อัปเดตเฉพาะฟิลด์ที่ส่งมา
-//     updatedHotel := utils.CopyNonZeroFields(&payload, &existingHotel).(*model.Hotel)
-
-//     // บันทึกข้อมูลที่อัปเดตลงฐานข้อมูล
-//     err = s.HotelServiceRepositoryIn.UpdateHotel(*updatedHotel)
-//     if err != nil {
-//         return http.StatusInternalServerError, fmt.Errorf("failed to update hotel: %v", err)
-//     }
-
-//     return http.StatusOK, nil
-// }
 
 func (s *BookingService) AcceptRejectBookHotel(payload types.SelectStatusPayload) error {
 	bookID := payload.HotelServiceID
@@ -348,6 +306,41 @@ func (s *BookingService) UpdateHotelService(id uint, ser model.HotelService) err
 	return nil
 }
 
+func (s *BookingService) CheckAvailableBooking(payload types.BookAgainPayload) (bool, error, error) {
+	if err := s.Validate.Struct(payload); err != nil {
+		return false, fmt.Errorf("information is not correct"), err
+	}
+
+	startDate, err := time.Parse("2006-01-02", payload.StartTime)
+	if err != nil {
+		return false, fmt.Errorf("information is not correct"), err
+	}
+
+	endDate, err := time.Parse("2006-01-02", payload.EndTime)
+	if err != nil {
+		return false, fmt.Errorf("information is not correct"), err
+	}
+
+	strErr, err := utils.CheckInputDate(startDate, endDate)
+	if err != nil {
+		return false, strErr, err
+	}
+	if strErr != nil {
+		return false, strErr, nil
+	}
+
+	_, err = s.HotelServiceRepositoryIn.CheckNotAvailableBooking(payload.CageID, startDate, endDate)
+	// cage's available in selected date
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return true, nil, nil
+	}
+	if err != nil {
+		return false, fmt.Errorf("selected date is not available"), err
+	}
+
+	return false, fmt.Errorf("selected date is not available"), nil
+}
+
 // role : hotel
 func (s *BookingService) GetAllBookingHotelByHotel(profile_id uint, status string) ([]model.HotelService, error) {
 	status = strings.ToLower(status)
@@ -431,3 +424,56 @@ func (s *BookingService) GetAllBookingHotelByStatus(status string) ([]model.Hote
 
 	return ser, nil
 }
+
+// location, err := time.LoadLocation("Asia/Bangkok")
+// if err != nil {
+// 	return http.StatusInternalServerError, fmt.Errorf("failed to get current time in location"), err
+// }
+
+// currentTime := time.Now().In(location)
+// // currentDay := time.Date(
+// // 	currentTime.Year(),
+// // 	currentTime.Month(),
+// // 	currentTime.Day()+1,
+// // 	0, 0, 0, 0, location,
+// // )
+// nextDay := time.Date(
+// 	currentTime.Year(),
+// 	currentTime.Month(),
+// 	currentTime.Day()+1,
+// 	0, 0, 0, 0, location,
+// )
+// // fmt.Println("reserve : ", ser.StartTime.In(location))
+// // fmt.Println("next : ", nextDay)
+// if (ser.StartTime.In(location)).Before(nextDay) {
+// 	return http.StatusBadRequest, fmt.Errorf("failed to reserve past day and current day"), err
+// }
+
+// if (ser.EndTime).Before(ser.StartTime) {
+// 	return http.StatusBadRequest, fmt.Errorf("end time must be after start time"), err
+// }
+
+// func (s *BookingService) UpdateHotelInfo(payload types.UpdateHotelPayload) (int, error) {
+//     // ตรวจสอบความถูกต้องของข้อมูลที่ส่งมา
+//     err := s.Validate.Struct(payload)
+//     if err != nil {
+//         return http.StatusBadRequest, fmt.Errorf("invalid input: %v", err)
+//     }
+
+//     // ดึงข้อมูลโรงแรมเดิมจากฐานข้อมูล
+//     existingHotel, err := s.HotelServiceRepositoryIn.GetHotelByID(payload.HotelID)
+//     if err != nil {
+//         return http.StatusNotFound, fmt.Errorf("hotel not found")
+//     }
+
+//     // อัปเดตเฉพาะฟิลด์ที่ส่งมา
+//     updatedHotel := utils.CopyNonZeroFields(&payload, &existingHotel).(*model.Hotel)
+
+//     // บันทึกข้อมูลที่อัปเดตลงฐานข้อมูล
+//     err = s.HotelServiceRepositoryIn.UpdateHotel(*updatedHotel)
+//     if err != nil {
+//         return http.StatusInternalServerError, fmt.Errorf("failed to update hotel: %v", err)
+//     }
+
+//     return http.StatusOK, nil
+// }

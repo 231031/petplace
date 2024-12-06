@@ -58,6 +58,7 @@ function HotelDetail() {
             cage_type: cage.cage_type,  // Replace with dynamic value if needed
             facility: cage.facility,
             price: cage.price.toString(),
+            animal_type: cage.animal_type,
             max_capacity: cage.max_capacity.toString(),     // Replace with dynamic value if needed
             startDate: startDate,
             endDate: endDate,
@@ -275,8 +276,8 @@ function HotelDetail() {
 
                                             <div key={index}
                                                 className={`flex h-60 mx-5 mt-5 p-3 shadow shadow-gray-400 h-80 ${selectedRoomIndex === index
-                                                        ? 'rounded-t-md  shadow-tl shadow-tr shadow-bl shadow-br shadow-gray-400'  // มุมโค้งเฉพาะด้านบนและเงารอบๆ ยกเว้นด้านล่าง
-                                                        : 'rounded-md shadow shadow-gray-400 '  // มุมโค้งรอบๆ ทุกด้านตอนแรก
+                                                    ? 'rounded-t-md  shadow-tl shadow-tr shadow-bl shadow-br shadow-gray-400'  // มุมโค้งเฉพาะด้านบนและเงารอบๆ ยกเว้นด้านล่าง
+                                                    : 'rounded-md shadow shadow-gray-400 '  // มุมโค้งรอบๆ ทุกด้านตอนแรก
                                                     }`}
                                             // onClick={() => handleRoomClick(index)}
                                             // onClick={() => handleRoomClick(index)}
@@ -290,7 +291,7 @@ function HotelDetail() {
                                                 <div className="basis-1/3  flex flex-col space-y-5 pl-5 pt-4 cursor-pointer "
                                                     onClick={() => handleRoomClick(index)}
                                                 >
-                                                    <h1 className="text-2xl font-semibold">{cage.cage_type}</h1>
+                                                    <h1 className="text-2xl font-semibold">{cage.cage_type} : {cage.animal_type}</h1>
                                                     <div>
                                                         <div className="flex flex-col gap-y-5">
                                                             <div className="flex gap-2 ">
