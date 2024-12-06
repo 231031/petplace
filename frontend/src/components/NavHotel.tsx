@@ -17,8 +17,6 @@ const NavHotel: React.FC = () => {
       setUsername(storedUsername);
       setRole(storedRole);
       setUserId(storedUserId);
-      console.log("username", username);
-      console.log("userId", userId);
     }
   }, [navigate]);
 
@@ -53,7 +51,7 @@ const NavHotel: React.FC = () => {
           {/* Navigation Links */}
           <div className="hidden md:flex justify-center flex-grow space-x-4">
             <ul className="flex space-x-3 gap-x-20 text-lg">
-              <li><a href="/HotelHome" className="text-white">Home</a></li>
+              <li><a href="/hotelhome" className="text-white">Home</a></li>
               <li><a href="/HotelRating" className="text-white">Rating</a></li>
               <li><a href="/hotel/reservation/upcoming" className="text-white">Reservation</a></li>
 

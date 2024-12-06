@@ -26,11 +26,7 @@ function CageCard({ cage_type, size, width, height, lenth, price, facility, max_
         <div>
 
             <div className="flex h-60 m-5 p-3 rounded-md shadow shadow-gray-400">
-<<<<<<< HEAD
-                <div className="basis-1/3 bg-cover h-full w-72 " style={{ backgroundImage: "url('/images/homebg.jpg')" }}></div>
-=======
                 <div className="basis-1/3 bg-cover h-full w-72 " style={{ backgroundImage: "url('https://carlsonpetproducts.com/cdn/shop/articles/hotel_500x.jpg?v=1672180658')" }}></div>
->>>>>>> 175917cd2f0f69c16a2690cadd8cd1e6b024f5d3
                 <div className="basis-1/3  flex flex-col space-y-5 pl-5 pt-4">
                     <h1 className="text-2xl">{cage_type}</h1>
                     <div>
