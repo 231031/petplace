@@ -3,6 +3,7 @@ import axios from "axios";
 import UploadImage from "@/components/CreateProfile/UploadImage";
 import { UploadRes } from '@/types/response';
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function MyProfile() {
     const [profile, setProfileData] = useState<any>(null); // เก็บข้อมูลโปรไฟล์
@@ -25,6 +26,9 @@ export default function MyProfile() {
     const [petImage, setPetImage] = useState<any>(null);
     const [pet, setPetData] = useState<any>(null);
     const [allPet, setAllPet] = useState<any>(null);
+
+    const [selectedPet, setSelectedPet] = useState<any>();
+    const [selectedPetId, setSelectedPetId] = useState<any>();
 
     // ดึงข้อมูลโปรไฟล์จาก API
     useEffect(() => {
@@ -66,38 +70,10 @@ export default function MyProfile() {
         fetchProfile();
     }, []);
 
-    useEffect(() => {
-        const fetchPetData = async () => {
-            try {
-                const response = await axios.get(`http://localhost:5000/api/user/animal/${id}`, {
-                    headers: {
-                        "accept": "application/json",
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
-                const data = response.data;
-                setPetData({
-                    name: data.name,
-                    animal_type: data.animal_type,
-                    age: data.age,
-                    weight: data.weight,
-                    breed: data.breed,
-                    image_array: data.image_array
-                });
-                console.log("pet", data);
-                setPetImage(data.image)
-            } catch (error) {
-                console.error("Error fetching pet data:", error);
-            }
-        };
-
-        fetchPetData();
-    }, []);
-
+    // useEffect(() => {
     //     const fetchPetData = async () => {
     //         try {
-    //             const response = await axios.get(`http://localhost:5000/api/user/animals/${id}`, {
+    //             const response = await axios.get(`http://localhost:5000/api/user/animal/${id}`, {
     //                 headers: {
     //                     "accept": "application/json",
     //                     'Content-Type': 'application/json',
@@ -105,7 +81,16 @@ export default function MyProfile() {
     //                 },
     //             });
     //             const data = response.data;
-    //             setAllPet(data);
+    //             setPetData({
+    //                 name: data.name,
+    //                 animal_type: data.animal_type,
+    //                 age: data.age,
+    //                 weight: data.weight,
+    //                 breed: data.breed,
+    //                 image_array: data.image_array
+    //             });
+    //             console.log("pet", data);
+    //             // setPetImage(data.image)
     //         } catch (error) {
     //             console.error("Error fetching pet data:", error);
     //         }
@@ -113,6 +98,26 @@ export default function MyProfile() {
 
     //     fetchPetData();
     // }, []);
+
+    useEffect(() => {
+        const fetchPetData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/user/animals/${id}`, {
+                    headers: {
+                        "accept": "application/json",
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                const data = response.data;
+                setAllPet(data);
+            } catch (error) {
+                console.error("Error fetching pet data:", error);
+            }
+        };
+
+        fetchPetData();
+    }, []);
 
 
     // Handle input changes
@@ -123,9 +128,35 @@ export default function MyProfile() {
 
     const handleRemovePetImage = () => {
         setPetImage(null); // Clear the pet image from the state
+        setPetData((prevPet: any) => {
+            return {
+                ...prevPet,
+                image_array: [],
+            };
+        });
     };
 
 
+    const handleSelectPet = (id: string) => {
+        if (id != "") {
+            const selectedPetInfo = allPet.find((pet) => pet.id === parseInt(id));
+            console.log(id);
+            if (selectedPetInfo) {
+                // setSelectedPet(selectedPetInfo);
+                setPetData({
+                    id: parseInt(id),
+                    name: selectedPetInfo.name,
+                    animal_type: selectedPetInfo.animal_type,
+                    age: selectedPetInfo.age,
+                    weight: selectedPetInfo.weight,
+                    breed: selectedPetInfo.breed,
+                    image: selectedPetInfo.image,
+                    image_array: []
+                });
+                setPetImage(selectedPetInfo.image)
+            }
+        }
+    }
 
     // Toggle edit mode
     const toggleEditMode = () => setIsEditing(!isEditing);
@@ -190,7 +221,7 @@ export default function MyProfile() {
                 weight: parseFloat(pet.weight),
             };
 
-            const response = await axios.put(`http://localhost:5000/api/user/animal/${id}`, updatedPet, {
+            const response = await axios.put(`http://localhost:5000/api/user/animal/${pet.id}`, updatedPet, {
                 headers: {
                     accept: "application/json",
                     "Content-Type": "application/json",
@@ -199,7 +230,7 @@ export default function MyProfile() {
             });
 
             console.log("Pet profile updated:", response.data);
-            // setPetData(response.data);
+            toast.success(response.data);
             setIsEditing(false);
         } catch (error) {
             console.error("Error updating pet profile:", error);
@@ -388,164 +419,205 @@ export default function MyProfile() {
                     </div>
                 );
             case "MyPet":
-                return <div >
-                    <div className="bg-bg flex flex-col items-center p-10 ">
-                        <div className="w-full flex gap-x-5 rounded-lg shadow shadow-gray-400 h-48">
+                return <div>
+                    <select
+                        className="text-gray-500 bg-[#FFFBF5] border border-gray-400 p-2 rounded-lg"
+                        // value={selectedPetId}
+                        onChange={(e) => handleSelectPet(e.target.value)}
+                    >
+                        <option value="">Select Pet</option>
+                        {
+                            (allPet && allPet.length > 0) ? (
 
-                            <div className="w-1/4 h-1/4 p-3">
-                                {isEditing ? (
-                                    // โหมดแก้ไข: อัปโหลดหรือลบรูปภาพ
-                                    (pet.image_array.length > 0) ? (
-                                        <div className="relative w-full h-44  ">
-                                            <div className="overflow-hidden  w-full h-full">
-                                                <img
-                                                    src={pet.image_array[0]}
-                                                    alt="Uploaded Image"
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            </div>
-                                            <button
-                                                onClick={handleRemovePetImage}
-                                                className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full text-2xl w-5 h-5  "
-                                            >
-                                                x
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        // อัปโหลดรูปใหม่
-                                        <div className="relative w-full top-16  h-full rounded-full flex justify-center items-center cursor-pointer">
-                                            <UploadImage limit={1} onComplete={handlePetImageUpload} />
-                                        </div>
-                                    )
-                                ) : (
-                                    // โหมดแสดงผล: แสดงรูปโปรไฟล์
-                                    <div className="flex ">
-                                        <img
-                                            src={pet.image_array || petImage} // ใช้รูปภาพใหม่หรือรูปภาพปัจจุบัน
-                                            alt="Profile Image"
-                                            className="size-44 "
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                            {pet ? (
-                                <div className="flex flex-col text-xl  w-3/4 gap-y-5 mt-5 ">
-                                    <div className="flex items-center">
-                                        <p>Pet Name: </p>
+                                allPet.map((pet) => (
+                                    <option key={pet.id} value={pet.id}>
+                                        {pet.name} : {pet.animal_type}
+                                    </option>
+                                ))
+
+                            ) : (
+                                <option>No Pet</option>
+                            )
+                        }
+
+                    </select>
+                    {
+                        (pet) ? (
+                            <div className="bg-bg flex flex-col items-center p-10 ">
+                                <div className="w-full flex gap-x-5 rounded-lg shadow shadow-gray-400 h-48">
+
+                                    <div className="w-1/4 h-1/4 p-3">
                                         {isEditing ? (
-
-                                            <input
-                                                type="text"
-                                                name="name"
-                                                value={pet.name}
-                                                onChange={handleInputChangePet}
-                                                className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
-                                            />
+                                            // โหมดแก้ไข: อัปโหลดหรือลบรูปภาพ
+                                            (petImage) ? (
+                                                <div className="relative w-full h-44  ">
+                                                    <div className="overflow-hidden  w-full h-full">
+                                                        <img
+                                                            src={petImage}
+                                                            alt="Uploaded Image"
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        onClick={handleRemovePetImage}
+                                                        className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full text-2xl w-5 h-5  "
+                                                    >
+                                                        x
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                // อัปโหลดรูปใหม่
+                                                <div className="relative w-full top-16  h-full rounded-full flex justify-center items-center cursor-pointer">
+                                                    <UploadImage limit={1} onComplete={handlePetImageUpload} />
+                                                </div>
+                                            )
                                         ) : (
-                                            <p className="ml-2 text-gray-500"> {pet.name} </p>
+                                            // โหมดแสดงผล: แสดงรูปโปรไฟล์
+                                            <div className="flex ">
+                                                {
+                                                    (petImage) ? (
+                                                        <img
+                                                            src={petImage} // ใช้รูปภาพใหม่หรือรูปภาพปัจจุบัน
+                                                            alt="Profile Image"
+                                                            className="size-44 "
+                                                        />
+                                                    ) : (
+                                                        <div></div>
+                                                    )
+                                                }
+                                            </div>
                                         )}
                                     </div>
+                                    <div className="flex flex-col text-xl  w-3/4 gap-y-5 mt-5 ">
+                                        <div className="flex items-center">
+                                            <p>Pet Name: </p>
+                                            {isEditing ? (
 
-                                    <div className="flex gap-x-5 flex-col space-x-48  w-full h-full">
-                                        <div className="flex flex-col items-center gap-y-5 ">
+                                                <input
+                                                    type="text"
+                                                    name="name"
+                                                    value={pet.name}
+                                                    onChange={handleInputChangePet}
+                                                    className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
+                                                />
+                                            ) : (
+                                                <p className="ml-2 text-gray-500"> {pet.name} </p>
+                                            )}
+                                        </div>
 
-                                            <div className="flex gap-y-10  w-full">
-                                                <div className="flex w-1/2 ">
-                                                    <p>Pet Type: </p>
-                                                    {isEditing ? (
-                                                        <select
-                                                            name="animal_type"
-                                                            value={pet.animal_type}
-                                                            onChange={handleInputChangePet}
-                                                            className="flex text-xs text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-8"
-                                                        >
-                                                            <option value="" disabled>
-                                                                Select Pet Type
-                                                            </option>
-                                                            <option value="dog">Dog</option>
-                                                            <option value="cat">Cat</option>
-                                                            <option value="bird">Bird</option>
-                                                            <option value="fish">Fish</option>
-                                                            <option value="other">Other</option>
-                                                        </select>
-                                                    ) : (
-                                                        <p className="ml-2 text-gray-500">{pet.animal_type}</p>
-                                                    )}
+                                        <div className="flex gap-x-5 flex-col space-x-48  w-full h-full">
+                                            <div className="flex justify-between w-full">
+                                                <div className="flex flex-col items-center gap-y-5 w-full">
+
+                                                    <div className="flex gap-y-10  w-full">
+                                                        <div className="flex w-1/2 ">
+                                                            <p>Pet Type: </p>
+                                                            {isEditing ? (
+                                                                <select
+                                                                    name="animal_type"
+                                                                    value={pet.animal_type}
+                                                                    onChange={handleInputChangePet}
+                                                                    className="flex text-xs text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-8"
+                                                                >
+                                                                    <option value="" disabled>
+                                                                        Select Pet Type
+                                                                    </option>
+                                                                    <option value="" disabled>Select pet type</option>
+                                                                    <option value="dog">dog</option>
+                                                                    <option value="cat">cat</option>
+                                                                    <option value="bird">bird</option>
+                                                                    <option value="ferret">ferret</option>
+                                                                    <option value="rabbit">rabbit</option>
+                                                                    <option value="hamster">hamster</option>
+                                                                    <option value="fish">fish</option>
+                                                                    <option value="chinchilla">chinchilla</option>
+                                                                    <option value="hedgehog">hedgehog</option>
+                                                                    <option value="sugarglider">sugar glider</option>
+                                                                </select>
+                                                            ) : (
+                                                                <p className="ml-2 text-gray-500">{pet.animal_type}</p>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex w-1/2">
+                                                            <p> Pet Breed : </p>
+                                                            {isEditing ? (
+
+                                                                <input
+                                                                    type="text"
+                                                                    name="breed"
+                                                                    value={pet.breed}
+                                                                    onChange={handleInputChangePet}
+                                                                    className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
+                                                                />
+                                                            ) : (
+                                                                <p className=" ml-2 text-gray-500"> {pet.breed}</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex gap-y-10  w-full">
+                                                        <div className="flex  w-1/2">
+                                                            <p>Pet Age: </p>
+                                                            {isEditing ? (
+
+                                                                <input
+                                                                    type="text"
+                                                                    name="age"
+                                                                    value={pet.age}
+                                                                    onChange={handleInputChangePet}
+                                                                    className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
+                                                                />
+                                                            ) : (
+                                                                <p className="ml-2  text-gray-500"> {pet.age}</p>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex w-1/2  ">
+                                                            <p> Weight: </p>
+                                                            {isEditing ? (
+
+                                                                <input
+                                                                    type="text"
+                                                                    name="weight"
+                                                                    value={pet.weight}
+                                                                    onChange={handleInputChangePet}
+                                                                    className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
+                                                                />
+                                                            ) : (
+                                                                <p className="ml-2 text-gray-500"> {pet.weight}</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+
                                                 </div>
-                                                <div className="flex w-1/2">
-                                                    <p> Pet Breed : </p>
-                                                    {isEditing ? (
-
-                                                        <input
-                                                            type="text"
-                                                            name="breed"
-                                                            value={pet.breed}
-                                                            onChange={handleInputChangePet}
-                                                            className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
-                                                        />
-                                                    ) : (
-                                                        <p className=" ml-2 text-gray-500"> {pet.breed}</p>
-                                                    )}
+                                                <div className="flex justify-end">
+                                                    <div className="rounded-full bg-bg shadow shadow-gray-400 w-20 h-7 items-center flex justify-center gap-x-2 text-gray-500 cursor-pointer m-2"
+                                                        onClick={isEditing ? savePetProfile : toggleEditMode}
+                                                    >
+                                                        <p>{isEditing ? "Save" : "Edit"}</p>
+                                                        <i className="fa-regular fa-pen-to-square"></i>
+                                                    </div>
                                                 </div>
+
+
+
+
                                             </div>
-
-                                            <div className="flex gap-y-10  w-full">
-                                                <div className="flex  w-1/2">
-                                                    <p>Pet Age: </p>
-                                                    {isEditing ? (
-
-                                                        <input
-                                                            type="text"
-                                                            name="age"
-                                                            value={pet.age}
-                                                            onChange={handleInputChangePet}
-                                                            className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
-                                                        />
-                                                    ) : (
-                                                        <p className="ml-2  text-gray-500"> {pet.age}</p>
-                                                    )}
-                                                </div>
-                                                <div className="flex w-1/2  ">
-                                                    <p> Weight: </p>
-                                                    {isEditing ? (
-
-                                                        <input
-                                                            type="text"
-                                                            name="weight"
-                                                            value={pet.weight}
-                                                            onChange={handleInputChangePet}
-                                                            className="text-gray-500 rounded-lg border-gray-400 w-28 ml-2 h-7"
-                                                        />
-                                                    ) : (
-                                                        <p className="ml-2 text-gray-500"> {pet.weight}</p>
-                                                    )}
-                                                </div>
-                                            </div>
-
 
                                         </div>
+
+
                                     </div>
+
                                 </div>
-                            ) : (
-                                <div className="flex w-full h-full justify-center items-center">You have no pet</div>
-                            )}
+                            </div>
+                        ) : (
+                            <div className="mt-5 ont-medium">
+                                Select Pet First
+                            </div>
+                        )
+                    }
 
-                            {pet ? (
-                                <div className="flex justify-end  w-1/4">
-                                    <div className="rounded-full bg-bg shadow shadow-gray-400 w-20 h-7 items-center flex justify-center gap-x-2 text-gray-500 cursor-pointer m-2"
-                                        onClick={isEditing ? savePetProfile : toggleEditMode}
-                                    >
-                                        <p>{isEditing ? "Save" : "Edit"}</p>
-                                        <i className="fa-regular fa-pen-to-square"></i>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div> </div>
-                            )}
-
-
-                        </div>
-                    </div>
                 </div >; // Empty content for now
             default:
                 return null;
@@ -581,6 +653,7 @@ export default function MyProfile() {
 
             </div>
             <div className="w-3/5 h-3/5 bg-bg rounded-lg shadow shadow-gray-400 mt-5 p-5">
+                <Toaster position="top-center" reverseOrder={false} />
                 {renderContent()}
             </div>
         </div>
