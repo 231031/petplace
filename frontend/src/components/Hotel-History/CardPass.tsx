@@ -181,14 +181,21 @@ function CardPass({ hotel }: { hotel: Hotel }) {
                 </h2>
                 {hotel.status === "completed" && (
                   <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
+                    {
+                      (hotel.review_rate > 0) ? (
+                        <p>reviewed</p>
+                      ) : (
+                        <button
+                          onClick={handleReviewClick}
+                          className="bg-bgLogin px-4 py-2 border rounded-2xl shadow-lg shadow-egg"
+                        >
+                          Review
+                        </button>
+                      )
+                    }
+
                     <button
-                      onClick={handleReviewClick}
-                      className="bg-bgLogin px-4 py-2 border rounded-2xl shadow-lg shadow-egg"
-                    >
-                      Review
-                    </button>
-                    <button
-                      onClick={() => navigate("/hotelsearch")}
+                      onClick={() => navigate("/hotelbookagain", { state: { hotelServiceID: hotel.id } })}
                       className="bg-button  px-4 py-2 border rounded-2xl shadow-lg shadow-egg"
                     >
                       Book Again
@@ -320,14 +327,20 @@ function CardPass({ hotel }: { hotel: Hotel }) {
               </h2>
               {hotel.status === "completed" && (
                 <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
+                  {
+                    (hotel.review_rate > 0) ? (
+                      <p className="px-4 py-2" >reviewed</p>
+                    ) : (
+                      <button
+                        onClick={handleReviewClick}
+                        className="bg-bgLogin px-4 py-2 border rounded-2xl shadow-lg shadow-egg"
+                      >
+                        Review
+                      </button>
+                    )
+                  }
                   <button
-                    onClick={handleReviewClick}
-                    className="bg-bgLogin px-4 py-2 border rounded-2xl shadow-lg shadow-egg"
-                  >
-                    Review
-                  </button>
-                  <button
-                    onClick={() => navigate("/hotelsearch")}
+                    onClick={() => navigate("/hotelbookagain", { state: { hotelServiceID: hotel.id } })}
                     className="bg-button  px-4 py-2 border rounded-2xl shadow-lg shadow-egg"
                   >
                     Book Again
@@ -358,8 +371,9 @@ function CardPass({ hotel }: { hotel: Hotel }) {
             )} */}
           </div>
         )
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }
 

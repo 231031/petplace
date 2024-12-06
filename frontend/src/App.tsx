@@ -21,6 +21,7 @@ import HotelcPayment from './page/HotelcPayment';
 import HotelSearch from './page/HotelSearch';
 import SelectProfile from './page/SelectProfile';
 import FullMap from './page/Fullmap';
+import BookAgain from './page/HotelBookAgain/';
 
 //Test
 import TestSearch from './page/TestSearch';
@@ -44,6 +45,7 @@ import MyprofileHotel from './page/MyProfileHotel';
 import HotelResAcc from './page/HotelResAcc';
 import HotelResRej from './page/HotelResRej';
 import HotelResPass from './page/HotelResPass';
+
 // import TestLogin from './page/TestLogin';
 
 
@@ -91,6 +93,7 @@ function App() {
           <Route path="/hotelbooksuccess" element={<HotelBookSuccess />} />
           <Route path="/CreateProfile" element={<CreateProfile />} />
           <Route path="/MyProfile" element={<MyProfile />} />
+          <Route path="/hotelbookagain" element={<BookAgain/>}/>
 
           {/* test api */}
           <Route path="/test/search" element={<TestSearch />} />

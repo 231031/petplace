@@ -668,11 +668,11 @@ export default function MyProfile() {
                 </div > // Empty content for now
            
         }
-    };
-
-    if (isLoading) {
-        return <div>Loading...</div>;
     }
+
+    // if (isLoading) {
+    //     return <div>Loading...</div>;
+    // }
 
 
     return (

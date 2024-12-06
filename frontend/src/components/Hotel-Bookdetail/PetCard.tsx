@@ -1,6 +1,6 @@
 import { AddAnimalsUser } from '@/helper/animal_user';
 import { UploadRes } from '@/types/response';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import UploadImage from '@/components/UploadImage';
 
 interface Pet {
@@ -17,9 +17,10 @@ interface PetCardProps {
     pets: Pet[];
     onPetSelect: (petId: number) => void;
     showPetForm: boolean;
+    selectedPet?: any;
 }
 
-function PetCard({ pets, onPetSelect, showPetForm }: PetCardProps) {
+function PetCard({ pets, onPetSelect, showPetForm, selectedPet }: PetCardProps) {
     const [selectedPets, setSelectedPets] = useState<number[]>([]);
     const [newPet, setNewPet] = useState({
         name: '',
@@ -37,6 +38,7 @@ function PetCard({ pets, onPetSelect, showPetForm }: PetCardProps) {
         setImages(prev => [...prev, ...uploadedFiles]);
     };
 
+
     const handlePetSelect = (petId: number) => {
         if (!selectedPets.includes(petId)) {
             const newSelection = [...selectedPets, petId];
@@ -44,6 +46,12 @@ function PetCard({ pets, onPetSelect, showPetForm }: PetCardProps) {
             onPetSelect(petId);
         }
     };
+
+    useEffect(() => {
+        if (selectedPet) {
+            handlePetSelect(selectedPet.animal_user.id);
+        }
+    }, [selectedPet])
 
     const handleRemovePet = (petId: number) => {
         const newSelection = selectedPets.filter(id => id !== petId);
@@ -73,7 +81,7 @@ function PetCard({ pets, onPetSelect, showPetForm }: PetCardProps) {
                 weight: parseFloat(newPet.weight.replace('kg', '').trim()),
                 age: parseFloat(newPet.age.replace('y', '').trim()),
                 gender: "Not specified",
-                image_array: images.map(img => img.fileUrl), 
+                image_array: images.map(img => img.fileUrl),
                 hair_type: "Not specified"
             }];
 

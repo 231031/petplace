@@ -95,6 +95,7 @@ function HotelBookdetail() {
 
     return (
         <div className="grid grid-row-3 gap-16">
+            
 
             <div className="max-w-2xl w-full mx-auto mt-10">
                 <ol className="flex items-center w-full text-xs text-gray-900 font-medium sm:text-base">

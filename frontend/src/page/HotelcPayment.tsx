@@ -9,19 +9,20 @@ export default function HotelcPayment() {
     const navigate = useNavigate();
     const location = useLocation();
     const selectedCage = location.state?.selectedCage || [];
+    const Cage = location.state?.cage || {};
     console.log("HotelcPayment location state:", location.state);
     const handleSelect = (choice: number) => {
         setSelect(choice);
     };
     const handleCaegClick = (selectedCage: Cage) => {
-        navigate('/hotelfillpayment', { 
-            state: { 
+        navigate('/hotelfillpayment', {
+            state: {
                 selectedCage: selectedCage,
-                selectedPets: location.state?.selectedPets, 
-                hotelName: location.state?.hotelName,       
-                startDate: location.state?.startDate,       
-                endDate: location.state?.endDate            
-            } 
+                selectedPets: location.state?.selectedPets,
+                hotelName: location.state?.hotelName,
+                startDate: location.state?.startDate,
+                endDate: location.state?.endDate
+            }
         });
     };
 
@@ -72,7 +73,7 @@ export default function HotelcPayment() {
                 <div className="max-w-sm w-full mx-auto mb-10">
                     <div className="flex justify-between space-x-6">
                         <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400" onClick={() => { navigate(-1) }}>Back</button>
-                        <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400" onClick={() => {handleCaegClick(selectedCage)}}>Next</button>
+                        <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400" onClick={() => { handleCaegClick(selectedCage) }}>Next</button>
                     </div>
                 </div>
 
