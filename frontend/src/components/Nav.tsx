@@ -2,13 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Nav: React.FC = () => {
+  // State to manage menu open/close status
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // State to manage username
   const [username, setUsername] = useState<string | null>(null);
+  // State to manage user ID
   const [userId, setUserId] = useState<string | null>(null);
+  // State to manage user role
   const [role, setRole] = useState<string | null>("None");
   const navigate = useNavigate();
 
-  // ดึงชื่อผู้ใช้จาก localStorage เมื่อ component โหลด
+  // Fetch user data from localStorage when component loads
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
     const storedRole = localStorage.getItem('role');
@@ -17,29 +21,27 @@ const Nav: React.FC = () => {
       setUsername(storedUsername);
       setRole(storedRole);
       setUserId(storedUserId);
-      console.log("username", username);
-      console.log("userId", userId);
     }
   }, [navigate]);
 
+  // Toggle menu open/close status
   const toggleMenu = (): void => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  // Handle logout action
   const handleLogout = () => {
-    // ลบข้อมูลจาก localStorage และนำทางไปหน้า Login
+    // Remove user data from localStorage and navigate to login page
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
     localStorage.removeItem('profile_id');
     localStorage.removeItem('profileID');
     localStorage.removeItem('name');
-    setUsername("")
-    setUserId(null)
+    setUsername("");
+    setUserId(null);
     navigate('/login');
   };
-
-
 
   return (
     <nav>
@@ -53,7 +55,7 @@ const Nav: React.FC = () => {
           {/* Navigation Links */}
           <div className="hidden md:flex justify-center flex-grow space-x-4">
             <ul className="flex space-x-4 gap-x-20 text-lg">
-              <li><a href="/" className="text-white ">Home</a></li>
+              <li><a href="/" className="text-white">Home</a></li>
               <li><a href="/hotelsearch" className="text-white">Booking</a></li>
               <li><a href="/hotelhistory" className="text-white">History</a></li>
             </ul>
@@ -62,10 +64,9 @@ const Nav: React.FC = () => {
           {/* Profile Icon */}
           <div className="flex items-center space-x-4">
             {username ? (
-
-              <button className="text-white text-sm bg-navname w-fit p-2 rounded-lg  "> {username}</button> // ปุ่ม Logout แทน Log in
+              <button className="text-white text-sm bg-navname w-fit p-2 rounded-lg">{username}</button> // Display username if logged in
             ) : (
-              <a href="/login" className="text-white">Log in</a> // ถ้ายังไม่ได้ล็อกอิน
+              <a href="/login" className="text-white">Log in</a> // Display login link if not logged in
             )}
 
             <div className="hidden md:block">
@@ -86,7 +87,6 @@ const Nav: React.FC = () => {
                     <li><a href="/MyProfile" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100"><span className="ml-3">My Profile</span></a></li>
                     <li><a href="/" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Hotel</span></a></li>
                     <li><a href="/care" className="flex items-center p-2 text-base font-normal text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Care & Clinic</span></a></li>
-
                     <li><button type="button" onClick={handleLogout} className="flex items-center p-2 text-base font-normal w-full text-black-900 rounded-lg hover:bg-gray-100"><span className="ml-3">Log out</span></button></li>
                   </ul>
                 </div>

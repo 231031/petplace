@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import UploadImage from "../components/UploadImage";
+import UploadImage from "../../components/UploadImage";
 import { UploadRes, ProfileRes } from "@/types/response";
 import { GetProfileByID, UpdateProfile } from "@/helper/profile";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
@@ -22,7 +22,6 @@ const HotelDetailPage = () => {
     const [newFacility, setNewFacility] = useState("");
     const [images, setImages] = useState<UploadRes[]>([]);
     const [position, setPosition] = useState<[number, number] | null>(null);
-    const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
     const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
     const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
 
@@ -132,7 +131,6 @@ const HotelDetailPage = () => {
         }
 
         try {
-            const token = localStorage.getItem("token");
             const payload = {
                 id: profile.profile.id,
                 user_id: profile.profile.user_id,

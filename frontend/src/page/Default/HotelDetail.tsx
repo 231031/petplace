@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { CarouselDemo } from "../components/HotelHome/CarousalDemo";
-import { CarouselCage } from "../components/HotelHome/CarousalCage";
+import { CarouselDemo } from "@/components/HotelHome/CarousalDemo";
+import { CarouselCage } from "@/components/HotelHome/CarousalCage";
 import { useEffect, useRef, useState } from 'react';
 import { Cage } from "@/types/response";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';

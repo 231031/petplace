@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { UpdateCage, RemoveCage } from "../helper/cage";
+import { UpdateCage, RemoveCage } from "@/helper/cage";
 import { UploadRes } from "@/types/response";
-import UploadImage from "../components/UploadImage";
-import { mapCageSize } from "../helper/cage";
+import UploadImage from "@/components/UploadImage";
+import { mapCageSize } from "@/helper/cage";
 import toast, { Toaster } from "react-hot-toast";
 
 const RoomDetailPage = () => {

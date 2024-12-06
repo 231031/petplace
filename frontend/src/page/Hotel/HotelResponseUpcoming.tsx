@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AcceptRejectBookHotel } from "../helper/hotel";
-import { SelectStatusPayload } from "../types/payload";
-
+import { SelectStatusPayload } from "@/types/payload";
+import { AcceptRejectBookHotel } from "@/helper/hotel";
 function HotelResponseUpcoming() {
     // State to manage hotels data
     const [hotels, setHotels] = useState<any[] | null>(null);

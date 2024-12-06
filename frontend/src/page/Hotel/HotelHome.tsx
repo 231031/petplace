@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CarouselDemo } from "../components/HotelHome/CarousalDemo";
-import { CarouselCage } from "../components/HotelHome/CarousalCage";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { CarouselDemo } from "@/components/HotelHome/CarousalDemo";
+import { CarouselCage } from "@/components/HotelHome/CarousalCage";
 import 'leaflet/dist/leaflet.css';
 
 export default function HotelHome() {
@@ -183,7 +183,6 @@ export default function HotelHome() {
                     <button
                         className="bg-[#FFFBF5] border shadow-lg h-10 w-20 rounded-md text-navbar"
                         onClick={() => navigate('/hotel/edit')}
-                    // onClick={() => navigate('hotel/edit', { state: { hotels: results } })}
                     >
                         Edit
                     </button>
