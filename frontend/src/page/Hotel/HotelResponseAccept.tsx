@@ -1,32 +1,32 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
-function HotelResAcc() {
+function HotelResponseAccept() {
+    // State to manage hotels data
     const [hotels, setHotels] = useState<any[] | null>(null);
+    // State to manage error messages
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
-
-
+    // Fetch accepted hotel reservations when the component mounts
     useEffect(() => {
         const token = localStorage.getItem("token");
         const id = localStorage.getItem("profileID");
 
-        console.log("Token:", token);
-        console.log("ProfileID:", id);
-
+        // Redirect to login if token is not found
         if (!token) {
             navigate("/login");
         } else if (localStorage.getItem("role") && localStorage.getItem("role") !== "hotel") {
             navigate("/")
         }
 
+        // Set error if user ID is not found
         if (!id) {
             setError("User ID not found");
             return;
         }
 
+        // Fetch accepted hotel reservations
         fetch(`http://localhost:5000/api/hotel/${id}/accepted`, {
             method: "GET",
             headers: {
@@ -35,19 +35,16 @@ function HotelResAcc() {
             },
         })
             .then((response) => {
-                console.log("Response status:", response.status);
                 if (!response.ok) throw new Error("Failed to fetch data");
                 return response.json();
             })
             .then((data) => {
-                console.log("API Response data:", data);
-
                 if (data && Array.isArray(data)) {
                     setHotels(data);
                 } else if (data && data.data) {
                     setHotels(data.data);
                 } else {
-                    setError("ไม่พบข้อมูลที่ต้องการ");
+                    setError("Invalid data format");
                 }
             })
             .catch((error) => {
@@ -55,17 +52,8 @@ function HotelResAcc() {
                 setError(error.message);
             });
     }, []);
-    if (error) {
-        return <div className="h-screen text-red-500">Error: {error}</div>;
-    }
 
-    console.log("hotelServiceUsers", hotels)
-    console.log("Hotel data in ResCard:", hotels);
-
-    if (!hotels) {
-        return <div>Loading...</div>;
-    }
-
+    // Format date to 'DD-MM-YYYY'
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-GB', {
@@ -74,9 +62,6 @@ function HotelResAcc() {
             year: 'numeric'
         }).replace(/\//g, '-');
     };
-
-
-
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -100,14 +85,13 @@ function HotelResAcc() {
                                     <div key={index} className="grid grid-cols-10 gap-4  mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4 max-w-screen-xl mx-auto">
                                         <div className="col-span-2">
                                             {
-                                                (hotel.cage_room.image_array.lenght > 0) ? (
-                                                    <p>no image</p>
-                                                ) : (
+                                                (hotel.cage_room.image_array.length > 0) ? (
                                                     <img
-                                                        // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
                                                         src={hotel.cage_room.image_array[0]}
                                                         className="w-full h-full object-cover object-center rounded-lg ml-5 "
                                                     />
+                                                ) : (
+                                                    <p>No image</p>
                                                 )
                                             }
                                         </div>
@@ -182,4 +166,4 @@ function HotelResAcc() {
     );
 }
 
-export default HotelResAcc;
+export default HotelResponseAccept;

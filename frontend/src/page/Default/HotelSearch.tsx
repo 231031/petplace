@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import HotelData from "../components/Hotel-Search/HotelData";
-import { GetSearchCage, GetSearchCageByHotel } from "@/helper/cage";
-import { FilterAnimal, FilterSearchCage } from "@/types/payload";
-import { Navigate, useNavigate } from "react-router-dom";
-import { Profile } from "@/types/model";
-import { Cage } from "@/types/response";
-
+import { GetSearchCage } from "@/helper/cage";
+import { FilterAnimal } from "@/types/payload";
 import {
   MapContainer,
   Marker,
@@ -24,38 +20,20 @@ import { formatDateToString } from "../helper/utils";
 function HotelSearch() {
   const location = useLocation();
   const hotel = location.state?.hotels || [];
-  const startDateFromState = location.state?.startDate || "";
-  const endDateFromState = location.state?.endDate || "";
-  // console.log("test ",hotel[0].cages.animal_type);
-  // console.log("test ", hotel[0].cages[0].size);
   const [formattedStartDate, setFormattedStartDate] = useState(""); // Store formatted date only
   const [formattedEndDate, setFormattedEndDate] = useState(""); // Store formatted date only
   const [hotels, setHotels] = useState<any[]>([]);
-  // const [longitude, setLongitude] = useState("");
-  // const [latitude, setLatitude] = useState("");
-  // const [longitude, setLongitude] = useState<string>("");
-  // const [latitude, setLatitude] = useState<string>("");
-  // const [longitude, setLongitude] = useState<string[]>([]); // Initialize as number
-  // const [latitude, setLatitude] = useState<string[]>([]); // Initialize as number
-  // const latitudeFromState = location.state?.latitude || "0";
-  // const longitudeFromState = location.state?.longitude || "0";
   const latitudeFromState = parseFloat(location.state?.latitude) || 0;
   const longitudeFromState = parseFloat(location.state?.longitude) || 0;
   const [latitude, setLatitude] = useState<number>(latitudeFromState);
   const [longitude, setLongitude] = useState<number>(longitudeFromState);
-  // const [startDate, setStartDate] = useState(startDateFromState);
-  // const [endDate, setEndDate] = useState(endDateFromState);
   const [selectedPets, setSelectedPets] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(true);
   const [currentSort, setSort] = useState("");
-  const navigate = useNavigate();
   const [selectedCageSizes, setSelectedCageSizes] = useState<{
     [key: string]: string;
   }>({});
-  console.log("Pet kub", selectedPets);
-  console.log("Start Date kub1", startDateFromState);
-  console.log("Currently latitude kub:", latitude);
-  console.log("Currently longitude kub:", longitude);
+
   // Function to convert the Date object into 'YYYY-MM-DD' format for input
   const formatDateForInput = (date: Date) => {
     if (!date) return "";
@@ -64,6 +42,7 @@ function HotelSearch() {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
+
   const petOptions = [
     "Dog",
     "Cat",
@@ -76,15 +55,16 @@ function HotelSearch() {
     "Hedgehog",
     "Sugar Glider",
   ];
-
+  const [activeButton, setActiveButton] = useState<number | null>(null);
+  const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
+  // Handle pet selection change
   const handlePetChange = (pet) => {
     setSelectedPets((prev) =>
       prev.includes(pet) ? prev.filter((item) => item !== pet) : [...prev, pet]
     );
   };
 
-  console.log("Currently selected pets:", selectedPets);
-
+  // Handle search action
   const handleSearch = async (sort: string) => {
     const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
       animal_type: pet,
@@ -108,30 +88,20 @@ function HotelSearch() {
     try {
       const results = await GetSearchCage(filterAnimal, filterSearchCage);
       setHotels(results);
-      console.log("Results:", results);
-      // navigate('/hotelsearch', {
-      //   state: {
-      //     hotels: results,
-      //     startDate: startDate,
-      //     endDate: endDate
-      //   }
-      // });
     } catch (error: any) {
       toast.error(error || "Please fill all information");
       console.error("Error fetching hotels:", error);
     }
-    console.log("Filter Search Cage:", filterSearchCage);
-    
+
     const dateObjectStart = new Date(startDate); // Parse the original start date string
     const formattedStartDate = formatDateForInput(dateObjectStart); // Format it for input display
     setFormattedStartDate(formattedStartDate); // Set the formatted start date for the input field
     const dateObjectEnd = new Date(endDate); // Parse the original start date string
     const formattedEndDate = formatDateForInput(dateObjectEnd); // Format it for input display
-    setFormattedEndDate(formattedEndDate); // Set the formatted start date for the input field
-    console.log("check value sd", startDate);
-    console.log("check value formatsd", formattedStartDate);
+    setFormattedEndDate(formattedEndDate); // Set the formatted end date for the input field
   };
 
+  // Geocoder component to search for locations
   const MapWithGeocoder = () => {
     const map = useMap();
 
@@ -154,28 +124,6 @@ function HotelSearch() {
     return null;
   };
 
-  // const [position, setPosition] = useState<[number, number] | null>(null);
-  // const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(
-  //   null
-  // ); // Track marker position
-  // const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
-  // const [searchedPosition, setSearchedPosition] = useState<
-  //   [number, number] | null
-  // >(null); // Position from search or click
-  // const LocationMarker = () => {
-  //   useMapEvents({
-  //     click(e) {
-  //       setSearchedPosition([e.latlng.lat, e.latlng.lng]); // Store clicked position
-  //     },
-  //   });
-  //   console.log('location: ', longitude)
-  //   return (
-  //     <Marker position={searchedPosition || [13.736717, 100.523186]}>
-  //       <Popup>Selected Location</Popup>
-  //     </Marker>
-  //   );
-
-  // };
   const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
   const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(
     null
@@ -190,11 +138,14 @@ function HotelSearch() {
     long: "",
     lat: "",
   });
+
+  // Handle location change
   const handleLocationChange = (lat: number, lng: number) => {
     setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
     setMarkerPosition([lat, lng]); // Update the marker position
   };
 
+  // Marker component to display selected location
   const LocationMarker = () => {
     const map = useMap();
     useMapEvents({
@@ -209,17 +160,16 @@ function HotelSearch() {
     }, [searchedPosition, map]);
     return (
       <Marker position={searchedPosition || [13.736717, 100.523186]}>
-        {/* <Marker position={searchedPosition || [latitude, longitude]}> */}
         <Popup>Selected Location</Popup>
       </Marker>
     );
   };
 
+  // Fetch user's current location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          // const { latitude, longitude } = position.coords;
           const { latitude, longitude } = position.coords;
           setPosition([latitude, longitude]);
           handleLocationChange(latitude, longitude); // Update formData with initial position
@@ -233,8 +183,8 @@ function HotelSearch() {
     }
   }, []);
 
+  // Fetch user's current location
   useEffect(() => {
-    // Fetch user's current location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -244,8 +194,6 @@ function HotelSearch() {
         },
         () => {
           setError("Unable to retrieve your location.");
-          // setPosition([13.736717, 100.523186]); // Default to Bangkok
-          // setSearchedPosition([13.736717, 100.523186]); // Default search position
           setPosition([latitude, longitude]); // Default to Bangkok
           setSearchedPosition([latitude, longitude]); // Default search position
         }
@@ -257,9 +205,7 @@ function HotelSearch() {
     }
   }, []);
 
-  console.log("position:", searchedPosition);
-
-  // check=====================================================================================================================================================================================
+  // Handle cage size change
   const handleCageSizeChange = (pet: string, size: string) => {
     setSelectedCageSizes((prev) => ({
       ...prev,
@@ -268,7 +214,6 @@ function HotelSearch() {
   };
 
   const [startDate, setStartDate] = useState("");
-  console.log("date select edit2", startDate);
   const [endDate, setEndDate] = useState("");
   const [selectionStage, setSelectionStage] = useState<"start" | "range">(
     "start"
@@ -290,9 +235,8 @@ function HotelSearch() {
       setFormattedEndDate(formattedDate); // Set the formatted end date for the input field
     }
   }, [endDate]); // Only re-run this effect when endDateFromState changes
-  // console.log("formattedStartDate", formattedStartDate);
-  // console.log("formattedStartDate", formattedEndDate);
 
+  // Handle date click
   const handleDateClick = (clickedDate: Date) => {
     if (selectionStage === "start") {
       // First click: Set start date
@@ -317,17 +261,15 @@ function HotelSearch() {
         setEndDate(null);
       }
     }
-    console.log("Start Date:", startDate);
-    console.log("End Date:", endDate);
   };
 
+  // Add custom classes to calendar tiles
   const tileClassName = ({ date, view }) => {
     if (view === "month") {
       // Highlight start date
       if (startDate && date.toDateString() === startDate.toDateString()) {
         return "highlight-start";
       }
-
       // Highlight end date
       if (endDate && date.toDateString() === endDate.toDateString()) {
         return "highlight-end";
@@ -340,11 +282,13 @@ function HotelSearch() {
     return null;
   };
 
+  // Disable past dates in the calendar
   const tileDisabled = ({ date, view }) => {
     // Optional: Add logic to disable past dates or specific date ranges
     return view === "month" && date < new Date();
   };
 
+  // Fetch initial data from location state
   useEffect(() => {
     if (location.state) {
       setIsEditing(false);
@@ -353,23 +297,11 @@ function HotelSearch() {
       setEndDate(location.state.endDate || "");
       setSelectedPets(location.state.selectedPets || []);
       setSelectedCageSizes(location.state.selectedCageSizes || []);
-      console.log(location.state.selectedPets);
-      console.log(location.state.selectedCageSizes);
     }
   }, []);
 
-  const [searchClicked, setSearchClicked] = useState(false);
 
-  // const [isClicked, setIsClicked] = useState(false);
-  const [activeButton, setActiveButton] = useState<number | null>(null);
-  const buttons = ["Sort By", "Distance", "Price", "Rating", "Hot Deal"]; // Button labels
-  // const uniqueAnimalTypes = [
-  //   ...new Set(
-  //     hotel.flatMap((hotelItem) =>
-  //       hotelItem.cages.map((cage) => cage.animal_type)
-  //     )
-  //   ),
-  // ];
+
   return (
     <div className="">
       <div className="w-full h-1/2 p-4 bg-white flex justify-center items-center relative">
@@ -392,13 +324,8 @@ function HotelSearch() {
           </a>
         </div>
       </div>
-      {/* dsadsa */}
-
-      {/* -=========================================================================*/}
-      {/* <div className="flex flex-rows-2"> */}
       <div className="">
         <div className="flex flex-cols-3 justify-center gap-20 ">
-          {/* <div className="flex flex-cols-3 justify-center gap-20 rounded-2xl shadow-lg shadow-egg border border-gray-300 mx-40 bg-slate-500"></div> */}
 
           {/* Conditional Rendering */}
           {isEditing ? (
@@ -462,39 +389,7 @@ function HotelSearch() {
                   </div>
                 </div>
 
-                {/* Date Section */}
-                {/* <div className="grid grid-cols-1 gap-4 mb-6 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
-                  <div>
-                    <label
-                      htmlFor="start-date"
-                      className="block text-lg font-semibold mb-2"
-                    >
-                      Start Date
-                    </label>
-                    <input
-                      type="date"
-                      id="start-date"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="end-date"
-                      className="block text-lg font-semibold mb-2"
-                    >
-                      End Date
-                    </label>
-                    <input
-                      type="date"
-                      id="end-date"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
-                    />
-                  </div>
-                </div> */}
+                
                 <div className="grid grid-cols-1 gap-4 p-4 border border-gray-300 rounded-lg shadow-md bg-white mt-8">
                   <div className="flex col justify-center h-[28rem]">
                     <label
@@ -620,9 +515,6 @@ function HotelSearch() {
                                   )?.size ||
                                 "" // Default to an empty string if no matching animal is found
                               }
-                              // onChange={(e) =>
-                              //   handleCageSizeChange(animal, e.target.value)
-                              // }
                               className="border border-[#A08252] rounded-lg px-2 py-1 text-[#5E4126] focus:outline-none focus:ring-2 focus:ring-[#A08252] ml-2"
                             >
                               <option value="s">Small (S)</option>
@@ -661,8 +553,6 @@ function HotelSearch() {
                           type="date"
                           id="start-date"
                           value={formattedStartDate}
-                          // value={startDate}
-                          // onChange={(e) => setStartDate(e.target.value)}
                           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
                         />
                       </div>
@@ -672,7 +562,6 @@ function HotelSearch() {
                           type="date"
                           id="end-date"
                           value={formattedEndDate}
-                          // onChange={(e) => setEndDate(e.target.value)}
                           className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#A08252]"
                         />
                       </div>
@@ -724,7 +613,6 @@ function HotelSearch() {
           )}
         </div>
       </div>
-      {/* </div> */}
     </div>
   );
 }

@@ -1,21 +1,23 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-// import toast from "react-toastify";
 import { UpdateCage, RemoveCage } from "../helper/cage";
 import { UploadRes } from "@/types/response";
 import UploadImage from "../components/UploadImage";
 import { mapCageSize } from "../helper/cage";
 import toast, { Toaster } from "react-hot-toast";
-// import { Toast } from "node_modules/react-toastify/dist/components";
-
 
 const RoomDetailPage = () => {
+    // State to manage cage room data
     const [cageRoomData, setCageRoomData] = useState<any[]>([]);
+    // State to manage selected animal type
     const [selectedAnimal, setSelectedAnimal] = useState<string>('');
+    // State to manage selected cage
     const [selectedCage, setSelectedCage] = useState<string>('');
+    // State to manage filtered cage data
     const [filteredCageData, setFilteredCageData] = useState<any>({});
     const navigate = useNavigate();
 
+    // Fetch cage room data when component mounts
     useEffect(() => {
         if (!localStorage.getItem("token")) {
             navigate("/login");
@@ -49,12 +51,14 @@ const RoomDetailPage = () => {
         fetchCageRoomType();
     }, [selectedAnimal, selectedCage]);
 
+    // Fetch cage room data by ID when selected cage changes
     useEffect(() => {
         if (selectedCage) {
             fetchCageRoomById(parseInt(selectedCage));
         }
     }, [selectedAnimal, selectedCage]);
 
+    // Fetch cage room data by ID
     const fetchCageRoomById = async (cageRoomId: number) => {
         if (cageRoomId) {
             try {
@@ -74,9 +78,9 @@ const RoomDetailPage = () => {
                 console.log(error);
             }
         }
-
     };
 
+    // Handle form submission to update cage data
     const handleSubmit = async () => {
         try {
             const token = localStorage.getItem("token");
@@ -114,8 +118,10 @@ const RoomDetailPage = () => {
         }
     };
 
+    // State to manage modal visibility
     const [showModal, setShowModal] = useState(false);
 
+    // Handle cage deletion
     const handleDeleteCage = async () => {
         try {
             const token = localStorage.getItem("token");
@@ -150,24 +156,25 @@ const RoomDetailPage = () => {
                 toast.error(err);
             }
         }
-    }
+    };
 
+    // Handle adding a new facility
     const handleAddFacility = () => {
         const currentFacilities = filteredCageData.facility_array || [];
         const newFacility = filteredCageData.facility;
         const updatedFacilities = [...currentFacilities, newFacility];
         setFilteredCageData({ ...filteredCageData, facility_array: updatedFacilities, facility: '' });
-    }
+    };
 
-
+    // Handle removing a facility
     const handleRemoveFacility = (facility: string) => {
         const updatedFacilities = (filteredCageData.facility_array || []).filter((f: string) => f !== facility);
         setFilteredCageData({ ...filteredCageData, facility_array: updatedFacilities });
-    }
+    };
 
+    // Handle image upload
     const handleImageUpload = (files: UploadRes[]) => {
         const currentImages = filteredCageData.image_array || [];
-        //map the new images to the current images
         const newImageArray = files.map((file) => (file.fileUrl));
         const updatedImages = [...currentImages, ...newImageArray];
 
@@ -181,6 +188,7 @@ const RoomDetailPage = () => {
         });
     };
 
+    // Handle removing an image
     const handleRemoveImage = (index: number) => {
         const updatedImages = (filteredCageData.image_array || []).filter((_: any, imgIndex: number) => imgIndex !== index);
         setFilteredCageData({
@@ -190,10 +198,10 @@ const RoomDetailPage = () => {
         });
     };
 
+    // Handle creating a new cage room
     const handleCreateRoom = () => {
         const token = localStorage.getItem("token");
         const profileId = localStorage.getItem("profile_id");
-        console.log("profileId", profileId);
 
         const payload = {
             animal_type: selectedAnimal,
@@ -224,12 +232,11 @@ const RoomDetailPage = () => {
         })
             .then((res) => res.json())
             .then((data) => {
-                console.log("data", data);
                 setFilteredCageData(data);
                 toast.success(data);
             })
             .catch((error) => {
-                toast.error(error)
+                toast.error(error);
             });
     };
 

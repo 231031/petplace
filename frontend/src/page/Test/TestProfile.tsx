@@ -1,14 +1,11 @@
 import { GetProfileByID, UpdateProfile } from "@/helper/profile";
-// import { Profile } from "@/types/model";
 import { ProfileRes } from "@/types/response";
 import { useEffect, useState } from "react";
-
 
 
 function TestProfile() {
 
     const [profile, setProfile] = useState<ProfileRes>();
-
     const payload = {
         address: "555/55 Main Street",
         check_in: "15:00",

@@ -5,50 +5,44 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { GetTypeAnimalByUserID } from '@/helper/animal_user';
 
-
 function HotelBookdetail() {
+    // Get search parameters from the URL
     const [searchParams] = useSearchParams();
-    const cage_type = searchParams.get('cage_type')
-    const size = searchParams.get('size')
-    const price = searchParams.get('price')
-    const facility = searchParams.get('facility')
-    const max_capacity = searchParams.get('max_capacity')
-    const width = searchParams.get('width')
-    const height = searchParams.get('height')
-    const lenth = searchParams.get('lenth')
+    const cage_type = searchParams.get('cage_type');
+    const size = searchParams.get('size');
+    const price = searchParams.get('price');
+    const facility = searchParams.get('facility');
+    const max_capacity = searchParams.get('max_capacity');
+    const width = searchParams.get('width');
+    const height = searchParams.get('height');
+    const lenth = searchParams.get('lenth');
+
+    // State to manage selected pets and error messages
     const [selectedPets, setSelectedPets] = useState<number[]>([]);
     const [error, setError] = useState<string>('');
 
+    // Get location and navigation hooks
     const location = useLocation();
     const navigate = useNavigate();
+
+    // Get state from location
     const selectedCage = location.state?.selectedCage || [];
     const selectedHotel = location.state?.selectedHotel || [];
     const startDate = location.state?.startDate || '';
     const endDate = location.state?.endDate || '';
     const profile_name = location.state?.profile_name || '';
+
+    // State to manage pets and pet form visibility
     const [pets, setPets] = useState<any[]>([]);
     const [showPetForm, setShowPetForm] = useState<boolean>(true);
 
-    console.log("date", startDate, endDate);
-    console.log("CageSelected", selectedCage);
-    console.log("Location State:", location.state);
-    console.log("Selected Cage:", selectedCage);
-    console.log("Selected Hotel:", selectedHotel);
-    console.log("Profile from selectedCage:", selectedCage.profile);
-    console.log("Profile name:", profile_name);
-    console.log("width", width);
-    console.log("height", height);
-    console.log("lenth", lenth);
-
+    // Fetch pets when the component mounts
     useEffect(() => {
         const fetchPets = async () => {
             try {
                 const userId = localStorage.getItem('userId');
-                console.log("userId", userId);
                 if (!userId) return;
-
                 const response = await GetTypeAnimalByUserID(Number(userId), selectedCage.animal_type);
-                console.log("Pets data:", response);
                 setPets(response);
             } catch (error) {
                 console.error('Error fetching pets:', error);
@@ -58,20 +52,19 @@ function HotelBookdetail() {
         fetchPets();
     }, []);
 
+    // Toggle pet form visibility
     const handleAddPetClick = () => {
         setShowPetForm(!showPetForm);
     };
+
+    // Handle hotel click and navigate to the payment page
     const handleHotelClick = (selectedCage: Cage) => {
         if (!selectedPets || selectedPets.length === 0) {
-            setError('กรุณาเลือกสัตว์เลี้ยงอย่างน้อย 1 ตัว');
+            setError('Please select at least one pet');
             return;
         }
-
-
-        const hotelName = location.state?.profile_name || selectedCage.profile?.name || "ไม่ระบุชื่อโรงแรม";
-        console.log("hotelNameasdasd", hotelName);
-
-        navigate('/hotelcpayment', {
+        const hotelName = location.state?.profile_name || selectedCage.profile?.name || "Default Hotel";
+        navigate('/hotelselectpayment', {
             state: {
                 selectedCage: {
                     ...selectedCage,
@@ -92,10 +85,9 @@ function HotelBookdetail() {
         });
     };
 
-
     return (
         <div className="grid grid-row-3 gap-16">
-
+            {/* Step Indicator */}
             <div className="max-w-2xl w-full mx-auto mt-10">
                 <ol className="flex items-center w-full text-xs text-gray-900 font-medium sm:text-base">
                     <li className="flex w-full relative text-black after:content-[''] after:w-full after:h-2 after:bg-gray-200 after:inline-block after:absolute lg:after:top-5 after:top-5 after:left-6">
@@ -119,7 +111,7 @@ function HotelBookdetail() {
                 </ol>
             </div>
 
-
+            {/* Room and Pet Selection */}
             <div className="max-w-5xl w-full mx-auto">
                 <p className="text-2xl ">Room</p>
                 <CageCard
@@ -158,6 +150,8 @@ function HotelBookdetail() {
                     showPetForm={showPetForm}
                 />
             </div>
+
+            {/* Navigation Buttons */}
             <div className="max-w-sm w-full mx-auto mb-10">
                 <div className="flex justify-between space-x-6">
                     <button className="w-full px-2 h-8  rounded-full shadow shadow-gray-400 " onClick={() => navigate(-1)}>Back</button>
@@ -165,7 +159,6 @@ function HotelBookdetail() {
                 </div>
             </div>
         </div>
-
     )
 }
 

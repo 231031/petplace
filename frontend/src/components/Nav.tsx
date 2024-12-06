@@ -55,7 +55,7 @@ const Nav: React.FC = () => {
             <ul className="flex space-x-4 gap-x-20 text-lg">
               <li><a href="/" className="text-white ">Home</a></li>
               <li><a href="/hotelsearch" className="text-white">Booking</a></li>
-              <li><a href="/hotelhis" className="text-white">History</a></li>
+              <li><a href="/hotelhistory" className="text-white">History</a></li>
             </ul>
           </div>
 

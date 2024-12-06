@@ -2,17 +2,19 @@ import { Cage } from "@/types/response";
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-
-
 export default function HotelcPayment() {
+    // State to manage selected payment method
     const [select, setSelect] = useState<number | null>(0);
     const navigate = useNavigate();
     const location = useLocation();
     const selectedCage = location.state?.selectedCage || [];
-    console.log("HotelcPayment location state:", location.state);
+
+    // Handle payment method selection
     const handleSelect = (choice: number) => {
         setSelect(choice);
     };
+
+    // Handle cage click and navigate to the payment form
     const handleCaegClick = (selectedCage: Cage) => {
         navigate('/hotelfillpayment', { 
             state: { 
@@ -50,8 +52,6 @@ export default function HotelcPayment() {
                 </ol>
             </div>
 
-
-
             <p className="text-2xl font-bold max-w-6xl w-full mx-auto mt-5">Select Payment Method</p>
             <div className="flex flex-col gap-3 max-w-7xl mx-auto mt-5">
                 <div className={`${select === 1 ? "opacity-100" : "opacity-50"} `}>
@@ -75,7 +75,6 @@ export default function HotelcPayment() {
                         <button className="w-full px-2 h-8 bg-nextstep text-white rounded-full shadow shadow-gray-400" onClick={() => {handleCaegClick(selectedCage)}}>Next</button>
                     </div>
                 </div>
-
             </div>
         </div>
     );

@@ -1,16 +1,18 @@
-
-import { formatDateToString, formatDateToStringNew } from '@/helper/utils';
+import { formatDateToStringNew } from '@/helper/utils';
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function PaymentSelect() {
+    // State to manage selected payment method
     const [select, setSelect] = useState<number | null>(0);
+    // State to manage payment details
     const [paymentDetails, setPaymentDetails] = useState({
         cardName: '',
         cardNumber: '',
         expiry: '',
         cvv: ''
     });
+    // State to manage error messages
     const [error, setError] = useState('');
 
     const navigate = useNavigate();
@@ -19,10 +21,12 @@ export default function PaymentSelect() {
     const selectedPets = location.state?.selectedPets;
     const profile_name = location.state?.hotelName;
 
+    // Handle payment method selection
     const handleSelect = (choice: number) => {
         setSelect(choice);
     };
 
+    // Handle input change for payment details
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setPaymentDetails(prev => ({
@@ -31,57 +35,46 @@ export default function PaymentSelect() {
         }));
     };
 
-    console.log("Location State:", location.state);
-    console.log("Selected Pets:", selectedPets);
-    console.log("Selected Cage:", selectedCage);
-    console.log("Profile name:", profile_name);
-    console.log("Start Date:", location.state?.startDate);
-    console.log("End Date:", location.state?.endDate);
-
+    // Handle booking confirmation
     const handleBooking = async () => {
         try {
-
+            // Validate selected pets
             if (!selectedPets || selectedPets.length === 0) {
-                setError('กรุณาเลือกสัตว์เลี้ยงอย่างน้อย 1 ตัว');
+                setError('Please select at least one pet to book');
                 return;
             }
 
+            // Validate start and end dates
             if (!location.state?.startDate || !location.state?.endDate) {
-                setError('กรุณาเลือกวันที่เช็คอินและเช็คเอาท์');
+                setError('Please select start and end date to book');
                 return;
             }
 
+            // Validate selected cage
             if (!selectedCage) {
-                setError('ไม่พบข้อมูลห้องพัก กรุณาเลือกห้องพักใหม่');
+                setError('Do not have selected cage');
                 return;
             }
 
-
+            // Validate payment details
             if (!paymentDetails.cardName || !paymentDetails.cardNumber ||
                 !paymentDetails.expiry || !paymentDetails.cvv) {
-                setError('กรุณากรอกข้อมูลการชำระเงินให้ครบถ้วน');
+                setError('Please fill in all payment details');
                 return;
             }
 
+            // Get client details from localStorage
             const client_id = parseInt(localStorage.getItem('userId') || '0');
             const client_name = localStorage.getItem('username') || '';
 
+            // Validate client details
             if (!client_id || !client_name) {
                 setError('กรุณาเข้าสู่ระบบใหม่');
                 navigate('/login');
                 return;
             }
 
-            // const postBookingHotel = async () => {
-
-            //         card_detail: {
-            //             expiry: "2029-11",
-            //             name: "Client First",
-            //             number: "4032032300864326",
-            //             security_code: "111",
-            //         },
-            //     };
-            // สร้าง payload
+            // Prepare booking payload
             const bookingPayload = {
                 animals: selectedPets,
                 cage_id: selectedCage.id,
@@ -98,15 +91,16 @@ export default function PaymentSelect() {
                     security_code: paymentDetails.cvv
                 }
             };
-            console.log("Final Booking Payload:", bookingPayload);
-
             const token = localStorage.getItem("token");
 
+            // Validate token
             if (!token) {
                 console.error("No token found. Please log in first.");
                 alert("No token found. Please log in first.");
                 return;
             }
+
+            // Send booking request to the server
             const response = await fetch("http://localhost:5000/api/hotel/client/booking", {
                 method: "POST",
                 headers: {
@@ -116,6 +110,7 @@ export default function PaymentSelect() {
                 body: JSON.stringify(bookingPayload),
             });
 
+            // Handle response
             if (!response.ok) {
                 const errorData = await response.json();
                 alert("Error: " + (errorData.message || "Failed to book!"));
@@ -123,15 +118,16 @@ export default function PaymentSelect() {
             }
 
             const data = await response.json();
-            console.log("Booking successful:", data);
             alert("Booking successful!");
         } catch (error) {
             console.error("Error:", (error as any).message);
             alert("An error occurred while booking!");
         }
 
+        // Navigate to booking success page
         navigate('/hotelbooksuccess');
     };
+
     return (
         <div className='h-screen'>
             <div className="max-w-2xl w-full mx-auto mt-10">
@@ -160,7 +156,6 @@ export default function PaymentSelect() {
             <div className="flex flex-col gap-3 max-w-7xl mx-auto mt-5">
                 <div>
                     <div className="flex items-center">
-
                         <div className="shadow shadow-gray-400 w-full p-6 ml-12">
                             <p className="text-xl font-bold mb-4">Credit/Debit Card</p>
                             <div className='grid grid-row-2 gap-2'>

@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"; // Import star icons
 
-function HotelResPass() {
+function HotelResponseReject() {
+    // State to manage hotels data
     const [hotels, setHotels] = useState<any[] | null>(null);
+    // State to manage error messages
     const [error, setError] = useState<string | null>(null);
-    const [view, setView] = useState<boolean>(false);
-    const [viewId, setViewId] = useState<number>(-1);
     const navigate = useNavigate();
-    const [fullStars, setFullStars] = useState<number>(0);
-    const [halfStar, sethalfStar] = useState<boolean>(false);
 
-
+    // Fetch rejected hotel reservations when the component mounts
     useEffect(() => {
         const token = localStorage.getItem("token");
         const id = localStorage.getItem("profileID");
@@ -21,48 +18,34 @@ function HotelResPass() {
             return;
         }
 
-
-        Promise.all([
-            fetch(`http://localhost:5000/api/hotel/${id}/completed`, {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-            }),
-            fetch(`http://localhost:5000/api/hotel/${id}/cancel`, {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
+        // Fetch rejected hotel reservations
+        fetch(`http://localhost:5000/api/hotel/${id}/rejected`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                Accept: "application/json",
+            },
+        })
+            .then((response) => {
+                if (!response.ok) throw new Error("Failed to fetch data");
+                return response.json();
             })
-        ])
-            .then(([completedRes, cancelRes]) =>
-                Promise.all([completedRes.json(), cancelRes.json()])
-            )
-            .then(([completedData, cancelData]) => {
-
-                const combinedData = [
-                    ...(Array.isArray(completedData) ? completedData : []),
-                    ...(Array.isArray(cancelData) ? cancelData : [])
-                ];
-                setHotels(combinedData);
+            .then((data) => {
+                if (data && Array.isArray(data)) {
+                    setHotels(data);
+                } else if (data && data.data) {
+                    setHotels(data.data);
+                } else {
+                    setError("Invalid data format");
+                }
             })
             .catch((error) => {
                 console.error("Error fetching hotel data:", error);
                 setError(error.message);
             });
     }, []);
-    if (error) {
-        return <div className="h-screen text-red-500">Error: {error}</div>;
-    }
-    console.log("hotelServiceUsers", hotels)
 
-    if (!hotels) {
-        return <div>Loading...</div>;
-    }
-
+    // Format date to 'DD-MM-YYYY'
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-GB', {
@@ -71,19 +54,6 @@ function HotelResPass() {
             year: 'numeric'
         }).replace(/\//g, '-');
     };
-
-    function handleViewReview(id: number, review_rate: number) {
-        setFullStars(Math.floor(review_rate))
-        sethalfStar(review_rate % 1 >= 0.5);
-
-        if (viewId === id) {
-            setView(!view)
-        } else {
-            setView(true)
-        }
-        setViewId(id)
-
-    }
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -97,24 +67,23 @@ function HotelResPass() {
                         <button className="h-10 rounded-md " onClick={() => navigate('/hotel/reservation/passedby')}>Passed By</button>
                     </div>
                 </div>
-                <h2 className="max-w-screen-xl mx-auto text-2xl  mt-10">Passed By</h2>
+                <h2 className="max-w-screen-xl mx-auto text-2xl  mt-10">Rejected</h2>
                 <div className="pb-10">
                     {Array.isArray(hotels) && hotels.length > 0 ? (
                         <div>
                             {hotels
-                                .filter(hotel => hotel.status === "completed")
+                                .filter(hotel => hotel.status === "rejected")
                                 .map((hotel: any, index: number) => (
                                     <div key={index} className="grid grid-cols-10 gap-4  mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4 max-w-screen-xl mx-auto">
                                         <div className="col-span-2">
                                             {
-                                                (hotel.cage_room.image_array.lenght > 0) ? (
-                                                    <p>no image</p>
-                                                ) : (
+                                                (hotel.cage_room.image_array.length > 0) ? (
                                                     <img
-                                                        // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
                                                         src={hotel.cage_room.image_array[0]}
                                                         className="w-full h-full object-cover object-center rounded-lg ml-5 "
                                                     />
+                                                ) : (
+                                                    <p>No image</p>
                                                 )
                                             }
                                         </div>
@@ -165,70 +134,21 @@ function HotelResPass() {
                                                     Check out: {formatDate(hotel.end_time)}
                                                 </h1>
                                             </div>
-
                                             <h2 className="ml-auto text-right px-4 font-bold text-2xl">
                                                 {hotel.price} ฿
                                             </h2>
-                                            <div className="flex justify-end mt-auto mb-0 space-x-4 pt-2">
-                                                {
-                                                    (hotel.status === "completed" && parseFloat(hotel.review_rate) > 0) ? (
-                                                        <button onClick={() => handleViewReview(hotel.id, hotel.review_rate)}
-                                                            className="bg-button px-10 py-2 border rounded-2xl shadow-lg shadow-egg"
-                                                        >
-                                                            View Review
-                                                        </button>
-                                                    ) : (
-
-                                                        (hotel.status === "rejected") ? (
-                                                            <div className="pr-2" >
-                                                                <p className="font-medium">Rejected</p>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="pr-2" >
-                                                                <p className="font-medium">Not Have Review</p>
-                                                            </div>
-                                                        )
-
-                                                    )
-                                                }
-                                            </div>
-
                                         </div>
-                                        {
-                                            (view && viewId === hotel.id) ? (
-                                                <div className="col-span-10 ml-5 border-t border-gray-500 pt-2 justify-items-end">
-                                                    <h1 className="text-medium text-lg font-medium">Review Rate</h1>
-                                                    <div className="flex items-center">
-                                                        {Array(fullStars)
-                                                            .fill(0)
-                                                            .map((_, i) => (
-                                                                <FaStar key={`full-${i}`} className="text-[#A08252]" />
-                                                            ))}
-
-                                                        {halfStar && <FaStarHalfAlt className="text-[#A08252]" />}
-                                                    </div>
-                                                    <h1 className="text-medium text-lg font-medium">Review Detail</h1>
-                                                    <h1 className="text-medium text-lg flex">
-                                                        {hotel.review_detail}
-                                                    </h1>
-                                                </div>
-                                            ) : (
-                                                <div className="review">
-                                                </div>
-                                            )
-                                        }
-
                                     </div>
                                 ))
                             }
                         </div>
                     ) : (
-                        <div className="text-center py-4">No passed by hotel reservation information found.</div>
+                        <div className="text-center py-4">No rejected hotel reservation information found.</div>
                     )}
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 }
 
-export default HotelResPass;
+export default HotelResponseReject;

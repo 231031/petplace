@@ -7,11 +7,6 @@ function HotelBookDetail() {
     const location = useLocation();
     const navigate = useNavigate();    
     const selectedHotel = location.state?.selectedHotel;
-
-//asa
-    // const handleCageSelect = (cage: Cage) => {
-    //     navigate('/hotelbookdetail', { state: { selectedCage: cage, hotelName: selectedHotel?.name } });
-    // };
     const handleCageSelect = (cage: Cage) => {
         const queryParams = new URLSearchParams({
             size: cage.size,
@@ -25,7 +20,6 @@ function HotelBookDetail() {
         navigate(`/hotelbookdetail?${queryParams}`);
     };
 
-    // const SelectRoom = createContext< | undefined>(undefined);
     return (
         <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">Hotel Booking Details</h1>
@@ -42,7 +36,6 @@ function HotelBookDetail() {
                                     <p className="text-black">ID: {cage.id}</p>
                                     <p className="text-black">Size: {cage.size}</p>
                                     <p className="text-black">Price: {cage.price} THB</p>
-                                    {/* Add a button to select this cage */}
                                     <button 
                                         className="mt-2 p-2 bg-blue-500 text-white rounded"
                                         onClick={() => handleCageSelect(cage)}

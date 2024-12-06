@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { CarouselDemo } from "../components/HotelHome/CarousalDemo";
 import { CarouselCage } from "../components/HotelHome/CarousalCage";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -22,15 +22,11 @@ export default function HotelHome() {
     );
     const id = localStorage.getItem("userId");
     const profileId = localStorage.getItem("profile_id");
-
     const [rooms, setRooms] = useState({
         quantity: "",
         width: "",
         height: "",
         lenth: "",
-        // size: "",
-
-
     });
 
     useEffect(() => {
@@ -51,12 +47,10 @@ export default function HotelHome() {
                 return response.json();
             })
             .then((data) => {
-                console.log("Fetched hotel data:", data.profile);
                 setHotel(data.profile) // ตรวจสอบข้อมูลที่ดึงมาจาก API
                 localStorage.setItem("profile_id", data.profile.id)
                 localStorage.setItem("token", data.token)
                 localStorage.setItem("role", data.profile.role)
-
                 const profileID = data.profile.id
                 localStorage.setItem("profileID", profileID)
                 localStorage.setItem("name", data.profile.name)
@@ -117,8 +111,6 @@ export default function HotelHome() {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log("Fetched cage room data:", data);
-                    // console.log("Fetched cage room data:", data.address);
                     setRooms(data || []); // เก็บข้อมูลห้องใน state
                 })
                 .catch((error) => console.error("Error fetching cage room data:", error));
@@ -143,18 +135,11 @@ export default function HotelHome() {
                     return response.json();
                 })
                 .then((data) => {
-                    console.log("Fetched hotel review data:", data);
-                    // console.log("Fetched cage room data:", data.address);
                     setReview(data || []); // เก็บข้อมูลห้องใน state
                 })
                 .catch((error) => console.error("Error fetching cage room data:", error));
         }
     }, [hotel]);
-
-    console.log("cages", rooms)
-
-
-    // console.log("hotel data", hotel.facility[])
 
     const [expandedRoomId, setExpandedRoomId] = useState<number | null>(null);
 
@@ -187,8 +172,6 @@ export default function HotelHome() {
         setExpandedRoomId((prev) => (prev === index ? null : index));
 
     };
-
-
 
 
     return (
@@ -276,12 +259,6 @@ export default function HotelHome() {
                     <h1 className="text-2xl mb-5">Cage</h1>
                     <div className="flex flex-col">
                         {/* selection */}
-                        {/* <div className="flex justify-end gap-x-2 my-2">
-                            <button className="w-16 h-8 bg-navbar rounded-md text-xs">Cat</button>
-                            <button className="w-16 h-8 bg-yellow rounded-md text-xs">Rabbit</button>
-                            <button className="w-16 h-8 bg-yellow rounded-md text-xs">Hamster</button>
-                        </div> */}
-
                         <div className="flex bg-bg w-full h-full  flex-col shadow shadow-gray-400 rounded-md pb-5" >
                             {/* room container */}
                             {rooms && rooms.length > 0 ? (
@@ -293,8 +270,6 @@ export default function HotelHome() {
                                                 ? 'rounded-t-md  shadow-tl shadow-tr shadow-bl shadow-br shadow-gray-400'  // มุมโค้งเฉพาะด้านบนและเงารอบๆ ยกเว้นด้านล่าง
                                                 : 'rounded-md shadow shadow-gray-400 '  // มุมโค้งรอบๆ ทุกด้านตอนแรก
                                                 }`}
-                                        // onClick={() => handleRoomClick(index)}
-                                        // onClick={() => handleRoomClick(index)}
                                         >
                                             <div
                                                 className="basis-1/3 bg-cover  w-72  pt-5 pl-5">

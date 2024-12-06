@@ -2,36 +2,30 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AcceptRejectBookHotel } from "../helper/hotel";
 import { SelectStatusPayload } from "../types/payload";
-function HotelResUpcom() {
+
+function HotelResponseUpcoming() {
+    // State to manage hotels data
     const [hotels, setHotels] = useState<any[] | null>(null);
+    // State to manage error messages
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
-
+    // Fetch upcoming hotel reservations when the component mounts
     useEffect(() => {
         const token = localStorage.getItem("token");
         const id = localStorage.getItem("profileID");
-        console.log("localStorage contents:", {
-            profileID: localStorage.getItem("profileID"),
-            name: localStorage.getItem("name"),
-            token: localStorage.getItem("token")
-        });
-        console.log("Token:", token);
-        console.log("ProfileID:", id);
-
         if (!id) {
             setError("User ID not found");
             return;
         }
 
-
+        // Fetch upcoming hotel reservations
         fetch(`http://localhost:5000/api/hotel/${id}/pending`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,
                 Accept: "application/json",
             },
-
         })
             .then((response) => {
                 console.log("Response status:", response.status);
@@ -40,7 +34,7 @@ function HotelResUpcom() {
             })
             .then((data) => {
                 console.log("API Response data:", data);
-                console.log("First hotel object:", data[0]); // ดูโครงสร้างข้อมูลของ hotel object
+                console.log("First hotel object:", data[0]); // Log the structure of the hotel object
 
                 if (data && Array.isArray(data)) {
                     setHotels(data);
@@ -57,13 +51,11 @@ function HotelResUpcom() {
             })
     }, []);
 
-    console.log("hotelServiceUsers", hotels)
-    console.log("Hotel data in ResCard:", hotels);
-
     if (!hotels) {
         return <div>Loading...</div>;
     }
 
+    // Format date to 'DD-MM-YYYY'
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-GB', {
@@ -73,31 +65,16 @@ function HotelResUpcom() {
         }).replace(/\//g, '-');
     };
 
+    // Handle accept/reject booking
     const handleAcceptReject = async (hotelServiceId: number, status: "accepted" | "rejected") => {
         try {
             const token = localStorage.getItem("token");
             const profileId = localStorage.getItem("profileID");
             const profileName = localStorage.getItem("name");
 
-            console.log("Current hotel:", hotels?.find(h => h.id === hotelServiceId));
-            console.log("All hotels:", hotels);
-            console.log("Attempting to update with:", {
-                hotelServiceId,
-                profileId,
-                profileName,
-                status,
-                token
-            });
-
             if (!profileId || !profileName || !token) {
                 throw new Error("Required information not found");
             }
-
-            // ตรวจสอบว่าการชำระเงินสำเร็จหรือไม่
-            // const currentHotel = hotels?.find(h => h.id === hotelServiceId);
-            // if (!currentHotel?.payment_status || currentHotel.payment_status !== "completed") {
-            //     throw new Error("Payment not completed");
-            // }
 
             const payload: SelectStatusPayload = {
                 hotel_service_id: hotelServiceId,
@@ -106,19 +83,11 @@ function HotelResUpcom() {
                 status: status
             };
 
-            console.log("Sending payload:", payload);
-
             const response = await AcceptRejectBookHotel(payload);
-            console.log("API Response:", response);
 
             if (!response.ok) {
-                // const errorData = await response.json();
-                // throw new Error(errorData.message || "Failed to update booking status");
                 throw new Error(response || "Failed to update booking status");
             }
-
-            // รีโหลดหน้าเว็บหลังจาก update สำเร็จ
-            // window.location.reload();
 
         } catch (error) {
             console.error("Error updating status:", error);
@@ -133,7 +102,6 @@ function HotelResUpcom() {
             }
         }
     };
-
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -155,21 +123,18 @@ function HotelResUpcom() {
                                 .filter(hotel => hotel.status === "pending")
                                 .map((hotel: any, index: number) => (
                                     <div key={index} className="grid grid-cols-10 gap-4  mt-10 rounded-2xl shadow-lg shadow-egg border border-gray-300 p-4 max-w-screen-xl mx-auto">
-                                        {
-                                            <div className="col-span-2">
-                                                {
-                                                    (hotel.cage_room.image_array.lenght > 0) ? (
-                                                        <p>no image</p>
-                                                    ) : (
-                                                        <img
-                                                            // src="https://images.unsplash.com/photo-1612838320302-4b3b3b3b3b3b"
-                                                            src={hotel.cage_room.image_array[0]}
-                                                            className="w-full h-full max-h-56 object-cover object-center rounded-lg ml-5 "
-                                                        />
-                                                    )
-                                                }
-                                            </div>
-                                        }
+                                        <div className="col-span-2">
+                                            {
+                                                (hotel.cage_room.image_array.length > 0) ? (
+                                                    <img
+                                                        src={hotel.cage_room.image_array[0]}
+                                                        className="w-full h-full max-h-56 object-cover object-center rounded-lg ml-5 "
+                                                    />
+                                                ) : (
+                                                    <p>No image</p>
+                                                )
+                                            }
+                                        </div>
 
                                         <div className="col-span-3  ml-5 mt-5">
                                             <h2 className="text-2xl font-medium">{hotel.cage_room.cage_type}</h2>
@@ -249,4 +214,4 @@ function HotelResUpcom() {
     );
 }
 
-export default HotelResUpcom;
+export default HotelResponseUpcoming;

@@ -1,9 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import UploadImage from "../components/UploadImage";
-import { UploadRes } from "@/types/response";
-import { ProfileRes } from "@/types/response";
-import { useEffect } from "react";
+import { UploadRes, ProfileRes } from "@/types/response";
 import { GetProfileByID, UpdateProfile } from "@/helper/profile";
 import { MapContainer, Marker, Popup, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import L from 'leaflet';
@@ -23,7 +21,12 @@ const HotelDetailPage = () => {
     const [facilities, setFacilities] = useState<string[]>([]);
     const [newFacility, setNewFacility] = useState("");
     const [images, setImages] = useState<UploadRes[]>([]);
+    const [position, setPosition] = useState<[number, number] | null>(null);
+    const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
+    const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
+    const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
 
+    // Fetch profile data when component mounts
     useEffect(() => {
         if (!localStorage.getItem("token")) {
             navigate("/login");
@@ -31,12 +34,9 @@ const HotelDetailPage = () => {
             navigate("/")
         }
         const fetchProfile = async () => {
-
-
             try {
                 const userId = localStorage.getItem('userId') || '';
                 const res = await GetProfileByID(parseInt(userId), "hotel");
-
                 setProfile(res);
                 setHotelName(res.profile.name || "");
                 setAddress(res.profile.address || "");
@@ -53,10 +53,10 @@ const HotelDetailPage = () => {
                 console.error(err);
             }
         };
-
         fetchProfile();
     }, []);
 
+    // Handle adding a new facility
     const handleAddFacility = () => {
         if (newFacility && !facilities.includes(newFacility)) {
             setFacilities([...facilities, newFacility]);
@@ -64,8 +64,9 @@ const HotelDetailPage = () => {
         }
     };
 
+    // Geocoder component to search for locations
     const MapWithGeocoder = () => {
-        const map = useMap();
+    const map = useMap();
 
         useEffect(() => {
             const geocoder = L.Control.geocoder({
@@ -86,11 +87,7 @@ const HotelDetailPage = () => {
         return null;
     };
 
-    const [position, setPosition] = useState<[number, number] | null>(null);
-    const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
-    const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
-    const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
-
+    // Marker component to display selected location
     const LocationMarker = () => {
         const map = useMap();
 
@@ -111,19 +108,23 @@ const HotelDetailPage = () => {
         );
     };
 
+    // Handle removing a facility
     const handleRemoveFacility = (facility: string) => {
         setFacilities(facilities.filter((item) => item !== facility));
     };
 
+    // Handle image upload
     const handleImageUpload = (uploadedFiles: UploadRes[]) => {
         setImages(prev => [...prev, ...uploadedFiles].slice(0, 10));
     };
 
+    // Handle image removal
     const handleRemoveImage = (index: number) => {
         const updatedImages = images.filter((_, imgIndex) => imgIndex !== index);
         setImages(updatedImages);
     };
 
+    // Handle form submission
     const handleSubmit = async () => {
         if (!profile) {
             toast.error("Profile not loaded");
@@ -131,9 +132,7 @@ const HotelDetailPage = () => {
         }
 
         try {
-            // const userId = localStorage.getItem("userId") || "";
             const token = localStorage.getItem("token");
-            console.log("search", searchedPosition);
             const payload = {
                 id: profile.profile.id,
                 user_id: profile.profile.user_id,
@@ -152,10 +151,7 @@ const HotelDetailPage = () => {
                 image_array: images.map((image) => image.fileUrl),
             };
 
-
-
             const res = await UpdateProfile(payload);
-            console.log(res);
             toast.success(res);
         } catch (err: any) {
             if (err) {

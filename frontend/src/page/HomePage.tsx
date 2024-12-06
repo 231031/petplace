@@ -12,11 +12,15 @@ import L from 'leaflet';
 import { formatDateToString } from "../helper/utils";
 
 function Home() {
+    // State to manage hotels data
     const [hotels, setHotels] = useState<any[]>([]);
+    // State to manage date selection stage
     const [selectionStage, setSelectionStage] = useState<'start' | 'range'>('start');
+    // State to manage start and end dates
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
 
+    // Handle date click
     const handleDateClick = (clickedDate: Date) => {
         if (selectionStage === 'start') {
             // First click: Set start date
@@ -41,10 +45,9 @@ function Home() {
                 setEndDate(null);
             }
         }
-        console.log("Start Date:", startDate);
-        console.log("End Date:", endDate);
     };
 
+    // Add custom classes to calendar tiles
     const tileClassName = ({ date, view }) => {
         if (view === 'month') {
             // Highlight start date
@@ -69,11 +72,12 @@ function Home() {
         return null;
     };
 
+    // Disable past dates in the calendar
     const tileDisabled = ({ date, view }) => {
-        // Optional: Add logic to disable past dates or specific date ranges
         return view === 'month' && date < new Date();
     };
 
+    // State to manage selected pets and cage sizes
     const [selectedPets, setSelectedPets] = useState<string[]>([]);
     const navigate = useNavigate();
     const petOptions = ["Dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
@@ -101,6 +105,7 @@ function Home() {
         if (room.facility) uniqueFacilities.add(room.facility);
     });
 
+    // Handle cage selection
     const handleCageSelect = (cage: Cage) => {
         const queryParams = new URLSearchParams({
             size: cage.size,
@@ -113,7 +118,6 @@ function Home() {
         }).toString();
 
         // Navigate with query parameters
-
         navigate(`/hotelbookdetail?${queryParams}`,
             {
                 state: {
@@ -124,10 +128,9 @@ function Home() {
                     endDate: endDate
                 }
             });
-
-
     };
 
+    // Handle removing favorite cage
     const handleRemoveFavorite = async (cage: Cage) => {
         const userId = localStorage.getItem("userId");
         if (!userId) {
@@ -139,11 +142,8 @@ function Home() {
             cage_id: cage.id,
             user_id: Number(userId),
         };
-        console.log("Favorite payload:", favPayload);
-
         try {
             const response = await RemoveFavCage(favPayload);
-            console.log("Favorite response:", response);
             window.location.reload();
         } catch (error) {
             console.error("Error delete your favorites:", error);
@@ -151,6 +151,7 @@ function Home() {
         }
     };
 
+    // Handle cage size change
     const handleCageSizeChange = (pet: string, size: string) => {
         setSelectedCageSizes((prev) => ({
             ...prev,
@@ -158,17 +159,20 @@ function Home() {
         }));
     };
 
+    // Handle pet change
     const handlePetChange = (pet: string) => {
         setSelectedPets((prev) =>
             prev.includes(pet) ? prev.filter((p) => p !== pet) : [...prev, pet]
         );
     };
 
+    // Handle location change
     const handleLocationChange = (lat: number, lng: number) => {
         setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
         setMarkerPosition([lat, lng]); // Update the marker position
     };
 
+    // Marker component to display selected location
     const LocationMarker = () => {
         const map = useMap();
         useMapEvents({
@@ -188,12 +192,12 @@ function Home() {
         );
     };
 
+    // Get token to change role
     const getTokenChangeRole = async () => {
         const userId = localStorage.getItem("userId");
         if (!userId) {
             return;
         }
-
         try {
             const response = await GetTokenChangeRoleToClient(parseInt(userId));
             if (response) {
@@ -205,7 +209,7 @@ function Home() {
         }
     };
 
-
+    // Fetch user's current location
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -222,38 +226,13 @@ function Home() {
         } else {
             setError('Geolocation is not supported by this browser.');
         }
-
         if (location.state && location.state.role) {
             getTokenChangeRole();
-
         }
-
     }, []);
 
-    // useEffect(() => {
-    //     const token = localStorage.getItem("token");
-    //     const id = localStorage.getItem("userId");
-
-    //     fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
-    //         method: "GET",
-    //         headers: {
-    //             Authorization: `Bearer ${token}`,
-    //             Accept: "application/json",
-    //         },
-    //     })
-    //         .then((response) => {
-    //             if (!response.ok) throw new Error("Failed to fetch cage room data");
-    //             return response.json();
-    //         })
-    //         .then((data) => {
-    //             setRooms(data || []);
-    //             console.log("Cage room for search:", rooms);
-    //         })
-    //         .catch((error) => console.error("Error fetching cage room data:", error));
-    // }, []);
-
+    // Fetch user's current location
     useEffect(() => {
-        // Fetch user's current location
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -274,9 +253,11 @@ function Home() {
         }
     }, []);
 
+    // State to manage favorite data and loading state
     const [favData, setFavData] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // Fetch favorite cages
     useEffect(() => {
         const fetchFavorites = async () => {
             try {
@@ -298,14 +279,11 @@ function Home() {
                         Accept: "application/json",
                     },
                 });
-                console.log("Response:", response);
                 if (!response.ok) {
                     throw new Error(`Error fetching data: ${response.statusText}`);
                 }
-
                 const data = await response.json();
                 setFavData(data); // Update state with fetched data
-                console.log("User favorites:", data);
             } catch (err) {
                 console.error("Error fetching user favorites:", err);
             } finally {
@@ -316,6 +294,7 @@ function Home() {
         fetchFavorites();
     }, [position]);
 
+    // Geocoder component to search for locations
     const MapWithGeocoder = () => {
         const map = useMap();
 
@@ -340,6 +319,7 @@ function Home() {
 
     console.log(searchedPosition)
 
+    // Handle search for cages
     const handleSearch = async () => {
         const filterAnimal: FilterAnimal[] = selectedPets.map((pet) => ({
             animal_type: pet,
@@ -353,11 +333,9 @@ function Home() {
             end_time: formatDateToString(endDate),
         };
 
-
         try {
             const results = await GetSearchCage(filterAnimal, filterSearchCage);
             setHotels(results.data);
-            console.log("Results:", results);
             navigate('/hotelsearch', {
                 state: {
                     hotels: results,
@@ -381,7 +359,6 @@ function Home() {
             <div className="w-full h-1/2 bg-gray-100 relative">
                 <img
                     src="/images/loginbg.png"
-                    // src="https://upcdn.io/FW25cHP/raw/uploads/2024/11/20/4kBdTokw6C-Breaking%20new%20Background.webp"
                     className="w-full h-full object-cover object-center"
                 />
                 <img
@@ -561,14 +538,6 @@ function Home() {
                                             <img></img>
                                         )
                                     }
-                                    {/* <img
-                                        src={
-                                            fav.cage_room.profile.image_array?.[0] ||
-                                            "/images/default-room.jpg"
-                                        }
-                                        alt="Cage Room"
-                                        className="w-full h-full object-cover"
-                                    /> */}
                                 </div>
 
                                 {/* Hotel Info */}
@@ -608,54 +577,45 @@ function Home() {
                                 </div>
                             </div>
 
-                            {/* Capsule Info */}
-
-                            <div className="flex-1 mx-8 border-l pl-6 flex items-start space-x-6">
-                                {/* Image Section */}
-                                <div className="w-40 h-40 rounded-lg overflow-hidden flex-shrink-0">
-                                    {
-                                        (fav.cage_room.image_array && fav.cage_room.image_array.length > 0) ? (
-                                            <img
-                                                src={
-                                                    fav.cage_room.image_array[0]}
-                                                alt="Cage Room"
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <img></img>
-                                        )
-                                    }
-                                    {/* <img
-                                        src={
-                                            fav.cage_room.image_array?.[0] || "/images/default-room.jpg"
+                                {/* Capsule Info */}
+                                <div className="flex-1 mx-8 border-l pl-6 flex items-start space-x-6">
+                                    {/* Image Section */}
+                                    <div className="w-40 h-40 rounded-lg overflow-hidden flex-shrink-0">
+                                        {
+                                            (fav.cage_room.image_array && fav.cage_room.image_array.length > 0) ? (
+                                                <img
+                                                    src={
+                                                        fav.cage_room.image_array[0]}
+                                                    alt="Cage Room"
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <img></img>
+                                            )
                                         }
-                                        alt="Cage Room"
-                                        className="w-full h-full object-cover"
-                                    /> */}
-                                </div>
-
-                                {/* Information Section */}
-                                <div className="flex flex-col space-y-2">
-                                    <h3 className="text-[#333] text-xl font-semi">Capsule</h3>
-                                    <div className="flex items-center space-x-2">
-                                        <p className="bg-navbar text-white text-sm px-2 py-1 rounded">
-                                            {fav.cage_room.size || "Unknown"}
-                                        </p>
+                                    </div>
+                                    {/* Information Section */}
+                                    <div className="flex flex-col space-y-2">
+                                        <h3 className="text-[#333] text-xl font-semi">Capsule</h3>
+                                        <div className="flex items-center space-x-2">
+                                            <p className="bg-navbar text-white text-sm px-2 py-1 rounded">
+                                                {fav.cage_room.size || "Unknown"}
+                                            </p>
+                                            <p className="text-sm text-gray-600">
+                                                Size: ({fav.cage_room.width} x{" "}
+                                                {fav.cage_room.lenth} x {fav.cage_room.height} m)
+                                            </p>
+                                        </div>
                                         <p className="text-sm text-gray-600">
-                                            Size: ({fav.cage_room.width} x{" "}
-                                            {fav.cage_room.lenth} x {fav.cage_room.height} m)
+                                            <span className="font-meduim">Accomodates :</span>{" "}
+                                            {fav.cage_room.max_capacity || "N/A"}
+                                        </p>
+                                        <p className="text-gray-600 text-sm mb-2">
+                                            <span className="font-meduim">Facilities:</span>&nbsp;
+                                            {fav.cage_room.facility || "N/A"}
                                         </p>
                                     </div>
-                                    <p className="text-sm text-gray-600">
-                                        <span className="font-meduim">Accomodates :</span>{" "}
-                                        {fav.cage_room.max_capacity || "N/A"}
-                                    </p>
-                                    <p className="text-gray-600 text-sm mb-2">
-                                        <span className="font-meduim">Facilities:</span>&nbsp;
-                                        {fav.cage_room.facility || "N/A"}
-                                    </p>
                                 </div>
-                            </div>
 
                             {/* Price and Action */}
                             <div className="flex flex-col items-end space-y-4">
@@ -673,12 +633,9 @@ function Home() {
                             </div>
                         </div>
                     ))}
-
                 </div>
             </div>
-
         </div>
-
     )
 }
 

@@ -1,50 +1,48 @@
 
-import Home from './page/Home';
+import Home from './page/HomePage';
 import Nav from '../src/components/Nav';
 import { Outlet } from 'react-router-dom';
 import Footer from '../src/components/Footer';
 import { Routes, Route } from 'react-router-dom';
-import Care from './page/Care';
-import Delivery from './page/Delivery';
-import Shop from './page/Shop';
-import Social from './page/Social';
-import Login from './page/Login';
-import Signup from './page/Signup';
-import FormSignupHotel from './page/FormSignupHotel';
-import FormSignup from './page/FormSignup';
-import HotelHistory from './page/HotelHistory';
-import HotelDetail from './page/HotelDetail';
-import HotelFillPayment from './page/HotelFillPayment';
-import CreateProfile from './page/CreateProfile';
-import HotelBookdetail from './page/HotelBookdetail';
-import HotelcPayment from './page/HotelcPayment';
-import HotelSearch from './page/HotelSearch';
-import SelectProfile from './page/SelectProfile';
-import FullMap from './page/Fullmap';
 
-//Test
-import TestSearch from './page/TestSearch';
-import TestLogin from './page/TestLogin';
-import TestPost from './page/TestPost';
-import TestBooking from './page/TestBooking';
-import TestProfile from './page/TestProfile';
-import TestSelectRoom from './page/TestSelectRoom';
-import TestUpload from './page/TestUpload';
+// Default Layout
+import Care from './page/MockPage/Care';
+import Delivery from './page/MockPage/Delivery';
+import Shop from './page/MockPage/Shop';
+import Social from './page/MockPage/Social';
+import Login from './page/Authentication/Login';
+import Signup from './page/Authentication/Signup';
+import HotelHistory from './page/Default/HotelHistory';
+import HotelDetail from './page/Default/HotelDetail';
+import HotelFillPayment from './page/Default/HotelFillPayment';
+import CreateProfile from './page/Default/CreateProfile';
+import HotelBookdetail from './page/Default/HotelBookDetail';
+import HotelSelectPayment from './page/Default/HotelSelectPayment';
+import HotelSearch from './page/Default/HotelSearch';
+import SelectProfile from './page/Default/SelectProfile';
+import FullMap from './page/Default/Fullmap';
+import HotelBookSuccess from './page/Default/HotelBookSuccess';
+import MyProfile from './page/Default/MyProfile';
 
-//Role Hotel
+// Test
+import TestSearch from './page/Test/TestSearch';
+import TestLogin from './page/Test/TestLogin';
+import TestPost from './page/Test/TestPost';
+import TestBooking from './page/Test/TestBooking';
+import TestProfile from './page/Test/TestProfile';
+import TestSelectRoom from './page/Test/TestSelectRoom';
+import TestUpload from './page/Test/TestUpload';
+
+// Role Hotel
 import NavHotel from '../src/components/NavHotel';
-import HotelHome from './page/HotelHome';
-import HotelEdit from './page/HotelEdit';
-import RoomEdit from './page/RoomEdit';
-import HotelResUpcom from './page/HotelResUpcom';
-import HotelBookSuccess from './page/HotelBookSuccess';
-import MyProfile from './page/MyProfile';
-import MyprofileHotel from './page/MyProfileHotel';
-
-import HotelResAcc from './page/HotelResAcc';
-import HotelResRej from './page/HotelResRej';
-import HotelResPass from './page/HotelResPass';
-// import TestLogin from './page/TestLogin';
+import HotelHome from './page/Hotel/HotelHome';
+import HotelEdit from './page/Hotel/HotelEdit';
+import RoomEdit from './page/Hotel/RoomEdit';
+import MyprofileHotel from './page/Hotel/MyProfileHotel';
+import HotelResponseAccept from './page/Hotel/HotelResponseAccept';
+import HotelResponseReject from './page/Hotel/HotelResponseReject';
+import HotelResponsePass from './page/Hotel/HotelResponsePass';
+import HotelResponseUpcoming from './page/Hotel/HotelResponseUpcoming';
 
 
 const DefaultLayout = () => {
@@ -81,11 +79,9 @@ function App() {
           <Route path="/social" element={<Social />} />
           <Route path="/Login" element={<Login />} />
           <Route path="/Signup" element={<Signup />} />
-          <Route path="/FormSignupHotel" element={<FormSignupHotel />} />
-          <Route path="/FormSignup" element={<FormSignup />} />
-          <Route path="/hotelhis" element={<HotelHistory />} />
+          <Route path="/hotelhistory" element={<HotelHistory />} />
           <Route path="/hoteldetail" element={<HotelDetail />} />
-          <Route path="/hotelcpayment" element={<HotelcPayment />} />
+          <Route path="/hotelselectpayment" element={<HotelSelectPayment />} />
           <Route path="/hotelfillpayment" element={<HotelFillPayment />} />
           <Route path="/hotelbookdetail" element={<HotelBookdetail />} />
           <Route path="/hotelbooksuccess" element={<HotelBookSuccess />} />
@@ -104,18 +100,16 @@ function App() {
           <Route path="/SelectProfile" element={<SelectProfile />} />
         </Route>
 
-
+        {/* Routes with Hotel Layout */}
         <Route element={<HotelLayout />}>
-          <Route path="/HotelHome" element={<HotelHome />} />
+          <Route path="/hotelhome" element={<HotelHome />} />
           <Route path="/hotel/edit" element={<HotelEdit />} />
           <Route path="/room/edit" element={<RoomEdit />} />
-          {/* <Route path="/hotel/reservation" element={<HotelReservation />} /> */}
           <Route path="/hotel/MyProfileHotel" element={<MyprofileHotel />} />
-          
-          <Route path="/hotel/reservation/upcoming" element={<HotelResUpcom />} />
-          <Route path="/hotel/reservation/accepted" element={<HotelResAcc />} />
-          <Route path="/hotel/reservation/rejected" element={<HotelResRej />} />
-          <Route path="/hotel/reservation/passedby" element={<HotelResPass />} />
+          <Route path="/hotel/reservation/upcoming" element={<HotelResponseUpcoming />} />
+          <Route path="/hotel/reservation/accepted" element={<HotelResponseAccept />} />
+          <Route path="/hotel/reservation/rejected" element={<HotelResponseReject />} />
+          <Route path="/hotel/reservation/passedby" element={<HotelResponsePass />} />
         </Route>
       </Routes>
     </div>

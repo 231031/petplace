@@ -7,6 +7,7 @@ import UploadImage from "@/components/CreateProfile/UploadImage";
 import { UploadRes } from '@/types/response';
 
 function Signup() {
+    // State to manage form data
     const [formData, setFormData] = useState({
         name: '',
         surname: '',
@@ -17,11 +18,15 @@ function Signup() {
         citizenId: '',
         tel: ''
     });
+    // State to manage error messages
     const [error, setError] = useState('');
+    // State to manage success messages
     const [successMessage, setSuccessMessage] = useState('');
     const navigate = useNavigate();
-    const [image, setImage] = useState<string | null>(null); // Store one image URL or null
+    // State to manage profile image
+    const [image, setImage] = useState<string | null>(null);
 
+    // Handle image upload
     const handleImageUpload = (uploadedFiles: UploadRes[]) => {
         if (uploadedFiles.length > 0) {
             const uploadedUrl = uploadedFiles[0].fileUrl;  // Get the first image's URL
@@ -29,15 +34,18 @@ function Signup() {
         }
     };
 
+    // Handle removing image
     const handleRemoveImage = () => {
         setImage(null);  // Clear the image when removed
     };
 
+    // Handle input changes
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
     };
 
+    // Handle signup action
     const handleSignup = async () => {
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match');
@@ -82,6 +90,7 @@ function Signup() {
         }
     };
 
+    // Handle login button click
     const LoginClick = () => {
         navigate('/Login');
     };
@@ -144,7 +153,7 @@ function Signup() {
                             <input
                                 type="text"
                                 name="tel"
-                                value={formData.tell}
+                                value={formData.tel}
                                 onChange={handleChange}
                                 className="w-52 h-12 p-4 text-sm text-yellow rounded-lg bg-white 
                                            placeholder:text-yellow border border-2 border-bg hover:border-yellow
