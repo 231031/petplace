@@ -1,7 +1,7 @@
-import InputBox from '../../components/LoginSignup/InputBox';
-import Button from '../../components/LoginSignup/Button';
+import InputBox from '@/components/LoginSignup/InputBox';
+import Button from '@/components/LoginSignup/Button';
 import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function Login() {

@@ -1,6 +1,6 @@
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import HotelData from "../../components/Hotel-History/HotelData";
-import HotelDataPass from "../../components/Hotel-History/HotelDataPass";
+import { useLocation, useNavigate } from "react-router-dom";
+import HotelData from "@/components/Hotel-History/HotelData";
+import HotelDataPass from "@/components/Hotel-History/HotelDataPass";
 import { useEffect, useState } from "react";
 
 function HotelHistory() {

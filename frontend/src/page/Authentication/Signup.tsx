@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import InputBox from '../../components/LoginSignup/InputBox';
-import InputBox2 from '../../components/LoginSignup/InputBox2';
-import Button from '../../components/LoginSignup/Button';
+import InputBox from '@/components/LoginSignup/InputBox';
+import InputBox2 from '@/components/LoginSignup/InputBox2';
+import Button from '@/components/LoginSignup/Button';
 import { useNavigate } from 'react-router-dom';
 import UploadImage from "@/components/CreateProfile/UploadImage";
 import { UploadRes } from '@/types/response';

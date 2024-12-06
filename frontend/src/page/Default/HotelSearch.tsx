@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import HotelData from "../../components/Hotel-Search/HotelData";
+import HotelData from "@/components/Hotel-History/HotelData";
 import { GetSearchCage } from "@/helper/cage";
 import { FilterAnimal } from "@/types/payload";
 import {
@@ -10,12 +10,13 @@ import {
   useMap,
   useMapEvents,
 } from "react-leaflet";
+
 import { useLocation } from "react-router-dom";
 import L from "leaflet";
 import "leaflet-control-geocoder";
 import toast, { Toaster } from "react-hot-toast";
 import Calendar from "react-calendar";
-import { formatDateToString } from "../../helper/utils";
+import { formatDateToString } from "@/helper/utils";
 
 function HotelSearch() {
   const location = useLocation();

@@ -2,13 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const NavHotel: React.FC = () => {
+  // State to manage menu open/close status
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // State to manage username
   const [username, setUsername] = useState<string | null>(null);
+  // State to manage user ID
   const [userId, setUserId] = useState<string | null>(null);
+  // State to manage user role
   const [role, setRole] = useState<string | null>("None");
   const navigate = useNavigate();
 
-  // ดึงชื่อผู้ใช้จาก localStorage เมื่อ component โหลด
+  // Fetch user data from localStorage when component loads
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
     const storedRole = localStorage.getItem('role');
@@ -20,24 +24,24 @@ const NavHotel: React.FC = () => {
     }
   }, [navigate]);
 
+  // Toggle menu open/close status
   const toggleMenu = (): void => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  // Handle logout action
   const handleLogout = () => {
-    // ลบข้อมูลจาก localStorage และนำทางไปหน้า Login
+    // Remove user data from localStorage and navigate to login page
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
     localStorage.removeItem('profile_id');
     localStorage.removeItem('profileID');
     localStorage.removeItem('name');
-    setUsername("")
-    setUserId(null)
+    setUsername("");
+    setUserId(null);
     navigate('/login');
   };
-
-
 
   return (
     <nav>
@@ -54,17 +58,15 @@ const NavHotel: React.FC = () => {
               <li><a href="/hotelhome" className="text-white">Home</a></li>
               <li><a href="/HotelRating" className="text-white">Rating</a></li>
               <li><a href="/hotel/reservation/upcoming" className="text-white">Reservation</a></li>
-
             </ul>
           </div>
 
           {/* Profile Icon */}
           <div className="flex items-center space-x-4">
             {username ? (
-
-              <button className="text-white text-sm bg-navname w-fit p-2 rounded-lg  "> {username}</button> // ปุ่ม Logout แทน Log in
+              <button className="text-white text-sm bg-navname w-fit p-2 rounded-lg">{username}</button> // Display username if logged in
             ) : (
-              <a href="/login" className="text-white">Log in</a> // ถ้ายังไม่ได้ล็อกอิน
+              <a href="/login" className="text-white">Log in</a> // Display login link if not logged in
             )}
 
             <div className="hidden md:block">

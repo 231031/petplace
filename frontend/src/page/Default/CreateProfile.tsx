@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import InputBox from '../../components/CreateProfile/InputBox';
-import Button from '../../components/LoginSignup/Button';
+import InputBox from '@/components/CreateProfile/InputBox';
+import Button from '@/components/LoginSignup/Button';
 import UploadImage from "@/components/CreateProfile/UploadImage";
 import { UploadRes } from '@/types/response';
 import MapView from '@/components/CreateProfile/Map'; // Assuming you have a map component
