@@ -11,17 +11,17 @@ Petplace is a web application that integrates all pet hotels in Thailand into a 
 - User Reviews: Customers can share feedback and rate their experiences, helping others make informed decisions.
 
 ## Technical
-#Backend
+### Backend
 - Language: Go (Golang)
 - Framework: Echo
 - API Architecture: RESTful API
 - Authentication and Authorization: Implements secure JWT-based authentication and role-based authorization by validating user roles embedded within the token to restrict access to specific resources and actions.
 
-#Frontend
+### Frontend
 - Language: Typescript
 - Library: React
 - Styling: TailwindCSS
  
-#Database
+### Database
 - Database Management System: MySQL
 - ORM: GORM (for backend database management in Go)
