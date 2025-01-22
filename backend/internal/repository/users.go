@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"petplace/internal/model"
 
 	"gorm.io/gorm"
@@ -16,12 +15,12 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	return &UserRepository{db: db}
 }
 
-func (r *UserRepository) CreateUser(data model.User) error {
+func (r *UserRepository) CreateUser(data model.User) (model.User, error) {
 	result := r.db.Create(&data)
 	if result.Error != nil {
-		return fmt.Errorf("%s", result.Error.Error())
+		return data, result.Error
 	}
-	return nil
+	return data, nil
 }
 
 func (r *UserRepository) GetUserByEmail(email string) (model.User, error) {
@@ -31,7 +30,7 @@ func (r *UserRepository) GetUserByEmail(email string) (model.User, error) {
 
 	result := r.db.Preload("Profiles").Where("email = ?", email).First(&user)
 	if result.Error != nil {
-		return user, fmt.Errorf("%s", result.Error.Error())
+		return user, result.Error
 	}
 
 	return user, nil

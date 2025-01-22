@@ -9,6 +9,10 @@ type LoginPayload struct {
 	Password string `json:"password" query:"password" validate:"required"`
 }
 
+type AuthGooglePayload struct {
+	AuthCode string `json:"auth_code" query:"auth_code" validate:"required"`
+}
+
 type BookingPayload struct {
 	CageID    uint   `json:"cage_id" query:"cage_id" validate:"required"`
 	Animals   []uint `json:"animals" query:"animals" validate:"required"`

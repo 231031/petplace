@@ -1,4 +1,19 @@
 services:
+  nginx:
+    container_name: petplace-nginx
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    depends_on:
+      - petplace_api
+      - petplace_db
+    networks:
+      - petplace_networks
+
   petplace_api:
     container_name: petplace-api
     build: .

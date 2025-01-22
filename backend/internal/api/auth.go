@@ -22,6 +22,7 @@ func NewAuthHandler(authServiceIn service.AuthServiceIn) *AuthHandler {
 func (h *AuthHandler) RegisterRoutes(g *echo.Group) {
 	g.POST("/signup", h.handleSignUp)
 	g.POST("/login", h.handleLogIn)
+	g.POST("/google/callback", h.handleLoginGoogle)
 }
 
 // @Summary Sign Up
@@ -86,3 +87,56 @@ func (h *AuthHandler) handleLogIn(c echo.Context) error {
 	})
 
 }
+
+// @Summary Log In Google
+// @Description log in google account
+// @tags Authentication
+// @Param   authCode body string true "Autharization-Code"
+// @Accept application/json
+// @Produce application/json
+// @Success 200
+// @Failure 401
+// @Failure 500
+// @Router /auth/google [post]
+func (h *AuthHandler) handleLoginGoogle(c echo.Context) error {
+	authCode := &types.AuthGooglePayload{}
+	err := c.Bind(authCode)
+	if err != nil {
+		return utils.HandleError(c, http.StatusBadRequest, "login information is not correct", err)
+	}
+
+	user, token, err := h.authServiceIn.LoginGoogle(authCode.AuthCode)
+	if err != nil {
+		return utils.HandleError(c, http.StatusUnauthorized, "login failed", err)
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "login Successfully",
+		"token":   token,
+		"user":    user,
+	})
+}
+
+// @Summary Log In Google
+// @Description log in google account
+// @tags Authentication
+// @Accept application/json
+// @Produce application/json
+// @Success 200
+// @Failure 401
+// @Failure 500
+// @Router /auth/google/callback [get]
+// func (h *AuthHandler) handleCallbackLoginGoogle(c echo.Context) error {
+// 	authCode := c.QueryParam("code")
+// 	if authCode == "" {
+// 		return utils.HandleError(c, http.StatusBadRequest, "login information is not correct", fmt.Errorf("missing auth-code"))
+// 	}
+
+// 	fmt.Println("authCode", authCode)
+// 	h.authServiceIn.LoginGoogle(authCode)
+// 	return c.JSON(http.StatusOK, map[string]interface{}{
+// 		"message": "login Successfully",
+// 		// "token":   token,
+// 		// "user":    user,
+// 	})
+// }

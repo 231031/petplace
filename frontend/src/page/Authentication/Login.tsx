@@ -3,6 +3,8 @@ import Button from '@/components/LoginSignup/Button';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
+import { GoogleLoginUser } from '@/helper/auth';
 
 export default function Login() {
     const navigate = useNavigate();
@@ -44,6 +46,20 @@ export default function Login() {
         }
     };
 
+    console.log(import.meta.env.VITE_GOOGLE_REDIRECT_URL);
+    const LoginButton = () => {
+        const googleLogin = useGoogleLogin({
+            onSuccess: tokenResponse => console.log(tokenResponse.code),
+            flow: 'auth-code',
+            redirect_uri: import.meta.env.VITE_GOOGLE_REDIRECT_URL,
+        });
+
+        return (
+            <button className="bg-onstep h-10 hover:bg-nextstep text-white py-2 px-4 rounded-full 
+                focus:outline-none focus:shadow-outline" onClick={() => googleLogin()}>Sign in with Google 🚀</button>
+        );
+    };
+
     // Handle signup button click
     const SignupClick = () => {
         navigate('/Signup'); // Navigate to the signup page
@@ -51,6 +67,7 @@ export default function Login() {
 
     return (
         <div className="h-screen flex">
+
             <Toaster position="top-center" reverseOrder={false} />
             {/* container left */}
             <div className="flex justify-center bg-bgLogin w-3/4 items-baseline">
@@ -72,6 +89,10 @@ export default function Login() {
                         <a href="#" className="underline decoration-1"> Reset password </a>
                     </div> */}
                     <Button label="Log in" onClick={handleLogin} />
+                    <GoogleOAuthProvider clientId={import.meta.env.VITE_OAUTH_CLIENT_ID}>
+                        <LoginButton />
+                    </GoogleOAuthProvider>
+
                 </div>
             </div>
             {/* container right */}

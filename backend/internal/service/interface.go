@@ -9,10 +9,11 @@ import (
 type AuthServiceIn interface {
 	SignUp(data model.User) error
 	LogIn(payload types.LoginPayload) (any, string, error)
+	LoginGoogle(authCode string) (any, string, error)
 }
 
 type UsersServiceIn interface {
-	CreateUser(data model.User) error
+	CreateUser(data model.User) (model.User, error)
 	GetUserByEmail(email string) (model.User, error)
 	GetUserByID(id uint) (model.User, error)
 	UpdateUser(id uint, user model.User) error

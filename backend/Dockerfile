@@ -22,5 +22,5 @@ RUN mkdir -p public/uploads
 EXPOSE 5000
 
 # Run
-CMD ["air"]
+CMD ["air", "-c", ".air.toml"]
 # CMD ["./cmd/main/main"]

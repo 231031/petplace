@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepositoryIn interface {
-	CreateUser(data model.User) error
+	CreateUser(data model.User) (model.User, error)
 	GetUserByID(id uint) (model.User, error)
 	GetUserByEmail(email string) (model.User, error)
 	UpdateUser(user model.User) error

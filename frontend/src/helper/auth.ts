@@ -23,6 +23,27 @@ export async function LoginUser(loginPayload: LoginPayload): Promise<any> {
   }
 }
 
+export async function GoogleLoginUser(authCode: string): Promise<any> {
+  try {
+    const apiPath = baseApi + "/auth/google";
+    const response = await fetch(apiPath, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(authCode),
+    });
+    const data = await response.json();
+    if (response.status != 200) {
+      return Promise.reject(data);
+    }
+
+    return Promise.resolve(data);
+  } catch (error) {
+    Promise.reject(error);
+  }
+}
+
 // not test
 export async function SignUpUser(payload: User): Promise<any> {
   try {

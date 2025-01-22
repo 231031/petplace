@@ -34,12 +34,12 @@ func NewUserService(
 	}
 }
 
-func (s *UserService) CreateUser(data model.User) error {
-	err := s.UserRepositoryIn.CreateUser(data)
+func (s *UserService) CreateUser(data model.User) (model.User, error) {
+	user, err := s.UserRepositoryIn.CreateUser(data)
 	if err != nil {
-		return err
+		return user, err
 	}
-	return nil
+	return user, nil
 }
 
 func (s *UserService) GetUserByEmail(email string) (model.User, error) {
@@ -103,7 +103,7 @@ func (s *UserService) GetCreditCard(id uint) (types.CardPayload, error) {
 	card.Name = user.Name
 	card.Number = user.Number
 	card.Expiry = user.Expiry
-	card.SecurityCode = user.SecurityCode
+	// card.SecurityCode = user.SecurityCode
 
 	return card, nil
 }
