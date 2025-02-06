@@ -19,37 +19,37 @@ import (
 )
 
 // implement bussiness logic
-type AuthService struct {
-	UsersServiceIn UsersServiceIn
-	Validate       *validator.Validate
+type authService struct {
+	UsersService UsersService
+	Validate     *validator.Validate
 }
 
 func NewAuthService(
-	usersServiceIn UsersServiceIn,
+	usersService UsersService,
 	validate *validator.Validate,
-) *AuthService {
-	return &AuthService{
-		UsersServiceIn: usersServiceIn,
-		Validate:       validate,
+) AuthService {
+	return &authService{
+		UsersService: usersService,
+		Validate:     validate,
 	}
 }
 
-func (s *AuthService) SignUp(user model.User) error {
+func (s *authService) SignUp(user model.User) error {
 	hashed, err := auth.HashPassword(user.Password)
 	if err != nil {
 		return err
 	}
 
 	user.Password = hashed
-	_, res := s.UsersServiceIn.CreateUser(user)
+	_, res := s.UsersService.CreateUser(user)
 	if res != nil {
 		return res
 	}
 	return nil
 }
 
-func (s *AuthService) LogIn(payload types.LoginPayload) (any, string, error) {
-	user, err := s.UsersServiceIn.GetUserByEmail(payload.Email)
+func (s *authService) LogIn(payload types.LoginPayload) (any, string, error) {
+	user, err := s.UsersService.GetUserByEmail(payload.Email)
 	if err != nil {
 		return model.User{}, "", err
 	}
@@ -80,7 +80,7 @@ func (s *AuthService) LogIn(payload types.LoginPayload) (any, string, error) {
 	return returnUser, userToken, nil
 }
 
-func (s *AuthService) LoginGoogle(authCode string) (any, string, error) {
+func (s *authService) LoginGoogle(authCode string) (any, string, error) {
 	authResp, err := getAccessToken(authCode)
 	if err != nil {
 		return nil, "", err
@@ -92,7 +92,7 @@ func (s *AuthService) LoginGoogle(authCode string) (any, string, error) {
 	}
 
 	// check exiting user
-	user, err := s.UsersServiceIn.GetUserByEmail(userInfo.Email)
+	user, err := s.UsersService.GetUserByEmail(userInfo.Email)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -102,7 +102,7 @@ func (s *AuthService) LoginGoogle(authCode string) (any, string, error) {
 				FirstName:    userInfo.GivenName,
 				ImageProfile: userInfo.Picture,
 			}
-			createdUser, err := s.UsersServiceIn.CreateUser(user)
+			createdUser, err := s.UsersService.CreateUser(user)
 			if err != nil {
 				return nil, "", err
 			}

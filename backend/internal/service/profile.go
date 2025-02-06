@@ -16,36 +16,36 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProfileService struct {
-	ProfileRepositoryIn repository.ProfileRepositoryIn
-	UserServiceIn       UsersServiceIn
-	Validate            *validator.Validate
+type profileService struct {
+	ProfileRepository repository.ProfileRepository
+	UserServiceIn     UsersService
+	Validate          *validator.Validate
 }
 
 func NewProfileService(
-	profileRepository repository.ProfileRepositoryIn,
-	userService UsersServiceIn,
+	profileRepository repository.ProfileRepository,
+	userService UsersService,
 	validate *validator.Validate,
-) *ProfileService {
-	return &ProfileService{
-		ProfileRepositoryIn: profileRepository,
-		UserServiceIn:       userService,
-		Validate:            validate,
+) ProfileService {
+	return &profileService{
+		ProfileRepository: profileRepository,
+		UserServiceIn:     userService,
+		Validate:          validate,
 	}
 }
 
-func (s *ProfileService) CreateProfile(profile model.Profile) (int, string, error) {
+func (s *profileService) CreateProfile(profile model.Profile) (int, string, error) {
 	err := s.Validate.Struct(profile)
 	if err != nil {
 		return http.StatusBadRequest, "profile detail is not correct", err
 	}
 
-	_, err = s.ProfileRepositoryIn.GetProfileByUserID(profile.UserID, profile.Role)
+	_, err = s.ProfileRepository.GetProfileByUserID(profile.UserID, profile.Role)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		profile.Role = strings.ToLower(profile.Role)
 		profile.Image = utils.MapStringArrayToText(profile.ImageArray)
 		profile.Facility = utils.MapStringArrayToText(profile.FacilityArray)
-		status, msg, err := s.ProfileRepositoryIn.CreateProfile(profile)
+		status, msg, err := s.ProfileRepository.CreateProfile(profile)
 		if err != nil {
 			return http.StatusInternalServerError, msg, err
 		}
@@ -55,8 +55,8 @@ func (s *ProfileService) CreateProfile(profile model.Profile) (int, string, erro
 	return http.StatusBadRequest, "profile already exists", nil
 }
 
-func (s *ProfileService) GetProfileByID(id uint) (model.Profile, error) {
-	profile, err := s.ProfileRepositoryIn.GetProfileByID(id)
+func (s *profileService) GetProfileByID(id uint) (model.Profile, error) {
+	profile, err := s.ProfileRepository.GetProfileByID(id)
 	if err != nil {
 		return profile, err
 	}
@@ -66,8 +66,8 @@ func (s *ProfileService) GetProfileByID(id uint) (model.Profile, error) {
 	return profile, nil
 }
 
-func (s *ProfileService) GetProfileByUserID(userID uint, role string) (model.Profile, string, error) {
-	profile, err := s.ProfileRepositoryIn.GetProfileByUserID(userID, role)
+func (s *profileService) GetProfileByUserID(userID uint, role string) (model.Profile, string, error) {
+	profile, err := s.ProfileRepository.GetProfileByUserID(userID, role)
 	if err != nil {
 		return profile, "", err
 	}
@@ -95,8 +95,8 @@ func (s *ProfileService) GetProfileByUserID(userID uint, role string) (model.Pro
 	return profile, tokenProfile, nil
 }
 
-func (s *ProfileService) GetAllProfileByUserID(userID uint) ([]model.Profile, error) {
-	profiles, err := s.ProfileRepositoryIn.GetAllProfileByUserID(userID)
+func (s *profileService) GetAllProfileByUserID(userID uint) ([]model.Profile, error) {
+	profiles, err := s.ProfileRepository.GetAllProfileByUserID(userID)
 	if err != nil {
 		return profiles, err
 	}
@@ -104,12 +104,12 @@ func (s *ProfileService) GetAllProfileByUserID(userID uint) ([]model.Profile, er
 	return profiles, nil
 }
 
-func (s *ProfileService) UpdateProfile(id uint, profile model.Profile) error {
+func (s *profileService) UpdateProfile(id uint, profile model.Profile) error {
 	if err := s.Validate.Struct(profile); err != nil {
 		return err
 	}
 
-	existingProfile, err := s.ProfileRepositoryIn.GetProfileByID(id)
+	existingProfile, err := s.ProfileRepository.GetProfileByID(id)
 	if err != nil {
 		return err
 	}
@@ -122,26 +122,26 @@ func (s *ProfileService) UpdateProfile(id uint, profile model.Profile) error {
 	profile.Facility = utils.MapStringArrayToText(profile.FacilityArray)
 
 	updateProfile := utils.CopyNonZeroFields(&profile, &existingProfile).(*model.Profile)
-	err = s.ProfileRepositoryIn.UpdateProfile(*updateProfile)
+	err = s.ProfileRepository.UpdateProfile(*updateProfile)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *ProfileService) SortProfileByDistance(profiles []model.Profile) []model.Profile {
+func (s *profileService) SortProfileByDistance(profiles []model.Profile) []model.Profile {
 	sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].Distance < profiles[j].Distance })
 	return profiles
 }
 
 // high to low
-func (s *ProfileService) SortProfileByReviewRate(profiles []model.Profile) []model.Profile {
+func (s *profileService) SortProfileByReviewRate(profiles []model.Profile) []model.Profile {
 	sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].AvgReview > profiles[j].AvgReview })
 	return profiles
 }
 
-func (s *ProfileService) CountCompleteBookByID(profile_id uint) (int, error) {
-	count, err := s.ProfileRepositoryIn.CountCompleteBookByID(profile_id)
+func (s *profileService) CountCompleteBookByID(profile_id uint) (int, error) {
+	count, err := s.ProfileRepository.CountCompleteBookByID(profile_id)
 	if err != nil {
 		return 0, err
 	}
@@ -150,7 +150,7 @@ func (s *ProfileService) CountCompleteBookByID(profile_id uint) (int, error) {
 }
 
 // care & clinic
-func (s *ProfileService) CreateCliniCareProfile(profile model.Profile) (int, string, error) {
+func (s *profileService) CreateCliniCareProfile(profile model.Profile) (int, string, error) {
 	err := s.Validate.Struct(profile)
 	if err != nil {
 		return http.StatusBadRequest, "profile detail is not correct", err
@@ -191,7 +191,7 @@ func (s *ProfileService) CreateCliniCareProfile(profile model.Profile) (int, str
 		reservations = append(reservations, morning, noon)
 	}
 
-	strErr, err := s.ProfileRepositoryIn.CreateCliniCareProfile(profile, reservations)
+	strErr, err := s.ProfileRepository.CreateCliniCareProfile(profile, reservations)
 	if err != nil {
 		return http.StatusInternalServerError, strErr, err
 	}
@@ -199,8 +199,8 @@ func (s *ProfileService) CreateCliniCareProfile(profile model.Profile) (int, str
 	return http.StatusCreated, strErr, nil
 }
 
-func (s *ProfileService) GetProfileRoleClinic() ([]model.Profile, error) {
-	profiles, err := s.ProfileRepositoryIn.GetProfileRoleClinic()
+func (s *profileService) GetProfileRoleClinic() ([]model.Profile, error) {
+	profiles, err := s.ProfileRepository.GetProfileRoleClinic()
 	if err != nil {
 		return profiles, err
 	}

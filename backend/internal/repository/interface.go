@@ -6,14 +6,14 @@ import (
 	"time"
 )
 
-type UserRepositoryIn interface {
+type UserRepository interface {
 	CreateUser(data model.User) (model.User, error)
 	GetUserByID(id uint) (model.User, error)
 	GetUserByEmail(email string) (model.User, error)
 	UpdateUser(user model.User) error
 }
 
-type ProfileRepositoryIn interface {
+type ProfileRepository interface {
 	CreateProfile(profile model.Profile) (int, string, error)
 	GetProfileByID(id uint) (model.Profile, error)
 	GetProfileByUserID(userID uint, role string) (model.Profile, error)
@@ -26,18 +26,18 @@ type ProfileRepositoryIn interface {
 	GetProfileRoleClinic() ([]model.Profile, error) // use in daily task
 }
 
-type ReservationTimeRepositoryIn interface {
+type ReservationTimeRepository interface {
 	UpdateDailyReservationAndBook(previousDay, currentDate time.Time, reservations []model.ReservationTime) (string, error)
 	UpdateDailyNewDate(previousDay time.Time, reservations []model.ReservationTime) error
 }
 
-type FavoriteCageRepositoryIn interface {
+type FavoriteCageRepository interface {
 	AddFavoriteCage(fav model.FavoriteCage) error
 	DelFavoriteCage(user_id uint, cage_id uint) error
 	GetFavoriteCageByUser(user_id uint) ([]model.FavoriteCage, error)
 }
 
-type AnimalUserRepositoryIn interface {
+type AnimalUserRepository interface {
 	CreateAnimalUser(animals []model.AnimalUser) error
 	UpdateAnimalUser(animals model.AnimalUser) error
 
@@ -46,12 +46,12 @@ type AnimalUserRepositoryIn interface {
 	GetAnimalUser(id uint) (model.AnimalUser, error)
 }
 
-type AnimalHotelServiceRepositoryIn interface {
+type AnimalHotelServiceRepository interface {
 	CreateAnimalHotelService(animals []model.AnimalHotelService) error
 	UpdateAnimalHotelService(animals model.AnimalHotelService) error
 }
 
-type HotelServiceRepositoryIn interface {
+type HotelServiceRepository interface {
 	CheckNotAvailableBooking(cage_id uint, startTime, endTime time.Time) (model.HotelService, error)
 	BookHotelService(ser model.HotelService, animals []model.AnimalHotelService) (uint, error)
 	UpdateHotelService(ser model.HotelService) error
@@ -66,7 +66,7 @@ type HotelServiceRepositoryIn interface {
 	GetReviewByHotel(profile_id uint) ([]model.HotelService, error)
 }
 
-type CageRoomRepositoryIn interface {
+type CageRoomRepository interface {
 	CreateCageRoom(cage model.CageRoom) error
 	UpdateCageRoom(cage model.CageRoom) error
 	DeleteCageRoom(id uint) error

@@ -13,14 +13,14 @@ import (
 )
 
 type tickerService struct {
-	BookingServiceIn service.BookingServiceIn
+	BookingService service.BookingService
 }
 
 func NewTickerService(
-	bookingService service.BookingServiceIn,
+	bookingService service.BookingService,
 ) *tickerService {
 	return &tickerService{
-		BookingServiceIn: bookingService,
+		BookingService: bookingService,
 	}
 }
 
@@ -54,7 +54,7 @@ func (ds *tickerService) task() {
 	thTime := time.Now().In(thailandLocation)
 	fmt.Printf("Ticker task, %v\n", thTime)
 
-	ser, err := ds.BookingServiceIn.GetAllBookingHotelByStatus("accepted")
+	ser, err := ds.BookingService.GetAllBookingHotelByStatus("accepted")
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -79,7 +79,7 @@ func (ds *tickerService) task() {
 		checkoutTime := time.Date(year, month, day, h, m, 0, 0, thailandLocation)
 		if thTime.After(checkoutTime) || thTime.Equal(checkoutTime) {
 			ser[i].Status = "completed"
-			err = ds.BookingServiceIn.UpdateHotelService(ser[i].ID, ser[i])
+			err = ds.BookingService.UpdateHotelService(ser[i].ID, ser[i])
 			if err != nil {
 				fmt.Println(err.Error())
 			}

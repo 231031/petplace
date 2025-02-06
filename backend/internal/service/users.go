@@ -13,45 +13,45 @@ import (
 )
 
 // implement bussiness logic
-type UserService struct {
-	UserRepositoryIn         repository.UserRepositoryIn
-	AnimalUserRepositoryIn   repository.AnimalUserRepositoryIn
-	FavoriteCageRepositoryIn repository.FavoriteCageRepositoryIn
-	Validate                 *validator.Validate
+type userService struct {
+	UserRepository         repository.UserRepository
+	AnimalUserRepository   repository.AnimalUserRepository
+	FavoriteCageRepository repository.FavoriteCageRepository
+	Validate               *validator.Validate
 }
 
 func NewUserService(
-	userRepositoryIn repository.UserRepositoryIn,
-	animalUserRepositoryIn repository.AnimalUserRepositoryIn,
-	favoriteCageRepositoryIn repository.FavoriteCageRepositoryIn,
+	userRepository repository.UserRepository,
+	animalUserRepository repository.AnimalUserRepository,
+	favoriteCageRepository repository.FavoriteCageRepository,
 	validate *validator.Validate,
-) *UserService {
-	return &UserService{
-		UserRepositoryIn:         userRepositoryIn,
-		AnimalUserRepositoryIn:   animalUserRepositoryIn,
-		FavoriteCageRepositoryIn: favoriteCageRepositoryIn,
-		Validate:                 validate,
+) UsersService {
+	return &userService{
+		UserRepository:         userRepository,
+		AnimalUserRepository:   animalUserRepository,
+		FavoriteCageRepository: favoriteCageRepository,
+		Validate:               validate,
 	}
 }
 
-func (s *UserService) CreateUser(data model.User) (model.User, error) {
-	user, err := s.UserRepositoryIn.CreateUser(data)
+func (s *userService) CreateUser(data model.User) (model.User, error) {
+	user, err := s.UserRepository.CreateUser(data)
 	if err != nil {
 		return user, err
 	}
 	return user, nil
 }
 
-func (s *UserService) GetUserByEmail(email string) (model.User, error) {
-	user, err := s.UserRepositoryIn.GetUserByEmail(email)
+func (s *userService) GetUserByEmail(email string) (model.User, error) {
+	user, err := s.UserRepository.GetUserByEmail(email)
 	if err != nil {
 		return user, err
 	}
 	return user, nil
 }
 
-func (s *UserService) GetUserByID(id uint) (model.User, error) {
-	user, err := s.UserRepositoryIn.GetUserByID(id)
+func (s *userService) GetUserByID(id uint) (model.User, error) {
+	user, err := s.UserRepository.GetUserByID(id)
 	if err != nil {
 		return user, err
 	}
@@ -64,7 +64,7 @@ func (s *UserService) GetUserByID(id uint) (model.User, error) {
 	return user, nil
 }
 
-func (s *UserService) ChangeRoleToClient(id uint) (string, error) {
+func (s *userService) ChangeRoleToClient(id uint) (string, error) {
 	user, err := s.GetUserByID(id)
 	if err != nil {
 		return "", err
@@ -78,24 +78,24 @@ func (s *UserService) ChangeRoleToClient(id uint) (string, error) {
 	return tokenUser, nil
 }
 
-func (s *UserService) UpdateUser(id uint, user model.User) error {
-	userDb, err := s.UserRepositoryIn.GetUserByID(id)
+func (s *userService) UpdateUser(id uint, user model.User) error {
+	userDb, err := s.UserRepository.GetUserByID(id)
 	if err != nil {
 		return err
 	}
 
 	updateUser := utils.CopyNonZeroFields(&user, &userDb).(*model.User)
 
-	err = s.UserRepositoryIn.UpdateUser(*updateUser)
+	err = s.UserRepository.UpdateUser(*updateUser)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *UserService) GetCreditCard(id uint) (types.CardPayload, error) {
+func (s *userService) GetCreditCard(id uint) (types.CardPayload, error) {
 	card := types.CardPayload{}
-	user, err := s.UserRepositoryIn.GetUserByID(id)
+	user, err := s.UserRepository.GetUserByID(id)
 	if err != nil {
 		return card, err
 	}
@@ -109,7 +109,7 @@ func (s *UserService) GetCreditCard(id uint) (types.CardPayload, error) {
 }
 
 // Animal's User
-func (s *UserService) CreateAnimalUser(animals []model.AnimalUser) error {
+func (s *userService) CreateAnimalUser(animals []model.AnimalUser) error {
 	if len(animals) > 0 {
 		for i := range animals {
 			animals[i].Image = utils.MapStringArrayToText(animals[i].ImageArray)
@@ -117,15 +117,15 @@ func (s *UserService) CreateAnimalUser(animals []model.AnimalUser) error {
 		}
 	}
 
-	err := s.AnimalUserRepositoryIn.CreateAnimalUser(animals)
+	err := s.AnimalUserRepository.CreateAnimalUser(animals)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *UserService) UpdateAnimalUser(id uint, animal model.AnimalUser) error {
-	animal_db, err := s.AnimalUserRepositoryIn.GetAnimalUser(id)
+func (s *userService) UpdateAnimalUser(id uint, animal model.AnimalUser) error {
+	animal_db, err := s.AnimalUserRepository.GetAnimalUser(id)
 	if err != nil {
 		return err
 	}
@@ -134,15 +134,15 @@ func (s *UserService) UpdateAnimalUser(id uint, animal model.AnimalUser) error {
 	animal.AnimalType = strings.ToLower(animal.AnimalType)
 
 	updateAn := utils.CopyNonZeroFields(&animal, &animal_db).(*model.AnimalUser)
-	err = s.AnimalUserRepositoryIn.UpdateAnimalUser(*updateAn)
+	err = s.AnimalUserRepository.UpdateAnimalUser(*updateAn)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *UserService) GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error) {
-	animals, err := s.AnimalUserRepositoryIn.GetAllAnimalUser(user_id)
+func (s *userService) GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error) {
+	animals, err := s.AnimalUserRepository.GetAllAnimalUser(user_id)
 	if err != nil {
 		return animals, err
 	}
@@ -156,8 +156,8 @@ func (s *UserService) GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error)
 	return animals, nil
 }
 
-func (s *UserService) GetAnimalUser(id uint) (model.AnimalUser, error) {
-	animal, err := s.AnimalUserRepositoryIn.GetAnimalUser(id)
+func (s *userService) GetAnimalUser(id uint) (model.AnimalUser, error) {
+	animal, err := s.AnimalUserRepository.GetAnimalUser(id)
 	if err != nil {
 		return animal, err
 	}
@@ -165,9 +165,9 @@ func (s *UserService) GetAnimalUser(id uint) (model.AnimalUser, error) {
 	return animal, nil
 }
 
-func (s *UserService) GetAnimalUserByType(user_id uint, animal_type string) ([]model.AnimalUser, error) {
+func (s *userService) GetAnimalUserByType(user_id uint, animal_type string) ([]model.AnimalUser, error) {
 	animal_type = strings.ToLower(animal_type)
-	animals, err := s.AnimalUserRepositoryIn.GetAllAnimalUserByType(user_id, animal_type)
+	animals, err := s.AnimalUserRepository.GetAllAnimalUserByType(user_id, animal_type)
 	if err != nil {
 		return animals, err
 	}
@@ -181,24 +181,24 @@ func (s *UserService) GetAnimalUserByType(user_id uint, animal_type string) ([]m
 }
 
 // Favorite Cage
-func (s *UserService) AddFavoriteCage(fav model.FavoriteCage) error {
-	err := s.FavoriteCageRepositoryIn.AddFavoriteCage(fav)
+func (s *userService) AddFavoriteCage(fav model.FavoriteCage) error {
+	err := s.FavoriteCageRepository.AddFavoriteCage(fav)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *UserService) DelFavoriteCage(user_id uint, cage_id uint) error {
-	err := s.FavoriteCageRepositoryIn.DelFavoriteCage(user_id, cage_id)
+func (s *userService) DelFavoriteCage(user_id uint, cage_id uint) error {
+	err := s.FavoriteCageRepository.DelFavoriteCage(user_id, cage_id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *UserService) GetFavoriteCageByUser(user_id uint, userLoc types.LocationParams) ([]model.FavoriteCage, error) {
-	fav, err := s.FavoriteCageRepositoryIn.GetFavoriteCageByUser(user_id)
+func (s *userService) GetFavoriteCageByUser(user_id uint, userLoc types.LocationParams) ([]model.FavoriteCage, error) {
+	fav, err := s.FavoriteCageRepository.GetFavoriteCageByUser(user_id)
 	if err != nil {
 		return []model.FavoriteCage{}, nil
 	}

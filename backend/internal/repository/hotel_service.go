@@ -10,15 +10,15 @@ import (
 )
 
 // interact with the database
-type HotelServiceRepository struct {
+type hotelServiceRepository struct {
 	db *gorm.DB
 }
 
-func NewHotelServiceRepository(db *gorm.DB) *HotelServiceRepository {
-	return &HotelServiceRepository{db: db}
+func NewHotelServiceRepository(db *gorm.DB) HotelServiceRepository {
+	return &hotelServiceRepository{db: db}
 }
 
-func (r *HotelServiceRepository) BookHotelService(ser model.HotelService, animals []model.AnimalHotelService) (uint, error) {
+func (r *hotelServiceRepository) BookHotelService(ser model.HotelService, animals []model.AnimalHotelService) (uint, error) {
 	tx := r.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -49,7 +49,7 @@ func (r *HotelServiceRepository) BookHotelService(ser model.HotelService, animal
 
 }
 
-func (r *HotelServiceRepository) ReviewHotelService(review types.ReviewPayload, avgReview float32) error {
+func (r *hotelServiceRepository) ReviewHotelService(review types.ReviewPayload, avgReview float32) error {
 	tx := r.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -90,7 +90,7 @@ func (r *HotelServiceRepository) ReviewHotelService(review types.ReviewPayload, 
 	return nil
 }
 
-func (r *HotelServiceRepository) GetAllHotelServiceByHotel(profile_id uint, status string) ([]model.HotelService, error) {
+func (r *hotelServiceRepository) GetAllHotelServiceByHotel(profile_id uint, status string) ([]model.HotelService, error) {
 	ser := []model.HotelService{}
 	result := r.db.Preload("AnimalHotelServices.AnimalUser.User", func(db *gorm.DB) *gorm.DB {
 		return db.Select("users.id", "FirstName", "Surename", "tel")
@@ -106,7 +106,7 @@ func (r *HotelServiceRepository) GetAllHotelServiceByHotel(profile_id uint, stat
 	return ser, nil
 }
 
-func (r *HotelServiceRepository) GetStatusBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error) {
+func (r *hotelServiceRepository) GetStatusBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error) {
 	ser := []model.HotelService{}
 	result := r.db.
 		Preload("AnimalHotelServices.AnimalUser").
@@ -122,7 +122,7 @@ func (r *HotelServiceRepository) GetStatusBookingHotelByUser(user_id uint, statu
 	return ser, nil
 }
 
-func (r *HotelServiceRepository) GetAllHotelServiceByUser(user_id uint) ([]model.HotelService, error) {
+func (r *hotelServiceRepository) GetAllHotelServiceByUser(user_id uint) ([]model.HotelService, error) {
 	ser := []model.HotelService{}
 	result := r.db.Preload("AnimalHotelServices.AnimalUser.User", func(db *gorm.DB) *gorm.DB {
 		return db.Select("users.id", "FirstName", "Surename", "tel")
@@ -139,7 +139,7 @@ func (r *HotelServiceRepository) GetAllHotelServiceByUser(user_id uint) ([]model
 	return ser, nil
 }
 
-func (r *HotelServiceRepository) GetReviewByHotel(profile_id uint) ([]model.HotelService, error) {
+func (r *hotelServiceRepository) GetReviewByHotel(profile_id uint) ([]model.HotelService, error) {
 	ser := []model.HotelService{}
 
 	result := r.db.Preload("AnimalHotelServices.AnimalUser.User", func(db *gorm.DB) *gorm.DB {
@@ -157,7 +157,7 @@ func (r *HotelServiceRepository) GetReviewByHotel(profile_id uint) ([]model.Hote
 	return ser, nil
 }
 
-func (r *HotelServiceRepository) GetHotelService(id uint) (model.HotelService, error) {
+func (r *hotelServiceRepository) GetHotelService(id uint) (model.HotelService, error) {
 	ser := model.HotelService{}
 	result := r.db.Preload("AnimalHotelServices.AnimalUser.User", func(db *gorm.DB) *gorm.DB {
 		return db.Select("users.id", "FirstName", "Surename", "tel")
@@ -171,7 +171,7 @@ func (r *HotelServiceRepository) GetHotelService(id uint) (model.HotelService, e
 }
 
 // task
-func (r *HotelServiceRepository) GetAllBookingHotelByStatus(status string) ([]model.HotelService, error) {
+func (r *hotelServiceRepository) GetAllBookingHotelByStatus(status string) ([]model.HotelService, error) {
 	ser := []model.HotelService{}
 	result := r.db.
 		Preload("CageRoom.Profile").
@@ -185,7 +185,7 @@ func (r *HotelServiceRepository) GetAllBookingHotelByStatus(status string) ([]mo
 	return ser, nil
 }
 
-func (r *HotelServiceRepository) UpdateHotelService(ser model.HotelService) error {
+func (r *hotelServiceRepository) UpdateHotelService(ser model.HotelService) error {
 	result := r.db.Model(&model.HotelService{}).Where("id = ?", ser.ID).Updates(ser)
 	if result.Error != nil {
 		return result.Error
@@ -193,7 +193,7 @@ func (r *HotelServiceRepository) UpdateHotelService(ser model.HotelService) erro
 	return nil
 }
 
-func (r *HotelServiceRepository) DeleteHotelService(id uint) error {
+func (r *hotelServiceRepository) DeleteHotelService(id uint) error {
 	result := r.db.Delete(&model.HotelService{}, id)
 	if result.Error != nil {
 		return result.Error
@@ -201,7 +201,7 @@ func (r *HotelServiceRepository) DeleteHotelService(id uint) error {
 	return nil
 }
 
-// func (r *HotelServiceRepository) UpdateHotelProfile(profile model.Profile) error {
+// func (r *hotelServiceRepository) UpdateHotelProfile(profile model.Profile) error {
 // 	result := r.db.Save(&profile)
 // 	if result.Error != nil {
 // 		return result.Error
@@ -209,7 +209,7 @@ func (r *HotelServiceRepository) DeleteHotelService(id uint) error {
 // 	return nil
 // }
 
-func (r *HotelServiceRepository) CheckNotAvailableBooking(cage_id uint, startTime, endTime time.Time) (model.HotelService, error) {
+func (r *hotelServiceRepository) CheckNotAvailableBooking(cage_id uint, startTime, endTime time.Time) (model.HotelService, error) {
 	service := model.HotelService{}
 
 	query_service := r.db.Model(&service)
@@ -229,7 +229,7 @@ func (r *HotelServiceRepository) CheckNotAvailableBooking(cage_id uint, startTim
 	return service, nil
 }
 
-// func (r *HotelServiceRepository) UpdateHotel(hotel model.Hotel) error {
+// func (r *hotelServiceRepository) UpdateHotel(hotel model.Hotel) error {
 // 	db := r.db.Model(&model.Hotel{}).Where("id = ?", hotel.ID)
 // 	if err := db.Updates(hotel).Error; err != nil {
 // 		return err

@@ -12,11 +12,11 @@ import (
 
 // handle requests and response requests
 type AuthHandler struct {
-	authServiceIn service.AuthServiceIn
+	authService service.AuthService
 }
 
-func NewAuthHandler(authServiceIn service.AuthServiceIn) *AuthHandler {
-	return &AuthHandler{authServiceIn: authServiceIn}
+func NewAuthHandler(authService service.AuthService) *AuthHandler {
+	return &AuthHandler{authService: authService}
 }
 
 func (h *AuthHandler) RegisterRoutes(g *echo.Group) {
@@ -46,7 +46,7 @@ func (h *AuthHandler) handleSignUp(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "invalid email or password", err)
 	}
 
-	err = h.authServiceIn.SignUp(*u)
+	err = h.authService.SignUp(*u)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "sign up failed", err)
 	}
@@ -71,7 +71,7 @@ func (h *AuthHandler) handleLogIn(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "login information is not correct", err)
 	}
 
-	user, token, err := h.authServiceIn.LogIn(*payload)
+	user, token, err := h.authService.LogIn(*payload)
 	if err != nil {
 		return utils.HandleError(c, http.StatusUnauthorized, "email or password is not correct", err)
 	}
@@ -105,7 +105,7 @@ func (h *AuthHandler) handleLoginGoogle(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "login information is not correct", err)
 	}
 
-	user, token, err := h.authServiceIn.LoginGoogle(authCode.AuthCode)
+	user, token, err := h.authService.LoginGoogle(authCode.AuthCode)
 	if err != nil {
 		return utils.HandleError(c, http.StatusUnauthorized, "login failed", err)
 	}
@@ -133,7 +133,7 @@ func (h *AuthHandler) handleLoginGoogle(c echo.Context) error {
 // 	}
 
 // 	fmt.Println("authCode", authCode)
-// 	h.authServiceIn.LoginGoogle(authCode)
+// 	h.authService.LoginGoogle(authCode)
 // 	return c.JSON(http.StatusOK, map[string]interface{}{
 // 		"message": "login Successfully",
 // 		// "token":   token,

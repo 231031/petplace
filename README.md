@@ -14,7 +14,7 @@ Petplace is a web application that integrates all pet hotels in Thailand into a 
 ### Backend
 - Language: Go (Golang)
 - Framework: Echo
-- API Architecture: RESTful API
+- API Architecture: RESTful API - API Documentation ( http://localhost:{port}/swagger/index.html )
 - Authentication and Authorization: Implements secure JWT-based authentication and role-based authorization by validating user roles embedded within the token to restrict access to specific resources and actions.
 
 ### Frontend

@@ -10,15 +10,15 @@ import (
 )
 
 // interact with the database
-type CageRoomRepository struct {
+type cageRoomRepository struct {
 	db *gorm.DB
 }
 
-func NewCageRoomRepository(db *gorm.DB) *CageRoomRepository {
-	return &CageRoomRepository{db: db}
+func NewCageRoomRepository(db *gorm.DB) CageRoomRepository {
+	return &cageRoomRepository{db: db}
 }
 
-func (r *CageRoomRepository) CreateCageRoom(cage model.CageRoom) error {
+func (r *cageRoomRepository) CreateCageRoom(cage model.CageRoom) error {
 	result := r.db.Create(&cage)
 	if result.Error != nil {
 		return result.Error
@@ -26,7 +26,7 @@ func (r *CageRoomRepository) CreateCageRoom(cage model.CageRoom) error {
 	return nil
 }
 
-func (r *CageRoomRepository) GetAllCageRoom(id uint) ([]model.CageRoom, error) {
+func (r *cageRoomRepository) GetAllCageRoom(id uint) ([]model.CageRoom, error) {
 	cages := []model.CageRoom{}
 	result := r.db.Where("profile_id = ?", id).Find(&cages)
 	if result.Error != nil {
@@ -35,7 +35,7 @@ func (r *CageRoomRepository) GetAllCageRoom(id uint) ([]model.CageRoom, error) {
 	return cages, nil
 }
 
-func (r *CageRoomRepository) GetCageRoom(id uint) (model.CageRoom, error) {
+func (r *cageRoomRepository) GetCageRoom(id uint) (model.CageRoom, error) {
 	cage := model.CageRoom{ID: id}
 	result := r.db.Preload("Profile", func(db *gorm.DB) *gorm.DB {
 		return db.Select("ID", "CheckIn", "CheckOut")
@@ -47,7 +47,7 @@ func (r *CageRoomRepository) GetCageRoom(id uint) (model.CageRoom, error) {
 	return cage, nil
 }
 
-func (r *CageRoomRepository) GetSpecificCageRoomType(id uint, animal_type string, cage_type string) (model.CageRoom, error) {
+func (r *cageRoomRepository) GetSpecificCageRoomType(id uint, animal_type string, cage_type string) (model.CageRoom, error) {
 	cage := model.CageRoom{}
 	result := r.db.Where("profile_id = ? AND animal_type = ? AND cage_type = ?", id, animal_type, cage_type).First(&cage)
 
@@ -57,7 +57,7 @@ func (r *CageRoomRepository) GetSpecificCageRoomType(id uint, animal_type string
 	return cage, nil
 }
 
-func (r *CageRoomRepository) UpdateCageRoom(cage model.CageRoom) error {
+func (r *cageRoomRepository) UpdateCageRoom(cage model.CageRoom) error {
 	result := r.db.Model(&model.CageRoom{}).Where("id = ?", cage.ID).Updates(cage)
 	if result.Error != nil {
 		return result.Error
@@ -65,7 +65,7 @@ func (r *CageRoomRepository) UpdateCageRoom(cage model.CageRoom) error {
 	return nil
 }
 
-func (r *CageRoomRepository) DeleteCageRoom(id uint) error {
+func (r *cageRoomRepository) DeleteCageRoom(id uint) error {
 	result := r.db.Delete(&model.CageRoom{}, id)
 	if result.Error != nil {
 		return result.Error
@@ -75,7 +75,7 @@ func (r *CageRoomRepository) DeleteCageRoom(id uint) error {
 
 // filter by using animal_type and cage_size
 // calculate longtitude and latitude of selected location compare with longitude and latitude of hotel in profiles
-func (r *CageRoomRepository) FilterCages(animals []types.FilterInfo, startTime, endTime time.Time) ([]model.Profile, error) {
+func (r *cageRoomRepository) FilterCages(animals []types.FilterInfo, startTime, endTime time.Time) ([]model.Profile, error) {
 	profiles := []model.Profile{}
 
 	animalPairs := utils.MapSearchAnimalPairs(animals)
@@ -106,7 +106,7 @@ func (r *CageRoomRepository) FilterCages(animals []types.FilterInfo, startTime, 
 	return profiles, nil
 }
 
-func (r *CageRoomRepository) FilterCagesByHotel(animals []types.FilterInfo, startTime, endTime time.Time, profile_id uint, user_id uint) (model.Profile, error) {
+func (r *cageRoomRepository) FilterCagesByHotel(animals []types.FilterInfo, startTime, endTime time.Time, profile_id uint, user_id uint) (model.Profile, error) {
 	profile := model.Profile{
 		ID: profile_id,
 	}
@@ -142,7 +142,7 @@ func (r *CageRoomRepository) FilterCagesByHotel(animals []types.FilterInfo, star
 	return profile, nil
 }
 
-func (r *CageRoomRepository) getNotAvaliableCageRoom(animals [][]interface{}, startTime, endTime time.Time) ([]uint, error) {
+func (r *cageRoomRepository) getNotAvaliableCageRoom(animals [][]interface{}, startTime, endTime time.Time) ([]uint, error) {
 	id := []uint{}
 	services := []model.HotelService{}
 
@@ -168,7 +168,7 @@ func (r *CageRoomRepository) getNotAvaliableCageRoom(animals [][]interface{}, st
 	return id, nil
 }
 
-// func (r *CageRoomRepository) GetAllCageRoomByIds(ids []uint) ([]model.CageRoom, error) {
+// func (r *cageRoomRepository) GetAllCageRoomByIds(ids []uint) ([]model.CageRoom, error) {
 // 	cages := []model.CageRoom{}
 // 	result := r.db.Preload("Profile").
 // 				Where("id IN (?)", ids).

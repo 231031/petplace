@@ -18,36 +18,36 @@ import (
 )
 
 // implement bussiness logic
-type BookingService struct {
-	HotelServiceRepositoryIn repository.HotelServiceRepositoryIn
-	UsersServiceIn           UsersServiceIn
-	ProfileServiceIn         ProfileServiceIn
-	CageRoomServiceIn        CageRoomServiceIn
-	PaymentServiceIn         PaymentServiceIn
-	Validate                 *validator.Validate
+type bookingService struct {
+	HotelServiceRepository repository.HotelServiceRepository
+	UsersService           UsersService
+	ProfileService         ProfileService
+	CageRoomService        CageRoomService
+	PaymentService         PaymentService
+	Validate               *validator.Validate
 }
 
 func NewBookingService(
-	hotelSerRepositoryIn repository.HotelServiceRepositoryIn,
-	usersServiceIn UsersServiceIn,
-	profileService ProfileServiceIn,
-	cageRoomService CageRoomServiceIn,
-	paymentService PaymentServiceIn,
+	hotelSerRepositoryIn repository.HotelServiceRepository,
+	usersService UsersService,
+	profileService ProfileService,
+	cageRoomService CageRoomService,
+	paymentService PaymentService,
 	validate *validator.Validate,
-) *BookingService {
+) BookingService {
 
-	return &BookingService{
-		HotelServiceRepositoryIn: hotelSerRepositoryIn,
-		UsersServiceIn:           usersServiceIn,
-		ProfileServiceIn:         profileService,
-		CageRoomServiceIn:        cageRoomService,
-		PaymentServiceIn:         paymentService,
-		Validate:                 validate,
+	return &bookingService{
+		HotelServiceRepository: hotelSerRepositoryIn,
+		UsersService:           usersService,
+		ProfileService:         profileService,
+		CageRoomService:        cageRoomService,
+		PaymentService:         paymentService,
+		Validate:               validate,
 	}
 }
 
 // role : Hotel
-func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, error, error) {
+func (s *bookingService) BookHotelService(payload types.BookingPayload) (int, error, error) {
 	err := s.Validate.Struct(payload)
 	if err != nil {
 		return http.StatusBadRequest, fmt.Errorf("the booking detail is not correct"), err
@@ -62,7 +62,7 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 		return http.StatusBadRequest, fmt.Errorf("failed to copy booking payload to hotel service: %v", err), err
 	}
 
-	cage, err := s.CageRoomServiceIn.GetCageRoom(ser.CageID)
+	cage, err := s.CageRoomService.GetCageRoom(ser.CageID)
 	if err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("cage room not available"), err
 	}
@@ -97,7 +97,7 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 	days, price := s.calculatePriceService(startDate, endDate, cage.Price)
 	ser.Price = price
 
-	bookID, err := s.HotelServiceRepositoryIn.BookHotelService(ser, animals)
+	bookID, err := s.HotelServiceRepository.BookHotelService(ser, animals)
 	if err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("booking service failed"), err
 	}
@@ -110,7 +110,7 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 		Day:        strconv.Itoa(days),
 	}
 
-	paymentID, err := s.PaymentServiceIn.RequestPayment(payload, bookDel)
+	paymentID, err := s.PaymentService.RequestPayment(payload, bookDel)
 	if err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("payment failed"), err
 	}
@@ -134,7 +134,7 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 		Expiry:       payload.CardDetail.Expiry,
 		SecurityCode: payload.CardDetail.SecurityCode,
 	}
-	err = s.UsersServiceIn.UpdateUser(payload.ClientID, updatedCredit)
+	err = s.UsersService.UpdateUser(payload.ClientID, updatedCredit)
 	if err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("update creddit card failed"), err
 	}
@@ -142,7 +142,7 @@ func (s *BookingService) BookHotelService(payload types.BookingPayload) (int, er
 	return http.StatusCreated, nil, nil
 }
 
-func (s *BookingService) AcceptRejectBookHotel(payload types.SelectStatusPayload) error {
+func (s *bookingService) AcceptRejectBookHotel(payload types.SelectStatusPayload) error {
 	bookID := payload.HotelServiceID
 	if payload.Status == "rejected" {
 		updatedSer := model.HotelService{
@@ -165,13 +165,13 @@ func (s *BookingService) AcceptRejectBookHotel(payload types.SelectStatusPayload
 	}
 
 	cost := ser.Price - 0.08*ser.Price
-	profile, err := s.ProfileServiceIn.GetProfileByID(payload.ProfileID)
+	profile, err := s.ProfileService.GetProfileByID(payload.ProfileID)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
 	}
 
-	payoutID, err := s.PaymentServiceIn.CreatePayout(cost, profile.PaypalEmail)
+	payoutID, err := s.PaymentService.CreatePayout(cost, profile.PaypalEmail)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
@@ -193,7 +193,7 @@ func (s *BookingService) AcceptRejectBookHotel(payload types.SelectStatusPayload
 	return nil
 }
 
-func (s *BookingService) ManageRefundBookHotel(payload types.RefundPayload) error {
+func (s *bookingService) ManageRefundBookHotel(payload types.RefundPayload) error {
 	ser, err := s.GetBookingHotel(payload.HotelServiceID)
 	if err != nil {
 		return nil
@@ -213,8 +213,8 @@ func (s *BookingService) ManageRefundBookHotel(payload types.RefundPayload) erro
 	return nil
 }
 
-func (s *BookingService) refundBookHotel(ser model.HotelService, payload types.RefundPayload, newStatus string) error {
-	payoutID, err := s.PaymentServiceIn.CreatePayout(ser.Price, payload.PaypalEmail)
+func (s *bookingService) refundBookHotel(ser model.HotelService, payload types.RefundPayload, newStatus string) error {
+	payoutID, err := s.PaymentService.CreatePayout(ser.Price, payload.PaypalEmail)
 	if err != nil {
 		return err
 	}
@@ -234,7 +234,7 @@ func (s *BookingService) refundBookHotel(ser model.HotelService, payload types.R
 	updatedUser := model.User{
 		PaypalEmail: payload.PaypalEmail,
 	}
-	err = s.UsersServiceIn.UpdateUser(payload.ClientID, updatedUser)
+	err = s.UsersService.UpdateUser(payload.ClientID, updatedUser)
 	if err != nil {
 		return err
 	}
@@ -242,7 +242,7 @@ func (s *BookingService) refundBookHotel(ser model.HotelService, payload types.R
 	return nil
 }
 
-func (s *BookingService) cancelNotRefundBookHotel(id uint) error {
+func (s *bookingService) cancelNotRefundBookHotel(id uint) error {
 	updatedSer := model.HotelService{
 		ServiceInfo: types.ServiceInfo{
 			Status: "canceled",
@@ -256,25 +256,25 @@ func (s *BookingService) cancelNotRefundBookHotel(id uint) error {
 	return nil
 }
 
-func (s *BookingService) calculatePriceService(startTime, endTime time.Time, cagePrice float32) (int, float32) {
+func (s *bookingService) calculatePriceService(startTime, endTime time.Time, cagePrice float32) (int, float32) {
 	duration := endTime.Sub(startTime)
 	days := int(duration.Hours() / 24)
 	price := cagePrice * float32(days)
 	return days, price
 }
 
-func (s *BookingService) ReviewHotelService(payload types.ReviewPayload) (int, error, error) {
+func (s *bookingService) ReviewHotelService(payload types.ReviewPayload) (int, error, error) {
 	err := s.Validate.Struct(payload)
 	if err != nil {
 		return http.StatusBadRequest, fmt.Errorf("review detail is not correct"), err
 	}
 
-	profile, err := s.ProfileServiceIn.GetProfileByID(payload.ProfileID)
+	profile, err := s.ProfileService.GetProfileByID(payload.ProfileID)
 	if err != nil {
 		return http.StatusBadRequest, fmt.Errorf("review detail is not correct"), err
 	}
 
-	count, err := s.ProfileServiceIn.CountCompleteBookByID(payload.ProfileID)
+	count, err := s.ProfileService.CountCompleteBookByID(payload.ProfileID)
 	if err != nil {
 		return http.StatusBadRequest, fmt.Errorf("review detail is not correct"), err
 	}
@@ -283,7 +283,7 @@ func (s *BookingService) ReviewHotelService(payload types.ReviewPayload) (int, e
 	newAvg := (preAvg + payload.ReviewRate) / (float32(count) + 1)
 
 	payload.ReviewImage = utils.MapStringArrayToText(payload.ReviewImageArray)
-	err = s.HotelServiceRepositoryIn.ReviewHotelService(payload, newAvg)
+	err = s.HotelServiceRepository.ReviewHotelService(payload, newAvg)
 	if err != nil {
 		return http.StatusInternalServerError, fmt.Errorf("review hotel service failed"), err
 	}
@@ -291,14 +291,14 @@ func (s *BookingService) ReviewHotelService(payload types.ReviewPayload) (int, e
 	return http.StatusOK, nil, nil
 }
 
-func (s *BookingService) UpdateHotelService(id uint, ser model.HotelService) error {
+func (s *bookingService) UpdateHotelService(id uint, ser model.HotelService) error {
 	ser_db, err := s.GetBookingHotel(id)
 	if err != nil {
 		return err
 	}
 
 	updateBook := utils.CopyNonZeroFields(&ser, &ser_db).(*model.HotelService)
-	err = s.HotelServiceRepositoryIn.UpdateHotelService(*updateBook)
+	err = s.HotelServiceRepository.UpdateHotelService(*updateBook)
 	if err != nil {
 		return err
 	}
@@ -306,7 +306,7 @@ func (s *BookingService) UpdateHotelService(id uint, ser model.HotelService) err
 	return nil
 }
 
-func (s *BookingService) CheckAvailableBooking(payload types.BookAgainPayload) (bool, error, error) {
+func (s *bookingService) CheckAvailableBooking(payload types.BookAgainPayload) (bool, error, error) {
 	if err := s.Validate.Struct(payload); err != nil {
 		return false, fmt.Errorf("information is not correct"), err
 	}
@@ -329,7 +329,7 @@ func (s *BookingService) CheckAvailableBooking(payload types.BookAgainPayload) (
 		return false, strErr, nil
 	}
 
-	_, err = s.HotelServiceRepositoryIn.CheckNotAvailableBooking(payload.CageID, startDate, endDate)
+	_, err = s.HotelServiceRepository.CheckNotAvailableBooking(payload.CageID, startDate, endDate)
 	// cage's available in selected date
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return true, nil, nil
@@ -342,9 +342,9 @@ func (s *BookingService) CheckAvailableBooking(payload types.BookAgainPayload) (
 }
 
 // role : hotel
-func (s *BookingService) GetAllBookingHotelByHotel(profile_id uint, status string) ([]model.HotelService, error) {
+func (s *bookingService) GetAllBookingHotelByHotel(profile_id uint, status string) ([]model.HotelService, error) {
 	status = strings.ToLower(status)
-	ser, err := s.HotelServiceRepositoryIn.GetAllHotelServiceByHotel(profile_id, status)
+	ser, err := s.HotelServiceRepository.GetAllHotelServiceByHotel(profile_id, status)
 	if err != nil {
 		return ser, err
 	}
@@ -357,8 +357,8 @@ func (s *BookingService) GetAllBookingHotelByHotel(profile_id uint, status strin
 	return ser, nil
 }
 
-func (s *BookingService) GetBookingHotel(id uint) (model.HotelService, error) {
-	ser, err := s.HotelServiceRepositoryIn.GetHotelService(id)
+func (s *bookingService) GetBookingHotel(id uint) (model.HotelService, error) {
+	ser, err := s.HotelServiceRepository.GetHotelService(id)
 	if err != nil {
 		return ser, err
 	}
@@ -369,8 +369,8 @@ func (s *BookingService) GetBookingHotel(id uint) (model.HotelService, error) {
 }
 
 // role : client
-func (s *BookingService) GetStatusBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error) {
-	ser, err := s.HotelServiceRepositoryIn.GetStatusBookingHotelByUser(user_id, status)
+func (s *bookingService) GetStatusBookingHotelByUser(user_id uint, status string) ([]model.HotelService, error) {
+	ser, err := s.HotelServiceRepository.GetStatusBookingHotelByUser(user_id, status)
 	if err != nil {
 		return ser, err
 	}
@@ -383,8 +383,8 @@ func (s *BookingService) GetStatusBookingHotelByUser(user_id uint, status string
 	return ser, nil
 }
 
-func (s *BookingService) GetAllHotelServiceByUser(user_id uint) ([]model.HotelService, error) {
-	ser, err := s.HotelServiceRepositoryIn.GetAllHotelServiceByUser(user_id)
+func (s *bookingService) GetAllHotelServiceByUser(user_id uint) ([]model.HotelService, error) {
+	ser, err := s.HotelServiceRepository.GetAllHotelServiceByUser(user_id)
 	if err != nil {
 		return ser, err
 	}
@@ -397,8 +397,8 @@ func (s *BookingService) GetAllHotelServiceByUser(user_id uint) ([]model.HotelSe
 	return ser, nil
 }
 
-func (s *BookingService) GetReviewByHotel(profile_id uint) ([]model.HotelService, error) {
-	ser, err := s.HotelServiceRepositoryIn.GetReviewByHotel(profile_id)
+func (s *bookingService) GetReviewByHotel(profile_id uint) ([]model.HotelService, error) {
+	ser, err := s.HotelServiceRepository.GetReviewByHotel(profile_id)
 	if err != nil {
 		return ser, err
 	}
@@ -411,8 +411,8 @@ func (s *BookingService) GetReviewByHotel(profile_id uint) ([]model.HotelService
 }
 
 // task
-func (s *BookingService) GetAllBookingHotelByStatus(status string) ([]model.HotelService, error) {
-	ser, err := s.HotelServiceRepositoryIn.GetAllBookingHotelByStatus(status)
+func (s *bookingService) GetAllBookingHotelByStatus(status string) ([]model.HotelService, error) {
+	ser, err := s.HotelServiceRepository.GetAllBookingHotelByStatus(status)
 	if err != nil {
 		return ser, err
 	}
@@ -453,7 +453,7 @@ func (s *BookingService) GetAllBookingHotelByStatus(status string) ([]model.Hote
 // 	return http.StatusBadRequest, fmt.Errorf("end time must be after start time"), err
 // }
 
-// func (s *BookingService) UpdateHotelInfo(payload types.UpdateHotelPayload) (int, error) {
+// func (s *bookingService) UpdateHotelInfo(payload types.UpdateHotelPayload) (int, error) {
 //     // ตรวจสอบความถูกต้องของข้อมูลที่ส่งมา
 //     err := s.Validate.Struct(payload)
 //     if err != nil {
@@ -461,7 +461,7 @@ func (s *BookingService) GetAllBookingHotelByStatus(status string) ([]model.Hote
 //     }
 
 //     // ดึงข้อมูลโรงแรมเดิมจากฐานข้อมูล
-//     existingHotel, err := s.HotelServiceRepositoryIn.GetHotelByID(payload.HotelID)
+//     existingHotel, err := s.HotelServiceRepository.GetHotelByID(payload.HotelID)
 //     if err != nil {
 //         return http.StatusNotFound, fmt.Errorf("hotel not found")
 //     }
@@ -470,7 +470,7 @@ func (s *BookingService) GetAllBookingHotelByStatus(status string) ([]model.Hote
 //     updatedHotel := utils.CopyNonZeroFields(&payload, &existingHotel).(*model.Hotel)
 
 //     // บันทึกข้อมูลที่อัปเดตลงฐานข้อมูล
-//     err = s.HotelServiceRepositoryIn.UpdateHotel(*updatedHotel)
+//     err = s.HotelServiceRepository.UpdateHotel(*updatedHotel)
 //     if err != nil {
 //         return http.StatusInternalServerError, fmt.Errorf("failed to update hotel: %v", err)
 //     }

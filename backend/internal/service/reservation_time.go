@@ -9,27 +9,27 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type ReservationTimeService struct {
-	ProfileServiceIn            ProfileServiceIn
-	ReservationTimeRepositoryIn repository.ReservationTimeRepositoryIn
-	Validate                    *validator.Validate
+type reservationTimeService struct {
+	ProfileService            ProfileService
+	ReservationTimeRepository repository.ReservationTimeRepository
+	Validate                  *validator.Validate
 }
 
 func NewReservationTimeService(
-	profileServiceIn ProfileServiceIn,
-	reservationTimeRepositoryIn repository.ReservationTimeRepositoryIn,
+	profileService ProfileService,
+	reservationTimeRepository repository.ReservationTimeRepository,
 	validate *validator.Validate,
-) *ReservationTimeService {
-	return &ReservationTimeService{
-		ProfileServiceIn:            profileServiceIn,
-		ReservationTimeRepositoryIn: reservationTimeRepositoryIn,
-		Validate:                    validate,
+) ReservationTimeService {
+	return &reservationTimeService{
+		ProfileService:            profileService,
+		ReservationTimeRepository: reservationTimeRepository,
+		Validate:                  validate,
 	}
 }
 
-func (s *ReservationTimeService) UpdateDailyReservationAndBook(currentDay time.Time) (string, error) {
+func (s *reservationTimeService) UpdateDailyReservationAndBook(currentDay time.Time) (string, error) {
 
-	// strErr, err := s.ReservationTimeRepositoryIn.UpdateDailyReservation(previousDay, currentDay, reservation)
+	// strErr, err := s.ReservationTimeRepository.UpdateDailyReservation(previousDay, currentDay, reservation)
 	// if err != nil {
 	// 	return strErr, err
 	// }
@@ -37,8 +37,8 @@ func (s *ReservationTimeService) UpdateDailyReservationAndBook(currentDay time.T
 	return "successfully updated daily task", nil
 }
 
-func (s *ReservationTimeService) UpdateDailyNewDate(previousDay, newDay time.Time) (string, error) {
-	profiles, err := s.ProfileServiceIn.GetProfileRoleClinic()
+func (s *reservationTimeService) UpdateDailyNewDate(previousDay, newDay time.Time) (string, error) {
+	profiles, err := s.ProfileService.GetProfileRoleClinic()
 	if err != nil {
 		return "falied to get profiles", err
 	}
@@ -58,7 +58,7 @@ func (s *ReservationTimeService) UpdateDailyNewDate(previousDay, newDay time.Tim
 		reservations = append(reservations, newMorning, newNoon)
 	}
 
-	err = s.ReservationTimeRepositoryIn.UpdateDailyNewDate(previousDay, reservations)
+	err = s.ReservationTimeRepository.UpdateDailyNewDate(previousDay, reservations)
 	if err != nil {
 		return "falied to update new date daily", err
 	}

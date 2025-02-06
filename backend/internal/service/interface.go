@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-type AuthServiceIn interface {
+type AuthService interface {
 	SignUp(data model.User) error
 	LogIn(payload types.LoginPayload) (any, string, error)
 	LoginGoogle(authCode string) (any, string, error)
 }
 
-type UsersServiceIn interface {
+type UsersService interface {
 	CreateUser(data model.User) (model.User, error)
 	GetUserByEmail(email string) (model.User, error)
 	GetUserByID(id uint) (model.User, error)
@@ -31,7 +31,7 @@ type UsersServiceIn interface {
 	GetFavoriteCageByUser(user_id uint, userLoc types.LocationParams) ([]model.FavoriteCage, error)
 }
 
-type ProfileServiceIn interface {
+type ProfileService interface {
 	CreateProfile(profile model.Profile) (int, string, error)
 	GetProfileByID(id uint) (model.Profile, error)
 	GetProfileByUserID(userID uint, role string) (model.Profile, string, error)
@@ -47,12 +47,12 @@ type ProfileServiceIn interface {
 	GetProfileRoleClinic() ([]model.Profile, error) // use in daily task ticker service
 }
 
-type ReservationTimeServiceIn interface {
+type ReservationTimeService interface {
 	UpdateDailyNewDate(previousDay, newDay time.Time) (string, error)
 	UpdateDailyReservationAndBook(currentDay time.Time) (string, error)
 }
 
-type BookingServiceIn interface {
+type BookingService interface {
 	CheckAvailableBooking(payload types.BookAgainPayload) (bool, error, error)
 	BookHotelService(payload types.BookingPayload) (int, error, error)
 	AcceptRejectBookHotel(payload types.SelectStatusPayload) error
@@ -68,7 +68,7 @@ type BookingServiceIn interface {
 	GetReviewByHotel(profile_id uint) ([]model.HotelService, error)
 }
 
-type CageRoomServiceIn interface {
+type CageRoomService interface {
 	CreateCageRoom(cage model.CageRoom) (int, string, error)
 	UpdateCageRoom(id uint, ser model.CageRoom) error
 	DeleteCageRoom(id uint) error
@@ -81,7 +81,7 @@ type CageRoomServiceIn interface {
 	GetAllAnimalCageType(id uint) ([]types.CageAnimalType, error)
 }
 
-type PaymentServiceIn interface {
+type PaymentService interface {
 	RequestPayment(payload types.BookingPayload, bookDel types.BookingDetail) (string, error)
 	CreatePayout(cost float32, paypalEmail string) (string, error)
 }

@@ -11,11 +11,11 @@ import (
 
 // handle requests and response requests
 type PaymentHandler struct {
-	paymentServiceIn service.PaymentServiceIn
+	paymentService service.PaymentService
 }
 
-func NewPaymentHandler(paymentServiceIn service.PaymentServiceIn) *PaymentHandler {
-	return &PaymentHandler{paymentServiceIn: paymentServiceIn}
+func NewPaymentHandler(paymentService service.PaymentService) *PaymentHandler {
+	return &PaymentHandler{paymentService: paymentService}
 }
 
 func (h *PaymentHandler) RegisterRoutes(g *echo.Group) {
@@ -27,7 +27,7 @@ func (h *PaymentHandler) handlePayment(c echo.Context) error {
 	payload := types.BookingPayload{}
 	bookDel := types.BookingDetail{}
 
-	_, err := h.paymentServiceIn.RequestPayment(payload, bookDel)
+	_, err := h.paymentService.RequestPayment(payload, bookDel)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Payment Failed", err)
 	}
@@ -35,7 +35,7 @@ func (h *PaymentHandler) handlePayment(c echo.Context) error {
 }
 
 func (h *PaymentHandler) handlePayout(c echo.Context) error {
-	_, err := h.paymentServiceIn.CreatePayout(5.0, "")
+	_, err := h.paymentService.CreatePayout(5.0, "")
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Payout Failed", err)
 	}

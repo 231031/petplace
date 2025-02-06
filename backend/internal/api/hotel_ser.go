@@ -12,11 +12,11 @@ import (
 
 // handle requests and response requests
 type HotelHandler struct {
-	bookingServiceIn service.BookingServiceIn
+	bookingService service.BookingService
 }
 
-func NewHotelHandler(bookingServiceIn service.BookingServiceIn) *HotelHandler {
-	return &HotelHandler{bookingServiceIn: bookingServiceIn}
+func NewHotelHandler(bookingService service.BookingService) *HotelHandler {
+	return &HotelHandler{bookingService: bookingService}
 }
 
 func (h *HotelHandler) RegisterRoutes(g *echo.Group) {
@@ -97,7 +97,7 @@ func (h *HotelHandler) handleBookHotelService(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "booking detail not correct", err)
 	}
 
-	status, err_str, err := h.bookingServiceIn.BookHotelService(s)
+	status, err_str, err := h.bookingService.BookHotelService(s)
 	if err != nil || status != http.StatusCreated {
 		return utils.HandleError(c, status, err_str.Error(), err)
 	}
@@ -124,7 +124,7 @@ func (h *HotelHandler) handleGetAllHotelServiceByHotel(c echo.Context) error {
 	}
 	status := c.Param("status")
 
-	ser_info, err := h.bookingServiceIn.GetAllBookingHotelByHotel(profile_id, status)
+	ser_info, err := h.bookingService.GetAllBookingHotelByHotel(profile_id, status)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Booking not available", err)
 	}
@@ -151,7 +151,7 @@ func (h *HotelHandler) handleGetStatusHotelServiceByUser(c echo.Context) error {
 	}
 	status := c.Param("status")
 
-	ser_info, err := h.bookingServiceIn.GetStatusBookingHotelByUser(user_id, status)
+	ser_info, err := h.bookingService.GetStatusBookingHotelByUser(user_id, status)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "falied to get reservation history", err)
 	}
@@ -176,7 +176,7 @@ func (h *HotelHandler) handleGetAllHotelServiceByUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
 	}
 
-	ser_info, err := h.bookingServiceIn.GetAllHotelServiceByUser(user_id)
+	ser_info, err := h.bookingService.GetAllHotelServiceByUser(user_id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "falied to get reservation history", err)
 	}
@@ -201,7 +201,7 @@ func (h *HotelHandler) handleGetHotelService(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "hotel information is not correct", err)
 	}
 
-	ser_info, err := h.bookingServiceIn.GetBookingHotel(id)
+	ser_info, err := h.bookingService.GetBookingHotel(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "falied to get reservation history", err)
 	}
@@ -235,7 +235,7 @@ func (h *HotelHandler) handleCheckBookAgain(c echo.Context) error {
 	}
 	payload.CageID = cage_id
 
-	checked, strErr, err := h.bookingServiceIn.CheckAvailableBooking(payload)
+	checked, strErr, err := h.bookingService.CheckAvailableBooking(payload)
 	if err != nil {
 		return utils.HandleError(c, http.StatusBadRequest, strErr.Error(), err)
 	}
@@ -267,7 +267,7 @@ func (h *HotelHandler) handleGetReviewByHotel(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "hotel information is not correct", err)
 	}
 
-	reviews, err := h.bookingServiceIn.GetReviewByHotel(id)
+	reviews, err := h.bookingService.GetReviewByHotel(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "reviews is not available", err)
 	}
@@ -293,7 +293,7 @@ func (h *HotelHandler) handleAcceptRejectBookHotel(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "this detail is not correct", err)
 	}
 
-	err = h.bookingServiceIn.AcceptRejectBookHotel(sel)
+	err = h.bookingService.AcceptRejectBookHotel(sel)
 	if err != nil {
 		return utils.HandleError(c, http.StatusBadRequest, "falied to update status of this booking", err)
 	}
@@ -319,7 +319,7 @@ func (h *HotelHandler) handleManageRefundBookHotel(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "this detail is not correct", err)
 	}
 
-	err = h.bookingServiceIn.ManageRefundBookHotel(payload)
+	err = h.bookingService.ManageRefundBookHotel(payload)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "failed to refuded", err)
 	}
@@ -345,7 +345,7 @@ func (h *HotelHandler) handleReviewHotelService(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "review detail is not correct", err)
 	}
 
-	status, errStr, err := h.bookingServiceIn.ReviewHotelService(payload)
+	status, errStr, err := h.bookingService.ReviewHotelService(payload)
 	if err != nil {
 		return utils.HandleError(c, status, errStr.Error(), err)
 	}

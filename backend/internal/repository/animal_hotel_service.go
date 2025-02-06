@@ -7,15 +7,15 @@ import (
 )
 
 // interact with the database
-type AnimalHotelServiceRepository struct {
+type animalHotelServiceRepository struct {
 	db *gorm.DB
 }
 
-func AnimalNewHotelServiceRepository(db *gorm.DB) *AnimalHotelServiceRepository {
-	return &AnimalHotelServiceRepository{db: db}
+func AnimalNewHotelServiceRepository(db *gorm.DB) AnimalHotelServiceRepository {
+	return &animalHotelServiceRepository{db: db}
 }
 
-func (r *AnimalHotelServiceRepository) CreateAnimalHotelService(animals []model.AnimalHotelService) error {
+func (r *animalHotelServiceRepository) CreateAnimalHotelService(animals []model.AnimalHotelService) error {
 	result := r.db.Create(&animals)
 	if result.Error != nil {
 		return result.Error
@@ -23,7 +23,7 @@ func (r *AnimalHotelServiceRepository) CreateAnimalHotelService(animals []model.
 	return nil
 }
 
-func (r *AnimalHotelServiceRepository) UpdateAnimalHotelService(ser model.AnimalHotelService) error {
+func (r *animalHotelServiceRepository) UpdateAnimalHotelService(ser model.AnimalHotelService) error {
 	result := r.db.Save(&ser)
 	if result.Error != nil {
 		return result.Error

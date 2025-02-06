@@ -12,11 +12,11 @@ import (
 
 // handle requests and response requests
 type ProfileHandler struct {
-	profileServiceIn service.ProfileServiceIn
+	profileService service.ProfileService
 }
 
-func NewProfileHandler(profileServiceIn service.ProfileServiceIn) *ProfileHandler {
-	return &ProfileHandler{profileServiceIn: profileServiceIn}
+func NewProfileHandler(profileService service.ProfileService) *ProfileHandler {
+	return &ProfileHandler{profileService: profileService}
 }
 
 func (h *ProfileHandler) RegisterRoutes(g *echo.Group) {
@@ -48,9 +48,9 @@ func (h *ProfileHandler) handleCreateProfile(c echo.Context) error {
 	var status int
 	var msg string
 	if strings.ToLower(profile.Role) == "clinic" {
-		status, msg, err = h.profileServiceIn.CreateCliniCareProfile(profile)
+		status, msg, err = h.profileService.CreateCliniCareProfile(profile)
 	} else {
-		status, msg, err = h.profileServiceIn.CreateProfile(profile)
+		status, msg, err = h.profileService.CreateProfile(profile)
 	}
 
 	if err != nil {
@@ -88,7 +88,7 @@ func (h *ProfileHandler) handleUpdateProfile(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "profile detail not correct", err)
 	}
 
-	err = h.profileServiceIn.UpdateProfile(id, profile)
+	err = h.profileService.UpdateProfile(id, profile)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "failed to udpate profile", err)
 	}
@@ -115,7 +115,7 @@ func (h *ProfileHandler) handleGetProfileByUserID(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "get user id failed", err)
 	}
 
-	profile, token, err := h.profileServiceIn.GetProfileByUserID(userID, role)
+	profile, token, err := h.profileService.GetProfileByUserID(userID, role)
 	if profile.ID == 0 {
 		return utils.HandleError(c, http.StatusBadRequest, "this profile is not found, create first", err)
 	}
@@ -145,7 +145,7 @@ func (h *ProfileHandler) handleGetAllProfileByUserID(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
 	}
 
-	profiles, err := h.profileServiceIn.GetAllProfileByUserID(userID)
+	profiles, err := h.profileService.GetAllProfileByUserID(userID)
 	if len(profiles) == 0 {
 		return utils.HandleError(c, http.StatusBadRequest, "profile is not created, create first", err)
 	}

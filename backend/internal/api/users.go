@@ -21,11 +21,11 @@ const (
 
 // handle requests and response requests
 type UsersHandler struct {
-	usersServiceIn service.UsersServiceIn
+	usersService service.UsersService
 }
 
-func NewUsersHandler(usersServiceIn service.UsersServiceIn) *UsersHandler {
-	return &UsersHandler{usersServiceIn: usersServiceIn}
+func NewUsersHandler(usersService service.UsersService) *UsersHandler {
+	return &UsersHandler{usersService: usersService}
 }
 
 func (h *UsersHandler) RegisterRoutes(g *echo.Group) {
@@ -94,7 +94,7 @@ func (h *UsersHandler) handleCreateAnimalUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "animals detail not correct", err)
 	}
 
-	err = h.usersServiceIn.CreateAnimalUser(animals)
+	err = h.usersService.CreateAnimalUser(animals)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "failed to add animals", err)
 	}
@@ -127,7 +127,7 @@ func (h *UsersHandler) handleUpdateAnimalUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "animal detail is not correct", err)
 	}
 
-	err = h.usersServiceIn.UpdateAnimalUser(id, animal)
+	err = h.usersService.UpdateAnimalUser(id, animal)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "failed to update animal", err)
 	}
@@ -160,7 +160,7 @@ func (h *UsersHandler) handleUpdateUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "user detail is not correct", err)
 	}
 
-	err = h.usersServiceIn.UpdateUser(id, user)
+	err = h.usersService.UpdateUser(id, user)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "failed to update user", err)
 	}
@@ -185,7 +185,7 @@ func (h *UsersHandler) handleGetAllAnimalUserByUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
 	}
 
-	animals, err := h.usersServiceIn.GetAllAnimalUser(id)
+	animals, err := h.usersService.GetAllAnimalUser(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "animals not available", err)
 	}
@@ -210,7 +210,7 @@ func (h *UsersHandler) handleGetAnimalUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "animal information is not correct", err)
 	}
 
-	animal, err := h.usersServiceIn.GetAnimalUser(id)
+	animal, err := h.usersService.GetAnimalUser(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "animal not available", err)
 	}
@@ -235,7 +235,7 @@ func (h *UsersHandler) handleGetCreaditCard(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
 	}
 
-	card, err := h.usersServiceIn.GetCreditCard(id)
+	card, err := h.usersService.GetCreditCard(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "credit card not available", err)
 	}
@@ -260,7 +260,7 @@ func (h *UsersHandler) handleGetUserByID(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
 	}
 
-	card, err := h.usersServiceIn.GetUserByID(id)
+	card, err := h.usersService.GetUserByID(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "user information card not available", err)
 	}
@@ -285,7 +285,7 @@ func (h *UsersHandler) handleChangeRoleClient(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "user information is not correct", err)
 	}
 
-	token, err := h.usersServiceIn.ChangeRoleToClient(id)
+	token, err := h.usersService.ChangeRoleToClient(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "user information card not available", err)
 	}
@@ -317,7 +317,7 @@ func (h *UsersHandler) handleGetAnimalUserByType(c echo.Context) error {
 
 	animal_type := c.Param("animal_type")
 
-	animals, err := h.usersServiceIn.GetAnimalUserByType(user_id, animal_type)
+	animals, err := h.usersService.GetAnimalUserByType(user_id, animal_type)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "your animals not available", err)
 	}
@@ -342,7 +342,7 @@ func (h *UsersHandler) handleAddFavoriteCage(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "favaorite information is not correct", err)
 	}
 
-	err = h.usersServiceIn.AddFavoriteCage(fav)
+	err = h.usersService.AddFavoriteCage(fav)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "failed to add favorite cage", err)
 	}
@@ -374,7 +374,7 @@ func (h *UsersHandler) handleDeleteFavoriteCage(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "cage information is not correct", err)
 	}
 
-	err = h.usersServiceIn.DelFavoriteCage(user_id, cage_id)
+	err = h.usersService.DelFavoriteCage(user_id, cage_id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "favorite cage is not available", err)
 	}
@@ -407,7 +407,7 @@ func (h *UsersHandler) handleGetFavoriteCageByUser(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "Search system not available", err)
 	}
 
-	favorites, err := h.usersServiceIn.GetFavoriteCageByUser(id, loc)
+	favorites, err := h.usersService.GetFavoriteCageByUser(id, loc)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "favorite cage is not available", err)
 	}

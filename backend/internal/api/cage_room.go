@@ -15,11 +15,11 @@ import (
 
 // handle requests and response requests
 type CageRoomHandler struct {
-	cageRoomServiceIn service.CageRoomServiceIn
+	cageRoomService service.CageRoomService
 }
 
-func NewCageRoomHandler(cageRoomServiceIn service.CageRoomServiceIn) *CageRoomHandler {
-	return &CageRoomHandler{cageRoomServiceIn: cageRoomServiceIn}
+func NewCageRoomHandler(cageRoomService service.CageRoomService) *CageRoomHandler {
+	return &CageRoomHandler{cageRoomService: cageRoomService}
 }
 
 func (h *CageRoomHandler) RegisterRoutes(g *echo.Group) {
@@ -76,7 +76,7 @@ func (h *CageRoomHandler) handleCreateCageRoom(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "cage detail not correct", err)
 	}
 
-	status, msg, err := h.cageRoomServiceIn.CreateCageRoom(cage)
+	status, msg, err := h.cageRoomService.CreateCageRoom(cage)
 	if err != nil {
 		return utils.HandleError(c, status, msg, err)
 	}
@@ -112,7 +112,7 @@ func (h *CageRoomHandler) handleUpdateCageRoom(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "Cage detail not correct", err)
 	}
 
-	err = h.cageRoomServiceIn.UpdateCageRoom(id, cage)
+	err = h.cageRoomService.UpdateCageRoom(id, cage)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "failed to update cage room", err)
 	}
@@ -138,7 +138,7 @@ func (h *CageRoomHandler) handleDeleteCageRoom(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "get cage room failed", err)
 	}
 
-	err = h.cageRoomServiceIn.DeleteCageRoom(id)
+	err = h.cageRoomService.DeleteCageRoom(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "cage room not available", err)
 	}
@@ -163,7 +163,7 @@ func (h *CageRoomHandler) handleGetCageRoom(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "Cannot get cage room", err)
 	}
 
-	cage, err := h.cageRoomServiceIn.GetCageRoom(id)
+	cage, err := h.cageRoomService.GetCageRoom(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Cage room not available", err)
 	}
@@ -188,7 +188,7 @@ func (h *CageRoomHandler) handleGetTypeCageRoom(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "Cannot get cage room", err)
 	}
 
-	cage, err := h.cageRoomServiceIn.GetAllAnimalCageType(id)
+	cage, err := h.cageRoomService.GetAllAnimalCageType(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Cage room not available", err)
 	}
@@ -213,7 +213,7 @@ func (h *CageRoomHandler) handleGetAllCageRoomByHotel(c echo.Context) error {
 		return utils.HandleError(c, http.StatusBadRequest, "Cannot get cage room", err)
 	}
 
-	cages, err := h.cageRoomServiceIn.GetAllCageRoom(id)
+	cages, err := h.cageRoomService.GetAllCageRoom(id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Cage room not available", err)
 	}
@@ -257,7 +257,7 @@ func (h *CageRoomHandler) handleSearchCage(c echo.Context) error {
 	}
 
 	// ?latitude=12.34&longitude=56.78&start_time=...&end_time=...&animals[0][animal_type]=dog&animals[0][cage_size]=large&animals[1][animal_type]=cat&animals[1][cage_size]=small
-	profiles, err := h.cageRoomServiceIn.SearchCage(animals, filter)
+	profiles, err := h.cageRoomService.SearchCage(animals, filter)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "Search system not available", err)
 	}
@@ -315,7 +315,7 @@ func (h *CageRoomHandler) handleSearchCageByHotel(c echo.Context) error {
 	}
 
 	// ?latitude=12.34&longitude=56.78&start_time=...&end_time=...&animals[0][animal_type]=dog&animals[0][cage_size]=large&animals[1][animal_type]=cat&animals[1][cage_size]=small
-	profiles, err := h.cageRoomServiceIn.SearchCageByHotel(animals, filter, profile_id, user_id)
+	profiles, err := h.cageRoomService.SearchCageByHotel(animals, filter, profile_id, user_id)
 	if err != nil {
 		return utils.HandleError(c, http.StatusInternalServerError, "search system not available", err)
 	}

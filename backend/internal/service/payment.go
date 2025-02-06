@@ -18,22 +18,22 @@ import (
 )
 
 // implement bussiness logic
-type PaymentService struct {
+type paymentService struct {
 	Validate *validator.Validate
 	Cache    *freecache.Cache
 }
 
 func NewPaymentService(
 	validate *validator.Validate,
-) *PaymentService {
-	return &PaymentService{
+) PaymentService {
+	return &paymentService{
 		Validate: validate,
 		Cache:    freecache.NewCache(1800 * 1024 * 1024),
 	}
 }
 
 // do cache to reduce response time
-func (s *PaymentService) getAccessToken() (*paypal.TokenResponse, error) {
+func (s *paymentService) getAccessToken() (*paypal.TokenResponse, error) {
 	cacheKey := []byte("access_token")
 	cachedTokenData, err := s.Cache.Get(cacheKey)
 	if err != nil {
@@ -78,7 +78,7 @@ func (s *PaymentService) getAccessToken() (*paypal.TokenResponse, error) {
 }
 
 // request paypal to transfer money from client account to web app account
-func (s *PaymentService) RequestPayment(payload types.BookingPayload, bookDel types.BookingDetail) (string, error) {
+func (s *paymentService) RequestPayment(payload types.BookingPayload, bookDel types.BookingDetail) (string, error) {
 
 	access_token, err := s.getAccessToken()
 	if err != nil {
@@ -170,7 +170,7 @@ func (s *PaymentService) RequestPayment(payload types.BookingPayload, bookDel ty
 }
 
 // from web application paypal's account to profile account ( hotel , so on )
-func (s *PaymentService) CreatePayout(cost float32, paypalEmail string) (string, error) {
+func (s *paymentService) CreatePayout(cost float32, paypalEmail string) (string, error) {
 	access_token, err := s.getAccessToken()
 	if err != nil {
 		return "", err

@@ -7,15 +7,15 @@ import (
 )
 
 // interact with the database
-type UserRepository struct {
+type userRepository struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) *UserRepository {
-	return &UserRepository{db: db}
+func NewUserRepository(db *gorm.DB) UserRepository {
+	return &userRepository{db: db}
 }
 
-func (r *UserRepository) CreateUser(data model.User) (model.User, error) {
+func (r *userRepository) CreateUser(data model.User) (model.User, error) {
 	result := r.db.Create(&data)
 	if result.Error != nil {
 		return data, result.Error
@@ -23,7 +23,7 @@ func (r *UserRepository) CreateUser(data model.User) (model.User, error) {
 	return data, nil
 }
 
-func (r *UserRepository) GetUserByEmail(email string) (model.User, error) {
+func (r *userRepository) GetUserByEmail(email string) (model.User, error) {
 	user := model.User{
 		Email: email,
 	}
@@ -36,7 +36,7 @@ func (r *UserRepository) GetUserByEmail(email string) (model.User, error) {
 	return user, nil
 }
 
-func (r *UserRepository) GetUserByID(id uint) (model.User, error) {
+func (r *userRepository) GetUserByID(id uint) (model.User, error) {
 	user := model.User{ID: id}
 	result := r.db.First(&user)
 	if result.Error != nil {
@@ -45,7 +45,7 @@ func (r *UserRepository) GetUserByID(id uint) (model.User, error) {
 	return user, nil
 }
 
-func (r *UserRepository) UpdateUser(user model.User) error {
+func (r *userRepository) UpdateUser(user model.User) error {
 	result := r.db.Model(&model.User{}).Where("id = ?", user.ID).Updates(user)
 	if result.Error != nil {
 		return result.Error

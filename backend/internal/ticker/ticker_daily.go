@@ -11,14 +11,14 @@ import (
 )
 
 type dailyTickerService struct {
-	ReservationTimeServiceIn service.ReservationTimeServiceIn
+	ReservationTimeService service.ReservationTimeService
 }
 
 func NewDailyTickerService(
-	reservationTimeServiceIn service.ReservationTimeServiceIn,
+	reservationTimeService service.ReservationTimeService,
 ) *dailyTickerService {
 	return &dailyTickerService{
-		ReservationTimeServiceIn: reservationTimeServiceIn,
+		ReservationTimeService: reservationTimeService,
 	}
 }
 
@@ -85,7 +85,7 @@ func (ds *dailyTickerService) taskDaily() {
 
 	// update date for next 30 days from current day
 	newDay := previousDay.AddDate(0, 0, 30)
-	strMsg, err := ds.ReservationTimeServiceIn.UpdateDailyNewDate(previousDay, newDay)
+	strMsg, err := ds.ReservationTimeService.UpdateDailyNewDate(previousDay, newDay)
 	if err != nil {
 		fmt.Println(err.Error())
 		fmt.Println(strMsg)
@@ -96,7 +96,7 @@ func (ds *dailyTickerService) taskDaily() {
 	// transaction
 	// update reservation status -> auto close
 	// update status -> auto rejected all requests
-	strMsg, err = ds.ReservationTimeServiceIn.UpdateDailyReservationAndBook(currentDay)
+	strMsg, err = ds.ReservationTimeService.UpdateDailyReservationAndBook(currentDay)
 	if err != nil {
 		fmt.Println(err.Error())
 		fmt.Println(strMsg)

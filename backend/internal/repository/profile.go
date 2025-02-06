@@ -11,15 +11,15 @@ import (
 )
 
 // interact with the database
-type ProfileRepository struct {
+type profileRepository struct {
 	db *gorm.DB
 }
 
-func NewProfileRepository(db *gorm.DB) *ProfileRepository {
-	return &ProfileRepository{db: db}
+func NewProfileRepository(db *gorm.DB) ProfileRepository {
+	return &profileRepository{db: db}
 }
 
-func (r ProfileRepository) CreateProfile(profile model.Profile) (int, string, error) {
+func (r profileRepository) CreateProfile(profile model.Profile) (int, string, error) {
 	result := r.db.Create(&profile)
 	if result.Error != nil {
 		return http.StatusInternalServerError, "failed to created profile", result.Error
@@ -27,7 +27,7 @@ func (r ProfileRepository) CreateProfile(profile model.Profile) (int, string, er
 	return http.StatusCreated, "profile created successfully", nil
 }
 
-func (r ProfileRepository) GetProfileByID(id uint) (model.Profile, error) {
+func (r profileRepository) GetProfileByID(id uint) (model.Profile, error) {
 	profile := model.Profile{}
 	result := r.db.Preload("Cages").
 		// Preload("ServiceClinics").
@@ -43,7 +43,7 @@ func (r ProfileRepository) GetProfileByID(id uint) (model.Profile, error) {
 	return profile, nil
 }
 
-func (r ProfileRepository) GetProfileByUserID(userID uint, role string) (model.Profile, error) {
+func (r profileRepository) GetProfileByUserID(userID uint, role string) (model.Profile, error) {
 	profile := model.Profile{}
 	result := r.db.Preload("Cages.HotelServices", func(db *gorm.DB) *gorm.DB {
 		return db.Select("CageID", "ReviewDetail", "ReviewRate")
@@ -57,7 +57,7 @@ func (r ProfileRepository) GetProfileByUserID(userID uint, role string) (model.P
 	return profile, nil
 }
 
-func (r ProfileRepository) GetAllProfileByUserID(userID uint) ([]model.Profile, error) {
+func (r profileRepository) GetAllProfileByUserID(userID uint) ([]model.Profile, error) {
 	profiles := []model.Profile{}
 	result := r.db.Where("user_id = ?", userID).
 		Find(&profiles)
@@ -72,7 +72,7 @@ func (r ProfileRepository) GetAllProfileByUserID(userID uint) ([]model.Profile, 
 	return profiles, nil
 }
 
-func (r ProfileRepository) UpdateProfile(profile model.Profile) error {
+func (r profileRepository) UpdateProfile(profile model.Profile) error {
 	result := r.db.Model(&model.Profile{}).Where("id = ?", profile.ID).Updates(profile)
 	if result.Error != nil {
 		return fmt.Errorf("error updating profile: %s", result.Error.Error())
@@ -80,7 +80,7 @@ func (r ProfileRepository) UpdateProfile(profile model.Profile) error {
 	return nil
 }
 
-func (r ProfileRepository) CountCompleteBookByID(profile_id uint) (int, error) {
+func (r profileRepository) CountCompleteBookByID(profile_id uint) (int, error) {
 	var count int64
 	result := r.db.
 		Model(&model.Profile{}).
@@ -98,7 +98,7 @@ func (r ProfileRepository) CountCompleteBookByID(profile_id uint) (int, error) {
 }
 
 // clinic & care
-func (r ProfileRepository) CreateCliniCareProfile(profile model.Profile, reservations []model.ReservationTime) (string, error) {
+func (r profileRepository) CreateCliniCareProfile(profile model.Profile, reservations []model.ReservationTime) (string, error) {
 	tx := r.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -134,7 +134,7 @@ func (r ProfileRepository) CreateCliniCareProfile(profile model.Profile, reserva
 }
 
 // use in daily task
-func (r ProfileRepository) GetProfileRoleClinic() ([]model.Profile, error) {
+func (r profileRepository) GetProfileRoleClinic() ([]model.Profile, error) {
 	profiles := []model.Profile{}
 	result := r.db.Where("role = ?", "clinic").Find(&profiles)
 	if result.Error != nil {

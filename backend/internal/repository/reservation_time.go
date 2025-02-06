@@ -9,15 +9,15 @@ import (
 )
 
 // interact with the database
-type ReservationTimeRepository struct {
+type reservationTimeRepository struct {
 	db *gorm.DB
 }
 
-func NewReservationTimeRepository(db *gorm.DB) *ReservationTimeRepository {
-	return &ReservationTimeRepository{db: db}
+func NewReservationTimeRepository(db *gorm.DB) ReservationTimeRepository {
+	return &reservationTimeRepository{db: db}
 }
 
-func (r *ReservationTimeRepository) UpdateDailyReservationAndBook(previousDay, currentDate time.Time, reservations []model.ReservationTime) (string, error) {
+func (r *reservationTimeRepository) UpdateDailyReservationAndBook(previousDay, currentDate time.Time, reservations []model.ReservationTime) (string, error) {
 	tx := r.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -33,7 +33,7 @@ func (r *ReservationTimeRepository) UpdateDailyReservationAndBook(previousDay, c
 	return "successfully updated daily task", nil
 }
 
-func (r *ReservationTimeRepository) UpdateDailyNewDate(previousDay time.Time, reservations []model.ReservationTime) error {
+func (r *reservationTimeRepository) UpdateDailyNewDate(previousDay time.Time, reservations []model.ReservationTime) error {
 	tx := r.db.Begin()
 	defer func() {
 		if r := recover(); r != nil {

@@ -18,33 +18,33 @@ import (
 )
 
 // implement bussiness logic
-type CageRoomService struct {
-	ProfileServiceIn     ProfileServiceIn
-	CageRoomRepositoryIn repository.CageRoomRepositoryIn
-	Validate             *validator.Validate
+type cageRoomService struct {
+	ProfileService     ProfileService
+	CageRoomRepository repository.CageRoomRepository
+	Validate           *validator.Validate
 }
 
 func NewCageRoomService(
-	profileServiceIn ProfileServiceIn,
-	cageRoomRepositoryIn repository.CageRoomRepositoryIn,
+	profileService ProfileService,
+	cageRoomRepository repository.CageRoomRepository,
 	validate *validator.Validate,
-) *CageRoomService {
-	return &CageRoomService{
-		ProfileServiceIn:     profileServiceIn,
-		CageRoomRepositoryIn: cageRoomRepositoryIn,
-		Validate:             validate,
+) CageRoomService {
+	return &cageRoomService{
+		ProfileService:     profileService,
+		CageRoomRepository: cageRoomRepository,
+		Validate:           validate,
 	}
 }
 
-func (s *CageRoomService) CreateCageRoom(cage model.CageRoom) (int, string, error) {
+func (s *cageRoomService) CreateCageRoom(cage model.CageRoom) (int, string, error) {
 	cage.AnimalType = strings.ToLower(cage.AnimalType)
-	_, err := s.CageRoomRepositoryIn.GetSpecificCageRoomType(cage.ProfileID, cage.AnimalType, cage.CageType)
+	_, err := s.CageRoomRepository.GetSpecificCageRoomType(cage.ProfileID, cage.AnimalType, cage.CageType)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		cage.Size = utils.MapCageSize(cage.MaxCapacity)
 		cage.Image = utils.MapStringArrayToText(cage.ImageArray)
 		cage.Facility = utils.MapStringArrayToText(cage.FacilityArray)
 
-		err = s.CageRoomRepositoryIn.CreateCageRoom(cage)
+		err = s.CageRoomRepository.CreateCageRoom(cage)
 		if err != nil {
 			return http.StatusInternalServerError, "falied to create cage", err
 		}
@@ -54,8 +54,8 @@ func (s *CageRoomService) CreateCageRoom(cage model.CageRoom) (int, string, erro
 	return http.StatusBadRequest, "this type of cage already exists", nil
 }
 
-func (s *CageRoomService) GetAllCageRoom(profile_id uint) ([]model.CageRoom, error) {
-	cages, err := s.CageRoomRepositoryIn.GetAllCageRoom(profile_id)
+func (s *cageRoomService) GetAllCageRoom(profile_id uint) ([]model.CageRoom, error) {
+	cages, err := s.CageRoomRepository.GetAllCageRoom(profile_id)
 	if err != nil {
 		return cages, err
 	}
@@ -70,8 +70,8 @@ func (s *CageRoomService) GetAllCageRoom(profile_id uint) ([]model.CageRoom, err
 	return cages, nil
 }
 
-func (s *CageRoomService) GetCageRoom(id uint) (model.CageRoom, error) {
-	cage, err := s.CageRoomRepositoryIn.GetCageRoom(id)
+func (s *cageRoomService) GetCageRoom(id uint) (model.CageRoom, error) {
+	cage, err := s.CageRoomRepository.GetCageRoom(id)
 	if err != nil {
 		return cage, err
 	}
@@ -81,7 +81,7 @@ func (s *CageRoomService) GetCageRoom(id uint) (model.CageRoom, error) {
 	return cage, nil
 }
 
-func (s *CageRoomService) GetAllAnimalCageType(id uint) ([]types.CageAnimalType, error) {
+func (s *cageRoomService) GetAllAnimalCageType(id uint) ([]types.CageAnimalType, error) {
 	var animalCageTypes []types.CageAnimalType
 	cages, err := s.GetAllCageRoom(id)
 	if err != nil {
@@ -109,7 +109,7 @@ func (s *CageRoomService) GetAllAnimalCageType(id uint) ([]types.CageAnimalType,
 
 }
 
-func (s *CageRoomService) UpdateCageRoom(id uint, cage model.CageRoom) error {
+func (s *cageRoomService) UpdateCageRoom(id uint, cage model.CageRoom) error {
 	cageDb, err := s.GetCageRoom(id)
 	if err != nil {
 		return err
@@ -138,7 +138,7 @@ func (s *CageRoomService) UpdateCageRoom(id uint, cage model.CageRoom) error {
 	}
 
 	updateCage := utils.CopyNonZeroFields(&cage, &cageDb).(*model.CageRoom)
-	err = s.CageRoomRepositoryIn.UpdateCageRoom(*updateCage)
+	err = s.CageRoomRepository.UpdateCageRoom(*updateCage)
 	if err != nil {
 		return err
 	}
@@ -146,15 +146,15 @@ func (s *CageRoomService) UpdateCageRoom(id uint, cage model.CageRoom) error {
 	return nil
 }
 
-func (s *CageRoomService) DeleteCageRoom(id uint) error {
-	err := s.CageRoomRepositoryIn.DeleteCageRoom(id)
+func (s *cageRoomService) DeleteCageRoom(id uint) error {
+	err := s.CageRoomRepository.DeleteCageRoom(id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.FilterSearchCage) ([]model.Profile, error) {
+func (s *cageRoomService) SearchCage(animals []types.FilterInfo, filter types.FilterSearchCage) ([]model.Profile, error) {
 	profiles := []model.Profile{}
 
 	if err := s.Validate.Struct(filter); err != nil {
@@ -172,7 +172,7 @@ func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.Fi
 	}
 
 	userLoc := types.LocationParams{Latitude: filter.Latitude, Longitude: filter.Longitude}
-	profilesBe, err := s.CageRoomRepositoryIn.FilterCages(animals, startDate, endDate)
+	profilesBe, err := s.CageRoomRepository.FilterCages(animals, startDate, endDate)
 	for i := range profilesBe {
 		if len(profilesBe[i].Cages) > 0 {
 			// protected private information
@@ -207,14 +207,14 @@ func (s *CageRoomService) SearchCage(animals []types.FilterInfo, filter types.Fi
 	// sort by
 	sort.SliceStable(profiles, func(i, j int) bool { return profiles[i].Cages[0].Price < profiles[j].Cages[0].Price })
 	if strings.ToLower(filter.Sort) == "distance" {
-		profiles = s.ProfileServiceIn.SortProfileByDistance(profiles)
+		profiles = s.ProfileService.SortProfileByDistance(profiles)
 	} else if strings.ToLower(filter.Sort) == "rating" {
-		profiles = s.ProfileServiceIn.SortProfileByReviewRate(profiles)
+		profiles = s.ProfileService.SortProfileByReviewRate(profiles)
 	}
 	return profiles, nil
 }
 
-func (s *CageRoomService) SearchCageByHotel(animals []types.FilterInfo, filter types.FilterSearchCage, profile_id uint, user_id uint) (model.Profile, error) {
+func (s *cageRoomService) SearchCageByHotel(animals []types.FilterInfo, filter types.FilterSearchCage, profile_id uint, user_id uint) (model.Profile, error) {
 	profile := model.Profile{}
 	if err := s.Validate.Struct(filter); err != nil {
 		return profile, err
@@ -240,7 +240,7 @@ func (s *CageRoomService) SearchCageByHotel(animals []types.FilterInfo, filter t
 		return profile, err
 	}
 
-	profile, err = s.CageRoomRepositoryIn.FilterCagesByHotel(animals, startDate, endDate, profile_id, user_id)
+	profile, err = s.CageRoomRepository.FilterCagesByHotel(animals, startDate, endDate, profile_id, user_id)
 	if err != nil {
 		return profile, err
 	}

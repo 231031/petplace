@@ -7,15 +7,15 @@ import (
 )
 
 // interact with the database
-type FavoriteCageRepository struct {
+type favoriteCageRepository struct {
 	db *gorm.DB
 }
 
-func NewFavoriteCageRepository(db *gorm.DB) *FavoriteCageRepository {
-	return &FavoriteCageRepository{db: db}
+func NewFavoriteCageRepository(db *gorm.DB) FavoriteCageRepository {
+	return &favoriteCageRepository{db: db}
 }
 
-func (r *FavoriteCageRepository) AddFavoriteCage(fav model.FavoriteCage) error {
+func (r *favoriteCageRepository) AddFavoriteCage(fav model.FavoriteCage) error {
 	result := r.db.Create(&fav)
 	if result.Error != nil {
 		return result.Error
@@ -23,7 +23,7 @@ func (r *FavoriteCageRepository) AddFavoriteCage(fav model.FavoriteCage) error {
 	return nil
 }
 
-func (r *FavoriteCageRepository) DelFavoriteCage(user_id uint, cage_id uint) error {
+func (r *favoriteCageRepository) DelFavoriteCage(user_id uint, cage_id uint) error {
 	fav := model.FavoriteCage{UserID: user_id, CageID: cage_id}
 	result := r.db.Where("user_id = ? AND cage_id = ?", user_id, cage_id).Delete(&fav)
 	if result.Error != nil {
@@ -32,7 +32,7 @@ func (r *FavoriteCageRepository) DelFavoriteCage(user_id uint, cage_id uint) err
 	return nil
 }
 
-func (r *FavoriteCageRepository) GetFavoriteCageByUser(user_id uint) ([]model.FavoriteCage, error) {
+func (r *favoriteCageRepository) GetFavoriteCageByUser(user_id uint) ([]model.FavoriteCage, error) {
 	favorites := []model.FavoriteCage{}
 	result := r.db.Preload("CageRoom").Preload("CageRoom.Profile", func(db *gorm.DB) *gorm.DB {
 		return db.Select("ID", "CheckIn", "CheckOut", "Name", "AvgReview", "Facility", "Image", "ImageProfile",
