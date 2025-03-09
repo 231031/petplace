@@ -7,7 +7,7 @@ services:
     build: .
     restart: unless-stopped
     volumes:
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./nginx/conf.d/:/etc/nginx/conf.d/:ro
       - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh:ro
     entrypoint: ["/bin/sh", "/docker-entrypoint.sh"]
     depends_on:
