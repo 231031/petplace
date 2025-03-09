@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"log"
 	"petplace/internal/auth"
 	"petplace/internal/model"
 	"petplace/internal/repository"
@@ -47,6 +48,7 @@ func (s *userService) CreateUser(data model.User) (model.User, error) {
 
 	user, err := s.UserRepository.CreateUser(data)
 	if err != nil {
+		log.Println(err)
 		return user, err
 	}
 	return user, nil
@@ -55,6 +57,7 @@ func (s *userService) CreateUser(data model.User) (model.User, error) {
 func (s *userService) GetUserByEmail(email string) (model.User, error) {
 	user, err := s.UserRepository.GetUserByEmail(email)
 	if err != nil {
+		log.Println(err)
 		return user, err
 	}
 	return user, nil
@@ -63,6 +66,7 @@ func (s *userService) GetUserByEmail(email string) (model.User, error) {
 func (s *userService) GetUserByID(id uint) (model.User, error) {
 	user, err := s.UserRepository.GetUserByID(id)
 	if err != nil {
+		log.Println(err)
 		return user, err
 	}
 
@@ -77,11 +81,13 @@ func (s *userService) GetUserByID(id uint) (model.User, error) {
 func (s *userService) ChangeRoleToClient(id uint) (string, error) {
 	user, err := s.GetUserByID(id)
 	if err != nil {
+		log.Println(err)
 		return "", err
 	}
 
 	tokenUser, err := auth.GenerateJwt(user.ID, user.Email, "client")
 	if err != nil {
+		log.Println(err)
 		return "", err
 	}
 
@@ -91,6 +97,7 @@ func (s *userService) ChangeRoleToClient(id uint) (string, error) {
 func (s *userService) UpdateUser(id uint, user model.User) error {
 	userDb, err := s.UserRepository.GetUserByID(id)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 
@@ -98,6 +105,7 @@ func (s *userService) UpdateUser(id uint, user model.User) error {
 
 	err = s.UserRepository.UpdateUser(*updateUser)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil
@@ -107,6 +115,7 @@ func (s *userService) GetCreditCard(id uint) (types.CardPayload, error) {
 	card := types.CardPayload{}
 	user, err := s.UserRepository.GetUserByID(id)
 	if err != nil {
+		log.Println(err)
 		return card, err
 	}
 
@@ -129,6 +138,7 @@ func (s *userService) CreateAnimalUser(animals []model.AnimalUser) error {
 
 	err := s.AnimalUserRepository.CreateAnimalUser(animals)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil
@@ -137,6 +147,7 @@ func (s *userService) CreateAnimalUser(animals []model.AnimalUser) error {
 func (s *userService) UpdateAnimalUser(id uint, animal model.AnimalUser) error {
 	animal_db, err := s.AnimalUserRepository.GetAnimalUser(id)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 
@@ -146,6 +157,7 @@ func (s *userService) UpdateAnimalUser(id uint, animal model.AnimalUser) error {
 	updateAn := utils.CopyNonZeroFields(&animal, &animal_db).(*model.AnimalUser)
 	err = s.AnimalUserRepository.UpdateAnimalUser(*updateAn)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil
@@ -154,6 +166,7 @@ func (s *userService) UpdateAnimalUser(id uint, animal model.AnimalUser) error {
 func (s *userService) GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error) {
 	animals, err := s.AnimalUserRepository.GetAllAnimalUser(user_id)
 	if err != nil {
+		log.Println(err)
 		return animals, err
 	}
 
@@ -169,6 +182,7 @@ func (s *userService) GetAllAnimalUser(user_id uint) ([]model.AnimalUser, error)
 func (s *userService) GetAnimalUser(id uint) (model.AnimalUser, error) {
 	animal, err := s.AnimalUserRepository.GetAnimalUser(id)
 	if err != nil {
+		log.Println(err)
 		return animal, err
 	}
 	animal.ImageArray = utils.MapTextToStringArray(animal.Image)
@@ -179,6 +193,7 @@ func (s *userService) GetAnimalUserByType(user_id uint, animal_type string) ([]m
 	animal_type = strings.ToLower(animal_type)
 	animals, err := s.AnimalUserRepository.GetAllAnimalUserByType(user_id, animal_type)
 	if err != nil {
+		log.Println(err)
 		return animals, err
 	}
 
@@ -194,6 +209,7 @@ func (s *userService) GetAnimalUserByType(user_id uint, animal_type string) ([]m
 func (s *userService) AddFavoriteCage(fav model.FavoriteCage) error {
 	err := s.FavoriteCageRepository.AddFavoriteCage(fav)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil
@@ -202,6 +218,7 @@ func (s *userService) AddFavoriteCage(fav model.FavoriteCage) error {
 func (s *userService) DelFavoriteCage(user_id uint, cage_id uint) error {
 	err := s.FavoriteCageRepository.DelFavoriteCage(user_id, cage_id)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil
@@ -210,6 +227,7 @@ func (s *userService) DelFavoriteCage(user_id uint, cage_id uint) error {
 func (s *userService) GetFavoriteCageByUser(user_id uint, userLoc types.LocationParams) ([]model.FavoriteCage, error) {
 	fav, err := s.FavoriteCageRepository.GetFavoriteCageByUser(user_id)
 	if err != nil {
+		log.Println(err)
 		return []model.FavoriteCage{}, nil
 	}
 	fmt.Println(userLoc)

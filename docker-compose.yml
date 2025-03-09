@@ -30,6 +30,19 @@ services:
       - ./backend:/app/go
     networks:
       - petplace_networks
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    env_file:
+      - .env
+    environment:
+      - PMA_HOST=${DATABASE_HOST}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+    networks:
+      - petplace_networks
+
   # petplace_frontend:
   #   container_name: petplace-frontend
   #   image: 231031/petplace_frontend:latest
