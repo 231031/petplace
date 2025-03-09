@@ -1,10 +1,10 @@
 import Card from "./Card"
 
 
-const HotelData = ({hotelList}:any) => {
-    return(
+const HotelData = ({ hotelList }: any) => {
+    return (
         <div>
-            {hotelList.map((hotel, index) => (
+            {hotelList.map((hotel, index: number) => (
                 <Card key={index} hotel={hotel} />
                 // <div>{hotel.hotel_name}</div>
             ))}

@@ -1,7 +1,5 @@
 import { UploadRes } from "@/types/response";
 import { UploadButton } from "@bytescale/upload-widget-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUpload } from "@fortawesome/free-solid-svg-icons";
 
 
 interface ImageUploadProps {
@@ -39,7 +37,7 @@ function UploadImage({ limit, onComplete }: ImageUploadProps) {
                     >
                         {/* ใส่รูปภาพ */}
                         <img
-                        
+
                             src="/images/upload.png" // เส้นทางรูปภาพ (ใส่ตามที่ตั้งไว้ในโปรเจกต์)
                             alt="Upload"
                             className="h-12 w-12"

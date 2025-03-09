@@ -45,7 +45,7 @@ export function CarouselCage({ images = [] }: CarouselCage) {
             </button>
 
             {/* Dots */}
-            <div className="absolute  left-1/2 transform -translate-x-1/2 flex space-x-2 flex items-center pt-2">
+            <div className="absolute  left-1/2 transform -translate-x-1/2 space-x-2 flex items-center pt-2">
               {images.map((_, index) => (
                 <div
                   key={index}

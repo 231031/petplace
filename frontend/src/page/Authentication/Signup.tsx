@@ -156,7 +156,7 @@ function Signup() {
                                 value={formData.tel}
                                 onChange={handleChange}
                                 className="w-52 h-12 p-4 text-sm text-yellow rounded-lg bg-white 
-                                           placeholder:text-yellow border border-2 border-bg hover:border-yellow
+                                           placeholder:text-yellow border-2 border-bg hover:border-yellow
                                            focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow "
                                 placeholder='Tel.'
                             />

@@ -30,7 +30,7 @@ export function CarouselDemo({ images = [] }: CarouselDemoProps) {
       {/* ปุ่ม Next และ Previous */}
       <button
         onClick={handlePrevious}  // เมื่อคลิกปุ่ม Previous จะเปลี่ยน index
-        className="absolute top-1/2 left-0 transform -translate-y-1/2 z-10 opacity-25 right-0 w-20 flex flex-col h-full justify-center p-2 items-center hover:bg-white" 
+        className="absolute top-1/2 left-0 transform -translate-y-1/2 z-10 opacity-25 right-0 w-20 flex flex-col h-full justify-center p-2 items-center hover:bg-white"
       >
         Prev
       </button>
@@ -42,14 +42,13 @@ export function CarouselDemo({ images = [] }: CarouselDemoProps) {
       </button>
 
       {/* Dots */}
-      <div className="absolute  left-1/2 transform -translate-x-1/2 flex space-x-2 flex items-center pt-2">
+      <div className="absolute  left-1/2 transform -translate-x-1/2 space-x-2 flex items-center pt-2">
         {images.map((_, index) => (
           <div
             key={index}
             onClick={() => setActiveIndex(index)}  // เมื่อคลิกที่ dot ให้เปลี่ยน activeIndex
-            className={`rounded-full cursor-pointer ${
-              activeIndex === index ? "bg-navbar w-5 h-5" : "bg-gray-400 w-3 h-3"
-            }`}
+            className={`rounded-full cursor-pointer ${activeIndex === index ? "bg-navbar w-5 h-5" : "bg-gray-400 w-3 h-3"
+              }`}
           ></div>
         ))}
       </div>

@@ -1,22 +1,21 @@
 import { ManageRefundBookHotel, ReviewHotelService } from "@/helper/hotel";
-import { Hotel } from "./HotelDataPass";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ReviewPayload } from "@/types/payload";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { UploadRes } from "@/types/response";
 import UploadImage from "./UploadImg";
 
-function CardPass({ hotel }: { hotel: Hotel }) {
-  const [reviewPayload, setReviewPayload] = useState<ReviewPayload>({
-    hide_name: false,
-    hotel_service_id: 1,
-    profile_id: hotel.cage_room.profile_id, // Use profile ID from `hotel`
-    review_detail: "",
-    review_image: "",
-    review_image_array: [],
-    review_rate: 1,
-  });
+function CardPass({ hotel }: { hotel: any }) {
+  // const [reviewPayload, setReviewPayload] = useState<ReviewPayload>({
+  //   hide_name: false,
+  //   hotel_service_id: 1,
+  //   profile_id: hotel.cage_room.profile_id, // Use profile ID from `hotel`
+  //   review_detail: "",
+  //   review_image: "",
+  //   review_image_array: [],
+  //   review_rate: 1,
+  // });
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -382,7 +381,7 @@ function ReviewForm({
   hotel,
   onReturn,
 }: {
-  hotel: Hotel;
+  hotel: any;
   onReturn: () => void; // Function to handle return to Card
 }) {
   const [rating, setRating] = useState(0); // State for star rating
@@ -391,7 +390,7 @@ function ReviewForm({
   const [reviewImage, setReviewImage] = useState(""); // Single review image
   const [hotelServiceId, setHotelServiceId] = useState(0); // Single review image
   const [profileId, setProfileId] = useState(0); // Single review image
-  const [reviewImageArray, setReviewImageArray] = useState<string[]>([]); // Multiple images
+  // const [reviewImageArray, setReviewImageArray] = useState<string[]>([]); // Multiple images
   const [images, setImages] = useState<UploadRes[]>([]);
   const storedUserName = localStorage.getItem("username");
   const handleImageUpload = (uploadedFiles: UploadRes[]) => {

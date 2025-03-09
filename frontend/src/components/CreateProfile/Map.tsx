@@ -1,6 +1,6 @@
 import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface MapProps {
   latitude?: number;
@@ -10,6 +10,7 @@ interface MapProps {
 const Map = ({ latitude, longitude }: MapProps) => {
   const [position, setPosition] = useState<[number, number] | null>(null); // User's location
   const [error, setError] = useState<string | null>(null); // Error state
+  const mapRef = useRef<any>(null);
 
   // If latitude and longitude are passed, use them as the initial position
   useEffect(() => {
@@ -60,10 +61,11 @@ const Map = ({ latitude, longitude }: MapProps) => {
         center={position}
         zoom={13}
         style={{ height: '100%', width: '100%' }}
-        whenCreated={(map) => {
-          // Set the map's zoom level or adjust based on user's location
-          if (position) {
-            map.setZoom(13); // Set a default zoom level
+        ref={mapRef}
+        whenReady={() => {
+          const map = mapRef.current;
+          if (map && position) {
+            map.setZoom(13);
           }
         }}
       >

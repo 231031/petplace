@@ -1,6 +1,5 @@
 import { ManageRefundBookHotel } from "@/helper/hotel";
-import { Hotel } from "./HotelData";
-import React, { useState } from "react";
+import { useState } from "react";
 
 // function Card({hotel}:{hotel:Hotel}) {
 //     return (
@@ -11,7 +10,7 @@ import React, { useState } from "react";
 //     );
 //   }
 
-function Card({ hotel }: { hotel: Hotel }) {
+function Card({ hotel }: { hotel: any }) {
 
   const [isCanceled, setIsCanceled] = useState(false);
   const [paypalEmail, setPaypalEmail] = useState("");

@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
-import { GoogleLoginUser } from '@/helper/auth';
 
 export default function Login() {
     const navigate = useNavigate();

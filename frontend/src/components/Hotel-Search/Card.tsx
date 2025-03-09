@@ -1,6 +1,5 @@
 import { Profile } from "@/types/response";
-import React from "react";
-import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa"; // Import star icons
+import { FaStar, FaStarHalfAlt } from "react-icons/fa"; // Import star icons
 import { useNavigate } from "react-router-dom";
 
 
