@@ -31,23 +31,23 @@ services:
       - ./backend:/app/go
     networks:
       - petplace_networks
-  petplace_frontend:
-    container_name: petplace-frontend
-    image: 231031/petplace_frontend:latest
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
-    env_file:
-      - .env
-    restart: unless-stopped
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend/public:/app/public
-    depends_on:
-      - petplace_backend
-    networks:
-      - petplace_networks
+  # petplace_frontend:
+  #   container_name: petplace-frontend
+  #   image: 231031/petplace_frontend:latest
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile.prod
+  #   env_file:
+  #     - .env
+  #   restart: unless-stopped
+  #   ports:
+  #     - "5173:5173"
+  #   volumes:
+  #     - ./frontend/public:/app/public
+  #   depends_on:
+  #     - petplace_backend
+  #   networks:
+  #     - petplace_networks
 
 networks:
   petplace_networks:

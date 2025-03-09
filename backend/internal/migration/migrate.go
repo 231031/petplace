@@ -7,127 +7,92 @@ import (
 )
 
 func Migrate(db *gorm.DB) error {
-	// & reserved clinic & care services
+	// AutoMigrate all models
 	db.AutoMigrate(&model.ReservationTime{})
 	db.AutoMigrate(&model.AnimalBookExtra{}) // history service
 	db.AutoMigrate(&model.AnimalBookClinic{})
 	db.AutoMigrate(&model.AnimalBookService{})
 
-	// supply clinic
 	db.AutoMigrate(&model.ClinicSubPrice{})
 	db.AutoMigrate(&model.ClinicSubService{})
 	db.AutoMigrate(&model.ClinicService{})
 
-	// & care
 	db.AutoMigrate(&model.CareExtraService{})
 	db.AutoMigrate(&model.CareServicePrice{})
 	db.AutoMigrate(&model.CareService{})
 
-	// supply hotel
 	db.AutoMigrate(&model.FavoriteCage{})
 	db.AutoMigrate(&model.AnimalHotelService{})
 	db.AutoMigrate(&model.HotelService{})
 	db.AutoMigrate(&model.CageRoom{})
 
-	// seller
 	db.AutoMigrate(&model.ProductAnimal{})
 	db.AutoMigrate(&model.ProductMerchadise{})
 	db.AutoMigrate(&model.Order{})
 	db.AutoMigrate(&model.Animal{})
 	db.AutoMigrate(&model.Merchandise{})
 
-	// transportation
 	db.AutoMigrate(&model.TransportService{})
 	db.AutoMigrate(&model.TransportCategory{})
 
-	// chat
 	db.AutoMigrate(&model.Chat{})
 
-	// profile
 	db.AutoMigrate(&model.Profile{})
 	db.AutoMigrate(&model.AnimalUserVaccine{})
 	db.AutoMigrate(&model.AnimalUser{})
 	db.AutoMigrate(&model.User{})
 
-	// create foreignkeys
-	// uncomment to create foreign keys then comment again
+	// Check and create foreign keys if they don't exist
+	createForeignKeyIfNotExists(db, &model.CageRoom{}, "FavoriteCages")
+	createForeignKeyIfNotExists(db, &model.User{}, "FavoriteCages")
 
-	// FavoriteCage
-	// db.Migrator().CreateConstraint(&model.CageRoom{}, "FavoriteCages")
-	// db.Migrator().CreateConstraint(&model.User{}, "FavoriteCages")
+	createForeignKeyIfNotExists(db, &model.User{}, "Profiles")
+	createForeignKeyIfNotExists(db, &model.User{}, "Animals")
+	createForeignKeyIfNotExists(db, &model.AnimalUser{}, "AnimalUserVaccines")
 
-	// profile
-	// db.Migrator().CreateConstraint(&model.User{}, "Profiles")
-	// db.Migrator().CreateConstraint(&model.User{}, "Animals")
-	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalUserVaccines")
+	createForeignKeyIfNotExists(db, &model.User{}, "Chats")
+	createForeignKeyIfNotExists(db, &model.Profile{}, "Chats")
 
-	// chat
-	// db.Migrator().CreateConstraint(&model.User{}, "Chats")
-	// db.Migrator().CreateConstraint(&model.Profile{}, "Chats")
+	createForeignKeyIfNotExists(db, &model.Profile{}, "Cages")
+	createForeignKeyIfNotExists(db, &model.CageRoom{}, "HotelServices")
+	createForeignKeyIfNotExists(db, &model.HotelService{}, "AnimalHotelServices")
+	createForeignKeyIfNotExists(db, &model.AnimalUser{}, "AnimalHotelServices")
 
-	// supply hotel
-	// db.Migrator().CreateConstraint(&model.Profile{}, "Cages")
-	// db.Migrator().CreateConstraint(&model.CageRoom{}, "HotelServices")
-	// db.Migrator().CreateConstraint(&model.HotelService{}, "AnimalHotelServices")
-	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalHotelServices")
+	createForeignKeyIfNotExists(db, &model.AnimalUser{}, "AnimalBookServices")
+	createForeignKeyIfNotExists(db, &model.Profile{}, "ClinicServices")
+	createForeignKeyIfNotExists(db, &model.Profile{}, "CareServices")
+	createForeignKeyIfNotExists(db, &model.Profile{}, "ReservationTimes")
 
-	// clinic & care
-	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalBookServices")
-	// db.Migrator().CreateConstraint(&model.Profile{}, "ClinicServices")
-	// db.Migrator().CreateConstraint(&model.Profile{}, "CareServices")
-	// db.Migrator().CreateConstraint(&model.Profile{}, "ReservationTimes")
+	createForeignKeyIfNotExists(db, &model.ClinicService{}, "ClinicSubServices")
+	createForeignKeyIfNotExists(db, &model.ClinicSubService{}, "ClinicSubPrices")
+	createForeignKeyIfNotExists(db, &model.ClinicSubPrice{}, "AnimalBookClinics")
 
-	// supply clinic
-	// db.Migrator().CreateConstraint(&model.ClinicService{}, "ClinicSubServices")
-	// db.Migrator().CreateConstraint(&model.ClinicSubService{}, "ClinicSubPrices")
-	// db.Migrator().CreateConstraint(&model.ClinicSubPrice{}, "AnimalBookClinics")
+	createForeignKeyIfNotExists(db, &model.CareService{}, "CareServicePrices")
+	createForeignKeyIfNotExists(db, &model.CareService{}, "CareExtraServices")
+	createForeignKeyIfNotExists(db, &model.CareServicePrice{}, "AnimalBookServices")
+	createForeignKeyIfNotExists(db, &model.CareExtraService{}, "AnimalBookExtras")
 
-	// & care
-	// db.Migrator().CreateConstraint(&model.CareService{}, "CareServicePrices")
-	// db.Migrator().CreateConstraint(&model.CareService{}, "CareExtraServices")
-	// db.Migrator().CreateConstraint(&model.CareServicePrice{}, "AnimalBookServices")
-	// db.Migrator().CreateConstraint(&model.CareExtraService{}, "AnimalBookExtras")
+	createForeignKeyIfNotExists(db, &model.AnimalBookService{}, "AnimalBookExtras")
+	createForeignKeyIfNotExists(db, &model.AnimalBookService{}, "AnimalBookClinics")
 
-	// reservation clinic & care
-	// db.Migrator().CreateConstraint(&model.AnimalBookService{}, "AnimalBookExtras")
-	// db.Migrator().CreateConstraint(&model.AnimalBookService{}, "AnimalBookClinics")
+	createForeignKeyIfNotExists(db, &model.Profile{}, "TransportCategorys")
+	createForeignKeyIfNotExists(db, &model.AnimalUser{}, "TransportServices")
+	createForeignKeyIfNotExists(db, &model.TransportCategory{}, "TransportServices")
 
-	// transportation
-	// db.Migrator().CreateConstraint(&model.Profile{}, "TransportCategorys")
-	// db.Migrator().CreateConstraint(&model.AnimalUser{}, "TransportServices")
-	// db.Migrator().CreateConstraint(&model.TransportCategory{}, "TransportServices")
-
-	// seller
-	// db.Migrator().CreateConstraint(&model.Profile{}, "Merchandises")
-	// db.Migrator().CreateConstraint(&model.Profile{}, "Animals")
-	// db.Migrator().CreateConstraint(&model.User{}, "Orders")
-	// db.Migrator().CreateConstraint(&model.Order{}, "ProductMerchadises")
-	// db.Migrator().CreateConstraint(&model.Order{}, "ProductAnimals")
-	// db.Migrator().CreateConstraint(&model.Animal{}, "ProductAnimals")
-	// db.Migrator().CreateConstraint(&model.Merchandise{}, "ProductMerchadises")
+	createForeignKeyIfNotExists(db, &model.Profile{}, "Merchandises")
+	createForeignKeyIfNotExists(db, &model.Profile{}, "Animals")
+	createForeignKeyIfNotExists(db, &model.User{}, "Orders")
+	createForeignKeyIfNotExists(db, &model.Order{}, "ProductMerchadises")
+	createForeignKeyIfNotExists(db, &model.Order{}, "ProductAnimals")
+	createForeignKeyIfNotExists(db, &model.Animal{}, "ProductAnimals")
+	createForeignKeyIfNotExists(db, &model.Merchandise{}, "ProductMerchadises")
 
 	return nil
 }
 
-// db.AutoMigrate(&model.Clinic{})
-// db.AutoMigrate(&model.Seller{})
-// db.AutoMigrate(&model.Hotel{})
-// db.AutoMigrate(&model.Carrier{})
-
-// db.Migrator().CreateConstraint(&model.AnimalUser{}, "HotelServices")
-
-// db.Migrator().CreateConstraint(&model.Profile{}, "Hotel")
-// db.Migrator().CreateConstraint(&model.Profile{}, "Clinic")
-// db.Migrator().CreateConstraint(&model.Profile{}, "Carrier")
-
-// db.Migrator().CreateConstraint(&model.Hotel{}, "Cages")
-// db.Migrator().CreateConstraint(&model.Clinic{}, "ServiceClinics")
-// db.Migrator().CreateConstraint(&model.Carrier{}, "TransportCategorys")
-// db.Migrator().CreateConstraint(&model.Seller{}, "Merchandises")
-// db.Migrator().CreateConstraint(&model.Seller{}, "Animals")
-
-// db.Migrator().CreateConstraint(&model.HotelService{}, "CageRoom")
-
-// db.Migrator().CreateConstraint(&model.Profile{}, "ServiceDetails")
-// db.Migrator().CreateConstraint(&model.AnimalUser{}, "AnimalServices")
-// db.Migrator().CreateConstraint(&model.ServiceDetail{}, "AnimalServices")
+// Helper function to create a foreign key constraint if it doesn't already exist
+func createForeignKeyIfNotExists(db *gorm.DB, model interface{}, constraintName string) {
+	if !db.Migrator().HasConstraint(model, constraintName) {
+		db.Migrator().CreateConstraint(model, constraintName)
+	}
+}
