@@ -4,7 +4,6 @@ services:
     image: nginx:alpine
     ports:
       - 80:80
-    build: .
     restart: unless-stopped
     volumes:
       - ./nginx/conf.d/:/etc/nginx/conf.d/:ro
