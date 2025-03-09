@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"gorm.io/gorm"
 )
@@ -17,6 +18,7 @@ func CreateRoutes(e *echo.Echo, db *gorm.DB) {
 
 	validate := validator.New()
 	e.GET("/swagger/*any", echoSwagger.WrapHandler)
+	e.Use(middleware.Logger())
 
 	baseRouter := e.Group("/api")
 

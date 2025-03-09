@@ -2,9 +2,12 @@ package auth
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"petplace/internal/utils"
+	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
@@ -15,6 +18,14 @@ import (
 // AuthMiddleware check token from Authorization header
 func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		var buf [64]byte
+		n := runtime.Stack(buf[:], false)
+		idField := strings.Fields(strings.TrimPrefix(string(buf[:n]), "goroutine "))[0]
+		id, err := strconv.Atoi(idField)
+		if err != nil {
+			panic(fmt.Sprintf("cannot get goroutine id: %v", err))
+		}
+		log.Println("go routie id : ", id)
 
 		authHeader := c.Request().Header.Get("Authorization")
 		if authHeader == "" {

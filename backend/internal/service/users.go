@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"petplace/internal/auth"
 	"petplace/internal/model"
@@ -34,7 +35,16 @@ func NewUserService(
 	}
 }
 
+var (
+	errInvalidPayload = errors.New("invalid data")
+)
+
 func (s *userService) CreateUser(data model.User) (model.User, error) {
+	err := s.Validate.Struct(data)
+	if err != nil {
+		return model.User{}, errInvalidPayload
+	}
+
 	user, err := s.UserRepository.CreateUser(data)
 	if err != nil {
 		return user, err

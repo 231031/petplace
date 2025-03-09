@@ -52,3 +52,13 @@ func (r *userRepository) UpdateUser(user model.User) error {
 	}
 	return nil
 }
+
+func (r *userRepository) Close() error {
+	conn, err := r.db.DB()
+	if err != nil {
+		return err
+	}
+
+	conn.Close()
+	return nil
+}

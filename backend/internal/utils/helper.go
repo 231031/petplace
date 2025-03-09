@@ -12,6 +12,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/umahmood/haversine"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func ConvertTypeToUint(str string) (uint, error) {
@@ -177,4 +179,14 @@ func CheckInputDate(startTime, endTime time.Time) (error, error) {
 	}
 
 	return nil, nil
+}
+
+func ConnectTestDB() (*gorm.DB, error) {
+	dsn := "admin:12345@tcp(localhost:3307)/petplace?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn))
+	if err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }

@@ -129,7 +129,6 @@ func (s *paymentService) RequestPayment(payload types.BookingPayload, bookDel ty
 		"application_context": appCtx,
 	}
 
-	fmt.Println(paymentInfo)
 	paymentInfoBytes, err := json.Marshal(paymentInfo)
 	if err != nil {
 		return "", err

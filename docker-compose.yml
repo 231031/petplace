@@ -1,0 +1,52 @@
+services:
+  nginx:
+    container_name: petplace-nginx
+    image: nginx:alpine
+    ports:
+      - 80:80
+    build: .
+    restart: unless-stopped
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh:ro
+    entrypoint: ["/bin/sh", "/docker-entrypoint.sh"]
+    depends_on:
+      - petplace_frontend
+      - petplace_backend
+    networks:
+      - petplace_networks
+  petplace_backend:
+    container_name: petplace-backend
+    image: 231031/petplace_backend:latest
+    build: ./backend
+    Dockerfile: Dockerfile.prod
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend/public:/app/go/public
+      - ./backend:/app/go
+    networks:
+      - petplace_networks
+  petplace_frontend:
+    container_name: petplace-frontend
+    image: 231031/petplace_frontend:latest
+    build: ./frontend
+    Dockerfile: Dockerfile.prod
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/public:/app/public
+    depends_on:
+      - petplace_backend
+    networks:
+      - petplace_networks
+
+networks:
+  petplace_networks:
+    driver: bridge
