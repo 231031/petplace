@@ -23,8 +23,8 @@ jobs:
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
           echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
-          echo "GOOGLE_API_INFO=${{ variables.GOOGLE_API_INFO }}" >> .env
-          echo "GOOGLE_API_INFO=${{ variables.FRONT_URL }}" >> .env
+          echo "GOOGLE_API_INFO=${{ vars.GOOGLE_API_INFO }}" >> .env
+          echo "GOOGLE_API_INFO=${{ vars.FRONT_URL }}" >> .env
 
       - name: Login to docker hub
         run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
