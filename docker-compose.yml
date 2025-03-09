@@ -11,8 +11,8 @@ services:
       - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh:ro
     entrypoint: ["/bin/sh", "/docker-entrypoint.sh"]
     depends_on:
-      - petplace_frontend
       - petplace_backend
+      # - petplace_frontend
     networks:
       - petplace_networks
   petplace_backend:
