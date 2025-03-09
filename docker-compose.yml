@@ -18,8 +18,9 @@ services:
   petplace_backend:
     container_name: petplace-backend
     image: 231031/petplace_backend:latest
-    build: ./backend
-    Dockerfile: Dockerfile.prod
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
     env_file:
       - .env
     restart: unless-stopped
@@ -33,8 +34,9 @@ services:
   petplace_frontend:
     container_name: petplace-frontend
     image: 231031/petplace_frontend:latest
-    build: ./frontend
-    Dockerfile: Dockerfile.prod
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
     env_file:
       - .env
     restart: unless-stopped
