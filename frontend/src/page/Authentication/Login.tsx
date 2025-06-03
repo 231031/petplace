@@ -10,12 +10,13 @@ export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [image, setImage] = useState('');
+    const baseApi = import.meta.env.VITE_BASEAPI;
+    // const [image, setImage] = useState('');
 
     // Handle login action
     const handleLogin = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/auth/login', {
+            const response = await fetch(`${baseApi}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -34,7 +35,7 @@ export default function Login() {
                 localStorage.setItem("role", "client");
                 localStorage.setItem("userId", data.user.id);
                 localStorage.setItem("username", data.user.firstname);
-                setImage(data.user.image_profile);
+                // setImage(data.user.image_profile);
                 navigate('/SelectProfile', { state: { image_profile: data.user.image_profile } });
             } else {
                 toast.error(data);
@@ -45,7 +46,6 @@ export default function Login() {
         }
     };
 
-    console.log(import.meta.env.VITE_GOOGLE_REDIRECT_URL);
     const LoginButton = () => {
         const googleLogin = useGoogleLogin({
             onSuccess: tokenResponse => console.log(tokenResponse.code),

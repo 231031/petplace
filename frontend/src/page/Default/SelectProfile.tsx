@@ -62,7 +62,8 @@ export default function SelectProfile() {
   }, [id, location.state]);
 
   // State to manage form data
-  const [formData, setFormData] = useState<any>(null);
+  // const [formData, setFormData] = useState<any>(null);
+  const baseApi = import.meta.env.VITE_BASEAPI;
 
   // Fetch user profile data when component mounts
   useEffect(() => {
@@ -72,7 +73,7 @@ export default function SelectProfile() {
 
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/user/${id}`, {
+        const response = await axios.get(`${baseApi}/user/${id}`, {
           headers: {
             "accept": "application/json",
             'Content-Type': 'application/json',
@@ -81,10 +82,10 @@ export default function SelectProfile() {
         });
         const data = response.data;
         console.log("user data", data);
-        setFormData({
-          first_name: data.first_name,
-          image_profile: data.image_profile
-        });
+        // setFormData({
+        //   first_name: data.first_name,
+        //   image_profile: data.image_profile
+        // });
         setImage(data.image_profile);
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -160,7 +161,7 @@ export default function SelectProfile() {
           {/* Create Profile */}
           <div>
             <div
-              className="bg-white p-2 mt-16 rounded-full w-46 flex text-xl justify-center items-center h-8 space-x-5 cursor-pointer hover:border hover:border-gray-400 hover:border-2"
+              className="bg-white p-2 mt-16 rounded-full w-46 flex text-xl justify-center items-center h-8 space-x-5 cursor-pointer hover:border-gray-400 hover:border-2"
               onClick={handleCreateProfile}
             >
               <p>Create Profile</p>

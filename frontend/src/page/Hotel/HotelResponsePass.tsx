@@ -17,6 +17,8 @@ function HotelResponsePass() {
     // State to manage the presence of a half star in the review
     const [halfStar, setHalfStar] = useState<boolean>(false);
 
+    const baseApi = import.meta.env.VITE_BASEAPI;
+
     // Fetch completed and canceled hotel reservations when the component mounts
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -24,19 +26,20 @@ function HotelResponsePass() {
 
         if (!id) {
             setError("User ID not found");
+            console.log(error)
             return;
         }
 
         // Fetch completed and canceled hotel reservations
         Promise.all([
-            fetch(`http://localhost:5000/api/hotel/${id}/completed`, {
+            fetch(`${baseApi}/hotel/${id}/completed`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
                     Accept: "application/json",
                 },
             }),
-            fetch(`http://localhost:5000/api/hotel/${id}/cancel`, {
+            fetch(`${baseApi}hotel/${id}/cancel`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,

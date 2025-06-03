@@ -6,7 +6,7 @@ const baseApi = import.meta.env.VITE_BASEAPI;
 
 export async function GetSearchCage(
   filterAnimal: FilterAnimal[],
-  filterSearchCage: FilterSearchCage
+  filterSearchCage: any
 ): Promise<any> {
   try {
     let apiPath = baseApi + "/cageroom/search?";

@@ -25,7 +25,7 @@ const Map = ({ latitude, longitude }: MapProps) => {
             setPosition([latitude, longitude]); // Set user's position
             console.log(position.coords);
           },
-          (err) => {
+          () => {
             setError('Unable to retrieve your location.');
             // Default to Bangkok if geolocation fails
             setPosition([13.736717, 100.523186]);

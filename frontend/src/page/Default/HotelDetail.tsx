@@ -33,7 +33,7 @@ function HotelDetail() {
         };
 
         try {
-            const response = await AddFavCage(favPayload);
+            await AddFavCage(favPayload);
         } catch (error) {
             console.error("Error adding to favorites:", error);
             alert("Failed to add cage to favorites. Please try again.");
@@ -67,14 +67,15 @@ function HotelDetail() {
         });
     };
 
-    const id = localStorage.getItem("userId");
+    // const id = localStorage.getItem("userId");
     const [review, setReview] = useState({});
     const profile_id = hotel.id;
+    const baseApi = import.meta.env.VITE_BASEAPI;
 
     // Fetch hotel reviews
     useEffect(() => {
         const token = localStorage.getItem("token");
-        fetch(`http://localhost:5000/api/hotel/review/${profile_id}`, {
+        fetch(`${baseApi}/hotel/review/${profile_id}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -91,7 +92,7 @@ function HotelDetail() {
             .catch((error) => console.error("Error fetching cage room data:", error));
     }, []);
 
-    const [distance, setDistance] = useState(null); // to store the calculated distance
+    const [distance, setDistance] = useState(Number); // to store the calculated distance
 
     // Get user's current location and calculate distance to hotel
     useEffect(() => {
@@ -232,7 +233,7 @@ function HotelDetail() {
                                     {hotel.cages.map((cage: Cage, index: number) => (
                                         <div className="flex flex-col">
                                             <div key={index}
-                                                className={`flex h-60 mx-5 mt-5 p-3 shadow shadow-gray-400 h-80 ${selectedRoomIndex === index
+                                                className={`flex mx-5 mt-5 p-3 shadow shadow-gray-400 h-80 ${selectedRoomIndex === index
                                                     ? 'rounded-t-md  shadow-tl shadow-tr shadow-bl shadow-br shadow-gray-400'  // Rounded corners only at the top and shadow around except bottom
                                                     : 'rounded-md shadow shadow-gray-400 '  // Rounded corners all around initially
                                                     }`}

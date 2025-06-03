@@ -6,11 +6,9 @@ import UploadImage from "@/components/CreateProfile/UploadImage";
 import { UploadRes } from '@/types/response';
 import MapView from '@/components/CreateProfile/Map'; // Assuming you have a map component
 import toast, { Toaster } from 'react-hot-toast';
-import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.css';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.js';
-import { useMap } from 'react-leaflet';
 
 function CreateProfile() {
     // State to manage form data
@@ -35,34 +33,40 @@ function CreateProfile() {
     const token = localStorage.getItem('token');
 
     // Map component with geocoder
-    const MapWithGeocoder = () => {
-        const map = useMap();
+    // const MapWithGeocoder = () => {
+    //     const map = useMap();
 
-        useEffect(() => {
-            const geocoder = L.Control.geocoder({
-                defaultMarkGeocode: false, // Do not mark automatically
-            }).addTo(map);
+    //     useEffect(() => {
+    //         const geocoder = L.Control.geocoder({
+    //             defaultMarkGeocode: false, // Do not mark automatically
+    //         }).addTo(map);
 
-            geocoder.on('markgeocode', (e) => {
-                const latlng = e.geocode.center;
-                setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
-                map.setView(latlng, 13); // Center the map on the searched location
-            });
+    //         geocoder.on('markgeocode', (e) => {
+    //             const latlng = e.geocode.center;
+    //             setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
+    //             map.setView(latlng, 13); // Center the map on the searched location
+    //         });
 
-            return () => {
-                map.removeControl(geocoder);
-            };
-        }, [map]);
+    //         return () => {
+    //             map.removeControl(geocoder);
+    //         };
+    //     }, [map]);
 
-        return null;
-    };
+    //     return null;
+    // };
 
     // Handle form input changes and save to localStorage
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleChange = (
+        e: React.ChangeEvent<
+            HTMLInputElement |
+            HTMLSelectElement |
+            HTMLTextAreaElement
+        >
+    ) => {
         const { name, value } = e.target;
         const updatedFormData = { ...formData, [name]: value };
         setFormData(updatedFormData);
-        localStorage.setItem('formData', JSON.stringify(updatedFormData)); // Save to localStorage
+        localStorage.setItem('formData', JSON.stringify(updatedFormData));
     };
 
     // Load form data from localStorage when component mounts
@@ -93,8 +97,8 @@ function CreateProfile() {
     };
 
     // Get selected position from localStorage
-    var selectedPosition = localStorage.getItem('selectedLocation');
-    var parsedLocation = JSON.parse(selectedPosition) || [];
+    const selectedPosition = localStorage.getItem('selectedLocation');
+    const parsedLocation = selectedPosition ? JSON.parse(selectedPosition) : [];
 
     // Handle form submission
     const handleSignup = async () => {
@@ -122,9 +126,10 @@ function CreateProfile() {
             tel: formData.tel,
             user_id: userId,
         };
+        const baseApi = import.meta.env.VITE_BASEAPI;
 
         try {
-            const response = await fetch('http://localhost:5000/api/profile/create', {
+            const response = await fetch(`${baseApi}/profile/create`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -175,7 +180,7 @@ function CreateProfile() {
                                 </div>
                                 <button
                                     onClick={handleRemoveImage}
-                                    className="absolute top-1 right-1  bg-red-500 text-white text-xs rounded-full text-2xl size-7"
+                                    className="absolute top-1 right-1  bg-red-500 text-white rounded-full text-2xl size-7"
                                 >
                                     x
                                 </button>
@@ -193,7 +198,7 @@ function CreateProfile() {
                                 name="profileType"
                                 value={formData.profileType}
                                 onChange={handleChange}
-                                className="rounded-lg w-52 text-yellow border border-2 border-bg hover:border-yellow focus:border-yellow focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow h-12"
+                                className="rounded-lg w-52 text-yellow border-2 border-bg hover:border-yellow focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow h-12"
                             >
                                 <option value="">Select profile</option>
                                 <option value="hotel">Hotel</option>
@@ -246,7 +251,7 @@ function CreateProfile() {
                                     name="address"
                                     value={formData.address}
                                     onChange={handleChange}
-                                    className="flex rounded-lg text-yellow border border-2 border-bg hover:border-yellow focus:border-yellow focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow h-20 w-full p-2"
+                                    className="flex rounded-lg text-yellow border-2 border-bg hover:border-yellow focus:outline-none focus:border-yellow focus:ring-1 focus:ring-yellow h-20 w-full p-2"
                                     style={{ resize: 'none', overflowY: 'auto' }}
                                 />
                             </div>
@@ -263,7 +268,7 @@ function CreateProfile() {
                     </div>
                     {error && <div className="text-red-500 mt-3">{error}</div>}
                     {successMessage && <div className="text-green-500 mt-3">{successMessage}</div>}
-                    <Button onClick={handleSignup} label='Create'> </Button>
+                    <Button onClick={handleSignup} label='Create' />
                 </div>
             </div>
         </div>

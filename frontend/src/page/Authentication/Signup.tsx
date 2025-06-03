@@ -25,6 +25,7 @@ function Signup() {
     const navigate = useNavigate();
     // State to manage profile image
     const [image, setImage] = useState<string | null>(null);
+    const baseApi = import.meta.env.VITE_BASEAPI;
 
     // Handle image upload
     const handleImageUpload = (uploadedFiles: UploadRes[]) => {
@@ -69,7 +70,7 @@ function Signup() {
         };
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/signup', {
+            const response = await fetch(`${baseApi}/auth/signup`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

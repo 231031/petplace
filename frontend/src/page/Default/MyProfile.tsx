@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function MyProfile() {
-    const [profile, setProfileData] = useState<any>(null); // เก็บข้อมูลโปรไฟล์
+    // const [profile, setProfileData] = useState<any>(null); // เก็บข้อมูลโปรไฟล์
     const [isLoading, setIsLoading] = useState<boolean>(true); // แสดงสถานะการโหลด
     const [isEditing, setIsEditing] = useState<boolean>(false); // โหมดแก้ไข
     const [isAdding, setIsAdding] = useState<boolean>(false);
@@ -44,7 +44,7 @@ export default function MyProfile() {
                 });
                 const data = response.data;
                 console.log("user data", data);
-                setProfileData(data);
+                // setProfileData(data);
                 setFormData({
                     first_name: data.first_name,
                     surename: data.surename,
@@ -109,7 +109,7 @@ export default function MyProfile() {
     const handleSelectPet = (id: string) => {
         if (id != "") {
             setIsAdding(false);
-            const selectedPetInfo = allPet.find((pet) => pet.id === parseInt(id));
+            const selectedPetInfo = allPet.find((pet: any) => pet.id === parseInt(id));
             console.log(id);
             if (selectedPetInfo) {
                 // setSelectedPet(selectedPetInfo);
@@ -163,7 +163,8 @@ export default function MyProfile() {
     const handleInputChangePet = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         if (name === "animal_type") {
-            setAnimalType(value); // อัปเดตค่า animal_type เมื่อมีการเลือกจาก select
+            setAnimalType(value);
+            console.log(animalType)
         }
         setPetData((prevPet: any) => ({
             ...prevPet,
@@ -191,6 +192,8 @@ export default function MyProfile() {
         }
     }, [allPet]);
 
+    const baseApi = import.meta.env.VITE_BASEAPI;
+
     // Save updated pet profile
     const savePetProfile = async () => {
 
@@ -205,9 +208,9 @@ export default function MyProfile() {
             if (isAdding && isEditing) {
                 const AddingPet = {
                     ...updatedPet,
-                    user_id: parseInt(id),
+                    user_id: parseInt(id!), // Non-null assertion (only if you're sure)
                 };
-                const response = await axios.post(`http://localhost:5000/api/user/animals`, [AddingPet], {
+                const response = await axios.post(`${baseApi}/user/animals`, [AddingPet], {
                     headers: {
                         accept: "application/json",
                         "Content-Type": "application/json",
@@ -324,7 +327,7 @@ export default function MyProfile() {
                                             </div>
                                             <button
                                                 onClick={handleRemoveImage}
-                                                className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full text-2xl w-5 h-5"
+                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full text-2xl w-5 h-5"
                                             >
                                                 x
                                             </button>
@@ -376,7 +379,7 @@ export default function MyProfile() {
                             </div>
 
                         </div>
-                        <div className="flex   mt-10  mx-20 flex pl-20 ">
+                        <div className="flex   mt-10  mx-20 pl-20 ">
                             <div className="flex flex-col  text-xl w-1/2 pl-5 ">
                                 <p>Email</p>
 
@@ -409,7 +412,7 @@ export default function MyProfile() {
                             </div>
 
                         </div>
-                        <div className="flex  mt-10  mx-20 flex pl-20">
+                        <div className="flex  mt-10  mx-20 pl-20">
                             <div className="flex flex-col  text-xl w-1/2 pl-5">
                                 <p>Citizen ID</p>
 
@@ -455,7 +458,7 @@ export default function MyProfile() {
                             {
                                 (allPet && allPet.length > 0) ? (
 
-                                    allPet.map((pet) => (
+                                    allPet.map((pet: any) => (
                                         <option key={pet.id} value={pet.id}>
                                             {pet.name} : {pet.animal_type}
                                         </option>
@@ -490,7 +493,7 @@ export default function MyProfile() {
                                                     </div>
                                                     <button
                                                         onClick={handleRemovePetImage}
-                                                        className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full text-2xl w-5 h-5  "
+                                                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full text-2xl w-5 h-5  "
                                                     >
                                                         x
                                                     </button>

@@ -1,22 +1,22 @@
 services:
-  nginx:
-    container_name: petplace-nginx
-    image: nginx:alpine
-    ports:
-      - 80:80
-    restart: unless-stopped
-    volumes:
-      - ./nginx/conf.d/:/etc/nginx/conf.d/:ro
-      - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh:ro
-    entrypoint: ["/bin/sh", "/docker-entrypoint.sh"]
-    depends_on:
-      - petplace_backend
-      # - petplace_frontend
-    networks:
-      - petplace_networks
+  # nginx:
+  #   container_name: petplace-test-nginx
+  #   image: nginx:alpine
+  #   ports:
+  #     - 80:80
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./nginx/conf.d/:/etc/nginx/conf.d/:ro
+  #     - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh:ro
+  #   entrypoint: ["/bin/sh", "/docker-entrypoint.sh"]
+  #   depends_on:
+  #     - petplace_backend
+  #     - petplace_frontend
+  #   networks:
+  #     - petplace_test_networks
   petplace_backend:
     container_name: petplace-backend
-    image: 231031/petplace_backend:latest
+    # image: 231031/petplace_backend:latest
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
@@ -25,30 +25,44 @@ services:
     restart: unless-stopped
     ports:
       - "5000:5000"
-    volumes:
-      - ./backend/public:/app/go/public
-      - ./backend:/app/go
+    depends_on:
+      - petplace_test_db
     networks:
-      - petplace_networks
+      - petplace_test_networks
 
-  # petplace_frontend:
-  #   container_name: petplace-frontend
-  #   image: 231031/petplace_frontend:latest
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile.prod
-  #   env_file:
-  #     - .env
-  #   restart: unless-stopped
-  #   ports:
-  #     - "5173:5173"
-  #   volumes:
-  #     - ./frontend/public:/app/public
-  #   depends_on:
-  #     - petplace_backend
-  #   networks:
-  #     - petplace_networks
+  petplace_frontend:
+    container_name: petplace-frontend
+    # image: 231031/petplace_frontend:latest
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - petplace_backend
+    networks:
+      - petplace_test_networks
+  
+  petplace_test_db:
+    image: mysql
+    restart: unless-stopped
+    container_name: petplace-test-db
+    env_file:
+      - .env
+    ports:
+      - "${DATABASE_PORT}:${DATABASE_PORT}"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_USER=${DATABASE_USERNAME}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+      - MYSQL_TCP_PORT=${DATABASE_PORT}
+    networks:
+      - petplace_test_networks
 
 networks:
-  petplace_networks:
+  petplace_test_networks:
     driver: bridge

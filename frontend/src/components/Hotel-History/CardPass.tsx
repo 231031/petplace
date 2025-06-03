@@ -387,10 +387,8 @@ function ReviewForm({
   const [rating, setRating] = useState(0); // State for star rating
   const [hideName, setHideName] = useState(false); // State for "hide your name"
   const [reviewText, setReviewText] = useState(""); // State for review text
-  const [reviewImage, setReviewImage] = useState(""); // Single review image
   const [hotelServiceId, setHotelServiceId] = useState(0); // Single review image
   const [profileId, setProfileId] = useState(0); // Single review image
-  // const [reviewImageArray, setReviewImageArray] = useState<string[]>([]); // Multiple images
   const [images, setImages] = useState<UploadRes[]>([]);
   const storedUserName = localStorage.getItem("username");
   const handleImageUpload = (uploadedFiles: UploadRes[]) => {
@@ -413,7 +411,7 @@ function ReviewForm({
         hotel_service_id: hotelServiceId, // Prop passed to component
         profile_id: profileId, // Prop passed to component
         review_detail: reviewText, // Use state value
-        review_image: reviewImage, // Use state value
+        review_image: "", // Use state value
         review_image_array: images.map((image) => image.fileUrl), // Use state value
         review_rate: rating, // Use state value
       };

@@ -15,18 +15,34 @@ const FullMap = () => {
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
+    type Coordinates = [number, number];
+
     // Fetch user's current location on load
     useEffect(() => {
         if (navigator.geolocation) {
+            // navigator.geolocation.getCurrentPosition(
+            //     ({ coords: { latitude, longitude } }) => {
+            //         const userPosition = [latitude, longitude];
+            //         setPosition(userPosition);
+            //         setSearchedPosition(userPosition);
+            //     },
+            //     () => {
+            //         setError('Unable to retrieve your location. Using default.');
+            //         const defaultPosition: [number, number] = [13.736717, 100.523186]; // Default to Bangkok
+            //         setPosition(defaultPosition);
+            //         setSearchedPosition(defaultPosition);
+            //     }
+            // );
+
             navigator.geolocation.getCurrentPosition(
                 ({ coords: { latitude, longitude } }) => {
-                    const userPosition = [latitude, longitude];
+                    const userPosition: Coordinates = [latitude, longitude];
                     setPosition(userPosition);
                     setSearchedPosition(userPosition);
                 },
                 () => {
                     setError('Unable to retrieve your location. Using default.');
-                    const defaultPosition: [number, number] = [13.736717, 100.523186]; // Default to Bangkok
+                    const defaultPosition: Coordinates = [13.736717, 100.523186];
                     setPosition(defaultPosition);
                     setSearchedPosition(defaultPosition);
                 }
@@ -44,11 +60,11 @@ const FullMap = () => {
         const map = useMap();
 
         useEffect(() => {
-            const geocoder = L.Control.geocoder({
+            const geocoder = (L.Control as any).geocoder({
                 defaultMarkGeocode: false,
             }).addTo(map);
 
-            geocoder.on('markgeocode', (e) => {
+            geocoder.on('markgeocode', (e: any) => {
                 const latlng = e.geocode.center;
                 setSearchedPosition([latlng.lat, latlng.lng]);
                 map.setView(latlng, 13);
@@ -82,7 +98,7 @@ const FullMap = () => {
         const map = useMap();
 
         useEffect(() => {
-            const button = L.control({ position: 'topright' });
+            const button = new L.Control({ position: 'topright' });
 
             button.onAdd = () => {
                 const div = L.DomUtil.create('button', 'current-location-btn');
@@ -138,7 +154,7 @@ const FullMap = () => {
         return (
             <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-[1000]">
                 <button
-                    className="bg-onstep hover:bg-nextstep text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
+                    className="bg-onstep text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition"
                     onClick={handleConfirmLocation}
                 >
                     Confirm Selected Location

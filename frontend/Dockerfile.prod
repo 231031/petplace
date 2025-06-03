@@ -3,15 +3,26 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
-
 RUN npm install
 
-RUN npm i -g serve
-
 COPY . .
-
+RUN chmod +x node_modules/typescript/bin/tsc  # Fix permission for local tsc
 RUN npm run build
+
+# Production stage
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+# Install serve globally
+RUN npm install -g serve
+
+# Set environment variable
+ENV NODE_ENV=production
+
+# Copy built files from builder stage
+COPY --from=builder /app/dist ./dist
 
 EXPOSE 5173
 
-CMD [ "serve", "-s", "dist" ]
+CMD ["serve", "-s", "dist", "-l", "5173"]

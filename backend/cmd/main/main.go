@@ -28,11 +28,14 @@ import (
 func main() {
 
 	e := echo.New()
-	// frontUrl := os.Getenv("FRONT_URL")
+
+	// Configure CORS
+	// front_url := os.Getenv("FRONT_URL")
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:5173"},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
-		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete, http.MethodOptions},
+		AllowHeaders:     []string{"*"},
+		AllowCredentials: true,
 	}))
 
 	db, err := config.ConnectDatabase()
@@ -40,9 +43,9 @@ func main() {
 		e.Logger.Fatalf("Failed to connect %s", err.Error())
 	}
 	fmt.Printf("connect database successfully\n")
-
 	migration.Migrate(db)
+
 	routes.CreateRoutes(e, db)
-	e.Logger.Fatal(e.Start(":5000"))
+	e.Logger.Fatal(e.Start(":50001"))
 
 }

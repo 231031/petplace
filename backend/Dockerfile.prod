@@ -12,6 +12,6 @@ RUN go build -o main ./cmd/main/main.go
 
 RUN chmod +x ./cmd/main/main
 
-EXPOSE 5000
+EXPOSE 50001
 
 CMD [ "./cmd/main/main" ]

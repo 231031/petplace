@@ -12,22 +12,27 @@ export default function HotelHome() {
         email: "",
         check_in: "",
         check_out: "",
-        facility_array: "",
+        facility_array: [],
         avg_review: "",
         image_array: [],
-        latitude: null,
-        longitude: null,
+        latitude: 0,
+        longitude: 0,
         address: "",
-    }
-    );
+        detail: ""
+    });
+
     const id = localStorage.getItem("userId");
     const profileId = localStorage.getItem("profile_id");
-    const [rooms, setRooms] = useState({
-        quantity: "",
-        width: "",
-        height: "",
-        lenth: "",
-    });
+
+    type Room = {
+        quantity: string;
+        width: string;
+        height: string;
+        length: string;
+    };
+
+    const [rooms, setRooms] = useState<Room[]>([]);
+    const baseApi = import.meta.env.VITE_BASEAPI;
 
     useEffect(() => {
         if (!localStorage.getItem("token")) {
@@ -35,7 +40,7 @@ export default function HotelHome() {
         }
         const token = localStorage.getItem("token");
 
-        fetch(`http://localhost:5000/api/profile/${id}/hotel`, {
+        fetch(`${baseApi}/profile/${id}/hotel`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -58,7 +63,7 @@ export default function HotelHome() {
             })
             .catch((error) => console.error("Error fetching hotel data:", error));
     }, []);
-    const [distance, setDistance] = useState(null); // to store the calculated distance
+    const [distance, setDistance] = useState(Number); // to store the calculated distance
 
     // Get user's current location and calculate distance to hotel
     useEffect(() => {
@@ -99,7 +104,7 @@ export default function HotelHome() {
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (profileId) {
-            fetch(`http://localhost:5000/api/cageroom/all/${profileId}`, {
+            fetch(`${baseApi}/cageroom/all/${profileId}`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -117,13 +122,13 @@ export default function HotelHome() {
         }
     }, [hotel]);
 
-    const [review, setReview] = useState()
+    const [review, setReview] = useState<any>()
 
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (profileId) {
-            fetch(`http://localhost:5000/api/hotel/review/${profileId}`, {
+            fetch(`${baseApi}/hotel/review/${profileId}`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -218,18 +223,18 @@ export default function HotelHome() {
                 <div className="flex flex-col w-full gap-y-5 pb-5">
                     <h1 className="text-2xl"> Facility</h1>
                     <div className="flex gap-x-2 flex-wrap">
-                    {hotel.facility_array && hotel.facility_array.length > 0 ? (
-                        hotel.facility_array.map((facility, index) => (
-                            <button
-                                key={`facility-${index}`} // Unique key
-                                className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400"
-                            >
-                                {facility}
-                            </button>
-                        ))
-                    ) : (
-                        <p>No facilities available.</p>
-                    )}
+                        {hotel.facility_array && hotel.facility_array.length > 0 ? (
+                            hotel.facility_array.map((facility: any, index: any) => (
+                                <button
+                                    key={`facility-${index}`} // Unique key
+                                    className="w-32 h-12 bg-bg rounded-md shadow shadow-gray-400"
+                                >
+                                    {facility}
+                                </button>
+                            ))
+                        ) : (
+                            <p>No facilities available.</p>
+                        )}
                     </div>
                 </div>
                 {/* section4 */}
@@ -240,11 +245,11 @@ export default function HotelHome() {
                         <div className="flex bg-bg w-full h-full  flex-col shadow shadow-gray-400 rounded-md pb-5" >
                             {/* room container */}
                             {rooms && rooms.length > 0 ? (
-                                rooms.map((room, index) => (
+                                rooms.map((room: any, index: any) => (
                                     <div key={`room-${index}`} className=" flex flex-col">
                                         <div
                                             key={index}
-                                            className={`flex h-60 mx-5 mt-5 p-3 shadow shadow-gray-400 h-80 ${selectedRoomIndex === index
+                                            className={`flex mx-5 mt-5 p-3 shadow shadow-gray-400 h-80 ${selectedRoomIndex === index
                                                 ? 'rounded-t-md  shadow-tl shadow-tr shadow-bl shadow-br shadow-gray-400'  // มุมโค้งเฉพาะด้านบนและเงารอบๆ ยกเว้นด้านล่าง
                                                 : 'rounded-md shadow shadow-gray-400 '  // มุมโค้งรอบๆ ทุกด้านตอนแรก
                                                 }`}
@@ -313,7 +318,7 @@ export default function HotelHome() {
                     </div>
                     <div className="shadow shadow-gray-400 rounded-md mt-5 ">
                         {review && Array.isArray(review) && review.length > 0 ? (
-                            review.map((item, index) => (
+                            review.map((item: any, index: any) => (
                                 <div
                                     key={`review-${index}`}
                                     className="flex flex-col h-auto m-5 p-3 bg-bg rounded-md shadow shadow-gray-400 gap-y-5 "

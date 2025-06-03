@@ -3,7 +3,6 @@ import PetCard from "@/components/Hotel-Bookdetail/PetCard";
 import { GetTypeAnimalByUserID } from "@/helper/animal_user";
 import { CheckAvailableCage, GetHotelServiceByID } from "@/helper/hotel";
 import { formatDateToStringNew } from "@/helper/utils";
-import { Cage } from "@/types/response";
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import toast, { Toaster } from "react-hot-toast";
@@ -99,6 +98,7 @@ function HotelBookAgain() {
         if (!selectedPets || selectedPets.length === 0) {
             toast.error("Please select at least 1 pet");
             setError("Please select at least 1 pet");
+            console.log(error)
             return;
         }
 
@@ -158,7 +158,7 @@ function HotelBookAgain() {
         console.log("Start Date:", startDate);
         console.log("End Date:", clickedDate);
     };
-    const tileClassName = ({ date, view }) => {
+    const tileClassName = ({ date, view }: any) => {
         if (view === 'month') {
             if (startDate && date.toDateString() === startDate.toDateString()) {
                 return 'highlight-start';
@@ -178,7 +178,7 @@ function HotelBookAgain() {
         return null;
     };
 
-    const tileDisabled = ({ date, view }) => {
+    const tileDisabled = ({ date, view }: any) => {
         return view === 'month' && date < new Date();
     };
 

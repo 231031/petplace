@@ -68,12 +68,15 @@ export function UpdateImageArray(newImages:UploadRes[], images:string[] | undefi
   return []
 }
 
-export function formatDateToString(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-  const day = String(date.getDate()).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
+export function formatDateToString(date: Date | null): string {
+  if (date != null) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    return `${year}-${month}-${day}`;
+  }
+  return ""
 }
 
 export function formatDateToStringNew(input: Date | string): string {

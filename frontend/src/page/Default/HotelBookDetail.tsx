@@ -27,10 +27,10 @@ function HotelBookdetail() {
 
     // Get state from location
     const selectedCage = location.state?.selectedCage || [];
-    const selectedHotel = location.state?.selectedHotel || [];
+    // const selectedHotel = location.state?.selectedHotel || [];
     const startDate = location.state?.startDate || '';
     const endDate = location.state?.endDate || '';
-    const profile_name = location.state?.profile_name || '';
+    // const profile_name = location.state?.profile_name || '';
 
     // State to manage pets and pet form visibility
     const [pets, setPets] = useState<any[]>([]);
@@ -61,6 +61,7 @@ function HotelBookdetail() {
     const handleHotelClick = (selectedCage: Cage) => {
         if (!selectedPets || selectedPets.length === 0) {
             setError('Please select at least one pet');
+            console.log(error)
             return;
         }
         const hotelName = location.state?.profile_name || selectedCage.profile?.name || "Default Hotel";

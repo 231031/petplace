@@ -8,6 +8,7 @@ function HotelResponseUpcoming() {
     // State to manage error messages
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const baseApi = import.meta.env.VITE_BASEAPI;
 
     // Fetch upcoming hotel reservations when the component mounts
     useEffect(() => {
@@ -15,11 +16,12 @@ function HotelResponseUpcoming() {
         const id = localStorage.getItem("profileID");
         if (!id) {
             setError("User ID not found");
+            console.log(error)
             return;
         }
 
         // Fetch upcoming hotel reservations
-        fetch(`http://localhost:5000/api/hotel/${id}/pending`, {
+        fetch(`${baseApi}/hotel/${id}/pending`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,

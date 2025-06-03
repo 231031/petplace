@@ -59,7 +59,7 @@ function HotelSearch() {
   const [activeButton, setActiveButton] = useState<number | null>(null);
   const buttons = ["Distance", "Price", "Rating", "Hot Deal"]; // Button labels
   // Handle pet selection change
-  const handlePetChange = (pet) => {
+  const handlePetChange = (pet: any) => {
     setSelectedPets((prev) =>
       prev.includes(pet) ? prev.filter((item) => item !== pet) : [...prev, pet]
     );
@@ -79,8 +79,8 @@ function HotelSearch() {
     }
 
     const filterSearchCage = {
-      latitude: searchedPosition[0] || 0,
-      longitude: searchedPosition[1] || 0,
+      latitude: searchedPosition?.[0] ?? 0,  // Nullish coalescing
+      longitude: searchedPosition?.[1] ?? 0,
       start_time: formatDateToString(startDate),
       end_time: formatDateToString(endDate),
       sort: finalSort || "",
@@ -94,12 +94,20 @@ function HotelSearch() {
       console.error("Error fetching hotels:", error);
     }
 
-    const dateObjectStart = new Date(startDate); // Parse the original start date string
-    const formattedStartDate = formatDateForInput(dateObjectStart); // Format it for input display
-    setFormattedStartDate(formattedStartDate); // Set the formatted start date for the input field
-    const dateObjectEnd = new Date(endDate); // Parse the original start date string
-    const formattedEndDate = formatDateForInput(dateObjectEnd); // Format it for input display
-    setFormattedEndDate(formattedEndDate); // Set the formatted end date for the input field
+    const dateObjectStart = startDate ? new Date(startDate) : new Date();
+    const formattedStartDate = formatDateForInput(dateObjectStart);
+    setFormattedStartDate(formattedStartDate);
+
+    const dateObjectEnd = endDate ? new Date(endDate) : new Date();
+    const formattedEndDate = formatDateForInput(dateObjectEnd);
+    setFormattedEndDate(formattedEndDate);
+
+    // const dateObjectStart = new Date(startDate); // Parse the original start date string
+    // const formattedStartDate = formatDateForInput(dateObjectStart); // Format it for input display
+    // setFormattedStartDate(formattedStartDate); // Set the formatted start date for the input field
+    // const dateObjectEnd = new Date(endDate); // Parse the original start date string
+    // const formattedEndDate = formatDateForInput(dateObjectEnd); // Format it for input display
+    // setFormattedEndDate(formattedEndDate); // Set the formatted end date for the input field
   };
 
   // Geocoder component to search for locations
@@ -107,11 +115,11 @@ function HotelSearch() {
     const map = useMap();
 
     useEffect(() => {
-      const geocoder = L.Control.geocoder({
-        defaultMarkGeocode: false, // Do not mark automatically
+      const geocoder = (L.Control as any).geocoder({
+        defaultMarkGeocode: false,
       }).addTo(map);
 
-      geocoder.on("markgeocode", (e) => {
+      geocoder.on("markgeocode", (e: any) => {
         const latlng = e.geocode.center;
         setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
         console.log("seaerchposi", searchedPosition)
@@ -126,26 +134,26 @@ function HotelSearch() {
     return null;
   };
 
-  const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
-  const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(
-    null
-  ); // Track marker position
+  // const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
+  // const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(
+  //   null
+  // ); // Track marker position
   const [position, setPosition] = useState<[number, number] | null>(null);
   const [searchedPosition, setSearchedPosition] = useState<
     [number, number] | null
   >(null); // Position from search or click
   const [error, setError] = useState(""); // Form error
 
-  const [maplocation, setMapLocation] = useState({
-    long: "",
-    lat: "",
-  });
+  // const [maplocation, setMapLocation] = useState({
+  //   long: "",
+  //   lat: "",
+  // });
 
   // Handle location change
-  const handleLocationChange = (lat: number, lng: number) => {
-    setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
-    setMarkerPosition([lat, lng]); // Update the marker position
-  };
+  // const handleLocationChange = (lat: number, lng: number) => {
+  //   setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
+  //   setMarkerPosition([lat, lng]); // Update the marker position
+  // };
 
   // Marker component to display selected location
   const LocationMarker = () => {
@@ -174,10 +182,13 @@ function HotelSearch() {
         (position) => {
           const { latitude, longitude } = position.coords;
           setPosition([latitude, longitude]);
-          handleLocationChange(latitude, longitude); // Update formData with initial position
+          setLatitude(latitude);
+          setLongitude(longitude);
+          // handleLocationChange(latitude, longitude); // Update formData with initial position
         },
-        (err) => {
+        () => {
           setError("Unable to retrieve your location.");
+          console.log(error)
         }
       );
     } else {
@@ -215,8 +226,8 @@ function HotelSearch() {
     }));
   };
 
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const [selectionStage, setSelectionStage] = useState<"start" | "range">(
     "start"
   );
@@ -266,7 +277,7 @@ function HotelSearch() {
   };
 
   // Add custom classes to calendar tiles
-  const tileClassName = ({ date, view }) => {
+  const tileClassName = ({ date, view }: any) => {
     if (view === "month") {
       // Highlight start date
       if (startDate && date.toDateString() === startDate.toDateString()) {
@@ -285,7 +296,7 @@ function HotelSearch() {
   };
 
   // Disable past dates in the calendar
-  const tileDisabled = ({ date, view }) => {
+  const tileDisabled = ({ date, view }: any) => {
     // Optional: Add logic to disable past dates or specific date ranges
     return view === "month" && date < new Date();
   };
@@ -336,7 +347,6 @@ function HotelSearch() {
                 {/* Location Section */}
                 <div className="flex flex-col  p-2 border border-gray-300 mt-8 rounded-lg ">
                   <label className="text-xl text-semibold">Select on map</label>
-                  {geoError && <div>{geoError}</div>}
                   <MapContainer
                     center={position || [13.736717, 100.523186]}
                     zoom={13}
@@ -473,8 +483,8 @@ function HotelSearch() {
 
               <HotelData
                 hotelList={hotels}
-                startDate={startDate}
-                endDate={endDate}
+                startDate={formatDateToString(startDate)}
+                endDate={formatDateToString(endDate)}
               />
             </div>
           ) : (
@@ -506,13 +516,13 @@ function HotelSearch() {
                               value={
                                 selectedCageSizes[animal] ||
                                 hotel
-                                  ?.find((h) =>
+                                  ?.find((h: any) =>
                                     h.cages?.some(
-                                      (cage) => cage.animal_type === animal
+                                      (cage: any) => cage.animal_type === animal
                                     )
                                   )
                                   ?.cages?.find(
-                                    (cage) => cage.animal_type === animal
+                                    (cage: any) => cage.animal_type === animal
                                   )?.size ||
                                 "" // Default to an empty string if no matching animal is found
                               }
@@ -532,7 +542,7 @@ function HotelSearch() {
                   <div className="text-xl p-2 mt-10">
                     <div className="flex flex-col border border-gray-300 rounded-lg shadow-md p-2 bg-white w-80 h-full">
                       <label>Location</label>
-                      {geoError && <div>{geoError}</div>}
+                      {/* {geoError && <div>{geoError}</div>} */}
                       <MapContainer
                         center={position || [13.736717, 100.523186]}
                         zoom={13}
@@ -607,8 +617,8 @@ function HotelSearch() {
 
               <HotelData
                 hotelList={hotels}
-                startDate={startDate}
-                endDate={endDate}
+                startDate={formatDateToString(startDate)}
+                endDate={formatDateToString(endDate)}
               />
             </div>
           )}

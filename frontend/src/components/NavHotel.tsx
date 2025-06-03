@@ -7,20 +7,20 @@ const NavHotel: React.FC = () => {
   // State to manage username
   const [username, setUsername] = useState<string | null>(null);
   // State to manage user ID
-  const [userId, setUserId] = useState<string | null>(null);
+  // const [userId, setUserId] = useState<string | null>(null);
   // State to manage user role
-  const [role, setRole] = useState<string | null>("None");
+  // const [role, setRole] = useState<string | null>("None");
   const navigate = useNavigate();
 
   // Fetch user data from localStorage when component loads
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
-    const storedRole = localStorage.getItem('role');
-    const storedUserId = localStorage.getItem('userId');
+    // const storedRole = localStorage.getItem('role');
+    // const storedUserId = localStorage.getItem('userId');
     if (storedUsername) {
       setUsername(storedUsername);
-      setRole(storedRole);
-      setUserId(storedUserId);
+      // setRole(storedRole);
+      // setUserId(storedUserId);
     }
   }, [navigate]);
 
@@ -39,7 +39,6 @@ const NavHotel: React.FC = () => {
     localStorage.removeItem('profileID');
     localStorage.removeItem('name');
     setUsername("");
-    setUserId(null);
     navigate('/login');
   };
 

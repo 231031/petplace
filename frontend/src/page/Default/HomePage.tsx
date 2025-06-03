@@ -13,12 +13,12 @@ import { formatDateToString } from "../../helper/utils";
 
 function Home() {
     // State to manage hotels data
-    const [hotels, setHotels] = useState<any[]>([]);
+    // const [hotels, setHotels] = useState<any[]>([]);
     // State to manage date selection stage
     const [selectionStage, setSelectionStage] = useState<'start' | 'range'>('start');
     // State to manage start and end dates
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
 
     // Handle date click
     const handleDateClick = (clickedDate: Date) => {
@@ -48,7 +48,7 @@ function Home() {
     };
 
     // Add custom classes to calendar tiles
-    const tileClassName = ({ date, view }) => {
+    const tileClassName = ({ date, view }: any) => {
         if (view === 'month') {
             // Highlight start date
             if (startDate && date.toDateString() === startDate.toDateString()) {
@@ -73,7 +73,7 @@ function Home() {
     };
 
     // Disable past dates in the calendar
-    const tileDisabled = ({ date, view }) => {
+    const tileDisabled = ({ date, view }: any) => {
         return view === 'month' && date < new Date();
     };
 
@@ -82,28 +82,28 @@ function Home() {
     const navigate = useNavigate();
     const petOptions = ["Dog", "Cat", "Fish", "Bird", "Chinchilla", "Ferret", "Rabbit", "Hamster", "Hedgehog", "Sugar Glider"];
     const [selectedCageSizes, setSelectedCageSizes] = useState<{ [key: string]: string }>({});
-    const [rooms, setRooms] = useState<any[]>([]);
+    // const [rooms, setRooms] = useState<any[]>([]);
     const location = useLocation();
-    const [error, setError] = useState(''); // Form error
+    const [error, setError] = useState('');
     const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
-    const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
+    // const [markerPosition, setMarkerPosition] = useState<[number, number] | null>(null); // Track marker position
     const [position, setPosition] = useState<[number, number] | null>(null);
-    const [maplocation, setMapLocation] = useState({
-        long: '',
-        lat: '',
-    });
+    // const [maplocation, setMapLocation] = useState({
+    //     long: '',
+    //     lat: '',
+    // });
 
     const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
 
     // Create sets to collect unique values
-    const uniqueAnimalTypes = new Set<string>();
-    const uniqueFacilities = new Set<string>();
+    // const uniqueAnimalTypes = new Set<string>();
+    // const uniqueFacilities = new Set<string>();
 
     // Iterate through rooms to populate sets
-    rooms.forEach((room) => {
-        if (room.animal_type) uniqueAnimalTypes.add(room.animal_type);
-        if (room.facility) uniqueFacilities.add(room.facility);
-    });
+    // rooms.forEach((room) => {
+    //     if (room.animal_type) uniqueAnimalTypes.add(room.animal_type);
+    //     if (room.facility) uniqueFacilities.add(room.facility);
+    // });
 
     // Handle cage selection
     const handleCageSelect = (cage: Cage) => {
@@ -113,8 +113,8 @@ function Home() {
             facility: cage.facility,
             price: cage.price.toString(),
             max_capacity: cage.max_capacity.toString(),
-            startDate: startDate,
-            endDate: endDate
+            startDate: startDate ? startDate.toISOString() : '',
+            endDate: endDate ? endDate.toISOString() : ''
         }).toString();
 
         // Navigate with query parameters
@@ -143,7 +143,7 @@ function Home() {
             user_id: Number(userId),
         };
         try {
-            const response = await RemoveFavCage(favPayload);
+            await RemoveFavCage(favPayload);
             window.location.reload();
         } catch (error) {
             console.error("Error delete your favorites:", error);
@@ -167,10 +167,10 @@ function Home() {
     };
 
     // Handle location change
-    const handleLocationChange = (lat: number, lng: number) => {
-        setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
-        setMarkerPosition([lat, lng]); // Update the marker position
-    };
+    // const handleLocationChange = (lat: number, lng: number) => {
+    // setMapLocation({ ...location, lat: lat.toString(), long: lng.toString() });
+    // setMarkerPosition([lat, lng]); // Update the marker position
+    // };
 
     // Marker component to display selected location
     const LocationMarker = () => {
@@ -216,11 +216,12 @@ function Home() {
                 (position) => {
                     const { latitude, longitude } = position.coords;
                     setPosition([latitude, longitude]);
-                    handleLocationChange(latitude, longitude); // Update formData with initial position
+                    // handleLocationChange(latitude, longitude); // Update formData with initial position
 
                 },
-                (err) => {
+                () => {
                     setError('Unable to retrieve your location.');
+                    console.log(error)
                 }
             );
         } else {
@@ -237,6 +238,7 @@ function Home() {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
+                    setGeoError(null);
                     setPosition([latitude, longitude]);
                     setSearchedPosition([latitude, longitude]); // Default search position
                 },
@@ -255,7 +257,9 @@ function Home() {
 
     // State to manage favorite data and loading state
     const [favData, setFavData] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
+
+    const baseApi = import.meta.env.VITE_BASEAPI;
 
     // Fetch favorite cages
     useEffect(() => {
@@ -269,7 +273,7 @@ function Home() {
                 const [latitude, longitude] = position || [13.736717, 100.523186];
 
                 // Construct the API URL
-                const apiUrl = `http://localhost:5000/api/user/fav/${userId}?latitude=${latitude}&longitude=${longitude}`;
+                const apiUrl = `${baseApi}/user/fav/${userId}?latitude=${latitude}&longitude=${longitude}`;
 
                 // Fetch data
                 const response = await fetch(apiUrl, {
@@ -286,9 +290,10 @@ function Home() {
                 setFavData(data); // Update state with fetched data
             } catch (err) {
                 console.error("Error fetching user favorites:", err);
-            } finally {
-                setLoading(false); // Stop the loading spinner
             }
+            // finally {
+            //     setLoading(false); // Stop the loading spinner
+            // }
         };
 
         fetchFavorites();
@@ -299,11 +304,11 @@ function Home() {
         const map = useMap();
 
         useEffect(() => {
-            const geocoder = L.Control.geocoder({
-                defaultMarkGeocode: false, // Do not mark automatically
+            const geocoder = (L.Control as any).geocoder({
+                defaultMarkGeocode: false,
             }).addTo(map);
 
-            geocoder.on('markgeocode', (e) => {
+            geocoder.on('markgeocode', (e: any) => {
                 const latlng = e.geocode.center;
                 setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
                 map.setView(latlng, 13); // Center the map on the searched location
@@ -335,7 +340,6 @@ function Home() {
 
         try {
             const results = await GetSearchCage(filterAnimal, filterSearchCage);
-            setHotels(results.data);
             navigate('/hotelsearch', {
                 state: {
                     hotels: results,

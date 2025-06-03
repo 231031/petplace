@@ -4,13 +4,14 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function PaymentSelect() {
     // State to manage selected payment method
-    const [select, setSelect] = useState<number | null>(0);
+    // const [select, setSelect] = useState<number | null>(0);
     // State to manage payment details
     const [paymentDetails, setPaymentDetails] = useState({
         cardName: '',
         cardNumber: '',
         expiry: '',
-        cvv: ''
+        cvv: '',
+        cardType: '',
     });
     // State to manage error messages
     const [error, setError] = useState('');
@@ -22,18 +23,31 @@ export default function PaymentSelect() {
     const profile_name = location.state?.hotelName;
 
     // Handle payment method selection
-    const handleSelect = (choice: number) => {
-        setSelect(choice);
-    };
+    // const handleSelect = (choice: number) => {
+    //     setSelect(choice);
+
+    // };
 
     // Handle input change for payment details
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const { name, value } = e.target;
+    //     setPaymentDetails(prev => ({
+    //         ...prev,
+    //         [name]: value
+    //     }));
+    // };
+
+    const handleInputChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
         const { name, value } = e.target;
         setPaymentDetails(prev => ({
             ...prev,
             [name]: value
         }));
     };
+
+    const baseApi = import.meta.env.VITE_BASEAPI;
 
     // Handle booking confirmation
     const handleBooking = async () => {
@@ -101,7 +115,7 @@ export default function PaymentSelect() {
             }
 
             // Send booking request to the server
-            const response = await fetch("http://localhost:5000/api/hotel/client/booking", {
+            const response = await fetch(`${baseApi}/hotel/client/booking`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -117,7 +131,7 @@ export default function PaymentSelect() {
                 return;
             }
 
-            const data = await response.json();
+            await response.json();
             alert("Booking successful!");
         } catch (error) {
             console.error("Error:", (error as any).message);

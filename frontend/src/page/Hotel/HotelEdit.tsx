@@ -22,7 +22,7 @@ const HotelDetailPage = () => {
     const [newFacility, setNewFacility] = useState("");
     const [images, setImages] = useState<UploadRes[]>([]);
     const [position, setPosition] = useState<[number, number] | null>(null);
-    const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
+    // const [geoError, setGeoError] = useState<string | null>(null); // Geolocation error
     const [searchedPosition, setSearchedPosition] = useState<[number, number] | null>(null); // Position from search or click
 
     // Fetch profile data when component mounts
@@ -65,16 +65,17 @@ const HotelDetailPage = () => {
 
     // Geocoder component to search for locations
     const MapWithGeocoder = () => {
-    const map = useMap();
+        const map = useMap();
 
         useEffect(() => {
-            const geocoder = L.Control.geocoder({
-                defaultMarkGeocode: false, // Do not mark automatically
+            const geocoder = (L.Control as any).geocoder({
+                defaultMarkGeocode: false,
             }).addTo(map);
 
-            geocoder.on('markgeocode', (e) => {
+            geocoder.on('markgeocode', (e: any) => {
                 const latlng = e.geocode.center;
                 setSearchedPosition([latlng.lat, latlng.lng]); // Store searched position
+                setPosition([latlng.lat, latlng.lng])
                 map.setView(latlng, 13); // Center the map on the searched location
             });
 
@@ -140,8 +141,8 @@ const HotelDetailPage = () => {
                 paypal_email: paypalEmail,
                 check_in: checkin,
                 check_out: checkout,
-                latitude: searchedPosition[0] || 0,
-                longitude: searchedPosition[1] || 0,
+                longitude: searchedPosition ? searchedPosition[1] : 0, // Remove JSON.stringify
+                latitude: searchedPosition ? searchedPosition[0] : 0,  // Remove JSON.stringify
                 role: "hotel",
                 tel: profile.profile.tel || "",
                 facility_array: facilities,
@@ -220,7 +221,7 @@ const HotelDetailPage = () => {
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">Select on map</label>
-                            {geoError && <div>{geoError}</div>}
+                            {/* {geoError && <div>{geoError}</div>} */}
                             <MapContainer
                                 center={position || [13.736717, 100.523186]}
                                 zoom={13}

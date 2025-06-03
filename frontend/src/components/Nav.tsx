@@ -7,20 +7,20 @@ const Nav: React.FC = () => {
   // State to manage username
   const [username, setUsername] = useState<string | null>(null);
   // State to manage user ID
-  const [userId, setUserId] = useState<string | null>(null);
+  // const [userId, setUserId] = useState<string | null>(null);
   // State to manage user role
-  const [role, setRole] = useState<string | null>("None");
+  // const [role, setRole] = useState<string | null>("None");
   const navigate = useNavigate();
 
   // Fetch user data from localStorage when component loads
   useEffect(() => {
     const storedUsername = localStorage.getItem('username');
-    const storedRole = localStorage.getItem('role');
-    const storedUserId = localStorage.getItem('userId');
+    // const storedRole = localStorage.getItem('role');
+    // const storedUserId = localStorage.getItem('userId');
     if (storedUsername) {
       setUsername(storedUsername);
-      setRole(storedRole);
-      setUserId(storedUserId);
+      // setRole(storedRole);
+      // setUserId(storedUserId);
     }
   }, [navigate]);
 
@@ -39,7 +39,6 @@ const Nav: React.FC = () => {
     localStorage.removeItem('profileID');
     localStorage.removeItem('name');
     setUsername("");
-    setUserId(null);
     navigate('/login');
   };
 
@@ -63,7 +62,7 @@ const Nav: React.FC = () => {
 
           {/* Profile Icon */}
           <div className="flex items-center space-x-4">
-            {username ? (
+            {localStorage.getItem("token") ? (
               <button className="text-white text-sm bg-navname w-fit p-2 rounded-lg">{username}</button> // Display username if logged in
             ) : (
               <a href="/login" className="text-white">Log in</a> // Display login link if not logged in

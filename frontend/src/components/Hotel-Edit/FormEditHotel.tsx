@@ -1,4 +1,4 @@
-import { Cage, UploadRes } from "@/types/response";
+import { UploadRes } from "@/types/response";
 import { UpdateCage } from "@/helper/cage";
 import UploadImage from "@/components/UploadImage";
 import { useState } from "react";
@@ -8,7 +8,6 @@ import { useEffect } from "react";
 
 const FormEditHotel = () => {
     const navigate = useNavigate();
-    const [profile, setProfile] = useState<Cage | null>(null);
     const [roomName, setRoomName] = useState("");
     const [description, setDescription] = useState("");
     const [capacity, setCapacity] = useState("");
@@ -19,11 +18,12 @@ const FormEditHotel = () => {
     const [facilities, setFacilities] = useState<string[]>(["Air condition", "Live video", "Pet fountain"]);
     const [newFacility, setNewFacility] = useState("");
     const [images, setImages] = useState<UploadRes[]>([]);
+    const baseApi = import.meta.env.VITE_BASEAPI;
 
     useEffect(() => {
         const token = localStorage.getItem("token");
         const id = localStorage.getItem("userId");
-        fetch(`http://localhost:5000/api/cageroom/all/${id}`, {
+        fetch(`${baseApi}/cageroom/all/${id}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,

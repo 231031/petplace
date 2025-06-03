@@ -4,8 +4,6 @@ import UploadImage from "@/components/CreateProfile/UploadImage";
 import { UploadRes } from '@/types/response';
 
 export default function MyProfile() {
-    // State to manage profile data
-    const [profile, setProfileData] = useState<any>(null);
     // State to manage loading status
     const [isLoading, setIsLoading] = useState<boolean>(true);
     // State to manage edit mode
@@ -21,12 +19,13 @@ export default function MyProfile() {
 
     const token = localStorage.getItem('token');
     const id = localStorage.getItem('userId');
+    const baseApi = import.meta.env.VITE_BASEAPI;
 
     // Fetch profile data from API
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/user/${id}`, {
+                const response = await axios.get(`${baseApi}/user/${id}`, {
                     headers: {
                         "accept": "application/json",
                         'Content-Type': 'application/json',
@@ -34,7 +33,6 @@ export default function MyProfile() {
                     },
                 });
                 const data = response.data;
-                setProfileData(data);
                 setFormData({
                     first_name: data.first_name,
                     surename: data.surename,
@@ -85,7 +83,7 @@ export default function MyProfile() {
     // Save updated pet profile
     const savePetProfile = async () => {
         try {
-            const response = await axios.put(`http://localhost:5000/api/user/animal/${id}`, pet, {
+            await axios.put(`${baseApi}/user/animal/${id}`, pet, {
                 headers: {
                     "accept": "application/json",
                     'Content-Type': 'application/json',
@@ -103,7 +101,7 @@ export default function MyProfile() {
     useEffect(() => {
         const fetchPetData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/user/animal/${id}`, {
+                const response = await axios.get(`${baseApi}/user/animal/${id}`, {
                     headers: {
                         "accept": "application/json",
                         'Content-Type': 'application/json',
@@ -130,7 +128,7 @@ export default function MyProfile() {
     const saveProfile = async () => {
         try {
             formData.age = parseInt(formData.age);
-            const response = await axios.put(`http://localhost:5000/api/user/${id}`, formData, {
+            await axios.put(`${baseApi}/user/${id}`, formData, {
                 headers: {
                     "accept": "application/json",
                     'Content-Type': 'application/json',
@@ -175,7 +173,7 @@ export default function MyProfile() {
                                             </div>
                                             <button
                                                 onClick={handleRemoveImage}
-                                                className="absolute top-1 right-1 bg-red-500 text-white text-xs rounded-full text-2xl"
+                                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full text-2xl"
                                             >
                                                 x
                                             </button>

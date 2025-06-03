@@ -7,6 +7,7 @@ function HotelResponseReject() {
     // State to manage error messages
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const baseApi = import.meta.env.VITE_BASEAPI;
 
     // Fetch rejected hotel reservations when the component mounts
     useEffect(() => {
@@ -15,11 +16,12 @@ function HotelResponseReject() {
 
         if (!id) {
             setError("User ID not found");
+            console.log(error)
             return;
         }
 
         // Fetch rejected hotel reservations
-        fetch(`http://localhost:5000/api/hotel/${id}/rejected`, {
+        fetch(`${baseApi}/hotel/${id}/rejected`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,

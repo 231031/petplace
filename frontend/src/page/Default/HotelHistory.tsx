@@ -1,31 +1,33 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import HotelData from "@/components/Hotel-History/HotelData";
 import HotelDataPass from "@/components/Hotel-History/HotelDataPass";
 import { useEffect, useState } from "react";
 
 function HotelHistory() {
-  const location = useLocation();
+  // const location = useLocation();
   const navigate = useNavigate();
-  const selectedCage = location.state?.selectedCage;
+  // const selectedCage = location.state?.selectedCage;
   const token = localStorage.getItem("token");
   const storedUserId = localStorage.getItem('userId');
-  const storedUserName = localStorage.getItem('username');
+  // const storedUserName = localStorage.getItem('username');
   const [hotelServiceUsers, setHotelServiceUsers] = useState([]);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
+
+  const baseApi = import.meta.env.VITE_BASEAPI;
 
   // Fetch data using async function within useEffect
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/login");
     }
-    const fetchHotelServiceUsers = async (userId: string) => {
+    const fetchHotelServiceUsers = async (userId: string | null) => {
       try {
         if (!userId || !token) {
           throw new Error("Missing userId or token.");
         }
 
         // Define the API URL, replacing the static client ID with the dynamic userId
-        const apiUrl = `http://localhost:5000/api/hotel/client/${userId}`;
+        const apiUrl = `${baseApi}/hotel/client/${userId}`;
 
         // Sending the fetch request
         const response = await fetch(apiUrl, {
@@ -47,7 +49,8 @@ function HotelHistory() {
 
       } catch (err) {
         if (err) {
-          setError(err);  // Set error state
+          // setError(err);  // Set error state
+          console.log(err);
         }
       }
     };

@@ -1,7 +1,7 @@
 export default function Footer() {
 
     return (
-        <div className="flex flex-col h-40 w-full bg-navbar flex justify-start pt-2 items-center">
+        <div className="flex flex-col h-40 w-full bg-navbar justify-start pt-2 items-center">
             <div className="flex w-full h-">
                 <div className="flex flex-col w-1/2 justify-center items-end pl-5 text-white">
                     <h1> Our Service</h1>

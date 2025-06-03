@@ -16,6 +16,8 @@ const RoomDetailPage = () => {
     // State to manage filtered cage data
     const [filteredCageData, setFilteredCageData] = useState<any>({});
     const navigate = useNavigate();
+    const isButtonDisabled = !selectedAnimal || Boolean(selectedCage);
+    const baseApi = import.meta.env.VITE_BASEAPI;
 
     // Fetch cage room data when component mounts
     useEffect(() => {
@@ -31,7 +33,7 @@ const RoomDetailPage = () => {
 
         const fetchCageRoomType = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/cageroom/type/${profileId}`, {
+                const response = await fetch(`${baseApi}/cageroom/type/${profileId}`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -63,7 +65,7 @@ const RoomDetailPage = () => {
         if (cageRoomId) {
             try {
                 const token = localStorage.getItem("token");
-                const response = await fetch(`http://localhost:5000/api/cageroom/${cageRoomId}`, {
+                const response = await fetch(`${baseApi}/cageroom/${cageRoomId}`, {
                     method: "GET",
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -221,7 +223,7 @@ const RoomDetailPage = () => {
             width: parseFloat(filteredCageData.width),
         };
 
-        fetch(`http://localhost:5000/api/cageroom`, {
+        fetch(`${baseApi}/cageroom`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -307,9 +309,9 @@ const RoomDetailPage = () => {
                                     ))}
                         </select>
                         <button
-                            className={`text-gray-500 p-2 rounded-lg ${!selectedAnimal || selectedCage ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            className={`text-gray-500 p-2 rounded-lg ${isButtonDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                             onClick={handleCreateRoom}
-                            disabled={!selectedAnimal || selectedCage}
+                            disabled={isButtonDisabled}
                         >
                             Create New Cage
                         </button>

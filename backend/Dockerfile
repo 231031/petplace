@@ -6,7 +6,7 @@ WORKDIR /app/go
 RUN apk update && apk add --no-cache git curl
 
 # Install air using Go
-RUN go install github.com/air-verse/air@latest
+RUN go install github.com/air-verse/air@v1.61.0
 
 COPY . .
 
@@ -19,7 +19,7 @@ RUN mkdir -p public/uploads
 # RUN go build -o cmd/main/main ./cmd/*/*.go
 
 # Expose the port the application will run on
-EXPOSE 5000
+EXPOSE 50001
 
 # Run
 CMD ["air", "-c", ".air.toml"]
