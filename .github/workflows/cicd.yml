@@ -16,28 +16,6 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v4
 
-      - name: Create .env file
-        run: |
-          echo "DATABASE_PORT=${{ secrets.DATABASE_PORT }}" >> .env
-          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
-          echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}" >> .env
-          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
-          echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> .env
-          echo "DATABASE_ROOT_PASSWORD=${{ secrets.DATABASE_ROOT_PASSWORD }}" >> .env
-          echo "CLIENT_ID=${{ secrets.CLIENT_ID }}" >> .env
-          echo "SECRET_ID=${{ secrets.SECRET_ID }}" >> .env
-          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
-          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
-          echo "GOOGLE_API_INFO=${{ vars.GOOGLE_API_INFO }}" >> .env
-          echo "FRONT_URL=${{ vars.FRONT_URL }}" >> .env
-          echo "GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }}" >> .env
-          echo "PORT=${{ secrets.PORT }}" >> .env
-          echo "VITE_BASEAPI=${{ secrets.VITE_BASEAPI }}" >> .env
-          echo "VITE_GOOGLE_REDIRECT_URL=${{ secrets.VITE_GOOGLE_REDIRECT_URL }}" >> .env
-          echo "VITE_OAUTH_CLIENT_ID=${{ secrets.VITE_OAUTH_CLIENT_ID }}" >> .env
-          echo "VITE_PUBLIC_API_KEY=${{ secrets.VITE_PUBLIC_API_KEY }}" >> .env
-
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -78,6 +56,29 @@ jobs:
     needs: build
     runs-on: self-hosted
     steps:
+      - name: Create .env file
+        run: |
+          echo "DATABASE_PORT=${{ secrets.DATABASE_PORT }}" >> .env
+          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
+          echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}" >> .env
+          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> .env
+          echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> .env
+          echo "DATABASE_ROOT_PASSWORD=${{ secrets.DATABASE_ROOT_PASSWORD }}" >> .env
+          echo "CLIENT_ID=${{ secrets.CLIENT_ID }}" >> .env
+          echo "SECRET_ID=${{ secrets.SECRET_ID }}" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+          echo "GOOGLE_API_INFO=${{ vars.GOOGLE_API_INFO }}" >> .env
+          echo "FRONT_URL=${{ vars.FRONT_URL }}" >> .env
+          echo "GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }}" >> .env
+          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "VITE_BASEAPI=${{ secrets.VITE_BASEAPI }}" >> .env
+          echo "VITE_GOOGLE_REDIRECT_URL=${{ secrets.VITE_GOOGLE_REDIRECT_URL }}" >> .env
+          echo "VITE_OAUTH_CLIENT_ID=${{ secrets.VITE_OAUTH_CLIENT_ID }}" >> .env
+          echo "VITE_PUBLIC_API_KEY=${{ secrets.VITE_PUBLIC_API_KEY }}" >> .env
+          echo "DOCKER_TAG=${{ vars.DOCKER_TAG }}" >> .env
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
