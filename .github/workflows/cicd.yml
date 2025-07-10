@@ -57,6 +57,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Create .env file
+        working-directory: ./
         run: |
           echo "DATABASE_PORT=${{ secrets.DATABASE_PORT }}" >> .env
           echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> .env
@@ -90,6 +91,7 @@ jobs:
         run: docker-compose down
 
       - name: Deploy to server
+        working-directory: ./
         run: |
           sed -i 's/^DOCKER_TAG=.*/DOCKER_TAG=${{ needs.build.outputs.docker_tag }}/' .env
           docker-compose -f docker-compose.prod.yml up -d

@@ -1,6 +1,6 @@
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import { useState, useEffect, useRef } from 'react';
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import { useState, useEffect, useRef } from "react";
 
 interface MapProps {
   latitude?: number;
@@ -23,16 +23,16 @@ const Map = ({ latitude, longitude }: MapProps) => {
           (position) => {
             const { latitude, longitude } = position.coords;
             setPosition([latitude, longitude]); // Set user's position
-            console.log(position.coords);
+            // console.log(position.coords);
           },
           () => {
-            setError('Unable to retrieve your location.');
+            setError("Unable to retrieve your location.");
             // Default to Bangkok if geolocation fails
             setPosition([13.736717, 100.523186]);
           }
         );
       } else {
-        setError('Geolocation is not supported by this browser.');
+        setError("Geolocation is not supported by this browser.");
         setPosition([13.736717, 100.523186]); // Default to Bangkok if geolocation is not supported
       }
     }
@@ -43,7 +43,7 @@ const Map = ({ latitude, longitude }: MapProps) => {
     useMapEvents({
       click(e) {
         setPosition([e.latlng.lat, e.latlng.lng]); // Update position on map click
-        console.log(`New position: ${e.latlng.lat}, ${e.latlng.lng}`);
+        // console.log(`New position: ${e.latlng.lat}, ${e.latlng.lng}`);
       },
     });
     return <Marker position={position || [13.736717, 100.523186]} />;
@@ -60,7 +60,7 @@ const Map = ({ latitude, longitude }: MapProps) => {
       <MapContainer
         center={position}
         zoom={13}
-        style={{ height: '100%', width: '100%' }}
+        style={{ height: "100%", width: "100%" }}
         ref={mapRef}
         whenReady={() => {
           const map = mapRef.current;

@@ -8,10 +8,11 @@ RUN go mod tidy
 
 COPY . .
 
-RUN go build -o main ./cmd/main/main.go
+RUN go build -o main ./cmd/main
 
-RUN chmod +x ./cmd/main/main
+RUN chmod +x ./app/main
 
+# Expose port
 EXPOSE 50001
 
-CMD [ "./cmd/main/main" ]
+CMD ["/app/main"]
