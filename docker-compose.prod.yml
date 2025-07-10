@@ -1,0 +1,28 @@
+services:
+  petplace_backend:
+    container_name: petplace-backend
+    image: ghcr.io/petplace/petplace_backend:latest
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - "50001:50001"
+    networks:
+      - petplace_nw
+
+  petplace_frontend:
+    container_name: petplace-frontend
+    image: ghcr.io/petplace/petplace_frontend:latest
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - petplace_backend
+    networks:
+      - petplace_nw
+
+networks:
+  petplace_nw:
+    driver: bridge

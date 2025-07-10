@@ -1,69 +1,72 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function SelectProfile() {
   const navigate = useNavigate();
   const location = useLocation();
 
   // State to manage profile image
-  const [image, setImage] = useState(localStorage.getItem('clientImage') || '');
+  const [image, setImage] = useState(localStorage.getItem("clientImage") || "");
   // State to manage hotel data
   const [hotel, setHotel] = useState({
-    name: '',
-    email: '',
-    check_in: '',
-    check_out: '',
-    facility_array: '',
-    avg_review: '',
+    name: "",
+    email: "",
+    check_in: "",
+    check_out: "",
+    facility_array: "",
+    avg_review: "",
     image_array: [],
-    image_profile: '',
-    role: ''
+    image_profile: "",
+    role: "",
   });
   // State to track fetch failure
   const [fetchFailed, setFetchFailed] = useState(false);
 
-  const id = localStorage.getItem('userId');
-  const username = localStorage.getItem('username');
-  const token = localStorage.getItem('token');
+  const id = localStorage.getItem("userId");
+  const username = localStorage.getItem("username");
+  const token = localStorage.getItem("token");
+  const baseApi = import.meta.env.VITE_BASEAPI;
 
   // Fetch profile and hotel data when component mounts
   useEffect(() => {
-    if (!localStorage.getItem('token')) {
-      navigate('/login');
+    if (!localStorage.getItem("token")) {
+      navigate("/login");
     }
 
     // If image is provided in location.state, update and persist it
     if (location.state && location.state.image_profile) {
       setImage(location.state.image_profile);
-      localStorage.setItem('clientImage', location.state.image_profile);
-      console.log('Updated client image from location:', location.state.image_profile);
+      localStorage.setItem("clientImage", location.state.image_profile);
+      console.log(
+        "Updated client image from location:",
+        location.state.image_profile
+      );
     }
 
-    fetch(`http://localhost:5000/api/profile/${id}`, {
-      method: 'GET',
+    fetch(`${baseApi}/profile/${id}`, {
+      method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: 'application/json'
-      }
+        Accept: "application/json",
+      },
     })
       .then((response) => {
-        if (!response.ok) throw new Error('Failed to fetch data');
+        if (!response.ok) throw new Error("Failed to fetch data");
         return response.json();
       })
       .then((data) => {
-        console.log('Fetched hotel data:', data);
+        console.log("Fetched hotel data:", data);
         setHotel(data[0]);
       })
       .catch((error) => {
-        console.error('Error fetching hotel data:', error);
+        console.error("Error fetching hotel data:", error);
         setFetchFailed(true); // Mark fetch as failed
       });
   }, [id, location.state]);
 
   // State to manage form data
   // const [formData, setFormData] = useState<any>(null);
-  const baseApi = import.meta.env.VITE_BASEAPI;
 
   // Fetch user profile data when component mounts
   useEffect(() => {
@@ -75,9 +78,9 @@ export default function SelectProfile() {
       try {
         const response = await axios.get(`${baseApi}/user/${id}`, {
           headers: {
-            "accept": "application/json",
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         });
         const data = response.data;
@@ -97,17 +100,17 @@ export default function SelectProfile() {
 
   // Handle click to navigate to HotelHome
   const handleClick = () => {
-    navigate('/hotelhome');
+    navigate("/hotelhome");
   };
 
   // Handle click to navigate to home with client role
   const handleClickHome = () => {
-    navigate('/', { state: { role: "client" } });
+    navigate("/", { state: { role: "client" } });
   };
 
   // Handle click to navigate to CreateProfile
   const handleCreateProfile = () => {
-    navigate('/CreateProfile');
+    navigate("/CreateProfile");
   };
 
   return (
@@ -131,7 +134,7 @@ export default function SelectProfile() {
               </div>
               <div className="flex justify-center mt-5 gap-x-3">
                 <p> Client Profile </p>
-                <p className='text-white font-black'> | </p>
+                <p className="text-white font-black"> | </p>
                 <p> {username} </p>
               </div>
             </div>
@@ -151,7 +154,7 @@ export default function SelectProfile() {
                 </div>
                 <div className="flex justify-center mt-5 gap-x-3">
                   <p> Hotel Owner</p>
-                  <p className='text-white font-black'> | </p>
+                  <p className="text-white font-black"> | </p>
                   <p> {hotel.name} </p>
                 </div>
               </div>
@@ -165,7 +168,7 @@ export default function SelectProfile() {
               onClick={handleCreateProfile}
             >
               <p>Create Profile</p>
-              <i className="fa-regular fa-plus" style={{ color: 'gray' }}></i>
+              <i className="fa-regular fa-plus" style={{ color: "gray" }}></i>
             </div>
           </div>
         </div>

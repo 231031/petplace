@@ -1,19 +1,21 @@
 services:
-  # nginx:
-  #   container_name: petplace-test-nginx
-  #   image: nginx:alpine
-  #   ports:
-  #     - 80:80
-  #   restart: unless-stopped
-  #   volumes:
-  #     - ./nginx/conf.d/:/etc/nginx/conf.d/:ro
-  #     - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh:ro
-  #   entrypoint: ["/bin/sh", "/docker-entrypoint.sh"]
-  #   depends_on:
-  #     - petplace_backend
-  #     - petplace_frontend
-  #   networks:
-  #     - petplace_test_networks
+  nginx:
+    container_name: petplace-test-nginx
+    image: nginx:alpine
+    ports:
+      - 80:80
+    restart: unless-stopped
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d/:ro
+      - ./nginx/docker-entrypoint.sh:/docker-entrypoint.sh:ro
+    entrypoint: ["/bin/sh", "/docker-entrypoint.sh"]
+    depends_on:
+      - petplace_backend
+      - petplace_frontend
+      - petplace_test_db
+    networks:
+      - petplace_test_networks
+
   petplace_backend:
     container_name: petplace-backend
     # image: 231031/petplace_backend:latest
@@ -24,7 +26,7 @@ services:
       - .env
     restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "50001:50001"
     depends_on:
       - petplace_test_db
     networks:

@@ -7,10 +7,11 @@ on:
 
 jobs:
   build:
-    runs-on: amazon-linux
+    runs-on: ubuntu
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
+
       - name: Create .env file
         run: |
           echo "DATABASE_PORT=${{ secrets.DATABASE_PORT }}" >> .env
@@ -25,22 +26,63 @@ jobs:
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
           echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
           echo "GOOGLE_API_INFO=${{ vars.GOOGLE_API_INFO }}" >> .env
-          echo "GOOGLE_API_INFO=${{ vars.FRONT_URL }}" >> .env
+          echo "FRONT_URL=${{ vars.FRONT_URL }}" >> .env
+          echo "GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }}" >> .env
+          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "VITE_BASEAPI=${{ secrets.VITE_BASEAPI }}" >> .env
+          echo "VITE_GOOGLE_REDIRECT_URL=${{ secrets.VITE_GOOGLE_REDIRECT_URL }}" >> .env
+          echo "VITE_OAUTH_CLIENT_ID=${{ secrets.VITE_OAUTH_CLIENT_ID }}" >> .env
+          echo "VITE_PUBLIC_API_KEY=${{ secrets.VITE_PUBLIC_API_KEY }}" >> .env
 
-      - name: Login to docker hub
-        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-      - name: Build docker all images
-        run: docker-compose build
-      - name: Push images to docker hub
-        run: docker-compose push
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker images backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ../../backend/Dockerfile.prod
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/petplace_backend:latest
+            ghcr.io/${{ github.repository }}/petplace_backend:${{ github.sha }}
+
+      - name: Build and push Docker images frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ../../frontend/Dockerfile.prod
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/petplace_frontend:latest
+            ghcr.io/${{ github.repository }}/petplace_frontend:${{ github.sha }}
+
   deploy:
     needs: build
     runs-on: self-hosted
     steps:
-      - name: Pull docker images
-        run: docker-compose pull
-      - name: Delete old docker container
-        run: docker-compose down
-      - name: Run docker container
-        run: docker-compose up -d
+      steps:
+        - name: Delete old docker container
+          run: docker-compose down
+        - name: Deploy to server
+          run: |
+            sed -i 's/^DOCKER_TAG=.*/DOCKER_TAG=${{ needs.build-push-image.outputs.date }}/' .env
+            docker compose -f docker-compose.prod.yml up -d
 
+        # - name: Set up SSH
+        #   uses: webfactory/ssh-agent@v0.9.0
+        #   with:
+        #     ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+        # - name: Add remote server to known_hosts
+        #   run: |
+        #     ssh-keyscan ${{ secrets.SERVER_USER }}@${{ secrets.REMOTE_SERVER }} >> ~/.ssh/known_hosts    # Replace user@REMOTE_SERVER
+
+        # - name: Deploy to server
+        #   run: |
+        #     ssh ${{ secrets.SERVER_USER }}@${{ secrets.REMOTE_SERVER }} << 'EOF'                         # Replace user@remote_server
+        #       sed -i 's/^DOCKER_TAG=.*/DOCKER_TAG=${{ needs.build-push-image.outputs.date }}/' .env
+        #       docker compose up -d
+        #     EOF
