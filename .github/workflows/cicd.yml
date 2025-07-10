@@ -10,8 +10,7 @@ jobs:
     runs-on: ubuntu
     permissions:
       packages: write
-    outputs:
-      docker_tag: ${{ steps.set_tag.outputs.tag }}
+
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
@@ -26,6 +25,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Set Docker tag output (short SHA with timestamp)
+        id: set_tag
+        run: |
+          SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          TAG="$SHORT_SHA-$TIMESTAMP"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
       - name: Build and push Docker images backend
         id: build-backend
         uses: docker/build-push-action@v5
@@ -35,7 +42,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}/petplace_backend:latest
-            ghcr.io/${{ github.repository }}/petplace_backend:${{ github.sha }}
+            ghcr.io/${{ github.repository }}/petplace_backend:${{ steps.set_tag.outputs.tag }}
 
       - name: Build and push Docker images frontend
         id: build-frontend
@@ -46,11 +53,10 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository }}/petplace_frontend:latest
-            ghcr.io/${{ github.repository }}/petplace_frontend:${{ github.sha }}
+            ghcr.io/${{ github.repository }}/petplace_frontend:${{ steps.set_tag.outputs.tag }}
 
-      - name: Set Docker tag output
-        id: set_tag
-        run: echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+    outputs:
+      docker_tag: ${{ steps.set_tag.outputs.tag }}
 
   deploy:
     needs: build
