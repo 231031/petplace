@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu
+    outputs:
+      docker_tag: ${{ steps.set_tag.outputs.tag }}
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
@@ -42,34 +44,41 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker images backend
+        id: build-backend
         uses: docker/build-push-action@v5
         with:
-          context: ../../backend/Dockerfile.prod
+          context: ./backend
+          file: ./backend/Dockerfile.prod
           push: true
           tags: |
             ghcr.io/${{ github.repository }}/petplace_backend:latest
             ghcr.io/${{ github.repository }}/petplace_backend:${{ github.sha }}
 
       - name: Build and push Docker images frontend
+        id: build-frontend
         uses: docker/build-push-action@v5
         with:
-          context: ../../frontend/Dockerfile.prod
+          context: ./frontend
+          file: ./frontend/Dockerfile.prod
           push: true
           tags: |
             ghcr.io/${{ github.repository }}/petplace_frontend:latest
             ghcr.io/${{ github.repository }}/petplace_frontend:${{ github.sha }}
 
+      - name: Set Docker tag output
+        id: set_tag
+        run: echo "tag=${GITHUB_SHA}" >> $GITHUB_OUTPUT
+
   deploy:
     needs: build
     runs-on: self-hosted
     steps:
-      steps:
-        - name: Delete old docker container
-          run: docker-compose down
-        - name: Deploy to server
-          run: |
-            sed -i 's/^DOCKER_TAG=.*/DOCKER_TAG=${{ needs.build-push-image.outputs.date }}/' .env
-            docker compose -f docker-compose.prod.yml up -d
+      - name: Delete old docker container
+        run: docker-compose down
+      - name: Deploy to server
+        run: |
+          sed -i 's/^DOCKER_TAG=.*/DOCKER_TAG=${{ needs.build.outputs.docker_tag }}/' .env
+          docker compose -f docker-compose.prod.yml up -d
 
         # - name: Set up SSH
         #   uses: webfactory/ssh-agent@v0.9.0
