@@ -44,6 +44,14 @@ jobs:
             ghcr.io/${{ github.repository }}/petplace_backend:latest
             ghcr.io/${{ github.repository }}/petplace_backend:${{ steps.set_tag.outputs.tag }}
 
+      - name: Create .env production file
+        working-directory: ./frontend
+        run: |
+          echo "VITE_BASEAPI=${{ secrets.VITE_BASEAPI }}" >> .env.production
+          echo "VITE_GOOGLE_REDIRECT_URL=${{ secrets.VITE_GOOGLE_REDIRECT_URL }}" >> .env.production
+          echo "VITE_OAUTH_CLIENT_ID=${{ secrets.VITE_OAUTH_CLIENT_ID }}" >> .env.production
+          echo "VITE_PUBLIC_API_KEY=${{ secrets.VITE_PUBLIC_API_KEY }}" >> .env.production
+
       - name: Build and push Docker images frontend
         id: build-frontend
         uses: docker/build-push-action@v5
