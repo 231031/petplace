@@ -15,6 +15,23 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v4
 
+      - name: clean unncessary files to save space
+        run: |
+          docker image prune -f
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/sudo apt/sources.list.d
+          sudo apt -y autoremove --purge
+          sudo apt -y autoclean
+          sudo apt clean
+          rm --recursive --force "$AGENT_TOOLSDIRECTORY"
+
+      - name: Cleanup build folder
+        run: |
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
+          df -h
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -116,7 +133,6 @@ jobs:
           if docker ps --filter "name=petplace-backend" --filter "status=running" | grep -q petplace-backend \
             && docker ps --filter "name=petplace-frontend" --filter "status=running" | grep -q petplace-frontend; then
             echo "Containers are running successfully. Proceeding to cleanup..."
-            docker image prune -f
 
             docker image ls --format "{{.Repository}}:{{.Tag}} {{.ID}}" | while read -r image id; do
               if ! docker ps --format '{{.Image}}' | grep -q "$image"; then
