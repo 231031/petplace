@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { BASE_API } from "@/config/config";
 
 const FormEditHotel = () => {
   const navigate = useNavigate();
@@ -22,12 +23,11 @@ const FormEditHotel = () => {
   ]);
   const [newFacility, setNewFacility] = useState("");
   const [images, setImages] = useState<UploadRes[]>([]);
-  const baseApi = import.meta.env.VITE_BASEAPI;
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const id = localStorage.getItem("userId");
-    fetch(`${baseApi}/cageroom/all/${id}`, {
+    fetch(`${BASE_API}/cageroom/all/${id}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,

@@ -1,3 +1,4 @@
+import { BASE_API } from "@/config/config";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -26,7 +27,6 @@ export default function SelectProfile() {
   const id = localStorage.getItem("userId");
   const username = localStorage.getItem("username");
   const token = localStorage.getItem("token");
-  const baseApi = import.meta.env.VITE_BASEAPI;
 
   // Fetch profile and hotel data when component mounts
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function SelectProfile() {
       );
     }
 
-    fetch(`${baseApi}/profile/${id}`, {
+    fetch(`${BASE_API}/profile/${id}`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -76,7 +76,7 @@ export default function SelectProfile() {
 
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`${baseApi}/user/${id}`, {
+        const response = await axios.get(`${BASE_API}/user/${id}`, {
           headers: {
             accept: "application/json",
             "Content-Type": "application/json",

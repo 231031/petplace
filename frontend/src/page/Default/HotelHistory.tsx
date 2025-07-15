@@ -2,18 +2,17 @@ import { useNavigate } from "react-router-dom";
 import HotelData from "@/components/Hotel-History/HotelData";
 import HotelDataPass from "@/components/Hotel-History/HotelDataPass";
 import { useEffect, useState } from "react";
+import { BASE_API } from "@/config/config";
 
 function HotelHistory() {
   // const location = useLocation();
   const navigate = useNavigate();
   // const selectedCage = location.state?.selectedCage;
   const token = localStorage.getItem("token");
-  const storedUserId = localStorage.getItem('userId');
+  const storedUserId = localStorage.getItem("userId");
   // const storedUserName = localStorage.getItem('username');
   const [hotelServiceUsers, setHotelServiceUsers] = useState([]);
   // const [error, setError] = useState(null);
-
-  const baseApi = import.meta.env.VITE_BASEAPI;
 
   // Fetch data using async function within useEffect
   useEffect(() => {
@@ -27,26 +26,25 @@ function HotelHistory() {
         }
 
         // Define the API URL, replacing the static client ID with the dynamic userId
-        const apiUrl = `${baseApi}/hotel/client/${userId}`;
+        const apiUrl = `${BASE_API}/hotel/client/${userId}`;
 
         // Sending the fetch request
         const response = await fetch(apiUrl, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,  // Token from localStorage
-            "Content-Type": "application/json",  // Ensure content type is set to JSON
+            Authorization: `Bearer ${token}`, // Token from localStorage
+            "Content-Type": "application/json", // Ensure content type is set to JSON
           },
         });
 
         if (!response.ok) {
           if (response.status === 401) {
-            navigate("/login")
+            navigate("/login");
           }
         }
 
         const data = await response.json();
-        setHotelServiceUsers(data);  // Set the data to state
-
+        setHotelServiceUsers(data); // Set the data to state
       } catch (err) {
         if (err) {
           // setError(err);  // Set error state
@@ -55,8 +53,8 @@ function HotelHistory() {
       }
     };
 
-    fetchHotelServiceUsers(storedUserId);  // Call the function with storedUserId
-  }, []);  // Dependencies to run useEffect when userId or token changes
+    fetchHotelServiceUsers(storedUserId); // Call the function with storedUserId
+  }, []); // Dependencies to run useEffect when userId or token changes
 
   return (
     <div className="w-full max-w-7xl mx-auto mt-10">
@@ -81,23 +79,21 @@ function HotelHistory() {
         </a>
       </div>
 
-      {
-        (hotelServiceUsers.length > 0) ? (
-          <div>
-            <div className="ml-20">
-              <span className="text-2xl font-medium">Upcoming</span>
-              <HotelData hotelList={hotelServiceUsers || []}></HotelData>
-            </div>
-            <hr className="border-black mx-40" />
-            <div className="ml-20 mt-10">
-              <span className="text-2xl font-midium">Passed By</span>
-              <HotelDataPass hotelList={hotelServiceUsers || []}></HotelDataPass>
-            </div>
+      {hotelServiceUsers.length > 0 ? (
+        <div>
+          <div className="ml-20">
+            <span className="text-2xl font-medium">Upcoming</span>
+            <HotelData hotelList={hotelServiceUsers || []}></HotelData>
           </div>
-        ) : (
-          <div></div>
-        )
-      }
+          <hr className="border-black mx-40" />
+          <div className="ml-20 mt-10">
+            <span className="text-2xl font-midium">Passed By</span>
+            <HotelDataPass hotelList={hotelServiceUsers || []}></HotelDataPass>
+          </div>
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 }

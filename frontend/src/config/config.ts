@@ -1,0 +1,10 @@
+const BASE_API = window.__ENV__.VITE_BASEAPI ?? import.meta.env.VITE_BASEAPI;
+const PUBLIC_API_KEY =
+  window.__ENV__.VITE_PUBLIC_API_KEY ?? import.meta.env.VITE_PUBLIC_API_KEY;
+const OAUTH_CLIENT_ID =
+  window.__ENV__.VITE_OAUTH_CLIENT_ID ?? import.meta.env.VITE_OAUTH_CLIENT_ID;
+const GOOGLE_REDIRECT_URL =
+  window.__ENV__.VITE_GOOGLE_REDIRECT_URL ??
+  import.meta.env.VITE_GOOGLE_REDIRECT_URL;
+
+export { BASE_API, PUBLIC_API_KEY, OAUTH_CLIENT_ID, GOOGLE_REDIRECT_URL };

@@ -1,15 +1,14 @@
 import { FilterAnimal, FilterSearchCage } from "@/types/payload";
 import { MapArrayToQuery, RequestApi } from "./utils";
 import { CageRoom } from "@/types/model";
-
-const baseApi = import.meta.env.VITE_BASEAPI;
+import { BASE_API } from "@/config/config";
 
 export async function GetSearchCage(
   filterAnimal: FilterAnimal[],
   filterSearchCage: any
 ): Promise<any> {
   try {
-    let apiPath = baseApi + "/cageroom/search?";
+    let apiPath = BASE_API + "/cageroom/search?";
     let queryParams = "";
 
     queryParams = MapArrayToQuery(filterAnimal, filterSearchCage);
@@ -34,10 +33,16 @@ export async function GetSearchCageByHotel(
   filterAnimal: FilterAnimal[],
   filterSearchCage: FilterSearchCage,
   profile_id: number,
-  user_id: number,
+  user_id: number
 ): Promise<any> {
   try {
-    let apiPath = baseApi + "/cageroom/search/" + user_id.toString() + "/" + profile_id.toString() + "?";
+    let apiPath =
+      BASE_API +
+      "/cageroom/search/" +
+      user_id.toString() +
+      "/" +
+      profile_id.toString() +
+      "?";
     let queryParams = "";
 
     queryParams = MapArrayToQuery(filterAnimal, filterSearchCage);
@@ -58,37 +63,34 @@ export async function GetSearchCageByHotel(
   }
 }
 
-export async function UpdateCage(cage:CageRoom): Promise<any> {
+export async function UpdateCage(cage: CageRoom): Promise<any> {
   try {
-      let endpoint = `${baseApi}/cageroom/${cage.id}`;
-      return RequestApi(endpoint, "PUT", cage, 200);
-
-    } catch (error) {
-      return Promise.reject(error);
-    }
+    let endpoint = `${BASE_API}/cageroom/${cage.id}`;
+    return RequestApi(endpoint, "PUT", cage, 200);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }
 
-export async function RemoveCage(cage:CageRoom): Promise<any> {
+export async function RemoveCage(cage: CageRoom): Promise<any> {
   try {
-      let endpoint = `${baseApi}/cageroom/${cage.id}`;
-      return RequestApi(endpoint, "DELETE", cage, 200);
-
-    } catch (error) {
-      return Promise.reject(error);
-    }
+    let endpoint = `${BASE_API}/cageroom/${cage.id}`;
+    return RequestApi(endpoint, "DELETE", cage, 200);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }
-
 
 export function mapCageSize(max_capacity: number): string {
-    if (max_capacity >= 1 && max_capacity <= 2) {
-        return "s";
-    } else if (max_capacity >= 3 && max_capacity <= 4) {
-        return "m";
-    } else if (max_capacity >= 5 && max_capacity <= 6) {
-        return "l";
-    } else if (max_capacity >= 7) {
-        return "xl";
-    }
+  if (max_capacity >= 1 && max_capacity <= 2) {
+    return "s";
+  } else if (max_capacity >= 3 && max_capacity <= 4) {
+    return "m";
+  } else if (max_capacity >= 5 && max_capacity <= 6) {
+    return "l";
+  } else if (max_capacity >= 7) {
+    return "xl";
+  }
 
-    return "";
+  return "";
 }

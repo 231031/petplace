@@ -1,10 +1,10 @@
+import { BASE_API } from "@/config/config";
 import { User } from "@/types/model";
 import { LoginPayload } from "@/types/payload";
 
-const baseApi = import.meta.env.VITE_BASEAPI;
 export async function LoginUser(loginPayload: LoginPayload): Promise<any> {
   try {
-    const apiPath = baseApi + "/auth/login";
+    const apiPath = BASE_API + "/auth/login";
     const response = await fetch(apiPath, {
       method: "POST",
       headers: {
@@ -25,7 +25,7 @@ export async function LoginUser(loginPayload: LoginPayload): Promise<any> {
 
 export async function GoogleLoginUser(authCode: string): Promise<any> {
   try {
-    const apiPath = baseApi + "/auth/google";
+    const apiPath = BASE_API + "/auth/google";
     const response = await fetch(apiPath, {
       method: "POST",
       headers: {
@@ -47,7 +47,7 @@ export async function GoogleLoginUser(authCode: string): Promise<any> {
 // not test
 export async function SignUpUser(payload: User): Promise<any> {
   try {
-    const apiPath = baseApi + "/auth/signup";
+    const apiPath = BASE_API + "/auth/signup";
     const response = await fetch(apiPath, {
       method: "POST",
       headers: {
@@ -65,5 +65,3 @@ export async function SignUpUser(payload: User): Promise<any> {
     Promise.reject(error);
   }
 }
-
-

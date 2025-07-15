@@ -4,6 +4,7 @@ import UploadImage from "@/components/CreateProfile/UploadImage";
 import { UploadRes } from "@/types/response";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { BASE_API } from "@/config/config";
 
 export default function MyProfile() {
   // const [profile, setProfileData] = useState<any>(null); // เก็บข้อมูลโปรไฟล์
@@ -24,15 +25,13 @@ export default function MyProfile() {
   const [pet, setPetData] = useState<any>(null);
   const [allPet, setAllPet] = useState<any>(null);
 
-  // ดึงข้อมูลโปรไฟล์จาก API
-  const baseApi = import.meta.env.VITE_BASEAPI;
   useEffect(() => {
     if (!localStorage.getItem("token")) {
       navigate("/login");
     }
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`${baseApi}/user/${id}`, {
+        const response = await axios.get(`${BASE_API}/user/${id}`, {
           headers: {
             accept: "application/json",
             "Content-Type": "application/json",
@@ -64,7 +63,7 @@ export default function MyProfile() {
 
   const fetchPetData = async () => {
     try {
-      const response = await axios.get(`${baseApi}/user/animals/${id}`, {
+      const response = await axios.get(`${BASE_API}/user/animals/${id}`, {
         headers: {
           accept: "application/json",
           "Content-Type": "application/json",
@@ -202,7 +201,7 @@ export default function MyProfile() {
           user_id: parseInt(id!), // Non-null assertion (only if you're sure)
         };
         const response = await axios.post(
-          `${baseApi}/user/animals`,
+          `${BASE_API}/user/animals`,
           [AddingPet],
           {
             headers: {
@@ -222,7 +221,7 @@ export default function MyProfile() {
         }
       } else {
         const response = await axios.put(
-          `${baseApi}/user/animal/${pet.id}`,
+          `${BASE_API}/user/animal/${pet.id}`,
           updatedPet,
           {
             headers: {
@@ -272,7 +271,7 @@ export default function MyProfile() {
     try {
       formData.age = parseInt(formData.age);
       formData.image_profile = image;
-      const response = await axios.put(`${baseApi}/user/${id}`, formData, {
+      const response = await axios.put(`${BASE_API}/user/${id}`, formData, {
         headers: {
           accept: "application/json",
           "Content-Type": "application/json",

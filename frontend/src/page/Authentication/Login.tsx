@@ -4,19 +4,22 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
+import {
+  BASE_API,
+  GOOGLE_REDIRECT_URL,
+  OAUTH_CLIENT_ID,
+} from "@/config/config";
 
 export default function Login() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const baseApi = import.meta.env.VITE_BASEAPI;
-  // const [image, setImage] = useState('');
 
   // Handle login action
   const handleLogin = async () => {
     try {
-      const response = await fetch(`${baseApi}/auth/login`, {
+      const response = await fetch(`${BASE_API}/auth/login`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -52,7 +55,7 @@ export default function Login() {
     const googleLogin = useGoogleLogin({
       // onSuccess: tokenResponse => console.log(tokenResponse.code),
       flow: "auth-code",
-      redirect_uri: import.meta.env.VITE_GOOGLE_REDIRECT_URL,
+      redirect_uri: GOOGLE_REDIRECT_URL,
     });
 
     return (
@@ -103,7 +106,7 @@ export default function Login() {
                         <a href="#" className="underline decoration-1"> Reset password </a>
                     </div> */}
           <Button label="Log in" onClick={handleLogin} />
-          <GoogleOAuthProvider clientId={import.meta.env.VITE_OAUTH_CLIENT_ID}>
+          <GoogleOAuthProvider clientId={OAUTH_CLIENT_ID}>
             <LoginButton />
           </GoogleOAuthProvider>
         </div>

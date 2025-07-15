@@ -102,7 +102,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Delete old docker container
-        run: docker-compose down
+        run: docker-compose down -v
 
       - name: Deploy to server
         working-directory: ./
@@ -110,18 +110,25 @@ jobs:
           sed -i 's/^DOCKER_TAG=.*/DOCKER_TAG=${{ needs.build.outputs.docker_tag }}/' .env
           docker-compose -f docker-compose.prod.yml up -d
 
-        # - name: Set up SSH
-        #   uses: webfactory/ssh-agent@v0.9.0
-        #   with:
-        #     ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+      - name: Check and Delete unused images
+        run: |
+          sleep 5
+          if docker ps --filter "name=petplace-backend" --filter "status=running" | grep -q petplace-backend \
+            && docker ps --filter "name=petplace-frontend" --filter "status=running" | grep -q petplace-frontend; then
+            echo "Containers are running successfully. Proceeding to cleanup..."
+            docker image prune -f
 
-        # - name: Add remote server to known_hosts
-        #   run: |
-        #     ssh-keyscan ${{ secrets.SERVER_USER }}@${{ secrets.REMOTE_SERVER }} >> ~/.ssh/known_hosts    # Replace user@REMOTE_SERVER
+            docker image ls --format "{{.Repository}}:{{.Tag}} {{.ID}}" | while read -r image id; do
+              if ! docker ps --format '{{.Image}}' | grep -q "$image"; then
+                echo "Deleting unused image: $image ($id)"
+                docker rmi -f "$id" || true
+              else
+                echo "Keeping in-use image: $image"
+              fi
+            done
 
-        # - name: Deploy to server
-        #   run: |
-        #     ssh ${{ secrets.SERVER_USER }}@${{ secrets.REMOTE_SERVER }} << 'EOF'                         # Replace user@remote_server
-        #       sed -i 's/^DOCKER_TAG=.*/DOCKER_TAG=${{ needs.build-push-image.outputs.date }}/' .env
-        #       docker compose up -d
-        #     EOF
+          else
+            echo "Deployment check failed: Containers not running. Skipping image cleanup."
+            docker ps
+            exit 1
+          fi
